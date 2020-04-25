@@ -48,6 +48,10 @@ public class ScatterTest6 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/scatter6.html
         // echarts只能认识js的Date...
         EnhancedOption option = new EnhancedOption();
@@ -84,27 +88,28 @@ public class ScatterTest6 {
         series1.data(getData().toArray());
 
         option.series(series1);
-        option.exportToHtml("scatter6.html");
+        String s = option.exportToHtml("scatter6.html");
         option.view();
+        return s;
     }
 
-    public List<Object[]> getData(){
+    public static List<Object[]> getData() {
         List<Object[]> dataList = new ArrayList<Object[]>(1500);
         for (int i = 0; i < 1500; i++) {
-            dataList.add(new Object[]{getDateStr(new Date(114,9,1,0,(int)Math.round(Math.random()*10000))),
-                            (int)(round(Math.random()*30) - 0),
-                            (int)(round(Math.random()*100) - 0)
+            dataList.add(new Object[]{getDateStr(new Date(114, 9, 1, 0, (int) Math.round(Math.random() * 10000))),
+                    (int) (round(Math.random() * 30) - 0),
+                    (int) (round(Math.random() * 100) - 0)
             });
         }
         return dataList;
     }
 
-    public String getDateStr(Date date){
+    public static String getDateStr(Date date) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         return format.format(date);
     }
 
-    public Double round(Double d) {
+    public static Double round(Double d) {
         BigDecimal bigDecimal = new BigDecimal(d.toString());
         bigDecimal = bigDecimal.round(new MathContext(2, RoundingMode.HALF_UP));
         return bigDecimal.doubleValue();

@@ -41,6 +41,10 @@ public class FunnelTest {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/funnel.html
         EnhancedOption option = new EnhancedOption();
         option.title().text("漏斗图").subtext("纯属虚构");
@@ -70,7 +74,9 @@ public class FunnelTest {
         );
 
         option.series(funnel);
-        option.exportToHtml("funnel.html");
+        String s = option.exportToHtml("funnel.html");
         option.view();
+        return s;
+
     }
 }

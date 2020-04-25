@@ -44,6 +44,10 @@ public class ScatterTest2 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/scatter2.html
         EnhancedOption option = new EnhancedOption();
         option.tooltip(new Tooltip()
@@ -65,11 +69,12 @@ public class ScatterTest2 {
                 , new Scatter("scatter2").symbolSize("function (value){" +
                         "                return Math.round(value[2] / 5);" +
                         "            }").data(randomDataArray()));
-        option.exportToHtml("scatter2.html");
+        String exportToHtml = option.exportToHtml("scatter2.html");
         option.view();
+        return exportToHtml;
     }
 
-    private ScatterData[] randomDataArray() {
+    private static ScatterData[] randomDataArray() {
         ScatterData[] scatters = new ScatterData[100];
         for (int i = 0; i < scatters.length; i++) {
             scatters[i] = new ScatterData(random(), random(), Math.abs(random()));
@@ -77,7 +82,7 @@ public class ScatterTest2 {
         return scatters;
     }
 
-    private int random() {
+    private static int random() {
         int i = (int) Math.round(Math.random() * 100);
         return (i * (i % 2 == 0 ? 1 : -1));
     }

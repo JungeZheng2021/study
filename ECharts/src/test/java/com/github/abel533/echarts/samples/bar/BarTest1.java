@@ -46,6 +46,10 @@ public class BarTest1 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/bar1.html
         EnhancedOption option = new EnhancedOption();
         option.title().text("某地区蒸发量和降水量").subtext("纯属虚构");
@@ -68,7 +72,8 @@ public class BarTest1 {
         bar2.markLine().data(new PointData().type(MarkType.average).name("平均值"));
 
         option.series(bar, bar2);
-        option.exportToHtml("bar1.html");
+        String s = option.exportToHtml("bar1.html");
         option.view();
+        return s;
     }
 }

@@ -43,10 +43,14 @@ public class BarTest14 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/echarts2/doc/example/bar14.html
         EnhancedOption option = new EnhancedOption();
         option.title().text("ECharts例子个数统计").subtext("Rainbow bar example")
-            .link("http://echarts.baidu.com/doc/example.html").x(X.center);
+                .link("http://echarts.baidu.com/doc/example.html").x(X.center);
         option.tooltip().trigger(Trigger.item);
         option.calculable(true);
         option.grid().borderWidth(0).y(80).y2(60);
@@ -64,10 +68,11 @@ public class BarTest14 {
                 "                        return colorList[params.dataIndex]" +
                 "                    }")
                 .label().show(true).position(Position.top).formatter("{b}\n{c}");
-        bar.data(12,21,10,4,12,5,6,5,25,23,7);
+        bar.data(12, 21, 10, 4, 12, 5, 6, 5, 25, 23, 7);
 
         option.series(bar);
-        option.exportToHtml("bar14.html");
+        String s = option.exportToHtml("bar14.html");
         option.view();
+        return s;
     }
 }

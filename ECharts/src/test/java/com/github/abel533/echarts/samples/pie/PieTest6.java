@@ -44,6 +44,10 @@ public class PieTest6 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/pie6.html
         ItemStyle dataStyle = new ItemStyle();
         dataStyle.normal().label(new Label().show(false)).labelLine().show(false);
@@ -84,7 +88,8 @@ public class PieTest6 {
                 .data(new Data("3%的人表示“我姓曾”", 3), new Data("invisible", 97).itemStyle(placeHolderStyle));
 
         option.series(p1, p2, p3);
-        option.exportToHtml("pie6.html");
+        String exportToHtml = option.exportToHtml("pie6.html");
         option.view();
+        return exportToHtml;
     }
 }

@@ -47,6 +47,10 @@ public class ScatterTest3 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/scatter3.html
         EnhancedOption option = new EnhancedOption();
         option.tooltip(new Tooltip()
@@ -81,11 +85,12 @@ public class ScatterTest3 {
         }
         cos.data(cosData);
         option.series(sin, cos);
-        option.exportToHtml("scatter3.html");
+        String s = option.exportToHtml("scatter3.html");
         option.view();
+        return s;
     }
 
-    public Double round(Double d) {
+    public static Double round(Double d) {
         BigDecimal bigDecimal = new BigDecimal(d.toString());
         bigDecimal = bigDecimal.round(new MathContext(3, RoundingMode.HALF_UP));
         return bigDecimal.doubleValue();

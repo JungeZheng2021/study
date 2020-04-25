@@ -41,7 +41,10 @@ public class RadarTest1 {
 
     @Test
     public void test() {
+        getHtml();
+    }
 
+    public static String getHtml() {
         EnhancedOption option = new EnhancedOption();
 
         option.title().text("基础雷达图").subtext("基础雷达图subtext");
@@ -69,11 +72,12 @@ public class RadarTest1 {
         RadarData radarData1 = new RadarData("预算分配", new Integer[]{4300, 10000, 28000, 35000, 50000, 19000});
         RadarData radarData2 = new RadarData("实际开销", new Integer[]{5000, 14000, 28000, 31000, 42000, 21000});
 
-        radar1.data(radarData1,radarData2);
+        radar1.data(radarData1, radarData2);
 
         option.series(radar1);
         System.out.println(option.toString());
-        option.exportToHtml("radar1.html");
+        String exportToHtml = option.exportToHtml("radar1.html");
         option.view();
+        return exportToHtml;
     }
 }

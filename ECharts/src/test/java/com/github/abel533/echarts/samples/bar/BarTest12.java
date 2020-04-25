@@ -40,6 +40,10 @@ public class BarTest12 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/bar12.html
         EnhancedOption option = new EnhancedOption();
         option.title("ECharts2 vs ECharts1", "Chrome下测试数据");
@@ -91,7 +95,8 @@ public class BarTest12 {
         b6.data(3000, 3000, 2817, 3000, 0, 1242).xAxisIndex(1);
 
         option.series(b1, b2, b3, b4, b5, b6);
-        option.exportToHtml("bar12.html");
+        String s = option.exportToHtml("bar12.html");
         option.view();
+        return s;
     }
 }

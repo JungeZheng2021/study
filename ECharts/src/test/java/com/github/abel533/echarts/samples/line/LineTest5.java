@@ -43,6 +43,10 @@ public class LineTest5 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址:http://echarts.baidu.com/doc/example/line5.html
         EnhancedOption option = new EnhancedOption();
         option.legend("高度(km)与气温(°C)变化关系");
@@ -88,5 +92,6 @@ public class LineTest5 {
             e.printStackTrace();
         }
         option.view();
+        return html;
     }
 }

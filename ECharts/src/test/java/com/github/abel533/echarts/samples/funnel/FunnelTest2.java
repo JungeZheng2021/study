@@ -42,6 +42,10 @@ public class FunnelTest2 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/funnel2.html
         EnhancedOption option = new EnhancedOption();
         option.color("rgba(255, 69, 0, 0.5)",
@@ -83,8 +87,9 @@ public class FunnelTest2 {
                 new Data().value(80).name("展现")
         );
 
-        option.series(funnel,funnel2);
-        option.exportToHtml("funnel2.html");
+        option.series(funnel, funnel2);
+        String s = option.exportToHtml("funnel2.html");
         option.view();
+        return s;
     }
 }

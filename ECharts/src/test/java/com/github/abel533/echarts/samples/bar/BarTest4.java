@@ -42,6 +42,10 @@ public class BarTest4 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/bar4.html
         EnhancedOption option = new EnhancedOption();
         option.tooltip().trigger(Trigger.axis).axisPointer().type(PointerType.shadow);
@@ -77,7 +81,8 @@ public class BarTest4 {
         bar5.data(820, 832, 901, 934, 1290, 1330, 1320);
 
         option.series(bar, bar2, bar3, bar4, bar5);
-        option.exportToHtml("bar4.html");
+        String s = option.exportToHtml("bar4.html");
         option.view();
+        return s;
     }
 }

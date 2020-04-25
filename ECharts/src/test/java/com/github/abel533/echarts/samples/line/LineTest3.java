@@ -41,6 +41,10 @@ public class LineTest3 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/map.html
         EnhancedOption option = new EnhancedOption();
         option.title("某楼盘销售情况", "纯属虚构");
@@ -68,7 +72,7 @@ public class LineTest3 {
         l3.data(1320, 1132, 601, 234, 120, 90, 20);
 
         option.series(l1, l2, l3);
-        option.exportToHtml("line3.html");
         option.view();
+        return option.exportToHtml("line3.html");
     }
 }

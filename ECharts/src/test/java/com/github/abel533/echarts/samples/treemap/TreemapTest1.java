@@ -38,6 +38,10 @@ public class TreemapTest1 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址:http://echarts.baidu.com/doc/example/treemap.html
         EnhancedOption option = new EnhancedOption();
         option.title().text("手机占有率").subtext("虚构数据");
@@ -64,7 +68,8 @@ public class TreemapTest1 {
         );
 
         option.series(treemap);
-        option.exportToHtml("treemap.html");
+        String s = option.exportToHtml("treemap.html");
         option.view();
+        return s;
     }
 }

@@ -102,21 +102,33 @@
 
     // 为echarts对象加载数据
     myChart.setOption(option);
-    base64Url = myChart.getDataURL();
-    console.log("---结果-", base64Url)
-    $.ajax({
-        // url: 'http://192.168.16.32/test/y/1576000082150/1576739082854',
-        url: 'http://localhost/:8083/test/image',
-        type: 'post',
-        dataType: "json",
-        data: {"image": '<img src="' + base64Url + '"/>'},
-        async: false,
-        success: function (res) {
-            dataCount = res.values.length;
-            valueData = res.values;
-            categoryData = res.times;
-        }
-    });
-    
+
+    setTimeout(function () {
+        var canvas = document.getElementsByTagName("canvas")[0];
+        var url = canvas.toDataURL("image/png");//PNG格式
+        // var oA = document.createElement("a");
+        // oA.download = 'fdsf';// 设置下载的文件名，默认是'下载'
+        // oA.href = url;
+        // document.body.appendChild(oA);
+        // oA.click();
+        // oA.remove(); // 下载之后把创建的元素删除
+        console.log(url);
+        var data = new Array();
+        data.push(url)
+        $.ajax({
+            url: 'http://localhost:8083/test/test/image',
+            type: 'post',
+            data: data,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            async: false,
+            success: function (res) {
+                dataCount = res.values.length;
+                valueData = res.values;
+                categoryData = res.times;
+            }
+        });
+    }, 2000);
+
 </script>
 </html>

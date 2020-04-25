@@ -24,6 +24,10 @@
 
 package com.github.abel533.echarts.samples.line;
 
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomNodeList;
+import com.gargoylesoftware.htmlunit.html.HtmlCanvas;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
 import com.github.abel533.echarts.code.Symbol;
@@ -31,7 +35,13 @@ import com.github.abel533.echarts.code.Trigger;
 import com.github.abel533.echarts.data.LineData;
 import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.util.EnhancedOption;
+import lombok.experimental.var;
 import org.junit.Test;
+import org.w3c.dom.NodeList;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Created by liuzh on 14-8-26.
@@ -79,10 +89,28 @@ public class LineTest {
         line.addData(120, 132, 301, 134,new LineData(90,Symbol.droplet,5),230,210);
         option.series.add(line);*/
 
-        option.exportToHtml("line.html");
-        option.print();
-        option.view();
+        String exportToHtml = option.exportToHtml("line.html");
+        System.out.println(exportToHtml);
+        try {
+            WebClient webClient = new WebClient();
+            final HtmlPage page = webClient.getPage("file:///" + exportToHtml);
+            NodeList nodes = page.getElementsByTagName("canvas");
+            Iterator iterator = ((DomNodeList) nodes).iterator();
+            for (; iterator.hasNext(); ) {
+                HtmlCanvas canvas = (HtmlCanvas) iterator.next();
+                System.out.println(canvas);
+            }
 
-
+//            var url = canvas.toDataURL("image/png");//PNG格式
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
+    //
+
+//        option.print();
+//        option.view();
+
 }

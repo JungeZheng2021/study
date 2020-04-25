@@ -43,7 +43,10 @@ public class LineTest9 {
 
     @Test
     public void test() {
-        //地址:http://echarts.baidu.com/doc/example/line9.html
+        getHtml();
+    }
+
+    public static String getHtml() {
         EnhancedOption option = new EnhancedOption();
         option.title().text("对数轴示例").x(X.center);
 
@@ -75,7 +78,7 @@ public class LineTest9 {
         Line line2 = new Line("2的指数");
         line2.data(1, 2, 4, 8, 16, 32, 64, 128, 256);
         option.series(line, line2);
-        option.exportToHtml("line7.html");
         option.view();
+        return option.exportToHtml("line7.html");
     }
 }

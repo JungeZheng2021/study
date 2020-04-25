@@ -39,6 +39,10 @@ public class HeatmapTest {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/heatmap.html
         EnhancedOption option = new EnhancedOption();
         option.tooltip().position(Position.top);
@@ -105,7 +109,8 @@ public class HeatmapTest {
         heatmap.itemStyle().emphasis().shadowBlur(10).shadowColor("rgba(0, 0, 0, 0.5)");
 
         option.series(heatmap);
-        option.exportToHtml("heatmap.html");
+        String s = option.exportToHtml("heatmap.html");
         option.view();
+        return s;
     }
 }

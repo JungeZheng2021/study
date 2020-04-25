@@ -37,36 +37,19 @@ var option = ##option##;
 
 // 为echarts对象加载数据
 myChart.setOption(option);
-base64Url = myChart.getDataURL({
+var base64Url = myChart.getDataURL({
     pixelRatio: 2,
     backgroundColor: '#fff'
   });
-  setTimeout(function(){
-    console.log(base64Url);
-  var canvas = document.getElementsByTagName("canvas")[0];
-      var url = canvas.toDataURL("image/png");//PNG格式
-      var oA = document.createElement("a");
-      oA.download = 'fdsf';// 设置下载的文件名，默认是'下载'
-      oA.href = url;
-      document.body.appendChild(oA);
-      oA.click();
-      oA.remove(); // 下载之后把创建的元素删除
-    console.log(url);
-    $.ajax({
-            url: 'http://localhost:8083/test/test/image',
-            type: 'post',
-            data: {"image": JSON.stringify(url)},
-            dataType:"json",
-            contentType: "application/json; charset=utf-8",
-            async: false,
-            success: function (res) {
-                dataCount = res.values.length;
-                valueData = res.values;
-                categoryData = res.times;
-            }
-        });
-  }, 2000);
-
-
+console.log(base64Url);
+var canvas = document.getElementsByTagName("canvas")[0];
+   var url = canvas.toDataURL("image/png");//PNG格式
+console.log(url);
+function test() {
+   return url;
+}
+function image() {
+   return base64Url;
+}
 </script>
 </html>

@@ -41,6 +41,10 @@ public class MapTest {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/map.html
         EnhancedOption option = new EnhancedOption();
         EMap map = new EMap("Map");
@@ -68,7 +72,8 @@ public class MapTest {
         map.geoCoord("上海", "121.4648", "31.2891").geoCoord("天津", "117.4219", "39.4189");
 
         option.series(map);
-        option.exportToHtml("map.html");
+        String exportToHtml = option.exportToHtml("map.html");
         option.view();
+        return exportToHtml;
     }
 }

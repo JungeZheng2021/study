@@ -46,6 +46,10 @@ public class PieTest7 {
 
     @Test
     public void test() {
+        getHtml();
+    }
+
+    public static String getHtml() {
         //地址：http://echarts.baidu.com/doc/example/pie7.html
         EnhancedOption option = new EnhancedOption();
         //时间轴
@@ -74,8 +78,9 @@ public class PieTest7 {
             os[i] = new Option().series(getPie(idx++));
         }
         option.options(os);
-        option.exportToHtml("pie7.html");
+        String html = option.exportToHtml("pie7.html");
         option.view();
+        return html;
     }
 
     /**
@@ -84,7 +89,7 @@ public class PieTest7 {
      * @param idx
      * @return
      */
-    public Pie getPie(int idx) {
+    public static Pie getPie(int idx) {
         return new Pie().name("浏览器（数据纯属虚构）").data(
                 new PieData("Chrome", idx * 128 + 80),
                 new PieData("Firefox", idx * 64 + 160),

@@ -11,7 +11,7 @@
 <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
 <div id="main" style="width: 800px;height:400px;"></div>
 
-<div class="showImg1"></div>
+<!--<div class="showImg1"></div>-->
 
 <!--<p class="showImg"><img id="ringoImage" alt="" src=""/></p>-->
 <!--<div><a onclick="down()" id="download" href="javascript:void(0);">下载图片</div>-->
@@ -85,39 +85,41 @@
     myChart.setOption(option);
 
 
-    var picBase64Info = myChart.getDataURL();
-    $(".showImg1").html('<img src="' + picBase64Info + '"/>')
+    // var canvas = document.getElementsByTagName("canvas")[0];
+    // var url = canvas.toDataURL("image/png");//PNG格式
+    // console.log(JSON.stringify(url))
+    // var oA = document.createElement("a");
+    // oA.download = 'fdsf';// 设置下载的文件名，默认是'下载'
+    // oA.href = url;
+    // document.body.appendChild(oA);
+    // oA.click();
+    // oA.remove(); // 下载之后把创建的元素删除
 
-    var canvas = document.getElementsByTagName("canvas")[0];
-    var url = canvas.toDataURL("image/png");//PNG格式
-    console.log(JSON.stringify(url))
-    var oA = document.createElement("a");
-    oA.download = 'fdsf';// 设置下载的文件名，默认是'下载'
-    oA.href = url;
-    document.body.appendChild(oA);
-    oA.click();
-    oA.remove(); // 下载之后把创建的元素删除
-
-    //
-    // /* 根据图片生成画布*/
-    // function convertImageToCanvas(image) {
-    //     var canvas = document.createElement("canvas");
-    //     canvas.width = image.width;
-    //     canvas.height = image.height;
-    //     canvas.getContext("2d").drawImage(image, 0, 0);
-    //     return canvas;
-    // }
-    //
-    // /* 下载图片*/
-    // function down() {
-    //     var sampleImage = document.getElementById("ringoImage"),
-    //         canvas = convertImageToCanvas(sampleImage);
-    //     url = canvas.toDataURL("image/png");//PNG格式
-    //     //以下代码为下载此图片功能
-    //     var triggerDownload = $("#download").attr("href", url).attr("download", "echartsImg.png");
-    //     triggerDownload[0].click();
-    // }
-
+    setTimeout(function () {
+        var canvas = document.getElementsByTagName("canvas")[0];
+        var url = canvas.toDataURL("image/png");//PNG格式
+        // var oA = document.createElement("a");
+        // oA.download = 'fdsf';// 设置下载的文件名，默认是'下载'
+        // oA.href = url;
+        // document.body.appendChild(oA);
+        // oA.click();
+        // oA.remove(); // 下载之后把创建的元素删除
+        var urlTxt = encodeURIComponent(url)
+        console.log(urlTxt);
+        $.ajax({
+            url: 'http://localhost:8083/test/test/image',
+            type: 'post',
+            data: {"image":url},
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            async: false,
+            success: function (res) {
+                dataCount = res.values.length;
+                valueData = res.values;
+                categoryData = res.times;
+            }
+        });
+    }, 2000);
 
 </script>
 </body>
