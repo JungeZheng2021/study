@@ -100,7 +100,7 @@ public class OptionUtil {
         List<String> lines = new ArrayList<String>();
         String line;
         try {
-            is = OptionUtil.class.getResourceAsStream("/template");
+            is = OptionUtil.class.getResourceAsStream("/template.html");
             iReader = new InputStreamReader(is, "UTF-8");
             bufferedReader = new BufferedReader(iReader);
             while ((line = bufferedReader.readLine()) != null) {

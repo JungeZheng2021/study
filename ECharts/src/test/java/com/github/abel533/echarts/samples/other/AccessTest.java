@@ -47,7 +47,7 @@ public class AccessTest {
      *
      * @return
      */
-    public List<AccessData> getWeekData() {
+    public static List<AccessData> getWeekData() {
         List<AccessData> list = new ArrayList<AccessData>(7);
         list.add(new AccessData("09-16", 4));
         list.add(new AccessData("09-17", 7));
@@ -61,6 +61,11 @@ public class AccessTest {
 
     @Test
     public void test() {
+
+        getHtml();
+    }
+
+    public static String getHtml() {
         //获取数据
         List<AccessData> datas = getWeekData();
         //创建Option对象
@@ -93,12 +98,13 @@ public class AccessTest {
         //设置数据
         option.series(line);
         //打开浏览器预览
-        option.exportToHtml("access.html");
+        String s = option.exportToHtml("access.html");
         option.view();
+        return s;
     }
 
     //数据对象
-    class AccessData {
+    static class AccessData {
         //日期
         private String date;
         //访问量

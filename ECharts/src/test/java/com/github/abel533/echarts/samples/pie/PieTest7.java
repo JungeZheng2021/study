@@ -49,7 +49,7 @@ public class PieTest7 {
         getHtml();
     }
 
-    public static String getHtml() {
+    public static String getHtml(boolean isShow) {
         //地址：http://echarts.baidu.com/doc/example/pie7.html
         EnhancedOption option = new EnhancedOption();
         //时间轴
@@ -79,8 +79,14 @@ public class PieTest7 {
         }
         option.options(os);
         String html = option.exportToHtml("pie7.html");
-        option.view();
+        if (isShow) {
+            option.view();
+        }
         return html;
+    }
+
+    public static String getHtml() {
+        return getHtml(false);
     }
 
     /**

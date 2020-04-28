@@ -44,10 +44,10 @@ public class PieTest6 {
 
     @Test
     public void test() {
-        getHtml();
+        getHtml(true);
     }
 
-    public static String getHtml() {
+    public static String getHtml(boolean isShow) {
         //地址：http://echarts.baidu.com/doc/example/pie6.html
         ItemStyle dataStyle = new ItemStyle();
         dataStyle.normal().label(new Label().show(false)).labelLine().show(false);
@@ -73,7 +73,7 @@ public class PieTest6 {
                 .y(56)
                 .itemGap(12)
                 .data("68%的人表示过的不错", "29%的人表示生活压力很大", "3%的人表示“我姓曾”");
-        option.toolbox().show(true).feature(Tool.mark, Tool.dataView, Tool.restore, Tool.saveAsImage);
+        option.toolbox().show(false).feature(Tool.mark, Tool.dataView, Tool.restore, Tool.saveAsImage);
 
         Pie p1 = new Pie("1");
         p1.clockWise(false).radius(125, 150).itemStyle(dataStyle)
@@ -89,7 +89,13 @@ public class PieTest6 {
 
         option.series(p1, p2, p3);
         String exportToHtml = option.exportToHtml("pie6.html");
-        option.view();
+        if (isShow) {
+            option.view();
+        }
         return exportToHtml;
+    }
+
+    public static String getHtml() {
+        return getHtml(false);
     }
 }
