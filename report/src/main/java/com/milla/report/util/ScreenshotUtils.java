@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.report.util
+ * @Package: com.milla.report.util
  * @Description: <截图工具类>
  * @Author: MILLA
  * @CreateDate: 2020/4/28 9:32
@@ -23,6 +23,15 @@ public class ScreenshotUtils {
     @Autowired
     @Qualifier("phantomJSDriver")
     private WebDriver driver;
+//    static WebDriver driver;
+//
+//    static {
+//        try {
+//            driver = new WebDriverConfig().phantomJSDriver();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     /**
      * 直接通过driver截图 不延时
@@ -86,18 +95,23 @@ public class ScreenshotUtils {
      */
     public <X> X getScreenshotAs(String htmlPath, String tagName, OutputType<X> outputType, Long sleepTime) throws WebDriverException, InterruptedException {
         //是否有html
-        if (Objects.nonNull(htmlPath) && htmlPath.length() > 0) {
-            driver.get(ReportConstant.BROWSER_LOCAL_OPEN_PRE + htmlPath);
+        try {
+            if (Objects.nonNull(htmlPath) && htmlPath.length() > 0) {
+                driver.get(ReportConstant.BROWSER_LOCAL_OPEN_PRE + htmlPath);
+            }
+            //是否延时处理
+            if (Objects.nonNull(sleepTime)) {
+                Thread.sleep(sleepTime);
+            }
+            //如果有tagName
+            if (Objects.nonNull(tagName) && tagName.length() > 0) {
+                return getScreenshotAs(outputType, tagName);
+            }
+            return getScreenshotAs(outputType, ReportConstant.ECHARTS_CANVAS);
+        } finally {
+            //截图之后删除图片
+//            new File(htmlPath).deleteOnExit();
         }
-        //是否延时处理
-        if (Objects.nonNull(sleepTime)) {
-            Thread.sleep(sleepTime);
-        }
-        //如果有tagName
-        if (Objects.nonNull(tagName) && tagName.length() > 0) {
-            return getScreenshotAs(outputType, tagName);
-        }
-        return getScreenshotAs(outputType, ReportConstant.ECHARTS_CANVAS);
     }
 
     /**
