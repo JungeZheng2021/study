@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalUnit;
 import java.util.Date;
@@ -38,12 +39,44 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     private static final String WEB_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static void main(String[] args) {
-        System.out.println(format(null, new Date()));
-        System.out.println(formatPreviousMonthLastDay());
+        System.out.println(previousMonthFirstDay().getTime());
+        System.out.println(previousMonthLastDay().getTime());
+        long until = DateUtils.until(previousMonthFirstDay(), new Date(), ChronoUnit.DAYS) + 1;
+        System.out.println(until);
+        System.out.println(new Date());
+        System.out.println(plus(new Date(), 1L, ChronoUnit.DAYS));
     }
 
     public static String formatCurrentDateTime() {
         return formatCurrentDateTime(null);
+    }
+
+
+    /**
+     * 对给定时间进行时间的加减操作
+     *
+     * @param now         指定时间
+     * @param amountToAdd 增加的数量
+     * @param unit        增加的单位
+     * @return
+     */
+    public static Date plus(Date now, Long amountToAdd, TemporalUnit unit) {
+        LocalDateTime nowDateTime = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime plus = nowDateTime.plus(amountToAdd, unit);
+        Instant instant = plus.atZone(ZoneId.systemDefault()).toInstant();
+        return Date.from(instant);
+    }
+
+    /**
+     * 对给定时间进行时间的加减操作
+     *
+     * @param now         指定时间
+     * @param amountToAdd 增加的数量
+     * @param unit        增加的单位
+     * @return
+     */
+    public static Date plus(Long now, Long amountToAdd, TemporalUnit unit) {
+        return plus(new Date(now), amountToAdd, unit);
     }
 
     /**
