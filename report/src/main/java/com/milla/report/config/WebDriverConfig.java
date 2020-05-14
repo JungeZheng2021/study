@@ -32,6 +32,7 @@ import java.util.logging.Level;
  */
 @Configuration
 public class WebDriverConfig {
+
     @Bean("phantomJSDriver")
     public WebDriver phantomJSDriver() throws IOException {
 //          //设置必要参数
@@ -93,9 +94,24 @@ public class WebDriverConfig {
         } else {//unix,linux
             File file = decompressionDriver2TempPath(classLoader, driver.getDriverNameLinux(), true);
             System.setProperty(driver.getBinPath(), file.getAbsolutePath());
-
-
         }
+        //没有网络的情况下需要将js拷贝到指定的路径下
+        decompressionEchartsJs2TempPath(classLoader, ReportConstant.ECHARTS_JS_NAME);
+    }
+
+    private void decompressionEchartsJs2TempPath(ClassLoader classLoader, String echartsJsName) throws IOException {
+        //获取临时目录
+        URL resource = classLoader.getResource(ReportConstant.PROJECT_STATIC_ROOT_DIR + echartsJsName);
+        InputStream inputStream = resource.openStream();
+        File file = new File(ReportConstant.ECHARTS_TEMP_DIR + echartsJsName);
+        if (!file.exists()) {
+            FileUtils.copyInputStreamToFile(inputStream, file);
+        }
+        File docTemp = new File(ReportConstant.DOC_TEMP_DIR_PRE);
+        if (!docTemp.exists()) {
+            docTemp.mkdirs();//创建文档目录
+        }
+
     }
 
     /**
@@ -144,5 +160,7 @@ public class WebDriverConfig {
             phantomJSPath = file.getAbsolutePath();
         }
         options.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomJSPath);
+        //没有网络的情况下需要将js拷贝到指定的路径下
+        decompressionEchartsJs2TempPath(classLoader, ReportConstant.ECHARTS_JS_NAME);
     }
 }
