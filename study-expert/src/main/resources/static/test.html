@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+
+    button {
+        text-align: center;
+        width: 100px;
+        background-color: lightsalmon;
+    }
+</style>
+<body>
+
+<div style="top: 1000px;background-color: red">显示框
+    <button>查询</button>
+</div>
+<button>搜索</button>
+<form action="#">
+    账号：<input type="text">
+    密码：<input type="password">
+    月份：<input type="text" id="month">
+    <input type="submit" onclick="test();">
+</form>
+<input type="file" src="http://192.168.16.54:8083/monitor/turbine/details/2">测试
+
+<img src="./课程.jpg" style="height: 100px;width: 100px;border-radius: 10px">
+<img src="www.baidu.com" alt="呵呵">
+
+<button onclick="create()">生成</button>
+<hr>
+<div id="parent"></div>
+<table style="background-color: bisque;border-bottom: red; ">
+    <thead>姓名</thead>
+    <thead>性别</thead>
+    <thead>年龄</thead>
+    <tr>
+        <td>milla</td>
+        <td>女</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>tom</td>
+        <td>男</td>
+        <td>13</td>
+    </tr>
+    <tr>
+        <td>lili</td>
+        <td>女</td>
+        <td>25</td>
+    </tr>
+</table>
+</body>
+<script type="application/javascript">
+
+
+    //参数 ：月份标签
+
+    //月份标签中的值
+
+    // 根据参数去后端去做请求
+
+    function test() {
+        var month = document.getElementById("month");
+        console.log(month);
+
+
+        return;
+    }
+
+    function create() {
+        var div = document.getElementById("parent");
+        //var div = document.createElement("div");
+        var button = document.createElement("button")
+        button.innerHTML = "测试";
+        div.appendChild(button);
+
+    }
+</script>
+</html>

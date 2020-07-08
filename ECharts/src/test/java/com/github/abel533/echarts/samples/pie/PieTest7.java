@@ -46,7 +46,7 @@ public class PieTest7 {
 
     @Test
     public void test() {
-        getHtml();
+        getHtml(true);
     }
 
     public static String getHtml(boolean isShow) {

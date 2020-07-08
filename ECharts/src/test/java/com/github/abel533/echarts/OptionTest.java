@@ -26,39 +26,64 @@ package com.github.abel533.echarts;
 
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
-import com.github.abel533.echarts.code.LegendType;
-import com.github.abel533.echarts.code.MarkType;
-import com.github.abel533.echarts.code.Tool;
-import com.github.abel533.echarts.code.Trigger;
+import com.github.abel533.echarts.code.*;
 import com.github.abel533.echarts.data.LineData;
 import com.github.abel533.echarts.series.Line;
+import com.github.abel533.echarts.style.LineStyle;
 import com.github.abel533.echarts.util.EnhancedOption;
+import com.google.common.collect.Maps;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Description: OptionTest
  *
  * @author liuzh
- * @since liuzh(2014-08-26 14:08)
+ * @since liuzh(2014 - 08 - 26 14 : 08)
  */
 public class OptionTest {
 
     @Test
     public void basicOption() {
         EnhancedOption option = new EnhancedOption();
-        option.legend().padding(5).itemGap(10).type(LegendType.scroll).data("ios7", "android4");
-        option.toolbox().show(true).feature(Tool.dataView, Tool.saveAsImage, Tool.dataZoom, Tool.magicType);
+//        option.legend().padding(5).itemGap(10).type(LegendType.scroll).data("ios7", "android4");
+//        option.toolbox().show(true).feature(Tool.dataView, Tool.saveAsImage, Tool.dataZoom, Tool.magicType);
         option.tooltip().trigger(Trigger.item);
         option.xAxis(new CategoryAxis().data("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"));
         option.yAxis(new ValueAxis().boundaryGap(new Double[]{0.1, 0.1}).splitNumber(10));
+        Line ground = new Line();
+        ground.data(112, 25, 8, 36, 203, 343, 454, 89, 343, 123, 45, 123);
+        ground.itemStyle().normal().lineStyle().width(20).color("lightgreen");
+        ground.symbol("none");//itemStyle().normal().color("lightgreen").borderWidth(0);
+        ground.itemStyle().normal().color("lightgreen").borderWidth(0);
+        ground.smooth(true);
+        option.series(ground);
 
         Line line = new Line();
-        line.name("ios7").data(112, 23, 45, 56, 233, 343, 454, 89, 343, 123, 45, 123).markLine().data(new LineData().type(MarkType.average).name("ios7"));
-        option.series(line);
+        line.data(112, 23, 45, 56, 233, 343, 454, 89, 343, 123, 45, 123);
+        line.markLine().symbol("none").data(new LineData().yAxis(300).name("高报"));
+        line.markLine().symbol("none").data(new LineData().yAxis(100).name("低报"));
+//        line.markLine().symbol("none").data(new LineData().type(MarkType.min).name("低报"));
+        Map<Object, Object> left = Maps.newHashMap();
+        left.put("lt", 100);
+        left.put("symbolSize", 8);
+        left.put("symbol", "circle");
 
-        line = new Line();
-        line.name("android4").data(45, 123, 145, 526, 233, 343, 44, 829, 33, 123, 45, 13).itemStyle().normal().label().show(true);
-        option.series(line);
+        Map<Object, Object> right = Maps.newHashMap();
+        right.put("gt", 300);
+        right.put("symbolSize", 8);
+        right.put("symbol", "circle");
+        Map<Object, Object> middle = Maps.newHashMap();
+        middle.put("gte", 100);
+        middle.put("lte", 300);
+        middle.put("symbol", "none");
+        line.lineStyle().normal().color("blue");
+        line.itemStyle().normal().color("red").borderWidth(0);
+        line.smooth(true);
+        option.series(line).visualMapNew().show(false).pieces(new Object[]{left, middle, right}).itemSymbol(Symbol.none);
+
 
         option.view();
     }

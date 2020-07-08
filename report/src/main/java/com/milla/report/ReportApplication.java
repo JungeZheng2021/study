@@ -170,17 +170,17 @@ public class ReportApplication {
         option.series(l1, l2, l3);
         option.view();
         String exportToHtml = option.exportToHtml("/tmp/echarts/", "saleInfo.html");
-        webDriver.get("file:///" + exportToHtml);
-        Thread.sleep(1000L);
-        WebElement canvas = webDriver.findElement(By.tagName("canvas"));
-        Dimension size = canvas.getSize();
-        int height = size.getHeight();
-        int width = size.getWidth();
-        System.out.println("height:" + height + "  -width:" + width);
-//        File srcFile = canvas.getScreenshotAs(OutputType.FILE);
-        File srcFile = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
-        FileUtils.copyFile(srcFile, new File("/tmp/echarts/image" + System.currentTimeMillis() + ".png"));
-        System.out.println("共计用时：" + (System.currentTimeMillis() - currentTimeMillis));
+//        webDriver.get("file:///" + exportToHtml);
+//        Thread.sleep(1000L);
+//        WebElement canvas = webDriver.findElement(By.tagName("canvas"));
+//        Dimension size = canvas.getSize();
+//        int height = size.getHeight();
+//        int width = size.getWidth();
+//        System.out.println("height:" + height + "  -width:" + width);
+////        File srcFile = canvas.getScreenshotAs(OutputType.FILE);
+//        File srcFile = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
+//        FileUtils.copyFile(srcFile, new File("/tmp/echarts/image" + System.currentTimeMillis() + ".png"));
+//        System.out.println("共计用时：" + (System.currentTimeMillis() - currentTimeMillis));
     }
 
     @GetMapping("bar")
