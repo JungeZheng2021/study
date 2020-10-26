@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<contextName>${HOSTNAME}</contextName>
+	<property name="LOG_PATH" value="/data/logs/core" />
+	<springProperty scope="context" name="appName"
+		source="spring.application.name" />
+	<springProperty scope="context" name="ip"
+		source="spring.cloud.client.ipAddress" />
+	<property name="CONSOLE_LOG_PATTERN"
+		value="[%d{yyyy-MM-dd HH:mm:ss.SSS} ${ip} ${appName} %highlight(%-5level) %yellow(%X{X-B3-TraceId}),%green(%X{X-B3-SpanId}),%blue(%X{X-B3-ParentSpanId}) %yellow(%thread) %green(%logger) %msg%n"></property>
+
+	<appender name="logstash"
+		class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+		<remoteHost>192.168.16.12</remoteHost>
+		<port>4569</port>
+		<encoder
+			class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+			<providers>
+				<timestamp>
+					<timeZone>UTC</timeZone>
+				</timestamp>
+				<pattern>
+					<pattern>
+						{
+						"ip": "${ip}",
+						"app": "${appName}",
+						"level": "%level",
+						"trace": "%X{X-B3-TraceId:-}",
+						"span": "%X{X-B3-SpanId:-}",
+						"parent": "%X{X-B3-ParentSpanId:-}",
+						"method": "%method",
+						"thread":
+						"%thread",
+						"class": "%logger{40}",
+						"message": "%message",
+						"stack_trace": "%exception{300}"
+						}
+					</pattern>
+				</pattern>
+			</providers>
+		</encoder>
+	</appender>
+
+	<appender name="FILEINFO"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/${appName}/${appName}-info.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}/${appName}/${appName}-info-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>30</maxHistory>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+		<append>true</append>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<charset>utf-8</charset>
+		</encoder>
+
+		<!-- <filter class="ch.qos.logback.classic.filter.LevelFilter"> -->
+		<!-- <level>debug</level> -->
+		<!-- <onMatch>ACCEPT</onMatch> -->
+		<!-- <onMismatch>ACCEPT</onMismatch> -->
+		<!-- </filter> -->
+	</appender>
+
+
+
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>
+				<pattern>%date [%thread] %-5level %logger:%method- %message %n
+				</pattern>
+			</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.springframework" level="INFO" />
+	<!-- <logger name="org.hibernate" level="INFO" /> -->
+	<logger name="com.aimsphm" level="DEBUG" />
+
+	<root level="DEBUG">
+		<appender-ref ref="FILEINFO" />
+		<appender-ref ref="STDOUT" />
+		<!-- <appender-ref ref="logstash" /> -->
+	</root>
+	<root level="ERROR">
+
+	</root>
+</configuration>

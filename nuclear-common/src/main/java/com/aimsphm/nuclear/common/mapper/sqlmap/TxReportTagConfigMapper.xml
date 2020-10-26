@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.TxReportTagConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.TxReportTagConfig">
+    <result column="id" property="id" />
+    <result column="create_by" property="createBy" />
+    <result column="last_update_by" property="lastUpdateBy" />
+    <result column="last_update_on" property="lastUpdateOn" />
+    <result column="create_on" property="createOn" />
+    <result column="delimit" property="delimit" />
+    <result column="sub_system_id" property="subSystemId" />
+    <result column="title" property="title" />
+    <result column="placeholder" property="placeholder" />
+    <result column="category" property="category" />
+    <result column="tag_list" property="tagList" />
+    <result column="y_unit" property="yUnit" />
+    <result column="x_unit" property="xUnit" />
+    <result column="legend" property="legend" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        create_by,
+        last_update_by,
+        last_update_on,
+        create_on,
+        delimit,
+        sub_system_id, title, placeholder, category, tag_list, y_unit, x_unit, legend
+    </sql>
+
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.MdDeviceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.MdDevice">
+        <result column="id" property="id"/>
+        <result column="create_by" property="createBy"/>
+        <result column="last_update_by" property="lastUpdateBy"/>
+        <result column="last_update_on" property="lastUpdateOn"/>
+        <result column="create_on" property="createOn"/>
+        <result column="delimit" property="delimit"/>
+        <result column="sub_system_id" property="subSystemId"/>
+        <result column="system_id" property="systemId"/>
+        <result column="set_id" property="setId"/>
+        <result column="site_id" property="siteId"/>
+        <result column="device_name" property="deviceName"/>
+        <result column="device_code" property="deviceCode"/>
+        <result column="device_type" property="deviceType"/>
+        <result column="device_desc" property="deviceDesc"/>
+        <result column="enable_monitor" property="enableMonitor"/>
+        <result column="monitor_algorithm_id" property="monitorAlgorithmId"/>
+        <result column="additional_type" property="additionalType"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        create_by,
+        last_update_by,
+        last_update_on,
+        create_on,
+        delimit,
+        sub_system_id, system_id, set_id, site_id, device_name, device_code, device_type, device_desc, enable_monitor, monitor_algorithm_id, additional_type
+    </sql>
+    <!--获取子系统下所有的设备id-->
+    <select id="selectDeviceIdsBySubSystemId" resultType="java.lang.Long">
+      SELECT id FROM `md_device` WHERE sub_system_id = #{subSystemId,jdbcType=BIGINT} ORDER BY id
+    </select>
+    <!--获取子系统下所有的设备-->
+    <select id="selectDeviceBySubSystemId" resultType="com.aimsphm.nuclear.common.entity.vo.MdDeviceVO">
+      SELECT id,device_name as deviceName,device_code as deviceCode ,additional_type as additionalType FROM `md_device` WHERE sub_system_id = #{subSystemId,jdbcType=BIGINT} ORDER BY id
+    </select>
+</mapper>

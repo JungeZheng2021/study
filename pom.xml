@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.aimsphm.nuclear</groupId>
+    <artifactId>nuclear-all</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>nuclear-all</name>
+    <description>nuclear-all application</description>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.12.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <modules>
+        <module>nuclear-common</module>
+        <module>nuclear-core</module>
+        <module>nuclear-data</module>
+    </modules>
+
+    <properties>
+        <encoding>UTF-8</encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <project.version>1.0</project.version>
+        <fastjson.version>1.2.24</fastjson.version>
+        <mybatis.starter.version>1.2.0</mybatis.starter.version>
+        <plugin.exec.version>1.5.0</plugin.exec.version>
+        <springfox.swagger2.version>2.6.1</springfox.swagger2.version>
+        <hamcrest.version>1.3</hamcrest.version>
+        <shiro.version>1.3.2</shiro.version>
+        <postgresql.version>42.1.1</postgresql.version>
+        <eureka_ip1>http://172.20.11.206:8761/eureka/</eureka_ip1>
+        <!--207上 eureka还没有部署-->
+        <eureka_ip2>http://172.20.11.207:8762/eureka/</eureka_ip2>
+        <sql_url>jdbc:mysql://172.20.11.217:3306/nuclear_phm?useUnicode=true&amp;characterEncoding=utf8&amp;allowMultiQueries=true</sql_url>
+        <sql_username>root</sql_username>
+        <sql_password>aims2016</sql_password>
+        <rabbitmq_host1>172.20.11.221</rabbitmq_host1>
+        <rabbitmq_host1_username>admin</rabbitmq_host1_username>
+        <rabbitmq_host1_password>admin123$</rabbitmq_host1_password>
+        <hbase_zookeeper_quorum>phm2-mid01:2181,phm2-mid02:2181,phm2-mid03:2181</hbase_zookeeper_quorum>
+        <redis1a>- 172.20.11.211:6378</redis1a>
+        <redis1b>- 172.20.11.211:6379</redis1b>
+        <redis2a>- 172.20.11.212:6378</redis2a>
+        <redis2b>- 172.20.11.212:6379</redis2b>
+        <redis3a>- 172.20.11.213:6378</redis3a>
+        <redis3b>- 172.20.11.213:6379</redis3b>
+        <redis_url>172.20.11.211</redis_url>
+        <!--<rabbitmq_url>10.1.4.40:5672,10.1.4.41:5672,10.1.4.42:5672</rabbitmq_url>-->
+        <mybatis-plus-boot-starter.version>3.3.1.tmp</mybatis-plus-boot-starter.version>
+        <!--本地注册地址-->
+        <eureka_local>http://192.168.16.43:8761/eureka/</eureka_local>
+        <!--开发环境-->
+        <eureka_dev1>http://192.168.16.44:8761/eureka/</eureka_dev1>
+        <eureka_dev2>http://192.168.16.45:8762/eureka/</eureka_dev2>
+        <hbase_config_dev>hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181</hbase_config_dev>
+        <!--开发环境-->
+    </properties>
+
+    <dependencyManagement>
+
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Greenwich.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.1.12.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <plugins>
+            <!-- <plugin> -->
+            <!-- <groupId>org.springframework.boot</groupId> -->
+            <!-- <artifactId>spring-boot-maven-plugin</artifactId> -->
+            <!-- </plugin> -->
+        </plugins>
+    </build>
+</project>

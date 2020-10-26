@@ -1,0 +1,23 @@
+hbase:
+  config:
+    properties:
+      hbase.zookeeper.quorum : hadoop-master1:2181,hadoop-slave011:2181,hadoop-slave021:2181
+eureka:
+  client:
+    serviceUrl:
+       defaultZone: @eureka_ip1@,@eureka_ip2@
+    fetchRegistry: true
+  instance:
+    prefer-ip-address: true
+spring:
+  application:
+    name: nuclear-data
+  mqtt:
+      username: admin
+      password: aims2020
+      url: tcp://192.168.16.54:1883
+      client:
+        id: mqttId555111
+      default:
+        topic: topic2211
+      completionTimeout: 10000

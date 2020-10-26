@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.MdSensorExtrainfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.MdSensorExtrainfo">
+    <result column="id" property="id" />
+    <result column="create_by" property="createBy" />
+    <result column="last_update_by" property="lastUpdateBy" />
+    <result column="last_update_on" property="lastUpdateOn" />
+    <result column="create_on" property="createOn" />
+    <result column="delimit" property="delimit" />
+        <result column="sensor_id" property="sensorId" />
+        <result column="tag_id" property="tagId" />
+        <result column="sensor_model" property="sensorModel" />
+        <result column="sensor_serial" property="sensorSerial" />
+        <result column="product_id" property="productId" />
+        <result column="edge_id" property="edgeId" />
+        <result column="firmware" property="firmware" />
+        <result column="temp1" property="temp1" />
+        <result column="temp2" property="temp2" />
+        <result column="voltage" property="voltage" />
+        <result column="unit_id" property="unitId" />
+        <result column="sleep_time" property="sleepTime" />
+        <result column="daq_frequency" property="daqFrequency" />
+        <result column="daq_time" property="daqTime" />
+        <result column="ap_ssid" property="apSsid" />
+        <result column="ap_key" property="apKey" />
+        <result column="client_ip" property="clientIp" />
+        <result column="client_mask" property="clientMask" />
+        <result column="client_gateway" property="clientGateway" />
+        <result column="tcp_server_ip" property="tcpServerIp" />
+        <result column="tcp_server_port" property="tcpServerPort" />
+        <result column="status" property="status" />
+        <result column="fmin" property="fmin" />
+        <result column="fmax" property="fmax" />
+        <result column="vt_early_warning_lo" property="vtEarlyWarningLo" />
+        <result column="vt_thr_lo" property="vtThrLo" />
+        <result column="vt_thr_lolo" property="vtThrLolo" />
+        <result column="t1_early_warning_hi" property="t1EarlyWarningHi" />
+        <result column="t1_thr_hi" property="t1ThrHi" />
+        <result column="t1_thr_hihi" property="t1ThrHihi" />
+        <result column="t2_early_warning_hi" property="t2EarlyWarningHi" />
+        <result column="t2_thr_hi" property="t2ThrHi" />
+        <result column="t2_thr_hihi" property="t2ThrHihi" />
+        <result column="transfer_type" property="transferType" />
+        <result column="sensitivity" property="sensitivity" />
+        <result column="connect_status" property="connectStatus" />
+        <result column="config_status" property="configStatus" />
+        <result column="mode" property="mode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        create_by,
+        last_update_by,
+        last_update_on,
+        create_on,
+        delimit,
+        sensor_id, tag_id, sensor_model, sensor_serial, product_id, edge_id, firmware, temp1, temp2, voltage, unit_id, sleep_time, daq_frequency, daq_time, ap_ssid, ap_key, client_ip, client_mask, client_gateway, tcp_server_ip, tcp_server_port, status, fmin, fmax, vt_early_warning_lo, vt_thr_lo, vt_thr_lolo, t1_early_warning_hi, t1_thr_hi, t1_thr_hihi, t2_early_warning_hi, t2_thr_hi, t2_thr_hihi, transfer_type, sensitivity, connect_status,config_status,mode
+    </sql>
+    <sql id="Base_Column_ListJoin">
+        e.id,
+        e.create_by,
+        e.last_update_by,
+        e.last_update_on,
+        e.create_on,
+        e.delimit,
+        e.sensor_id, e.tag_id, e.sensor_model, e.sensor_serial, e.product_id, e.edge_id, e.firmware, e.temp1, e.temp2, e.voltage, e.unit_id, e.sleep_time, e.daq_frequency, e.daq_time, e.ap_ssid, e.ap_key, e.client_ip, e.client_mask, e.client_gateway, e.tcp_server_ip, e.tcp_server_port, e.status, e.fmin, e.fmax, e.vt_early_warning_lo, e.vt_thr_lo, e.vt_thr_lolo, e.t1_early_warning_hi, e.t1_thr_hi, e.t1_thr_hihi, e.t2_early_warning_hi, e.t2_thr_hi, e.t2_thr_hihi, e.transfer_type, e.sensitivity, e.connect_status, s.iswifi ,s.alias
+
+    </sql>
+    <select id="selectFailedSensor" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_ListJoin"/>
+        FROM
+        `md_sensor_extrainfo` e
+        LEFT JOIN md_sensor s ON s.id = e.sensor_id
+        WHERE
+        s.pi_sensor = 0
+        AND s.device_id= #{deviceId,jdbcType=BIGINT}
+        <if test="type == 0 ">
+            AND  (e.status!=1)
+        </if>
+        <if test="type == 1 ">
+        AND  (e.connect_status is Null or e.connect_status!=1)
+        </if>
+        <if test="type == 2 ">
+            AND  (e.voltage &lt; e.vt_thr_lo)
+        </if>
+        <if test="type == 3 ">
+            AND  (e.status!=1 or (e.connect_status is Null or e.connect_status!=1) or (e.voltage &lt; e.vt_thr_lo))
+        </if>
+
+    </select>
+</mapper>

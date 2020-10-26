@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.TxTurbinesnapshotMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.TxTurbinesnapshot">
+    <result column="id" property="id" />
+    <result column="create_by" property="createBy" />
+    <result column="last_update_by" property="lastUpdateBy" />
+    <result column="last_update_on" property="lastUpdateOn" />
+    <result column="create_on" property="createOn" />
+    <result column="delimit" property="delimit" />
+        <result column="device_id" property="deviceId" />
+        <result column="device_name" property="deviceName" />
+        <result column="last_start_time" property="lastStartTime" />
+        <result column="last_stop_time" property="lastStopTime" />
+        <result column="heath_running_time" property="heathRunningTime" />
+        <result column="health_status" property="healthStatus" />
+        <result column="total_running_duration" property="totalRunningDuration" />
+        <result column="stop_times" property="stopTimes" />
+        <result column="snapshot_time" property="snapshotTime" />
+        <result column="additional_type" property="additionalType" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        create_by,
+        last_update_by,
+        last_update_on,
+        create_on,
+        delimit,
+        device_id, device_name, last_start_time, last_stop_time, heath_running_time, health_status, total_running_duration, stop_times, snapshot_time, additional_type
+    </sql>
+
+</mapper>

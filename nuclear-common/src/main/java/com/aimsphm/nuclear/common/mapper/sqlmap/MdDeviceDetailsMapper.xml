@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.MdDeviceDetailsMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.MdDeviceDetails">
+        <result column="id" property="id"/>
+        <result column="delimit" property="delimit"/>
+        <result column="create_by" property="createBy"/>
+        <result column="last_update_by" property="lastUpdateBy"/>
+        <result column="last_update_on" property="lastUpdateOn"/>
+        <result column="create_on" property="createOn"/>
+        <result column="system_id" property="systemId"/>
+        <result column="sub_system_id" property="subSystemId"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="field_name_en" property="fieldNameEn"/>
+        <result column="field_name_zh" property="fieldNameZh"/>
+        <result column="field_value" property="fieldValue"/>
+        <result column="field_type" property="fieldType"/>
+        <result column="unit" property="unit"/>
+        <result column="importance" property="importance"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        delimit,
+        create_by,
+        last_update_by,
+        last_update_on,
+        create_on,
+        system_id, sub_system_id, device_id, field_name_en, field_name_zh, field_value, field_type, unit, importance
+    </sql>
+</mapper>
