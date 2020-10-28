@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.data.feign;
 
-import com.aimsphm.nuclear.common.entity.dto.HColumnItemDTO;
-import com.aimsphm.nuclear.data.feign.fallback.HbaseHystrixClientFallback;
+import com.aimsphm.nuclear.common.entity.dto.HBaseColumnItemDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @Component
 @FeignClient(value = "nuclear-hbase/hbase")//, fallback = HbaseHystrixClientFallback.class)
-public interface HbaseServiceFeignClient {
+public interface HBaseServiceFeignClient {
 
     @PostMapping(value = "column/hour")
-    void saveItemData2TableByHour(@RequestBody HColumnItemDTO itemDTO);
+    void saveItemData2TableByHour(@RequestBody HBaseColumnItemDTO itemDTO);
 }

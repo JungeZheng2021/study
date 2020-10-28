@@ -16,7 +16,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class HTableDTO {
+public class HBaseTableDTO {
     @ApiModelProperty(value = "表格名", required = true)
     private String tableName;
     @ApiModelProperty(value = "列族集合", required = true)

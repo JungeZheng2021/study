@@ -17,11 +17,7 @@ import java.io.Serializable;
  * @Version: 1.0
  */
 @Data
-public class HColumnDoubleDTO implements Serializable {
+public class HBaseColumnDoubleDTO extends HBaseTimeSeriesDataDTO {
     @ApiModelProperty(value = "指定列名", required = true)
     private Object qualifier;
-    @ApiModelProperty(value = "指定列对应的值", required = true)
-    private Double value;
-    @ApiModelProperty(value = "数据产生时间戳")
-    private Long timestamp;
 }

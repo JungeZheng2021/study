@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ReturnResponse<T> {
+public class ResponseData<T> {
 
-	protected String resCode = RestResponseCode.OK.getCode();
-	protected T resData;
+    protected String resCode = RestResponseCode.OK.getCode();
+    protected T resData;
 }

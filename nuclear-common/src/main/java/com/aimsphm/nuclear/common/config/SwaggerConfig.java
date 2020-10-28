@@ -60,17 +60,22 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .apiInfo(apiInfo())
                 .globalOperationParameters(parameters)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage(basePackage)) // 需要扫描的包路径
+                // 需要扫描的包路径
+                .apis(RequestHandlerSelectors.basePackage(basePackage))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("接口列表 v1.1.0") //接口文档名称
-                .description("接口测试") //接口描述
-                .termsOfServiceUrl("http://localhost:8080/doc.html") // 接口地址
-                .contact(new Contact("AIMS", "https://www.aimsphm.com/", "info@aimsphm.com"))//联系人
+                //接口文档名称
+                .title("接口列表 v1.1.0")
+                //接口描述
+                .description("接口测试")
+                // 接口地址
+                .termsOfServiceUrl("http://localhost:8080/doc.html")
+                //联系人
+                .contact(new Contact("AIMS", "https://www.aimsphm.com/", "info@aimsphm.com"))
                 .version("1.1.0")
                 .build();
     }

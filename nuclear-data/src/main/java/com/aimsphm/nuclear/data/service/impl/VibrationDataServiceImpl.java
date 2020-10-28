@@ -7,6 +7,7 @@ import com.aimsphm.nuclear.data.entity.dto.SensorDataDTO;
 import com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
+import com.aimsphm.nuclear.data.service.HotSpotDataUpdateService;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.aimsphm.nuclear.common.constant.HBaseConstant.HBASE_FAMILY_NPC_VIBRATION_CALCULATE;
-import static com.aimsphm.nuclear.common.constant.HBaseConstant.HBASE_FAMILY_NPC_VIBRATION_RAW;
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
 import static com.aimsphm.nuclear.data.service.impl.PIDataServiceImpl.ROW_KEY_SEPARATOR;
 
 /**
@@ -43,6 +43,8 @@ import static com.aimsphm.nuclear.data.service.impl.PIDataServiceImpl.ROW_KEY_SE
 public class VibrationDataServiceImpl implements CommonDataService {
     @Autowired
     private HBaseService hBaseService;
+    @Autowired
+    private HotSpotDataUpdateService serviceUpdate;
 
     @Override
     public void operateData(String topic, String message) {
@@ -76,6 +78,8 @@ public class VibrationDataServiceImpl implements CommonDataService {
 
         Integer index = Math.toIntExact(timestamp / 1000 % 3600);
         boolean isDriveData = operationDeriveData3600Columns(packet, rowKey, index);
+        //保存到redis中
+        operationRmsData(packet, rowKey, index);
         //特征数据和其他数据不同时存在
         if (isDriveData) {
             return;
@@ -85,23 +89,59 @@ public class VibrationDataServiceImpl implements CommonDataService {
 
     }
 
+    /**
+     * 操作Rms值
+     *
+     * @param packet 数据包
+     * @param rowKey 行键
+     * @param index  索引值
+     */
+    private void operationRmsData(PacketDTO packet, String rowKey, Integer index) {
+        serviceUpdate.updateNonePIMeasurePoints(packet.getSensorCode(), packet.getRms(), null, null);
+        insert2HBase(rowKey, index, packet.getTimestamp(), packet.getRms(), H_BASE_FAMILY_NPC_SENSOR_RMS);
+    }
+
+    /**
+     * 操作振动计算数据
+     *
+     * @param packet 数据包
+     * @param rowKey 行键
+     * @param index  索引值
+     */
     private void operationVibrationVecData(PacketDTO packet, String rowKey, Integer index) {
         //振动计算得到数据
         Double[] vecData = packet.getVecData();
-        insert2HBase(rowKey, index, vecData, HBASE_FAMILY_NPC_VIBRATION_RAW);
+        insert2HBase(rowKey, index, packet.getTimestamp(), vecData, H_BASE_FAMILY_NPC_VIBRATION_RAW);
     }
 
+    /**
+     * 操作振动原始数据
+     *
+     * @param packet 数据包
+     * @param rowKey 行键
+     * @param index  索引值
+     */
     private void operationVibrationRawData(PacketDTO packet, String rowKey, Integer index) {
         //振动原始数据
         Double[] data = packet.getData();
-        insert2HBase(rowKey, index, data, HBASE_FAMILY_NPC_VIBRATION_CALCULATE);
+        insert2HBase(rowKey, index, packet.getTimestamp(), data, H_BASE_FAMILY_NPC_VIBRATION_CALCULATE);
     }
 
-    private void insert2HBase(String rowKey, Integer index, Double[] data, String family) {
+    /**
+     * 入库
+     *
+     * @param rowKey    行键
+     * @param index     索引值
+     * @param timestamp 时间戳
+     * @param data      真实数据
+     * @param family    列族
+     */
+    private void insert2HBase(String rowKey, Integer index, Long timestamp, Object data, String family) {
         Put put = new Put(Bytes.toBytes(rowKey));
+        put.setTimestamp(timestamp);
         put.addColumn(Bytes.toBytes(family), Bytes.toBytes(index), ByteUtil.toBytes(data));
         try {
-            hBaseService.save2HBase(HBaseConstant.HBASE_TABLE_NPC_REAL_TIME, put);
+            hBaseService.save2HBase(HBaseConstant.H_BASE_TABLE_NPC_REAL_TIME, put);
         } catch (IOException e) {
             log.error("batch save  hbase failed:{}", e);
         }
@@ -132,11 +172,12 @@ public class VibrationDataServiceImpl implements CommonDataService {
             }
             Double value = next.getValue();
             Put put = new Put(Bytes.toBytes(rowKey));
+            put.setTimestamp(packet.getTimestamp());
             put.addColumn(Bytes.toBytes(feature), Bytes.toBytes(index), Bytes.toBytes(value));
             putList.add(put);
         }
         try {
-            hBaseService.batchSave2HBase(HBaseConstant.HBASE_TABLE_NPC_REAL_TIME, putList);
+            hBaseService.batchSave2HBase(HBaseConstant.H_BASE_TABLE_NPC_REAL_TIME, putList);
         } catch (IOException e) {
             log.error("batch save 2 hbase failed:{}", e);
         } finally {

@@ -4,7 +4,7 @@ package com.aimsphm.nuclear.core.controller;
 import com.aimsphm.nuclear.common.entity.MdSubSystem;
 import com.aimsphm.nuclear.common.pojo.QueryObject;
 import com.aimsphm.nuclear.common.response.ResponseUtils;
-import com.aimsphm.nuclear.common.response.ReturnResponse;
+import com.aimsphm.nuclear.common.response.ResponseData;
 import com.aimsphm.nuclear.common.util.CommonUtil;
 import com.aimsphm.nuclear.core.service.MdSubSystemService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -63,7 +63,7 @@ public class MdSubSystemController {
 
     @GetMapping("getOne/{subSystemId}")
     @ApiOperation(value = "查询某一个子系统的接口")
-    public ReturnResponse<MdSubSystem> getOne(@PathVariable(name = "subSystemId") Long subSystemId) {
+    public ResponseData<MdSubSystem> getOne(@PathVariable(name = "subSystemId") Long subSystemId) {
         return ResponseUtils.success(iMdSubSystemService.getById(subSystemId));
 
     }

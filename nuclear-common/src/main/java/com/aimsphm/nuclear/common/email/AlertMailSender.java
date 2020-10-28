@@ -12,8 +12,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import com.aimsphm.nuclear.common.exception.ExceptionAdvice;
-
 @Component
 @ConditionalOnProperty(prefix = "spring.mailConfig", name = "enable", havingValue = "true",matchIfMissing= false)
 public class AlertMailSender {

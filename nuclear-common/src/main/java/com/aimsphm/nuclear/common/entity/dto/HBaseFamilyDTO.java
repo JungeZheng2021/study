@@ -14,7 +14,7 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-public class HFamilyDTO {
+public class HBaseFamilyDTO {
     @ApiModelProperty(value = "列族", required = true)
     private String family;
     @ApiModelProperty(value = "指定列")

@@ -35,7 +35,7 @@ public class PIDataRabbitMqListener {
 
     private Long LOG_PRINT_TIME = 10000L;
 
-    //    @RabbitListener(queues = "durableQueuePI")
+    @RabbitListener(queues = "durableQueuePI")
     public void messageConsumer(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
             if (count.longValue() % LOG_PRINT_TIME == 0) {

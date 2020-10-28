@@ -4,7 +4,7 @@ import com.aimsphm.nuclear.common.annotation.DistributedLock;
 import com.aimsphm.nuclear.common.entity.MdDevice;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointTimesScaleVO;
 import com.aimsphm.nuclear.common.mapper.MdDeviceMapper;
-import com.aimsphm.nuclear.pump.service.PumpEquipmentMonitoringService;
+import com.aimsphm.nuclear.core.service.EquipmentMonitoringService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,7 +26,7 @@ public class RotaryRuntimeStatisticsJob {
     @Autowired
     private MdDeviceMapper deviceMapper;
     @Autowired
-    private PumpEquipmentMonitoringService monitoringService;
+    private EquipmentMonitoringService monitoringService;
 
 
     //定时器 每天凌晨1点执行一次

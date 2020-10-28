@@ -70,4 +70,8 @@ public class PacketDTO {
      * 派生测点数值
      */
     private Map<String, Double> featuresResult;
+    /**
+     * 秒级别rms值
+     */
+    private Double rms;
 }

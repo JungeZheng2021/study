@@ -1,4 +1,4 @@
-package com.aimsphm.nuclear.pump.service;
+package com.aimsphm.nuclear.core.service;
 
 import com.aimsphm.nuclear.common.entity.TxPumpsnapshot;
 import com.aimsphm.nuclear.common.entity.TxTurbinesnapshot;
@@ -17,7 +17,7 @@ import java.util.List;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-public interface PumpEquipmentMonitoringService {
+public interface EquipmentMonitoringService {
     TxPumpsnapshot getRunningStatus(Long deviceId);
 
     List<MeasurePointVO> listWarmingPoint(Long deviceId);

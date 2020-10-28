@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.data.feign.fallback;
 
-import com.aimsphm.nuclear.common.entity.dto.HColumnItemDTO;
-import com.aimsphm.nuclear.data.feign.HbaseServiceFeignClient;
+import com.aimsphm.nuclear.common.entity.dto.HBaseColumnItemDTO;
+import com.aimsphm.nuclear.data.feign.HBaseServiceFeignClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class HbaseHystrixClientFallback implements HbaseServiceFeignClient {
+public class HBaseHystrixClientFallback implements HBaseServiceFeignClient {
 
     @Override
-    public void saveItemData2TableByHour(HColumnItemDTO itemDTO) {
+    public void saveItemData2TableByHour(HBaseColumnItemDTO itemDTO) {
         //TODO 服务调用失败处理逻辑
         System.out.println("...重试之后，仍然异常了.............................");
     }

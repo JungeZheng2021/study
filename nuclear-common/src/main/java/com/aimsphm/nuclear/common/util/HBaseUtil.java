@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.common.util;
 
 import com.aimsphm.nuclear.common.constant.HBaseConstant;
+import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.pojo.EstimateResult;
 import com.aimsphm.nuclear.common.pojo.EstimateTotal;
 import com.google.common.collect.Lists;
@@ -8,25 +9,17 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hadoop.hbase.Cell;
-import org.apache.hadoop.hbase.CellUtil;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.client.coprocessor.AggregationClient;
 import org.apache.hadoop.hbase.client.coprocessor.LongColumnInterpreter;
-import org.apache.hadoop.hbase.filter.BinaryComparator;
-import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.QualifierFilter;
+import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
+import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.io.encoding.DataBlockEncoding;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
@@ -46,9 +39,7 @@ import java.util.*;
  * @Version: 1.0
  */
 @Slf4j
-@Component
 public class HBaseUtil {
-    @Autowired
     private Connection connection;
     @Autowired
     Gson gson;
@@ -98,14 +89,22 @@ public class HBaseUtil {
             StringBuilder sb = new StringBuilder("create '" + table.getNameWithNamespaceInclAsString() + "',");
             for (ColumnFamilyDescriptor cf : columnFamilies) {
                 sb.append("{NAME=>");
-                int blockSize = cf.getBlocksize(); // 存储块大小
-                int timeToLive = cf.getTimeToLive(); // 存活时间
-                int maxVersions = cf.getMaxVersions(); // 最大版本
-                String family = Bytes.toString(cf.getName()); // 列族
-                boolean blockCacheEnabled = cf.isBlockCacheEnabled(); // 启缓存
-                Map<String, String> configuration = cf.getConfiguration(); // 配置信息
-                Compression.Algorithm compressionType = cf.getCompressionType(); // 压缩算法
-                DataBlockEncoding dataBlockEncoding = cf.getDataBlockEncoding(); // 编码
+                // 存储块大小
+                int blockSize = cf.getBlocksize();
+                // 存活时间
+                int timeToLive = cf.getTimeToLive();
+                // 最大版本
+                int maxVersions = cf.getMaxVersions();
+                // 列族
+                String family = Bytes.toString(cf.getName());
+                // 启缓存
+                boolean blockCacheEnabled = cf.isBlockCacheEnabled();
+                // 配置信息
+                Map<String, String> configuration = cf.getConfiguration();
+                // 压缩算法
+                Compression.Algorithm compressionType = cf.getCompressionType();
+                // 编码
+                DataBlockEncoding dataBlockEncoding = cf.getDataBlockEncoding();
                 sb.append(" '").append(family).append("'").append(", VERSIONS => ").append(maxVersions)
                         .append(", BLOCKSIZE => '").append(blockSize).append("' ").append(", TTL => '")
                         .append(timeToLive).append("' ").append(", BLOCKCACHE => '").append(blockCacheEnabled)
@@ -113,7 +112,8 @@ public class HBaseUtil {
                         .append(", DATA_BLOCK_ENCODING => '").append(Bytes.toString(dataBlockEncoding.getNameInBytes()))
                         .append("' ");
 
-                if (!configuration.isEmpty()) {// 配置信息
+                // 配置信息
+                if (!configuration.isEmpty()) {
                     sb.append(", CONFIGURATION => {");
                     Set<Map.Entry<String, String>> entries = configuration.entrySet();
                     for (Iterator<Map.Entry<String, String>> it = entries.iterator(); it.hasNext(); ) {
@@ -393,7 +393,7 @@ public class HBaseUtil {
      * @return
      * @throws IOException
      */
-    public List<List<Object>> selectDataListByHours(String tableName, String tag, Long startTime, Long endTime, String family) throws IOException {
+    public List<List<Object>> listDataWith3600Columns(String tableName, String tag, Long startTime, Long endTime, String family) throws IOException {
         TableName name = TableName.valueOf(tableName);
         try (Table table = connection.getTable(name)) {
             Scan scan = new Scan();
@@ -411,10 +411,12 @@ public class HBaseUtil {
                     List<Object> item = new ArrayList<>();
                     double value = Bytes.toDouble(CellUtil.cloneValue(cell));
                     Long timestamp = cell.getTimestamp();
-                    if (timestamp > endTime) {//如果列的时间戳大于终点查询时间跳出
+                    //如果列的时间戳大于终点查询时间跳出
+                    if (timestamp > endTime) {
                         break;
                     }
-                    if (timestamp < startTime) {//如果列的时间戳小于开始时间直接丢弃
+                    //如果列的时间戳小于开始时间直接丢弃
+                    if (timestamp < startTime) {
                         continue;
                     }
                     item.add(timestamp);
@@ -429,296 +431,61 @@ public class HBaseUtil {
         }
     }
 
-
     /**
-     * 根据小时获取数据(时间戳秒级数据分3600列存储)
+     * 获取数据列表
      *
-     * @param tableName 表格名称
-     * @param tag       唯一标识
-     * @param startTime 开始行
-     * @param endTime   结束行
-     * @param family    列族
-     * @param step      取数的间隔
+     * @param tableName   表格名称
+     * @param family      指定的列族
+     * @param prefixKey   指定rowKey的开始前缀
+     * @param rowLimit    需要查询的行数
+     * @param columnLimit 每行最多取多少列
+     * @param total       共计查询多个条数据
      * @return
      * @throws IOException
      */
-    public List<com.aimsphm.nuclear.common.entity.dto.Cell> selectDataListByHoursStep(String tableName, String tag, Long startTime, Long endTime, String family, Integer step) throws IOException {
+    public List<HBaseTimeSeriesDataDTO> listDataWithLimit(String tableName, String family, String prefixKey, Integer rowLimit, Integer columnLimit, Integer total) throws IOException {
         TableName name = TableName.valueOf(tableName);
-        if (step == null) {
-            long duration = endTime - startTime;
-            if (duration <= 3 * 3600 * 1000l) {
-                step = 1;
-            } else if (duration > 3 * 3600 * 1000l && duration <= 7 * 24 * 3600 * 1000l) {
-                step = 60;
-            } else if (duration > 7 * 24 * 3600 * 1000l && duration <= 30 * 24 * 3600 * 1000l) {
-                step = 600;
-            } else {
-                step = 3600;
-            }
-        }
         try (Table table = connection.getTable(name)) {
             Scan scan = new Scan();
-            scan.addFamily(Bytes.toBytes(family));
-            Long startRow = startTime / (1000 * 3600) * (1000 * 3600);
-            Long endRow = endTime / (1000 * 3600) * (1000 * 3600) + 1;
-            scan.withStartRow(Bytes.toBytes(tag + HBaseConstant.ROW_KEY_SEPARATOR + startRow));
-            scan.withStopRow(Bytes.toBytes(tag + HBaseConstant.ROW_KEY_SEPARATOR + endRow));
-            scan.setCaching(10000);
-            scan.setBatch(1000);
-            int loop = 3600 / step;
-            List<Filter> filters = new ArrayList<Filter>();
-            for (int i = 0; i < loop; i++) {
-
-                Filter filter = new QualifierFilter(CompareOp.EQUAL,
-                        new BinaryComparator(Bytes.toBytes(0 + step * i)));
-                filters.add(filter);
-
+            boolean isHasFamily = StringUtils.isEmpty(family);
+            if (!isHasFamily) {
+                scan.addFamily(Bytes.toBytes(family));
             }
-            FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ONE, filters);
-            scan.setFilter(filterList);
+            //前缀过滤器
+            RowFilter rowFilter = new RowFilter(CompareOperator.EQUAL, new BinaryPrefixComparator(Bytes.toBytes(prefixKey)));
+            scan.setFilter(rowFilter);
+            //逆序返回
+            scan.setReversed(true);
+            if (Objects.nonNull(rowLimit)) {
+                //限制行数
+                scan.setLimit(rowLimit);
+            }
+            if (Objects.nonNull(columnLimit)) {
+                //设置最大列数
+                scan.setMaxResultsPerColumnFamily(columnLimit);
+            }
             ResultScanner scanner = table.getScanner(scan);
-
+            List<HBaseTimeSeriesDataDTO> data = Lists.newArrayList();
             int count = 0;
-            List<com.aimsphm.nuclear.common.entity.dto.Cell> data = Lists.newArrayList();
             for (Result rs : scanner) {
-                List<com.aimsphm.nuclear.common.entity.dto.Cell> items = new ArrayList();
-                for (Cell cell : rs.listCells()) {
-
-                    List<Object> item = new ArrayList<>();
+                LinkedList<HBaseTimeSeriesDataDTO> cellData = Lists.newLinkedList();
+                List<Cell> cells = rs.listCells();
+                for (int i = cells.size() - 1; i >= 0; i--) {
+                    if (++count > total) {
+                        data.addAll(0, cellData);
+                        return data;
+                    }
+                    Cell cell = cells.get(i);
                     double value = Bytes.toDouble(CellUtil.cloneValue(cell));
-                    Long timestamp = cell.getTimestamp() / 1000l * 1000l;
-                    if (timestamp > endTime) {//如果列的时间戳大于终点查询时间跳出
-                        break;
-                    }
-                    if (timestamp < startTime) {//如果列的时间戳小于开始时间直接丢弃
-                        continue;
-                    }
-                    count++;
-//                    if (count % step != 0) {
-//						continue;
-//					}
-                    com.aimsphm.nuclear.common.entity.dto.Cell cellone = new com.aimsphm.nuclear.common.entity.dto.Cell();
-                    cellone.setTimestamp(timestamp);
-                    cellone.setValue(value);
-                    items.add(cellone);
+                    long timestamp = cell.getTimestamp();
+                    HBaseTimeSeriesDataDTO dto = new HBaseTimeSeriesDataDTO();
+                    dto.setValue(value);
+                    dto.setTimestamp(timestamp);
+                    cellData.addFirst(dto);
                 }
-                data.addAll(items);
+                data.addAll(0, cellData);
             }
             return data;
-        } catch (IOException e) {
-            throw e;
-        }
-    }
-
-
-    public Map<String, List<com.aimsphm.nuclear.common.entity.dto.Cell>> selectMonitorDataList(String tableName, String tags, Long startTime, Long endTime, String family) throws IOException {
-        TableName name = TableName.valueOf(tableName);
-
-        try (Table table = connection.getTable(name)) {
-            Long startRow = startTime / (1000 * 3600) * (1000 * 3600);
-            Long offsetColumnl = startTime / 1000 % (3600);
-            Integer offsetColumn = offsetColumnl.intValue();
-            Long endRow = endTime / (1000 * 3600) * (1000 * 3600) + 1;
-            long loop = startTime - startRow;
-            List<Filter> filters = new ArrayList<Filter>();
-//            for(int i=0;i<60;i++)
-////            {
-////
-////                Filter filter = new QualifierFilter(CompareOp.EQUAL,
-////                        new BinaryComparator(Bytes.toBytes(i+startTime)));
-////                filters.add(filter);
-////
-////            }
-            FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ONE, filters);
-
-            String taga[] = tags.split(",");
-            List<Get> getList = Lists.newArrayList();
-            for (String tag : taga) {
-                Get get = new Get(Bytes.toBytes(tag + HBaseConstant.ROW_KEY_SEPARATOR + startRow));
-                get.addFamily(Bytes.toBytes(family));
-                //  get.setFilter(filterList);
-                for (int i = 0; i < 60; i++) {
-
-                    get.addColumn(Bytes.toBytes(family), Bytes.toBytes(i + offsetColumn.intValue()));
-
-                }
-                getList.add(get);
-            }
-            Result[] results = table.get(getList);
-
-
-            int count = 0;
-            Map<String, List<com.aimsphm.nuclear.common.entity.dto.Cell>> map = Maps.newHashMap();
-
-            for (Result rs : results) {
-                List<com.aimsphm.nuclear.common.entity.dto.Cell> data = Lists.newArrayList();
-                if (ObjectUtils.isEmpty(rs.getRow())) {
-                    continue;
-                }
-                String rowkey = Bytes.toString(rs.getRow());
-                List<com.aimsphm.nuclear.common.entity.dto.Cell> items = new ArrayList();
-                for (Cell cell : rs.listCells()) {
-
-                    List<Object> item = new ArrayList<>();
-                    double value = Bytes.toDouble(CellUtil.cloneValue(cell));
-                    Long timestamp = cell.getTimestamp() / 1000l * 1000l;
-                    if (timestamp > endTime) {//如果列的时间戳大于终点查询时间跳出
-                        break;
-                    }
-                    if (timestamp < startTime) {//如果列的时间戳小于开始时间直接丢弃
-                        continue;
-                    }
-                    count++;
-//                    if (count % step != 0) {
-//						continue;
-//					}
-                    com.aimsphm.nuclear.common.entity.dto.Cell cellone = new com.aimsphm.nuclear.common.entity.dto.Cell();
-                    cellone.setTimestamp(timestamp);
-                    cellone.setValue(value);
-                    items.add(cellone);
-                }
-                data.addAll(items);
-                map.put(rowkey.split("_")[0], data);
-            }
-            return map;
-        } catch (IOException e) {
-            throw e;
-        }
-    }
-
-    /**
-     * @param tableName 表格名称
-     * @param start     开始rowKey
-     * @param end       结束rowKey
-     * @param family    列族
-     * @param qualifier 列
-     * @return
-     * @throws IOException
-     */
-    public List<Map<String, Object>> selectModelTagDataList(String tableName, Long start, Long end, String family,
-                                                            String qualifier, String modelId) throws IOException {
-        TableName name = TableName.valueOf(tableName);
-        String rowKeyStart = modelId + "m_" + start;
-        String rowKeyEnd = modelId + "m_" + end;
-        try (Table table = connection.getTable(name)) {
-            Scan scan = new Scan();
-            boolean isHasFamily = StringUtils.isEmpty(family);
-            boolean isHasQualifier = StringUtils.isEmpty(qualifier);
-            if (!isHasFamily) {
-                scan.addFamily(Bytes.toBytes(family));
-                if (!isHasQualifier) {
-                    scan.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier));
-                }
-            }
-            scan.withStartRow(Bytes.toBytes(rowKeyStart));
-            scan.withStopRow(Bytes.toBytes(rowKeyEnd));
-            ResultScanner scanner = table.getScanner(scan);
-            Map<String, Set<String>> familyMap = Maps.newHashMap();
-            Map<String, List<Object>> dataWithQualifier = Maps.newHashMap();
-            for (Result rs : scanner) {
-                assembleModelTagCellDataWithList(familyMap, dataWithQualifier, rs);
-
-            }
-            return assembleReturnDataWithList(dataWithQualifier, familyMap.entrySet());
-        } catch (IOException e) {
-            throw e;
-        }
-    }
-
-
-    /**
-     * @param tableName 表格名称
-     * @param start     开始rowKey
-     * @param end       结束rowKey
-     * @param family    列族
-     * @param qualifier 列
-     * @return
-     * @throws IOException
-     */
-    public List<EstimateResult> selectModelTagDataList2(String tableName, Long start, Long end, String family,
-                                                        String qualifier, String modelId) throws IOException {
-        TableName name = TableName.valueOf(tableName);
-        String rowKeyStart = modelId + "m_" + start;
-        String rowKeyEnd = modelId + "m_" + end;
-        try (Table table = connection.getTable(name)) {
-            Scan scan = new Scan();
-            boolean isHasFamily = StringUtils.isEmpty(family);
-            boolean isHasQualifier = StringUtils.isEmpty(qualifier);
-            if (!isHasFamily) {
-                scan.addFamily(Bytes.toBytes(family));
-                if (!isHasQualifier) {
-                    scan.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier));
-                }
-            }
-            scan.withStartRow(Bytes.toBytes(rowKeyStart));
-            scan.withStopRow(Bytes.toBytes(rowKeyEnd));
-            ResultScanner scanner = table.getScanner(scan);
-            List<EstimateResult> estimateResults = Lists.newArrayList();
-            for (Result rs : scanner) {
-                for (Cell cell : rs.listCells()) {
-                    String value = Bytes.toString(CellUtil.cloneValue(cell));
-                    EstimateResult es = gson.fromJson(value, EstimateResult.class);
-                    estimateResults.add(es);
-                }
-
-            }
-            return estimateResults;
-        } catch (IOException e) {
-            throw e;
-        }
-    }
-
-    /**
-     * 插入模型记录
-     *
-     * @param modelId         模型名
-     * @param timestamp       时间戳
-     * @param estimateResults 算法預測結果
-     */
-    public void insertModelEstimateData(String modelId, Long timestamp, List<EstimateResult> estimateResults)
-            throws IOException {
-        for (EstimateResult er : estimateResults) {
-            insertObject(HBaseConstant.TABLE_MODEL_ESTIMATE_RESULT, modelId + "m_" + timestamp, HBaseConstant.FAMILY_MODEL_ESTIMATE_RESULT, er.getTagId(), gson.toJson(er), timestamp);
-        }
-    }
-
-    /**
-     * @param tableName 表格名称
-     * @param start     开始rowKey
-     * @param end       结束rowKey
-     * @param family    列族
-     * @param qualifier 列
-     * @return
-     * @throws IOException
-     */
-    public List<EstimateTotal> selectModelDataList(String tableName, Long start, Long end, String family,
-                                                   String qualifier, String modelId) throws IOException {
-        TableName name = TableName.valueOf(tableName);
-        String rowKeyStart = modelId + "m_" + start;
-        String rowKeyEnd = modelId + "m_" + end;
-        try (Table table = connection.getTable(name)) {
-            Scan scan = new Scan();
-            boolean isHasFamily = StringUtils.isEmpty(family);
-            boolean isHasQualifier = StringUtils.isEmpty(qualifier);
-            if (!isHasFamily) {
-                scan.addFamily(Bytes.toBytes(family));
-                if (!isHasQualifier) {
-                    scan.addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier));
-                }
-            }
-            scan.withStartRow(Bytes.toBytes(rowKeyStart));
-            scan.withStopRow(Bytes.toBytes(rowKeyEnd));
-            ResultScanner scanner = table.getScanner(scan);
-            Map<String, Set<String>> familyMap = Maps.newHashMap();
-            Map<String, List<Object>> dataWithQualifier = Maps.newHashMap();
-
-            List<EstimateTotal> ets = new ArrayList<>();
-            for (Result rs : scanner) {
-                EstimateTotal et = new EstimateTotal();
-                assembleModelCellDataWithList(familyMap, dataWithQualifier, rs, et);
-                ets.add(et);
-            }
-            return ets;
         } catch (IOException e) {
             throw e;
         }

@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.data.service.impl;
 
-import com.aimsphm.nuclear.common.entity.dto.HColumnItemDTO;
-import com.aimsphm.nuclear.data.constant.Constant;
+import com.aimsphm.nuclear.common.constant.HBaseConstant;
+import com.aimsphm.nuclear.common.entity.dto.HBaseColumnItemDTO;
 import com.aimsphm.nuclear.data.entity.DataItemDTO;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
@@ -60,11 +60,11 @@ public class PIDataServiceImpl implements CommonDataService {
         List<Put> putList = Lists.newArrayList();
 
         for (DataItemDTO dataItem : dataItems) {
-            HColumnItemDTO item = new HColumnItemDTO();
+            HBaseColumnItemDTO item = new HBaseColumnItemDTO();
             item.setTag(dataItem.getItemId());
             item.setTimestamp(dataItem.getTimestamp());
-            item.setTableName(Constant.HBASE_TABLE_NPC_REAL_TIME);
-            item.setFamily(Constant.HBASE_FAMILY_NPC_PI_REAL_TIME);
+            item.setTableName(HBaseConstant.H_BASE_TABLE_NPC_REAL_TIME);
+            item.setFamily(HBaseConstant.H_BASE_FAMILY_NPC_PI_REAL_TIME);
             item.setTimestamp(dataItem.getTimestamp());
             BigDecimal value = (BigDecimal) dataItem.getValue();
             double v = value.doubleValue();
@@ -83,7 +83,7 @@ public class PIDataServiceImpl implements CommonDataService {
             put.addColumn(Bytes.toBytes(item.getFamily()), Bytes.toBytes((Integer) item.getQualifier()), Bytes.toBytes(item.getValue()));
             putList.add(put);
         }
-        hBaseService.batchSave2HBase("", putList);
+        hBaseService.batchSave2HBase(HBaseConstant.H_BASE_TABLE_NPC_REAL_TIME, putList);
     }
 
 

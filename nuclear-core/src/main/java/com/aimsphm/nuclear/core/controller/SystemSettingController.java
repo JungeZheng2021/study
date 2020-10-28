@@ -2,7 +2,7 @@ package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.bo.SysLogQueryBo;
 import com.aimsphm.nuclear.common.response.ResponseUtils;
-import com.aimsphm.nuclear.common.response.ReturnResponse;
+import com.aimsphm.nuclear.common.response.ResponseData;
 import com.aimsphm.nuclear.core.entity.bo.MdSensorDaqConfigBO;
 import com.aimsphm.nuclear.core.entity.bo.MdSensorExtrainfoBO;
 import com.aimsphm.nuclear.core.entity.bo.MdSensorConfigBO;
@@ -66,25 +66,25 @@ public class SystemSettingController {
 
     @ApiOperation(value = "传感器设置---操作编辑接口",notes = "传感器设置页面---修改传感器型号/序列号/灵敏度（此接口只用于更新，相关表内容手工添加维护）")
     @PutMapping("sensorConfig")
-    public ReturnResponse<Integer> modifySensorDetail(@RequestBody MdSensorExtrainfoBO bo) {
+    public ResponseData<Integer> modifySensorDetail(@RequestBody MdSensorExtrainfoBO bo) {
         return ResponseUtils.success(systemSettingService.modifySensorDetail(bo));
     }
 
     @ApiOperation(value = "传感器设置---详情列表接口",notes = "传入对应设备（如循环水泵A）id")
     @GetMapping("sensorConfig/{deviceId}")
-    public ReturnResponse<Map<String,List<MdSensorConfigBO>>> sensorConfigList(@PathVariable(name = "deviceId") Long deviceId) {
+    public ResponseData<Map<String,List<MdSensorConfigBO>>> sensorConfigList(@PathVariable(name = "deviceId") Long deviceId) {
         return ResponseUtils.success(systemSettingService.sensorConfigList(deviceId));
     }
 
     @ApiOperation(value = "传感器设置---采样配置详情接口",notes = "传入一个与设备采样配置相关的传感器id作为sensorId，得到该组传感器的采样配置")
     @GetMapping("sensorConfig/daqConfig/{sensorId}")
-    public ReturnResponse<List<MdSensorDaqConfigBO>> daqConfigDetail(@PathVariable(name = "sensorId") Long sensorId) {
+    public ResponseData<List<MdSensorDaqConfigBO>> daqConfigDetail(@PathVariable(name = "sensorId") Long sensorId) {
         return ResponseUtils.success(systemSettingService.daqConfigDetail(sensorId));
     }
 
     @ApiOperation(value = "传感器设置---采样配置应用接口",notes = "新增、修改传感器采样配置(根据需求，只允许手动采样配置模式)")
     @PostMapping("sensorConfig/daqConfig")
-    public ReturnResponse<Boolean> daqConfig(@RequestBody MdSensorDaqConfigBO bo) {
+    public ResponseData<Boolean> daqConfig(@RequestBody MdSensorDaqConfigBO bo) {
         return ResponseUtils.success(systemSettingService.daqConfig(bo));
     }
 

@@ -5,7 +5,7 @@ import com.aimsphm.nuclear.common.entity.TxPumpsnapshot;
 import com.aimsphm.nuclear.common.entity.vo.MdDeviceVO;
 import com.aimsphm.nuclear.common.mapper.MdDeviceMapper;
 import com.aimsphm.nuclear.common.response.ResponseUtils;
-import com.aimsphm.nuclear.common.response.ReturnResponse;
+import com.aimsphm.nuclear.common.response.ResponseData;
 import com.aimsphm.nuclear.core.vo.PumpPanoramaVO;
 import com.aimsphm.nuclear.pump.service.SystemPanoramaService;
 import io.swagger.annotations.Api;
@@ -40,21 +40,21 @@ public class PanoramaController {
 
     @GetMapping("pump/{subSystemId}")
     @ApiOperation(value = "主泵系统总览信息")
-    public ReturnResponse getPanoramaInfoPump(@PathVariable Long subSystemId) {
+    public ResponseData getPanoramaInfoPump(@PathVariable Long subSystemId) {
         PumpPanoramaVO vo = service.getPanoramaInfo(subSystemId);
         return ResponseUtils.success(vo);
     }
 
     @GetMapping("turbine/{subSystemId}")
     @ApiOperation(value = "汽机系统总览信息")
-    public ReturnResponse getPanoramaInfoTurbine(@PathVariable Long subSystemId) {
+    public ResponseData getPanoramaInfoTurbine(@PathVariable Long subSystemId) {
         PumpPanoramaVO vo = service.getPanoramaInfo(subSystemId);
         return ResponseUtils.success(vo);
     }
 
     @GetMapping("rotary/{subSystemId}")
     @ApiOperation(value = "旋机系统总览信息")
-    public ReturnResponse getPanoramaInfoRotary(@PathVariable Long subSystemId) {
+    public ResponseData getPanoramaInfoRotary(@PathVariable Long subSystemId) {
         PumpPanoramaVO vo = service.getPanoramaInfo(subSystemId);
         return ResponseUtils.success(vo);
     }
@@ -64,7 +64,7 @@ public class PanoramaController {
 
     @GetMapping("exchanger/{subSystemId}")
     @ApiOperation(value = "换热器系统总览信息")
-    public ReturnResponse getPanoramaInfo(@PathVariable Long subSystemId) {
+    public ResponseData getPanoramaInfo(@PathVariable Long subSystemId) {
         PumpPanoramaVO vo = service.getPanoramaInfo(subSystemId);
         List<MdDeviceVO> deviceList = deviceMapper.selectDeviceBySubSystemId(subSystemId);
         if (CollectionUtils.isNotEmpty(deviceList)) {
@@ -83,7 +83,7 @@ public class PanoramaController {
     //------------------------------------------预警信息----------------------------------------
     @GetMapping("pump/warning/newest/{queryId}")
     @ApiOperation(value = "获取最新的预警信息")
-    public ReturnResponse getWarningNewest(@PathVariable Long queryId, Integer top, boolean type) {
+    public ResponseData getWarningNewest(@PathVariable Long queryId, Integer top, boolean type) {
         List<TxAlarmEvent> vo = service.getWarningNewest(queryId, top, type);
         return ResponseUtils.success(vo);
     }

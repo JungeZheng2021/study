@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import com.aimsphm.nuclear.common.response.ReturnResponse;
+import com.aimsphm.nuclear.common.response.ResponseData;
 import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class Consumer {
     ),containerFactory="myFactory"
     )
 
-    public void process( @Payload ReturnResponse payload) {
+    public void process( @Payload ResponseData payload) {
         log.info("receive:{}",payload);
         System.out.println(gson.toJson(payload));
     }

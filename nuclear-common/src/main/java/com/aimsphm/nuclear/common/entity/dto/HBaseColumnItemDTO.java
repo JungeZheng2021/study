@@ -2,8 +2,7 @@ package com.aimsphm.nuclear.common.entity.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.List;
+import lombok.ToString;
 
 /**
  * @Package: com.aimsphm.nuclear.hbase.entity.dto
@@ -16,7 +15,10 @@ import java.util.List;
  * @Version: 1.0
  */
 @Data
-public class HColumnItemsDTO extends HBaseParamDTO {
-    @ApiModelProperty(value = "指定列集合", required = true)
-    private List<HColumnDoubleDTO> qualifiers;
+@ToString(callSuper = true)
+public class HBaseColumnItemDTO extends HBaseParamDTO {
+    @ApiModelProperty(value = "指定列名", required = true)
+    private Object qualifier;
+    @ApiModelProperty(value = "指定列对应的值", required = true)
+    private Double value;
 }

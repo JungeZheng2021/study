@@ -3,7 +3,6 @@ package com.aimsphm.nuclear.core.service;
 import java.util.List;
 import java.util.Map;
 
-import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.core.vo.SensorTrendVO;
 
 /**
@@ -20,7 +19,7 @@ public interface SensorTrendService {
 
 	List<Map<String,Object>> getTrendHotSpotBySubSystemId(Long deviceId);
 
-	List<Map<String,Object>> getTrendHotSpot(Long deviceId);
+	List<Map<String,Object>> getTrendHotSpot(Long deviceId, String keyword);
 
 	Map<String, SensorTrendVO> getSubSystemTrendHotSpotDetails(Long subSystemId);
 

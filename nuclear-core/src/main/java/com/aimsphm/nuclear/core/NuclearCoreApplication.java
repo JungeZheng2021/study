@@ -17,7 +17,6 @@ import java.util.TimeZone;
 
 
 @SpringBootApplication(scanBasePackages = {"com.aimsphm.nuclear"})
-
 @EnableEurekaClient
 @EnableTransactionManagement
 @EnableScheduling

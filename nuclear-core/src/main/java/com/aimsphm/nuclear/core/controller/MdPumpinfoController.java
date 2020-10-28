@@ -3,7 +3,7 @@ package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.pojo.QueryObject;
 import com.aimsphm.nuclear.common.response.ResponseUtils;
-import com.aimsphm.nuclear.common.response.ReturnResponse;
+import com.aimsphm.nuclear.common.response.ResponseData;
 import com.aimsphm.nuclear.common.util.CommonUtil;
 import com.aimsphm.nuclear.core.entity.MdPumpinfo;
 import com.aimsphm.nuclear.core.service.MdPumpinfoService;
@@ -68,7 +68,7 @@ public class MdPumpinfoController {
 
     @GetMapping("{id}")
     @ApiOperation(value = "根据数据库主键id获取主泵详细信息")
-    public ReturnResponse getPumpInfoById(@PathVariable Long id) {//此处传数据库id
+    public ResponseData getPumpInfoById(@PathVariable Long id) {//此处传数据库id
         return ResponseUtils.success(iMdPumpinfoService.getById(id));
     }
 

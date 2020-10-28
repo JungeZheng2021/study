@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.common.exception;
 
 /**
- * @Package: com.aimsphm.nuclear.hbase.config
+ * @Package: com.aimsphm.nuclear.common.exception
  * @Description: <自定义异常类>
  * @Author: MILLA
  * @CreateDate: 2019/8/15 18:39

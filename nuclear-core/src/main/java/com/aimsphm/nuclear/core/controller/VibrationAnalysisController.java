@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.response.ResponseUtils;
-import com.aimsphm.nuclear.common.response.ReturnResponse;
+import com.aimsphm.nuclear.common.response.ResponseData;
 import com.aimsphm.nuclear.core.service.VibrationAnalysisService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,14 +35,14 @@ public class VibrationAnalysisController {
 
     @GetMapping("devices/{deviceId}/locations")
     @ApiOperation(value = "获取测点位置-根据设备id")
-    public ReturnResponse listSensorLocation(@PathVariable @NotNull Long deviceId) {
+    public ResponseData listSensorLocation(@PathVariable @NotNull Long deviceId) {
         Map<String, String> locations = analysisService.listSensorLocation(deviceId);
         return ResponseUtils.success(locations);
     }
 
     @GetMapping("{subSystemId}/locations")
     @ApiOperation(value = "获取测点位置-根据子系统id")
-    public ReturnResponse listSensorLocationBySubSystemId(@PathVariable @NotNull Long subSystemId) {
+    public ResponseData listSensorLocationBySubSystemId(@PathVariable @NotNull Long subSystemId) {
         Map<String, String> locations = analysisService.listSensorLocationBySubSystemId(subSystemId);
         return ResponseUtils.success(locations);
     }
