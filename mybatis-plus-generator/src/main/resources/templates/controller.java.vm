@@ -1,0 +1,73 @@
+package ${cfg.controllerPackage};
+
+import ${package.Entity}.${entity};
+##import ${package.Service}.${table.serviceName};
+import ${package.Entity}.bo.QueryBO;
+import ${cfg.extPackagePre}.${cfg.service}.${table.serviceName}${cfg.classNameExt};
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * @Package: ${cfg.controllerPackage}
+ * @Description: <$!{table.comment}前端控制器>
+ * @Author: ${author}
+ * @CreateDate: ${date}
+ * @UpdateUser: ${author}
+ * @UpdateDate: ${date}
+ * @UpdateRemark: <>
+ * @Version: 1.0
+ */
+#set($path=${table.name})
+#set($path=$path.concat("path"))
+@RestController
+@Api(tags = "$!{table.comment}-相关接口")
+@RequestMapping(value = "${cfg.get($path)}", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ${table.controllerName} {
+##    @Autowired
+##    private ${table.serviceName} i${table.serviceName};
+    @Autowired
+    private ${table.serviceName}${cfg.classNameExt} i${table.serviceName}${cfg.classNameExt};
+
+    @GetMapping("list")
+    @ApiOperation(value = "$!{table.comment}分页查询")
+    public Page<${entity}> list${table.serviceName}ByPage(QueryBO<${entity}> query) {
+        return i${table.serviceName}${cfg.classNameExt}.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    }
+
+    @GetMapping("{id}")
+    @ApiOperation(value = "$!{table.comment}获取某一实体")
+    public ${entity} get${table.serviceName}Details(@PathVariable Long id) {
+        return i${table.serviceName}${cfg.classNameExt}.getById(id);
+    }
+
+    @PostMapping
+    @ApiOperation(value = "$!{table.comment}新增数据")
+    public boolean save${table.serviceName}(@RequestBody ${entity} dto) {
+        return i${table.serviceName}${cfg.classNameExt}.save(dto);
+    }
+
+    @PutMapping("{id}")
+    @ApiOperation(value = "$!{table.comment}修改数据")
+    public boolean modify${table.serviceName}(@RequestBody ${entity} dto, @PathVariable Long id) {
+        dto.setId(id);
+        return i${table.serviceName}${cfg.classNameExt}.updateById(dto);
+    }
+
+    @DeleteMapping("batch")
+    @ApiOperation(value = "$!{table.comment}批量删除数据")
+    public boolean batchRemove${table.serviceName}(@RequestParam(value = "ids") List<Long> ids) {
+        return i${table.serviceName}${cfg.classNameExt}.removeByIds(ids);
+    }
+
+    @DeleteMapping("{id}")
+    @ApiOperation(value = "$!{table.comment}删除数据")
+    public boolean remove${table.serviceName}(@PathVariable Long id) {
+        return i${table.serviceName}${cfg.classNameExt}.removeById(id);
+    }
+}

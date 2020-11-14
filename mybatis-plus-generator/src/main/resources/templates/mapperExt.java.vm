@@ -1,0 +1,21 @@
+package ${cfg.extPackagePre}.${cfg.mapper};
+
+import ${package.Mapper}.${table.mapperName};
+
+/**
+ * @Package: ${cfg.extPackagePre}.${cfg.mapper}
+ * @Description: <$!{table.comment}MapperExt接口>
+ * @Author: ${author}
+ * @CreateDate: ${date}
+ * @UpdateUser: ${author}
+ * @UpdateDate: ${date}
+ * @UpdateRemark: <>
+ * @Version: 1.0
+ */
+#if(${kotlin})
+interface ${table.mapperName}${cfg.classNameExt} : ${superMapperClass}<${entity}>
+#else
+public interface ${table.mapperName}${cfg.classNameExt} extends ${table.mapperName} {
+
+}
+#end

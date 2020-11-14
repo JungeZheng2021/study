@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${cfg.extPackagePre}.${cfg.mapper}.${table.mapperName}${cfg.classNameExt}">
+
+#if(${enableCache})
+    <!-- 开启二级缓存 -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+#end
+#if(${baseResultMap})
+    <!-- 扩展查询映射结果 -->
+    <resultMap id="BaseResultMap${cfg.classNameExt}" type="${package.Entity}.${entity}"
+               extends="${package.Mapper}.${table.mapperName}.BaseResultMap">
+    </resultMap>
+
+#end
+#if(${baseColumnList})
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+#foreach($field in ${table.commonFields})
+        ${field.columnName},
+#end
+        ${table.fieldNames}
+    </sql>
+
+#end
+</mapper>
