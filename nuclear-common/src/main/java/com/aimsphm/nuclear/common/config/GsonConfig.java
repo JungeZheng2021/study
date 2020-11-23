@@ -1,12 +1,7 @@
 package com.aimsphm.nuclear.common.config;
 
-import com.aimsphm.nuclear.common.entity.MdSensor;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -23,7 +17,7 @@ import java.util.Date;
 public class GsonConfig {
     @Bean
     public Gson gson() {
-        GsonBuilder builder = new GsonBuilder().serializeNulls() ;
+        GsonBuilder builder = new GsonBuilder().serializeNulls();
 
         builder.registerTypeAdapter(Date.class, new DateSerializer()).setDateFormat(DateFormat.LONG);
         builder.registerTypeAdapter(Date.class, new DateDeserializer()).setDateFormat(DateFormat.LONG);
@@ -31,6 +25,7 @@ public class GsonConfig {
         Gson gson = builder.create();
         return gson;
     }
+
     @Bean
     @Primary
     @ConditionalOnMissingBean(ObjectMapper.class)
@@ -40,13 +35,4 @@ public class GsonConfig {
         return objectMapper;
     }
 
-    public static void main(String[] args) {
-        GsonBuilder builder = new GsonBuilder().serializeNulls();
-        builder.registerTypeAdapter(Date.class, new DateSerializer()).setDateFormat(DateFormat.LONG);
-        builder.registerTypeAdapter(Date.class, new DateDeserializer()).setDateFormat(DateFormat.LONG);
-        Gson gsonNull = builder.create();
-        MdSensor ms = new MdSensor();
-        ms.setLastUpdateOn(new Date());
-        System.out.println(gsonNull.toJson(ms));
-    }
 }

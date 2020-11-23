@@ -1,0 +1,4 @@
+hbase:
+  config:
+    properties:
+      hbase.zookeeper.quorum: hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181

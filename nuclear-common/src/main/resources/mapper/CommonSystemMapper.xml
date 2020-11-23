@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.CommonSystemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonSystemDO">
+        <result column="id" property="id"/>
+        <result column="importance" property="importance"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="set_id" property="setId"/>
+        <result column="system_name" property="systemName"/>
+        <result column="system_desc" property="systemDesc"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        importance,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        set_id, system_name, system_desc
+    </sql>
+
+</mapper>

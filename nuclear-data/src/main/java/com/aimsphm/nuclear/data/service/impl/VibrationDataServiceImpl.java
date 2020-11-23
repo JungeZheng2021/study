@@ -4,10 +4,9 @@ import com.aimsphm.nuclear.common.constant.HBaseConstant;
 import com.aimsphm.nuclear.common.util.ByteUtil;
 import com.aimsphm.nuclear.data.entity.dto.PacketDTO;
 import com.aimsphm.nuclear.data.entity.dto.SensorDataDTO;
-import com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
-import com.aimsphm.nuclear.data.service.HotSpotDataUpdateService;
+import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -15,21 +14,19 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
-import static com.aimsphm.nuclear.data.service.impl.PIDataServiceImpl.ROW_KEY_SEPARATOR;
+import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
 
 /**
- * @Package: com.aimsphm.nuclear.data.service.impl
+ * @Package: com.aimsphm.nuclear.common.service.ext.service.impl
  * @Description: <振动数据处理服务>
  * @Author: MILLA
  * @CreateDate: 2020/3/31 11:41
@@ -44,30 +41,28 @@ public class VibrationDataServiceImpl implements CommonDataService {
     @Autowired
     private HBaseService hBaseService;
     @Autowired
-    private HotSpotDataUpdateService serviceUpdate;
+    private CommonMeasurePointServiceExt pointServiceExt;
 
     @Override
     public void operateData(String topic, String message) {
-        log.info("topic:{} ,message:{}", topic, message);
         if (StringUtils.isBlank(message)) {
             return;
         }
         SensorDataDTO sensorDataBO = JSON.parseObject(message, SensorDataDTO.class);
-        if (Objects.isNull(sensorDataBO)) {
+        if (Objects.isNull(sensorDataBO) || Objects.isNull(sensorDataBO.getType()) || Objects.isNull(sensorDataBO.getPacket())) {
             return;
         }
-        Integer type = sensorDataBO.getType();
+//        //暂时没有根据type进行区分
+//        Integer type = sensorDataBO.getType();
         PacketDTO packet = sensorDataBO.getPacket();
-        //如果是油质数据，需要按照3600列数据处理
-        boolean secondData = SensorDataCategoryEnum.OIL_NORMAL_DATA.getType().equals(type);
-        batchUpdateAndSave(packet, secondData);
+        log.info("topic:{} ,message:{}", topic, packet.getSensorCode());
+        batchUpdateAndSave(packet);
     }
 
-    private void batchUpdateAndSave(PacketDTO packet, boolean secondData) {
+    private void batchUpdateAndSave(PacketDTO packet) {
         if (Objects.isNull(packet)) {
             return;
         }
-        //tagId
         String sensorCode = packet.getSensorCode();
         Long timestamp = packet.getTimestamp();
         //如果没有时间戳或者是tag不存在不处理
@@ -75,7 +70,6 @@ public class VibrationDataServiceImpl implements CommonDataService {
             return;
         }
         String rowKey = sensorCode + ROW_KEY_SEPARATOR + timestamp / (1000 * 3600) * (1000 * 3600);
-
         Integer index = Math.toIntExact(timestamp / 1000 % 3600);
         boolean isDriveData = operationDeriveData3600Columns(packet, rowKey, index);
         //保存到redis中
@@ -97,8 +91,11 @@ public class VibrationDataServiceImpl implements CommonDataService {
      * @param index  索引值
      */
     private void operationRmsData(PacketDTO packet, String rowKey, Integer index) {
-        serviceUpdate.updateNonePIMeasurePoints(packet.getSensorCode(), packet.getRms(), null, null);
-        insert2HBase(rowKey, index, packet.getTimestamp(), packet.getRms(), H_BASE_FAMILY_NPC_SENSOR_RMS);
+        if (Objects.isNull(packet.getVecRms())) {
+            return;
+        }
+        pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + H_BASE_FAMILY_NPC_SENSOR_RMS, packet.getVecRms());
+        insert2HBase(rowKey, index, packet.getTimestamp(), packet.getVecRms(), H_BASE_FAMILY_NPC_SENSOR_RMS);
     }
 
     /**
@@ -111,6 +108,9 @@ public class VibrationDataServiceImpl implements CommonDataService {
     private void operationVibrationVecData(PacketDTO packet, String rowKey, Integer index) {
         //振动计算得到数据
         Double[] vecData = packet.getVecData();
+        if (Objects.isNull(vecData) || vecData.length == 0) {
+            return;
+        }
         insert2HBase(rowKey, index, packet.getTimestamp(), vecData, H_BASE_FAMILY_NPC_VIBRATION_RAW);
     }
 
@@ -124,6 +124,9 @@ public class VibrationDataServiceImpl implements CommonDataService {
     private void operationVibrationRawData(PacketDTO packet, String rowKey, Integer index) {
         //振动原始数据
         Double[] data = packet.getData();
+        if (Objects.isNull(data) || data.length == 0) {
+            return;
+        }
         insert2HBase(rowKey, index, packet.getTimestamp(), data, H_BASE_FAMILY_NPC_VIBRATION_CALCULATE);
     }
 
@@ -141,9 +144,9 @@ public class VibrationDataServiceImpl implements CommonDataService {
         put.setTimestamp(timestamp);
         put.addColumn(Bytes.toBytes(family), Bytes.toBytes(index), ByteUtil.toBytes(data));
         try {
-            hBaseService.save2HBase(HBaseConstant.H_BASE_TABLE_NPC_REAL_TIME, put);
+            hBaseService.save2HBase(HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA, put);
         } catch (IOException e) {
-            log.error("batch save  hbase failed:{}", e);
+            log.error("batch save  hBase failed:{}", e);
         }
     }
 
@@ -161,14 +164,19 @@ public class VibrationDataServiceImpl implements CommonDataService {
             return false;
         }
         List<Put> putList = Lists.newArrayList();
-
+        Set<String> featureList = pointServiceExt.listFeatures();
         for (Iterator<Map.Entry<String, Double>> it = features.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, Double> next = it.next();
             String feature = next.getKey();
-            List<String> featureList = listFeatures();
             //需要保证要添加的特征family是存在的
             if (CollectionUtils.isEmpty(featureList) || !featureList.contains(feature)) {
                 continue;
+            }
+            //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
+            try {
+                hBaseService.familyExists(HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA, feature, true, Compression.Algorithm.SNAPPY);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             Double value = next.getValue();
             Put put = new Put(Bytes.toBytes(rowKey));
@@ -177,20 +185,11 @@ public class VibrationDataServiceImpl implements CommonDataService {
             putList.add(put);
         }
         try {
-            hBaseService.batchSave2HBase(HBaseConstant.H_BASE_TABLE_NPC_REAL_TIME, putList);
+            hBaseService.batchSave2HBase(HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA, putList);
         } catch (IOException e) {
-            log.error("batch save 2 hbase failed:{}", e);
+            log.error("batch save 2 hBase failed:{}", e);
         } finally {
             return true;
         }
-    }
-
-    /**
-     * 获取全量的特征，避免边缘端随便传一个特征也能存储
-     *
-     * @return
-     */
-    private List<String> listFeatures() {
-        return null;
     }
 }

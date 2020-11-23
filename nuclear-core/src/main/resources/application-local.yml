@@ -5,8 +5,10 @@ server:
 spring:
   main:
     allow-bean-definition-overriding: true
-  mybatisPlusConfig:
-    enable: true
+  config:
+    enableSwagger2: true
+    enableMybatisPlus: true
+    enableServiceExtImpl: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8
@@ -45,14 +47,12 @@ spring:
         - 192.168.16.45:6378
         - 192.168.16.45:6379
       max-redirects: 5
-    pool:
-      max-active: 200
-      max-wait: 5000
-      min-idle: 20
-      max-idle: 50
-    timeout: 1000
-  application:
-    name: nuclear-core
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: 1000
+        min-idle: 20
+        max-idle: 50
   mail:
     host: 192.168.16.28
     port: 25
@@ -66,7 +66,7 @@ eureka:
   instance:
     prefer-ip-address: true
 mybatis-plus:
-  mapper-locations: classpath*:**/sqlmap/*.xml
+  mapper-locations: classpath*:/mapper/**/*.xml
   typeAliasesPackage: com.aimsphm.nuclear.*.entity
   global-config:
     #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
@@ -84,12 +84,11 @@ mybatis-plus:
     logic-not-delete-value: 1
     # SQL 解析缓存，开启后多租户 @SqlParser 注解生效
     sql-parser-cache: true
+    banner: false
   configuration:
     map-underscore-to-camel-case: true
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     cache-enabled: false
-context:
-  test:
-    app: 123356
 ribbon:
   ConnectTimeout: 3000
   # 请求处理的超时时间

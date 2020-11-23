@@ -1,22 +1,13 @@
 package com.aimsphm.nuclear.data;
 
-import com.aimsphm.nuclear.common.constant.HBaseConstant;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.data.entity.DataItemDTO;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
-import org.apache.hadoop.hbase.filter.CompareFilter;
-import org.apache.hadoop.hbase.filter.RowFilter;
-import org.apache.hadoop.hbase.io.compress.Compression;
+import org.apache.hadoop.hbase.filter.*;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -25,7 +16,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.aimsphm.nuclear.data.service.impl.PIDataServiceImpl.ROW_KEY_SEPARATOR;
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATOR;
+
 
 /**
  * @Package: com.aimsphm.nuclear.data
@@ -58,7 +50,7 @@ public class HBaseTest {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        HBaseUtil hbaseUtil = new HBaseUtil(connection);
+//        HBaseUtil hbaseUtil = new HBaseUtil(connection);
 //        hbaseUtil.createTable("t5", Lists.newArrayList("acc-Rems"), Compression.Algorithm.SNAPPY);
 //        String rowKey = UUID.randomUUID().toString().toUpperCase().substring(0, 1) + HBaseConstant.ROW_KEY_SEPARATOR + System.currentTimeMillis();
 //        hbaseUtil.deleteTable("t5");
@@ -66,30 +58,35 @@ public class HBaseTest {
 //        hbaseUtil.insertDouble("t5", rowKey, "t", "auto", 133.5);
 //        hbaseUtil.insertDouble("t5", "1_1603676917064 ", "acc-Rems", "demo", 33.5);
 //        testBatch(hbaseUtil);
-//        select(hbaseUtil, 5);
-        long l = System.currentTimeMillis();
-        List<HBaseTimeSeriesDataDTO> data = hbaseUtil.listDataWithLimit("t5", "acc-Rems", "HHH_", 10, 10, 2);
-        data.stream().forEach((o) -> System.out.println(o));
-        long l1 = System.currentTimeMillis();
-        System.out.println("共计耗时： " + (l1 - l));
+//        select(hbaseUtil, 5000000);
+//        long l = System.currentTimeMillis();
+//        List<HBaseTimeSeriesDataDTO> data = hbaseUtil.listDataWithLimit("t5", "acc-Rems", "HHH_", 10, 10, 2);
+//        data.stream().forEach((o) -> System.out.println(o));
+//        long l1 = System.currentTimeMillis();
+//        System.out.println("共计耗时： " + (l1 - l));
+
     }
 
     private static void select(HBaseUtil hbaseUtil, int total) throws IOException, InterruptedException {
         TableName name = TableName.valueOf("t5");
         Table table = connection.getTable(name);
         Scan scan = new Scan();
-        String family = "acc-Rems";
+        String family = "acc-Rems" ;
         boolean isHasFamily = StringUtils.isEmpty(family);
-//        if (!isHasFamily) {
-//            scan.addFamily(Bytes.toBytes(family));
-//        }
+        if (!isHasFamily) {
+            scan.addFamily(Bytes.toBytes(family));
+        }
 //        scan.withStartRow(Bytes.toBytes("5B6_" + (System.currentTimeMillis() - 1000 * 3600 * 500L)));
 //        scan.withStopRow(Bytes.toBytes("5B6_" + System.currentTimeMillis()));
-        RowFilter rowFilter = new RowFilter(CompareOperator.EQUAL, new BinaryPrefixComparator(Bytes.toBytes("HHH_160378")));
-        scan.setFilter(rowFilter);
+        RowFilter rowFilter1 = new RowFilter(CompareOperator.EQUAL, new BinaryPrefixComparator(Bytes.toBytes("HHH")));
+        RowFilter rowFilter2 = new RowFilter(CompareOperator.EQUAL, new BinaryPrefixComparator(Bytes.toBytes("DDD")));
+        List<Filter> rowFilters = Lists.newArrayList(rowFilter1, rowFilter2);
+
+        FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ONE, rowFilters);
+        scan.setFilter(filterList);
         scan.setReversed(true);
-        scan.setLimit(10);
-        scan.setMaxResultsPerColumnFamily(100);
+//        scan.setLimit(1000000);
+//        scan.setMaxResultsPerColumnFamily(100);
         ResultScanner scanner = table.getScanner(scan);
 
         int count = 0;
@@ -128,22 +125,22 @@ public class HBaseTest {
     private static void testBatch(HBaseUtil hbaseUtil) throws IOException {
         List<Put> putList = Lists.newArrayList();
         Random random = new Random();
-        for (int i = 200; i > 0; i--) {
-            String sensorCode = "HHH";
-            String family = "acc-Rems";
+//        for (int i = 200; i > 0; i--) {
+        String sensorCode = "HHH" ;
+        String family = "acc-Rems" ;
 //            if (i % 600 == 0) {
 //                family = UUID.randomUUID().toString().toUpperCase().substring(0, 5);
 //                hbaseUtil.addFamily2Table("t5", Lists.newArrayList(family), Compression.Algorithm.SNAPPY);
 //            }
-            long timestamp = System.currentTimeMillis() - 10 * 60 * 1000 * i;
-            String rowKey = sensorCode + ROW_KEY_SEPARATOR + timestamp / (1000 * 3600) * (1000 * 3600);
+        long timestamp = 1603796601001L;//System.currentTimeMillis() - 10 * 60 * 1000 * i;
+        String rowKey = sensorCode + ROW_KEY_SEPARATOR + 1603796600001L;//timestamp / (1000 * 3600) * (1000 * 3600);
 
-            Integer index = Math.toIntExact(timestamp / 1000 % 3600);
-            Put put = new Put(Bytes.toBytes(rowKey));
-            put.setTimestamp(timestamp);
-            put.addColumn(Bytes.toBytes(family), Bytes.toBytes(index), Bytes.toBytes(random.nextDouble()));
-            putList.add(put);
-        }
+        Integer index = Math.toIntExact(timestamp / 1000 % 3600);
+        Put put = new Put(Bytes.toBytes(rowKey));
+        put.setTimestamp(timestamp);
+        put.addColumn(Bytes.toBytes(family), Bytes.toBytes(index), Bytes.toBytes(random.nextDouble()));
+        putList.add(put);
+//        }
         System.out.println("共计元素：" + putList.size());
         batchSave2HBase("", putList);
         System.out.println("批量插入完毕：" + putList.size());

@@ -19,6 +19,8 @@ import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.io.encoding.DataBlockEncoding;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
@@ -29,8 +31,8 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
- * @Package: com.aimsphm.nuclear.hbase.utill
- * @Description: <Hbase操作工具类>
+ * @Package: com.aimsphm.nuclear.common.util
+ * @Description: <HBase操作工具类>
  * @Author: MILLA
  * @CreateDate: 2020/3/5 13:40
  * @UpdateUser: MILLA
@@ -39,6 +41,8 @@ import java.util.*;
  * @Version: 1.0
  */
 @Slf4j
+@ConditionalOnProperty(prefix = "spring.config", name = "enableHBase", havingValue = "true")
+@Component
 public class HBaseUtil {
     private Connection connection;
     @Autowired
@@ -393,7 +397,7 @@ public class HBaseUtil {
      * @return
      * @throws IOException
      */
-    public List<List<Object>> listDataWith3600Columns(String tableName, String tag, Long startTime, Long endTime, String family) throws IOException {
+    public List<HBaseTimeSeriesDataDTO> listDataWith3600Columns(String tableName, String tag, Long startTime, Long endTime, String family) throws IOException {
         TableName name = TableName.valueOf(tableName);
         try (Table table = connection.getTable(name)) {
             Scan scan = new Scan();
@@ -404,11 +408,10 @@ public class HBaseUtil {
             scan.withStopRow(Bytes.toBytes(tag + HBaseConstant.ROW_KEY_SEPARATOR + endRow));
             ResultScanner scanner = table.getScanner(scan);
 
-            List<List<Object>> data = Lists.newArrayList();
+            List<HBaseTimeSeriesDataDTO> data = Lists.newArrayList();
             for (Result rs : scanner) {
-                List<List<Object>> items = new ArrayList();
+                List<HBaseTimeSeriesDataDTO> items = new ArrayList();
                 for (Cell cell : rs.listCells()) {
-                    List<Object> item = new ArrayList<>();
                     double value = Bytes.toDouble(CellUtil.cloneValue(cell));
                     Long timestamp = cell.getTimestamp();
                     //如果列的时间戳大于终点查询时间跳出
@@ -419,9 +422,10 @@ public class HBaseUtil {
                     if (timestamp < startTime) {
                         continue;
                     }
-                    item.add(timestamp);
-                    item.add(value);
-                    items.add(item);
+                    HBaseTimeSeriesDataDTO dto = new HBaseTimeSeriesDataDTO();
+                    dto.setTimestamp(timestamp);
+                    dto.setValue(value);
+                    items.add(dto);
                 }
                 data.addAll(items);
             }

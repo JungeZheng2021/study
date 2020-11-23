@@ -1,0 +1,29 @@
+{
+  "sensorCode": "6M2RCV002ML-N",
+  "sleepTime": 0,
+  "timeStamp": 1605255663,
+  "timestamp": 1605255663000,
+  "tagStatus": 0,
+  "featuresResult": {
+    "abr-fe40": 28,
+    "abr-fe60": 109,
+    "abr-fe100": 0,
+    "abr-fe300": 0,
+    "abr-fe400": 0,
+    "abr-nfe135": 61,
+    "abr-nfe150": 119,
+    "abr-nfe250": 0,
+    "abr-fe350": 0,
+    "abr-fe450": 0,
+    "abr-realTime": 317,
+    "abr-perMinute": 0,
+    "abr-perHour": 0,
+    "state": 1,
+    "ana-temperature": 27.300000000000000711,
+    "ana-humidity": 2,
+    "ana-PPM": 15.400000000000000355,
+    "ana-viscosity": 31.219999999999998863,
+    "ana-density": 0.46000000000000001998,
+    "ana-dielectricConstant": 1.2700000000000000178
+  }
+}

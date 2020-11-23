@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.CommonMeasurePointMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonMeasurePointDO">
+        <result column="id" property="id"/>
+        <result column="importance" property="importance"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="system_id" property="systemId"/>
+        <result column="sub_system_id" property="subSystemId"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="device_name" property="deviceName"/>
+        <result column="sensor_code" property="sensorCode"/>
+        <result column="sensor_name" property="sensorName"/>
+        <result column="feature_type" property="featureType"/>
+        <result column="feature" property="feature"/>
+        <result column="feature_name" property="featureName"/>
+        <result column="tag_id" property="tagId"/>
+        <result column="tag_name" property="tagName"/>
+        <result column="tag_type" property="tagType"/>
+        <result column="tag_desc" property="tagDesc"/>
+        <result column="placeholder" property="placeholder"/>
+        <result column="location" property="location"/>
+        <result column="location_code" property="locationCode"/>
+        <result column="visible" property="visible"/>
+        <result column="category" property="category"/>
+        <result column="early_warning_high" property="earlyWarningHigh"/>
+        <result column="early_warning_low" property="earlyWarningLow"/>
+        <result column="threshold_high" property="thresholdHigh"/>
+        <result column="threshold_low" property="thresholdLow"/>
+        <result column="threshold_higher" property="thresholdHigher"/>
+        <result column="threshold_lower" property="thresholdLower"/>
+        <result column="unit" property="unit"/>
+        <result column="related_group" property="relatedGroup"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        importance,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        system_id, sub_system_id, device_id, device_name, sensor_code, sensor_name, feature_type, feature, feature_name, tag_id, tag_name, tag_type, tag_desc, placeholder, location, location_code, visible, category, early_warning_high, early_warning_low, threshold_high, threshold_low, threshold_higher, threshold_lower, unit, related_group
+    </sql>
+
+</mapper>

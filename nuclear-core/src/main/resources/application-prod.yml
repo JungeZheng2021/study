@@ -44,12 +44,12 @@ spring:
         @redis3a@
         @redis3b@
       max-redirects: 5
-    pool:
-      max-active: 200
-      max-wait: 5000
-      min-idle: 20
-      max-idle: 50
-    timeout: 1000
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: 1000
+        min-idle: 20
+        max-idle: 50
   application:
     name: nuclear-core
   mail:

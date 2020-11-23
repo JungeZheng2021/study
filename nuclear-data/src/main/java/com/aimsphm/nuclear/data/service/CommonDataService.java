@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.data.service;
 
 /**
- * @Package: com.aimsphm.nuclear.data.service
+ * @Package: com.aimsphm.nuclear.common.service.ext.service
  * @Description: <>
  * @Author: MILLA
  * @CreateDate: 2020/3/31 11:40

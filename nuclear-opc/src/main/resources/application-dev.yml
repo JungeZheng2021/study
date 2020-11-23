@@ -1,0 +1,16 @@
+spring:
+  #opc的连接信息
+  progId: Matrikon.OPC.Simulation.1 #opcServer的服务名称
+  host:  192.168.16.35 #连接地址
+  user: Administrator #用户名
+  password: Aims@2016  #密码
+  domain: "" #域
+  mqtt:
+      username: admin
+      password: admin123$
+      url: tcp://192.168.16.43:1883
+      client:
+        id: mqttId555
+      default:
+        topic: topic22
+      completionTimeout: 10000

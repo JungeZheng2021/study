@@ -1,0 +1,78 @@
+package ${package.Entity};
+
+    #foreach($pkg in ${table.importPackages})
+import ${pkg};
+    #end
+import lombok.Data;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+/**
+ * @Package: ${package.Entity}
+ * @Description: <$!{table.comment}实体>
+ * @Author: ${author}
+ * @CreateDate: ${date}
+ * @UpdateUser: ${author}
+ * @UpdateDate: ${date}
+ * @UpdateRemark: <>
+ * @Version: 1.0
+ */
+@Data
+#if(${cfg.customerTableName})
+@TableName("${table.name}")
+#end
+#if(${swagger2})
+@ApiModel(value = "$!{table.comment}实体")
+#end
+#if(${superEntityClass})
+public class ${entity} extends ${superEntityClass}#if(${activeRecord})<${entity}>#end {
+#else
+public class ${entity} implements Serializable{
+#end
+    /**
+     * 序列化时候使用
+     */
+    private static final long serialVersionUID = ${cfg.get(${table.name})}L;
+
+## ----------  BEGIN 字段循环遍历  ----------
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+    #set($keyPropertyName=${field.propertyName})
+#end
+###if("$!field.comment" != "")
+##    /**
+##     * ${field.comment}
+##     */
+###end
+#if(${field.keyFlag})
+    ## 主键
+    #if(${field.keyIdentityFlag})
+    @TableId(value = "${field.name}", type = IdType.AUTO)
+    #elseif(${field.convert})
+    @TableId("${field.name}")
+    #end
+#end
+## 乐观锁注解
+#if(${versionFieldName}==${field.name})
+    @Version
+#end
+## 逻辑删除注解
+#if(${logicDeleteFieldName}==${field.name})
+    @TableLogic
+#end
+##    生成swagg实体描述
+#if(${swagger2})
+    #set($comment=${field.comment})
+    #set($blankIndex=$comment.indexOf(" "))
+    #set($hasBlank=$comment.indexOf(" ")!=-1)
+    #if($hasBlank)
+    @ApiModelProperty(value = "$comment.substring(0,$blankIndex)", notes = "$comment.substring($blankIndex).trim()")
+    #end
+    #if(!$hasBlank)
+    @ApiModelProperty(value = "$comment", notes = "")
+    #end
+#end
+    private ${field.propertyType} ${field.propertyName};
+
+#end
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.CommonSubSystemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonSubSystemDO">
+        <result column="id" property="id"/>
+        <result column="importance" property="importance"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="system_id" property="systemId"/>
+        <result column="sub_system_name" property="subSystemName"/>
+        <result column="sub_system_desc" property="subSystemDesc"/>
+        <result column="sub_system_type" property="subSystemType"/>
+        <result column="additional_type" property="additionalType"/>
+        <result column="forecast_algo_id" property="forecastAlgoId"/>
+        <result column="trendf_algo_id" property="trendfAlgoId"/>
+        <result column="trendr_algo_id" property="trendrAlgoId"/>
+        <result column="faultd_algo_id" property="faultdAlgoId"/>
+        <result column="vif_algo_id" property="vifAlgoId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        importance,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        system_id, sub_system_name, sub_system_desc, sub_system_type, additional_type, forecast_algo_id, trendf_algo_id, trendr_algo_id, faultd_algo_id, vif_algo_id
+    </sql>
+
+</mapper>

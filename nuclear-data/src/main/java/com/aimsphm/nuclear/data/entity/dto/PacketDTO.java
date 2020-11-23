@@ -6,24 +6,16 @@ import java.util.Map;
 
 /**
  * @Package: com.aimsphm.nuclear.data.entity.bo
- * @Description: <>
- * @Author: milla
+ * @Description: <数据上传到MQ的结构>
+ * @Author: MILLA
  * @CreateDate: 2020/10/22 18:46
- * @UpdateUser: milla
+ * @UpdateUser: MILLA
  * @UpdateDate: 2020/10/22 18:46
  * @UpdateRemark: <>
  * @Version: 1.0
  */
 @Data
 public class PacketDTO {
-    /**
-     * 传感器所属边缘端设备编号
-     */
-    private String edgeCode;
-    /**
-     * 传感器所属边缘端通道编号
-     */
-    private String channelCode;
     /**
      * 传感器编号
      */
@@ -40,14 +32,6 @@ public class PacketDTO {
      * 采样间隔时间（秒）
      */
     private Long sleepTime;
-    /**
-     * MQ地址
-     */
-    private String serverIp;
-    /**
-     * MQ端口
-     */
-    private Integer serverPort;
     /**
      * 数据时间戳
      */
@@ -73,5 +57,5 @@ public class PacketDTO {
     /**
      * 秒级别rms值
      */
-    private Double rms;
+    private Double vecRms;
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.CommonDeviceDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO">
+        <result column="id" property="id"/>
+        <result column="importance" property="importance"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="system_id" property="systemId"/>
+        <result column="sub_system_id" property="subSystemId"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="field_name_en" property="fieldNameEn"/>
+        <result column="field_name_zh" property="fieldNameZh"/>
+        <result column="field_value" property="fieldValue"/>
+        <result column="field_type" property="fieldType"/>
+        <result column="unit" property="unit"/>
+        <result column="visible" property="visible"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        importance,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        system_id, sub_system_id, device_id, field_name_en, field_name_zh, field_value, field_type, unit, visible
+    </sql>
+
+</mapper>

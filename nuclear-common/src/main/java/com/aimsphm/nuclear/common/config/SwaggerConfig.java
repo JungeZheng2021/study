@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.common.config;
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -36,6 +37,7 @@ import java.util.List;
 @EnableSwagger2
 @Configuration
 @EnableKnife4j
+@ConditionalOnProperty(prefix = "spring.config", name = "enableSwagger2", havingValue = "true")
 public class SwaggerConfig implements WebMvcConfigurer {
 
     @Value("${swagger.enable.active:true}")

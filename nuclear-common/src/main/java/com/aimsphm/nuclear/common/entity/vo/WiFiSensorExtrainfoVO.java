@@ -1,6 +1,5 @@
 package com.aimsphm.nuclear.common.entity.vo;
 
-import com.aimsphm.nuclear.common.entity.ModelBase;
 import lombok.Data;
 
 /**

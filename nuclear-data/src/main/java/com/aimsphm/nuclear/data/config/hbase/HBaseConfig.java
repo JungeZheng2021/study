@@ -25,9 +25,9 @@ import java.util.concurrent.TimeUnit;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-@Configuration
-@ConfigurationProperties(prefix = HBaseConfig.CONF_PREFIX)
-@Slf4j
+//@Configuration
+//@ConfigurationProperties(prefix = HBaseConfig.CONF_PREFIX)
+//@Slf4j
 public class HBaseConfig {
     public static final String CONF_PREFIX = "hbase.config";
 

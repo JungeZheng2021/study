@@ -1,0 +1,21 @@
+package ${cfg.extPackagePre}.${cfg.service};
+
+import ${package.Service}.${table.serviceName};
+
+/**
+ * @Package: ${cfg.extPackagePre}.${cfg.service}
+ * @Description: <$!{table.comment}扩展服务类>
+ * @Author: ${author}
+ * @CreateDate: ${date}
+ * @UpdateUser: ${author}
+ * @UpdateDate: ${date}
+ * @UpdateRemark: <>
+ * @Version: 1.0
+ */
+#if(${kotlin})
+interface ${table.serviceName}${cfg.classNameExt} : ${table.serviceName}
+#else
+public interface ${table.serviceName}${cfg.classNameExt} extends ${table.serviceName} {
+
+}
+#end

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.CommonDeviceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonDeviceDO">
+        <result column="id" property="id"/>
+        <result column="importance" property="importance"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="site_id" property="siteId"/>
+        <result column="site_name" property="siteName"/>
+        <result column="set_id" property="setId"/>
+        <result column="set_name" property="setName"/>
+        <result column="system_id" property="systemId"/>
+        <result column="system_name" property="systemName"/>
+        <result column="sub_system_id" property="subSystemId"/>
+        <result column="sub_system_name" property="subSystemName"/>
+        <result column="device_name" property="deviceName"/>
+        <result column="device_code" property="deviceCode"/>
+        <result column="device_type" property="deviceType"/>
+        <result column="additional_type" property="additionalType"/>
+        <result column="device_desc" property="deviceDesc"/>
+        <result column="enable_monitor" property="enableMonitor"/>
+        <result column="monitor_algorithm_id" property="monitorAlgorithmId"/>
+        <result column="pkl_path" property="pklPath"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        importance,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        site_id, site_name, set_id, set_name, system_id, system_name, sub_system_id, sub_system_name, device_name, device_code, device_type, additional_type, device_desc, enable_monitor, monitor_algorithm_id, pkl_path
+    </sql>
+
+</mapper>

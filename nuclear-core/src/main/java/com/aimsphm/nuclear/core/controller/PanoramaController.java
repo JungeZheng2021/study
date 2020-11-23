@@ -1,16 +1,9 @@
 package com.aimsphm.nuclear.core.controller;
 
-import com.aimsphm.nuclear.common.entity.TxAlarmEvent;
-import com.aimsphm.nuclear.common.entity.TxPumpsnapshot;
-import com.aimsphm.nuclear.common.entity.vo.MdDeviceVO;
-import com.aimsphm.nuclear.common.mapper.MdDeviceMapper;
-import com.aimsphm.nuclear.common.response.ResponseUtils;
-import com.aimsphm.nuclear.common.response.ResponseData;
-import com.aimsphm.nuclear.core.vo.PumpPanoramaVO;
-import com.aimsphm.nuclear.pump.service.SystemPanoramaService;
+import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
+import com.aimsphm.nuclear.core.service.PanoramaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,73 +11,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 /**
- * @Package: com.aimsphm.nuclear.turbine
- * @Description: <>
+ * @Package: com.aimsphm.nuclear.pump.controller
+ * @Description: <各设备监测控制类>
  * @Author: MILLA
- * @CreateDate: 2020/6/9 18:36
+ * @CreateDate: 2020/4/3 9:35
  * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/9 18:36
+ * @UpdateDate: 2020/4/3 9:35
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-@RestController
-@Api(tags = "系统总览接口")
-@RequestMapping(value = "panorama", produces = MediaType.APPLICATION_JSON_VALUE)
+@RestController()
+@Api(tags = "系统总览控制类")
+@RequestMapping(value = "overview", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PanoramaController {
     @Autowired
-    private SystemPanoramaService service;
+    private PanoramaService panoramaService;
 
-    @GetMapping("pump/{subSystemId}")
-    @ApiOperation(value = "主泵系统总览信息")
-    public ResponseData getPanoramaInfoPump(@PathVariable Long subSystemId) {
-        PumpPanoramaVO vo = service.getPanoramaInfo(subSystemId);
-        return ResponseUtils.success(vo);
-    }
-
-    @GetMapping("turbine/{subSystemId}")
-    @ApiOperation(value = "汽机系统总览信息")
-    public ResponseData getPanoramaInfoTurbine(@PathVariable Long subSystemId) {
-        PumpPanoramaVO vo = service.getPanoramaInfo(subSystemId);
-        return ResponseUtils.success(vo);
-    }
-
-    @GetMapping("rotary/{subSystemId}")
-    @ApiOperation(value = "旋机系统总览信息")
-    public ResponseData getPanoramaInfoRotary(@PathVariable Long subSystemId) {
-        PumpPanoramaVO vo = service.getPanoramaInfo(subSystemId);
-        return ResponseUtils.success(vo);
-    }
-
-    @Autowired
-    private MdDeviceMapper deviceMapper;
-
-    @GetMapping("exchanger/{subSystemId}")
-    @ApiOperation(value = "换热器系统总览信息")
-    public ResponseData getPanoramaInfo(@PathVariable Long subSystemId) {
-        PumpPanoramaVO vo = service.getPanoramaInfo(subSystemId);
-        List<MdDeviceVO> deviceList = deviceMapper.selectDeviceBySubSystemId(subSystemId);
-        if (CollectionUtils.isNotEmpty(deviceList)) {
-            List<TxPumpsnapshot> collect = deviceList.stream().map(item -> {
-                TxPumpsnapshot snapshot = new TxPumpsnapshot();
-                snapshot.setDeviceId(item.getId());
-                snapshot.setDeviceName(item.getDeviceName());
-                snapshot.setAdditionalType(item.getAdditionalType());
-                return snapshot;
-            }).collect(Collectors.toList());
-            vo.setDevices(collect);
-        }
-        return ResponseUtils.success(vo);
-    }
-
-    //------------------------------------------预警信息----------------------------------------
-    @GetMapping("pump/warning/newest/{queryId}")
-    @ApiOperation(value = "获取最新的预警信息")
-    public ResponseData getWarningNewest(@PathVariable Long queryId, Integer top, boolean type) {
-        List<TxAlarmEvent> vo = service.getWarningNewest(queryId, top, type);
-        return ResponseUtils.success(vo);
+    @GetMapping("details")
+    @ApiOperation(value = "系统总览")
+    public Map<String, MeasurePointVO> getDeviceMonitorInfo(@PathVariable @NotNull Long deviceId) {
+//        return panoramaService.getMonitorInfo(deviceId);
+        return null;
     }
 }

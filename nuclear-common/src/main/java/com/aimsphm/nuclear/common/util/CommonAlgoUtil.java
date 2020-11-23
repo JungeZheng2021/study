@@ -1,6 +1,5 @@
 package com.aimsphm.nuclear.common.util;
 
-import com.aimsphm.nuclear.common.entity.MdSensor;
 import com.aimsphm.nuclear.common.entity.dto.Cell;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

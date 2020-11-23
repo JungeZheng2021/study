@@ -16,7 +16,7 @@ import lombok.Data;
 @Data
 public class TimeRangeQueryBO {
     @ApiModelProperty(value = "开始时间")
-    private long start;
+    private Long start;
     @ApiModelProperty(value = "结束时间")
-    private long end;
+    private Long end;
 }

@@ -3,9 +3,9 @@ package com.aimsphm.nuclear.data.enums;
 /**
  * @Package: com.aimsphm.nuclear.data.enums
  * @Description: <传感器类型枚举>
- * @Author: milla
+ * @Author: MILLA
  * @CreateDate: 2020/10/22 17:51
- * @UpdateUser: milla
+ * @UpdateUser: MILLA
  * @UpdateDate: 2020/10/22 17:51
  * @UpdateRemark: <>
  * @Version: 1.0

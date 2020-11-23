@@ -5,9 +5,9 @@ import lombok.Data;
 /**
  * @Package: com.aimsphm.nuclear.data.entity.bo
  * @Description: <>
- * @Author: milla
+ * @Author: MILLA
  * @CreateDate: 2020/10/22 18:46
- * @UpdateUser: milla
+ * @UpdateUser: MILLA
  * @UpdateDate: 2020/10/22 18:46
  * @UpdateRemark: <>
  * @Version: 1.0

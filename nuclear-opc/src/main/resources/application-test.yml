@@ -1,0 +1,31 @@
+spring:
+  profiles: test
+  #kafka
+  kafka:
+    producer:
+      bootstrap-servers: ubuntu01:9092,ubuntu02:9092,ubuntu03:9092
+      retries: 0
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      max.request.size: 104857600
+      # 批量抓取
+      batch-size: 65536
+      # 缓存容量
+      buffer-memory: 524288
+    consumer:
+      bootstrap-servers: ubuntu01:9092,ubuntu02:9092,ubuntu03:9092
+      enable-auto-commit: true
+      auto-commit-interval: 1000
+      # earliest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费
+      # latest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据
+      # none:topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常
+      auto-offset-reset: earliest
+      #指定一个默认的组名
+      group-id: opcES
+  #opc的连接信息
+  progId: HYQDOPC.SVR #opcServer的服务名称
+  host: 127.0.0.1 #连接地址
+  user: Administrator #用户名
+  password: hbzyAdmin123  #密码
+  domain: "" #域
+
