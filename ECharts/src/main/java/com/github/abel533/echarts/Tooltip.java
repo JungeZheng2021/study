@@ -111,6 +111,7 @@ public class Tooltip extends Basic<Tooltip> implements Component {
         this.alwaysShowContent = alwaysShowContent;
         return this;
     }
+
     public TriggerOn triggerOn() {
         return this.triggerOn;
     }
@@ -119,6 +120,7 @@ public class Tooltip extends Basic<Tooltip> implements Component {
         this.triggerOn = triggerOn;
         return this;
     }
+
     /**
      * 设置axisPointer值
      *

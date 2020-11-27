@@ -42,7 +42,7 @@ public class BarTest4 {
 
     @Test
     public void test() {
-        getHtml();
+        System.out.println(getHtml());
     }
 
     public static String getHtml() {

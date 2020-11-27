@@ -43,7 +43,7 @@ public class Bar extends Series<Bar> {
     /**
      * 柱条（K线蜡烛）宽度，不设时自适应
      */
-  //  private Integer barWidth;
+    //  private Integer barWidth;
     private Object barWidth;
     /**
      * 柱条（K线蜡烛）最大宽度，不设时自适应

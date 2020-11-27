@@ -34,7 +34,7 @@ import java.io.Serializable;
  * 文字样式
  *
  * @author liuzh
- *         Created by liuzh on 14-8-25.
+ * Created by liuzh on 14-8-25.
  */
 public class TextStyle implements Serializable {
 

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,6 +34,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Slf4j
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -50,33 +52,37 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomerLogoutSuccessHandler logoutSuccessHandler;
 
+    /**
+     * 配置拦截器保护请求
+     *
+     * @param http
+     * @throws Exception
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-/**        http.addFilterBefore(verifyCodeFilter, UsernamePasswordAuthenticationFilter.class);
- //开启登录配置
- */      //配置HTTP基本身份验证//使用自定义过滤器-兼容json和表单登录
+        //配置HTTP基本身份验证//使用自定义过滤器-兼容json和表单登录
         http.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .httpBasic()
                 .and().authorizeRequests()
                 //表示访问 /setting 这个接口，需要具备 admin 这个角色
-                .antMatchers("/setting").hasRole("admin")
+                .antMatchers("/setting").hasRole("admin11")
                 //表示剩余的其他接口，登录之后就能访问
                 .anyRequest()
                 .authenticated()
                 .and()
                 .formLogin()
                 //定义登录页面，未登录时，访问一个需要登录之后才能访问的接口，会自动跳转到该页面
-                .loginPage("/noToken")
+//                .loginPage("/noToken")
                 //登录处理接口-登录时候访问的接口地址
                 .loginProcessingUrl("/account/login")
                 //定义登录时,表单中用户名的 key，默认为 username
-                .usernameParameter("username")
+//                .usernameParameter("username")
                 //定义登录时,表单中用户密码的 key，默认为 password
-                .passwordParameter("password")
-                //登录成功的处理器
-                .successHandler(successHandler)
-                //登录失败的处理器
-                .failureHandler(failureHandler)
+//                .passwordParameter("password")
+//                //登录成功的处理器
+//                .successHandler(successHandler)
+//                //登录失败的处理器
+//                .failureHandler(failureHandler)
                 //允许所有用户访问
                 .permitAll()
                 .and()
@@ -89,6 +95,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
     }
 
+    /**
+     * 配置权限认证服务
+     *
+     * @param auth
+     * @throws Exception
+     */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         //权限校验-只要有一个认证通过即认为是通过的(有一个认证通过就跳出认证循环)-适用于多登录方式的系统
@@ -99,12 +111,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
+    /**
+     * 配置Spring Security的Filter链
+     *
+     * @param web
+     * @throws Exception
+     */
     @Override
     public void configure(WebSecurity web) throws Exception {
         //忽略拦截的接口
-        web.ignoring().antMatchers("/noToken", "/vercode");
+        web.ignoring().antMatchers("/noToken");
     }
 
+    /**
+     * 指定验证manager
+     *
+     * @return
+     * @throws Exception
+     */
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {

@@ -145,14 +145,14 @@ public class AxisPointer implements Serializable {
     /**
      * 是否显示
      */
-    public Boolean show(){
+    public Boolean show() {
         return this.show;
     }
 
     /**
      * 设置是否显示
      */
-    public AxisPointer show(Boolean show){
+    public AxisPointer show(Boolean show) {
         this.show = show;
         return this;
     }

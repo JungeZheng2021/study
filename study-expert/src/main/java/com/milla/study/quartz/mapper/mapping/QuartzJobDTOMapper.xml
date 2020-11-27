@@ -16,9 +16,9 @@
         <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, job_name, description, cron_expression, expression_desc, bean_class, job_status, job_group, creator,
-    create_time, modifier, modify_time
-  </sql>
+        id, job_name, description, cron_expression, expression_desc, bean_class, job_status, job_group, creator,
+        create_time, modifier, modify_time
+    </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
@@ -26,9 +26,9 @@
         where id = #{id,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from sys_job_quartz
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
+        delete from sys_job_quartz
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
     <insert id="insert" parameterType="com.aimsphm.nuclear.common.quartz.dto.QuartzJobDTO">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -159,20 +159,20 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.aimsphm.nuclear.common.quartz.dto.QuartzJobDTO">
-    update sys_job_quartz
-    set job_name = #{jobName,jdbcType=VARCHAR},
-      description = #{description,jdbcType=VARCHAR},
-      cron_expression = #{cronExpression,jdbcType=VARCHAR},
-      expression_desc = #{expressionDesc,jdbcType=VARCHAR},
-      bean_class = #{beanClass,jdbcType=VARCHAR},
-      job_status = #{jobStatus,jdbcType=VARCHAR},
-      job_group = #{jobGroup,jdbcType=VARCHAR},
-      creator = #{creator,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      modifier = #{modifier,jdbcType=VARCHAR},
-      modify_time = #{modifyTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+        update sys_job_quartz
+        set job_name = #{jobName,jdbcType=VARCHAR},
+        description = #{description,jdbcType=VARCHAR},
+        cron_expression = #{cronExpression,jdbcType=VARCHAR},
+        expression_desc = #{expressionDesc,jdbcType=VARCHAR},
+        bean_class = #{beanClass,jdbcType=VARCHAR},
+        job_status = #{jobStatus,jdbcType=VARCHAR},
+        job_group = #{jobGroup,jdbcType=VARCHAR},
+        creator = #{creator,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        modifier = #{modifier,jdbcType=VARCHAR},
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
     <select id="selectJob" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>

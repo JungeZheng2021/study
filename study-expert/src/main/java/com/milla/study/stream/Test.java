@@ -21,6 +21,6 @@ public class Test {
         Map<String, Object> map = Maps.newHashMap();
         Set<String> strings = map.keySet();
         strings.add("Q");
-        
+
     }
 }

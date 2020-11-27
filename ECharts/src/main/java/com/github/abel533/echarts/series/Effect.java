@@ -285,6 +285,7 @@ public class Effect implements Serializable {
         this.trailLength = trailLength;
         return this;
     }
+
     public static enum Type {
         scale, bounce
     }

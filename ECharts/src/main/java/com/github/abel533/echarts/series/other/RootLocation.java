@@ -103,8 +103,8 @@ public class RootLocation implements Serializable {
 
     /**
      * 获取x值
-	 */
-	public Object x() {
+     */
+    public Object x() {
         return this.x;
     }
 
@@ -113,7 +113,7 @@ public class RootLocation implements Serializable {
      *
      * @param y
      */
-	public RootLocation y(Y y) {
+    public RootLocation y(Y y) {
         this.y = y;
         return this;
     }
@@ -150,15 +150,15 @@ public class RootLocation implements Serializable {
 
     /**
      * 获取y值
-	 */
-	public Object y() {
+     */
+    public Object y() {
         return this.y;
     }
 
     /**
      * 获取x值
      */
-	public Object getX() {
+    public Object getX() {
         return x;
     }
 
@@ -167,14 +167,14 @@ public class RootLocation implements Serializable {
      *
      * @param x
      */
-	public void setX(Object x) {
+    public void setX(Object x) {
         this.x = x;
     }
 
     /**
      * 获取y值
      */
-	public Object getY() {
+    public Object getY() {
         return y;
     }
 
@@ -183,7 +183,7 @@ public class RootLocation implements Serializable {
      *
      * @param y
      */
-	public void setY(Object y) {
+    public void setY(Object y) {
         this.y = y;
     }
 }

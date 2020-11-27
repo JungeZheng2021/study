@@ -92,7 +92,7 @@ public class WordCloudData implements Serializable {
     /**
      * 获取value值
      */
-	public Integer value() {
+    public Integer value() {
         return this.value;
     }
 
@@ -109,7 +109,7 @@ public class WordCloudData implements Serializable {
     /**
      * 获取itemStyle值
      */
-	public ItemStyle itemStyle() {
+    public ItemStyle itemStyle() {
         if (this.itemStyle == null) {
             this.itemStyle = new ItemStyle();
         }

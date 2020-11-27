@@ -143,6 +143,7 @@ public class Link implements Serializable {
         }
         return this.itemStyle;
     }
+
     /**
      * 设置lineStyle，返回object
      *

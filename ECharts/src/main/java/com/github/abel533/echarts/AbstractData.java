@@ -177,6 +177,7 @@ public abstract class AbstractData<T> implements Data<T>, java.io.Serializable {
         this.clickable = clickable;
         return (T) this;
     }
+
     /**
      * 获取hoverable值
      */

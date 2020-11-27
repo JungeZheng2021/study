@@ -49,7 +49,7 @@ public class Legend extends Basic<Legend> implements Data<Legend>, Component {
     /**
      * 设置分页方式
      */
-    private LegendType type ;
+    private LegendType type;
 
     /**
      * 图例图形宽度
@@ -100,7 +100,7 @@ public class Legend extends Basic<Legend> implements Data<Legend>, Component {
         this.data(values);
     }
 
-    public LegendType type(){
+    public LegendType type() {
         return this.type;
     }
 
@@ -126,6 +126,7 @@ public class Legend extends Basic<Legend> implements Data<Legend>, Component {
         this.formatter = formatter;
         return this;
     }
+
     /**
      * 设置textStyle值
      *

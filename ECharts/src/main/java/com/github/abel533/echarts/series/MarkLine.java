@@ -286,6 +286,7 @@ public class MarkLine extends AbstractData<MarkLine> {
         this.smooth = smooth;
         return this;
     }
+
     /**
      * 边捆绑
      *
@@ -300,9 +301,9 @@ public class MarkLine extends AbstractData<MarkLine> {
         /**
          * 获取enable值
          */
-	public Boolean enable() {
-        return this.enable;
-    }
+        public Boolean enable() {
+            return this.enable;
+        }
 
         /**
          * 设置enable值
@@ -311,15 +312,15 @@ public class MarkLine extends AbstractData<MarkLine> {
          */
         public Bundling enable(Boolean enable) {
             this.enable = enable;
-        return this;
-    }
+            return this;
+        }
 
         /**
          * 获取maxTurningAngle值
          */
-	public Integer maxTurningAngle() {
-        return this.maxTurningAngle;
-    }
+        public Integer maxTurningAngle() {
+            return this.maxTurningAngle;
+        }
 
         /**
          * 设置maxTurningAngle值

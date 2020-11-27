@@ -160,7 +160,7 @@ public class TreeData implements Serializable {
     /**
      * 获取children值
      */
-	public List<TreeData> children() {
+    public List<TreeData> children() {
         if (this.children == null) {
             this.children = new LinkedList<TreeData>();
         }
@@ -179,8 +179,8 @@ public class TreeData implements Serializable {
 
     /**
      * 获取itemStyle值
-	 */
-	public ItemStyle itemStyle() {
+     */
+    public ItemStyle itemStyle() {
         if (this.itemStyle == null) {
             this.itemStyle = new ItemStyle();
         }

@@ -156,6 +156,7 @@ public class Polar extends AbstractData<Polar> implements Component {
     public Integer z() {
         return this.z;
     }
+
     /**
      * 获取center值
      */

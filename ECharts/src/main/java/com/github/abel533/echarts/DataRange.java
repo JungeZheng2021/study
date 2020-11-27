@@ -158,7 +158,7 @@ public class DataRange extends Basic<DataRange> implements Component {
     /**
      * 获取range值
      */
-	public RangeData range() {
+    public RangeData range() {
         return this.range;
     }
 
@@ -178,7 +178,7 @@ public class DataRange extends Basic<DataRange> implements Component {
     /**
      * 获取splitList值
      */
-	public List<RangeData> splitList() {
+    public List<RangeData> splitList() {
         if (this.splitList == null) {
             this.splitList = new ArrayList<RangeData>();
         }

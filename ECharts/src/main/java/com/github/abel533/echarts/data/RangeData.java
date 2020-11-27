@@ -93,7 +93,7 @@ public class RangeData implements Serializable {
     /**
      * 获取end值
      */
-	public Integer end() {
+    public Integer end() {
         return this.end;
     }
 
@@ -119,7 +119,7 @@ public class RangeData implements Serializable {
      *
      * @param color
      */
-	public RangeData color(Object color) {
+    public RangeData color(Object color) {
         this.color = color;
         return this;
     }

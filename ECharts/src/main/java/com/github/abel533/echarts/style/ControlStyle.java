@@ -182,7 +182,7 @@ public class ControlStyle implements Serializable {
     /**
      * 获取itemGap值
      */
-	public Integer getItemGap() {
+    public Integer getItemGap() {
         return itemGap;
     }
 

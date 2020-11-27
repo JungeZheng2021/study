@@ -134,7 +134,7 @@ public class Heatmap extends Series<Heatmap> {
     /**
      * 获取minAlpha值
      */
-	public Double minAlpha() {
+    public Double minAlpha() {
         return this.minAlpha;
     }
 
@@ -151,7 +151,7 @@ public class Heatmap extends Series<Heatmap> {
     /**
      * 获取valueScale值
      */
-	public Double valueScale() {
+    public Double valueScale() {
         return this.valueScale;
     }
 
@@ -167,8 +167,8 @@ public class Heatmap extends Series<Heatmap> {
 
     /**
      * 获取opacity值
-	 */
-	public Double opacity() {
+     */
+    public Double opacity() {
         return this.opacity;
     }
 
@@ -177,7 +177,7 @@ public class Heatmap extends Series<Heatmap> {
      *
      * @param opacity
      */
-	public Heatmap opacity(Double opacity) {
+    public Heatmap opacity(Double opacity) {
         this.opacity = opacity;
         return this;
     }

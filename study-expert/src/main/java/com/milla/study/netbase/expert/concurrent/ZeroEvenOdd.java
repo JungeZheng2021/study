@@ -65,6 +65,7 @@ public class ZeroEvenOdd {
 
         lock.unlock();
     }
+
     public static void main(String[] args) {
         ZeroEvenOdd zeroEvenOdd = new ZeroEvenOdd(2);
         new Thread(() -> {

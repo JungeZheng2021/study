@@ -118,6 +118,7 @@ public class ValueAxis extends Axis<ValueAxis> {
         this.splitNumber = splitNumber;
         return this;
     }
+
     /**
      * 设置nameLocation值
      *

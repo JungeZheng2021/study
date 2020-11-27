@@ -79,6 +79,7 @@ define(function (require) {
     function MessageCenter() {
         zrEvent.Dispatcher.call(this);
     }
+
     zrUtil.merge(MessageCenter.prototype, zrEvent.Dispatcher.prototype, true);
 
     /**
@@ -176,7 +177,7 @@ define(function (require) {
             this._zr = _zr;
 
             // wrap: n,e,d,t for name event data this
-            this._messageCenter.dispatch = function(type, event, eventPackage, that) {
+            this._messageCenter.dispatch = function (type, event, eventPackage, that) {
                 eventPackage = eventPackage || {};
                 eventPackage.type = type;
                 eventPackage.event = event;
@@ -199,7 +200,7 @@ define(function (require) {
                 // }
             };
 
-            this._onevent = function(param){
+            this._onevent = function (param) {
                 return self.__onevent(param);
             };
             for (var e in ecConfig.EVENT) {
@@ -213,7 +214,7 @@ define(function (require) {
 
             var eventBehaviors = {};
             this._onzrevent = function (param) {
-                return self[eventBehaviors[ param.type ]](param);
+                return self[eventBehaviors[param.type]](param);
             };
 
             // 挂载关心的事件
@@ -252,7 +253,7 @@ define(function (require) {
         /**
          * ECharts事件处理中心
          */
-        __onevent: function (param){
+        __onevent: function (param) {
             param.__echartsId = param.__echartsId || this.id;
 
             // 来自其他联动图表的事件
@@ -319,8 +320,7 @@ define(function (require) {
                                 }
                             );
                         }
-                    }
-                    else if (this._connected) {
+                    } else if (this._connected) {
                         // 来自自己，并且存在多图联动，空间坐标映射修改参数分发
                         var grid = this.component.grid;
                         if (grid) {
@@ -597,9 +597,9 @@ define(function (require) {
 
                 dataIndex = seriesIndex != -1 && this.component.dataZoom
                     ? this.component.dataZoom.getRealDataIndex(
-                    seriesIndex,
-                    dataIndex
-                )
+                        seriesIndex,
+                        dataIndex
+                    )
                     : dataIndex;
                 return {
                     seriesIndex: seriesIndex,
@@ -614,7 +614,7 @@ define(function (require) {
             return;
         },
 
-        _noDataCheck: function(magicOption) {
+        _noDataCheck: function (magicOption) {
             var series = magicOption.series;
 
             for (var i = 0, l = series.length; i < l; i++) {
@@ -635,11 +635,11 @@ define(function (require) {
                 || ecConfig.noDataLoadingOption
                 || {
                     text: (this._option && this._option.noDataText)
-                    || this._themeConfig.noDataText
-                    || ecConfig.noDataText,
+                        || this._themeConfig.noDataText
+                        || ecConfig.noDataText,
                     effect: (this._option && this._option.noDataEffect)
-                    || this._themeConfig.noDataEffect
-                    || ecConfig.noDataEffect
+                        || this._themeConfig.noDataEffect
+                        || ecConfig.noDataEffect
                 };
             // 空数据
             this.clear();
@@ -670,8 +670,7 @@ define(function (require) {
                     cList.length = 3;
                     cList[0] = cList[0].replace('a', '');
                     this.dom.style.backgroundColor = cList.join(',') + ')';
-                }
-                else {
+                } else {
                     this.dom.style.backgroundColor = bgColor;
                 }
             }
@@ -702,8 +701,7 @@ define(function (require) {
                 if (magicOption[componentType]) {
                     if (component) {
                         component.refresh && component.refresh(magicOption);
-                    }
-                    else {
+                    } else {
                         ComponentClass = componentLibrary.get(
                             /^[xy]Axis$/.test(componentType) ? 'axis' : componentType
                         );
@@ -714,8 +712,7 @@ define(function (require) {
                         this.component[componentType] = component;
                     }
                     this._chartList.push(component);
-                }
-                else if (component) {
+                } else if (component) {
                     component.dispose();
                     this.component[componentType] = null;
                     delete this.component[componentType];
@@ -740,8 +737,7 @@ define(function (require) {
                         if (this.chart[chartType]) {
                             chart = this.chart[chartType];
                             chart.refresh(magicOption);
-                        }
-                        else {
+                        } else {
                             chart = new ChartClass(
                                 this._themeConfig, this._messageCenter, this._zr,
                                 magicOption, this
@@ -749,8 +745,7 @@ define(function (require) {
                         }
                         this._chartList.push(chart);
                         this.chart[chartType] = chart;
-                    }
-                    else {
+                    } else {
                         console.error(chartType + ' has not been required.');
                     }
                 }
@@ -758,7 +753,7 @@ define(function (require) {
 
             // 已有实例但新option不带这类图表的实例释放
             for (chartType in this.chart) {
-                if (chartType != ecConfig.CHART_TYPE_ISLAND  && !chartMap[chartType]) {
+                if (chartType != ecConfig.CHART_TYPE_ISLAND && !chartMap[chartType]) {
                     this.chart[chartType].dispose();
                     this.chart[chartType] = null;
                     delete this.chart[chartType];
@@ -781,8 +776,7 @@ define(function (require) {
                 if (img) {
                     // 已经渲染过则更新显示
                     img.src = this.getDataURL(magicOption.renderAsImage);
-                }
-                else {
+                } else {
                     // 没有渲染过插入img dom
                     img = this.getImage(magicOption.renderAsImage);
                     img.id = imgId;
@@ -795,8 +789,7 @@ define(function (require) {
                 this._zr.un();
                 this._disposeChartList();
                 this._zr.clear();
-            }
-            else if (img) {
+            } else if (img) {
                 // 删除可能存在的img
                 img.parentNode.removeChild(img);
             }
@@ -937,8 +930,7 @@ define(function (require) {
         setOption: function (option, notMerge) {
             if (!option.timeline) {
                 return this._setOption(option, notMerge);
-            }
-            else {
+            } else {
                 return this._setTimelineOption(option);
             }
         },
@@ -959,8 +951,7 @@ define(function (require) {
                     zrUtil.clone(option),
                     true
                 );
-            }
-            else {
+            } else {
                 this._option = zrUtil.clone(option);
                 !keepTimeLine && this._timeline && this._timeline.dispose();
             }
@@ -996,6 +987,7 @@ define(function (require) {
             var magicOption = zrUtil.clone(this._option);
 
             var self = this;
+
             function restoreOption(prop) {
                 var restoreSource = self._optionRestore[prop];
 
@@ -1007,8 +999,7 @@ define(function (require) {
                                 restoreSource[len].data
                             );
                         }
-                    }
-                    else {
+                    } else {
                         magicOption[prop].data = zrUtil.clone(restoreSource.data);
                     }
                 }
@@ -1035,8 +1026,7 @@ define(function (require) {
         setSeries: function (series, notMerge) {
             if (!notMerge) {
                 this.setOption({series: series});
-            }
-            else {
+            } else {
                 this._option.series = series;
                 this.setOption(this._option, notMerge);
             }
@@ -1054,7 +1044,7 @@ define(function (require) {
          * timelineOption接口，配置图表实例任何可配置选项
          * @param {Object} option
          */
-        _setTimelineOption: function(option) {
+        _setTimelineOption: function (option) {
             this._timeline && this._timeline.dispose();
             var Timeline = require('./component/timeline');
             var timeline = new Timeline(
@@ -1124,8 +1114,7 @@ define(function (require) {
                                 legendDataIdx = zrUtil.indexOf(mLegendData, data.name);
                                 legendDataIdx != -1 && mLegendData.splice(legendDataIdx, 1);
                             }
-                        }
-                        else if (optionRestore.xAxis != null && optionRestore.yAxis != null) {
+                        } else if (optionRestore.xAxis != null && optionRestore.yAxis != null) {
                             // x轴类目
                             var axisData;
                             var mAxisData;
@@ -1186,6 +1175,7 @@ define(function (require) {
             this.component.dataZoom && this.component.dataZoom.syncOption(magicOption);
 
             this._option = magicOption;
+
             function animationDone() {
                 if (!self._zr) {
                     return; // 已经被释放
@@ -1241,12 +1231,10 @@ define(function (require) {
                         // 数据concat
                         markOpt.data = markOpt.data.concat(markData.data);
                         markOptR.data = markOptR.data.concat(markData.data);
-                    }
-                    else if (typeof markData[key] != 'object' || markOpt[key] == null) {
+                    } else if (typeof markData[key] != 'object' || markOpt[key] == null) {
                         // 简单类型或新值直接赋值
                         markOpt[key] = markOptR[key] = markData[key];
-                    }
-                    else {
+                    } else {
                         // 非数据的复杂对象merge
                         zrUtil.merge(markOpt[key], markData[key], true);
                         zrUtil.merge(markOptR[key], markData[key], true);
@@ -1280,11 +1268,11 @@ define(function (require) {
             var dataArray;
 
             if (!(
-                    series
-                    && (seriesItem = series[seriesIdx])
-                    && (mark = seriesItem[markType])
-                    && (dataArray = mark.data)
-                )
+                series
+                && (seriesItem = series[seriesIdx])
+                && (mark = seriesItem[markType])
+                && (dataArray = mark.data)
+            )
             ) {
                 return this;
             }
@@ -1301,8 +1289,7 @@ define(function (require) {
                         targetIndex = i;
                         break;
                     }
-                }
-                else if (dataItem.name === markName[0]) {
+                } else if (dataItem.name === markName[0]) {
                     targetIndex = i;
                     break;
                 }
@@ -1364,7 +1351,7 @@ define(function (require) {
             }
 
             var bgColor = this._option.backgroundColor;
-            if (bgColor && bgColor.replace(' ','') === 'rgba(0,0,0,0)') {
+            if (bgColor && bgColor.replace(' ', '') === 'rgba(0,0,0,0)') {
                 bgColor = '#fff';
             }
 
@@ -1513,8 +1500,7 @@ define(function (require) {
                 for (var i = 0, l = connectTarget.length; i < l; i++) {
                     this._connected[connectTarget[i].id] = connectTarget[i];
                 }
-            }
-            else {
+            } else {
                 this._connected[connectTarget.id] = connectTarget;
             }
 
@@ -1534,8 +1520,7 @@ define(function (require) {
                 for (var i = 0, l = connectTarget.length; i < l; i++) {
                     delete this._connected[connectTarget[i].id];
                 }
-            }
-            else {
+            } else {
                 delete this._connected[connectTarget.id];
             }
 
@@ -1615,7 +1600,7 @@ define(function (require) {
 
             var Effect = loadingOption.effect;
             if (typeof Effect === 'string' || Effect == null) {
-                Effect =  effectList[
+                Effect = effectList[
                     loadingOption.effect
                     || (this._option && this._option.loadingEffect)
                     || this._themeConfig.loadingEffect
@@ -1652,8 +1637,7 @@ define(function (require) {
                         default:
                             theme = {}; // require('./theme/default');
                     }
-                }
-                else {
+                } else {
                     theme = theme || {};
                 }
 
@@ -1696,7 +1680,7 @@ define(function (require) {
          */
         resize: function () {
             var self = this;
-            return function(){
+            return function () {
                 self._clearEffect();
                 self._zr.resize();
                 if (self._option && self._option.renderAsImage && _canvasSupported) {
@@ -1721,8 +1705,8 @@ define(function (require) {
             };
         },
 
-        _clearEffect: function() {
-            this._zr.modLayer(ecConfig.EFFECT_ZLEVEL, { motionBlur: false });
+        _clearEffect: function () {
+            this._zr.modLayer(ecConfig.EFFECT_ZLEVEL, {motionBlur: false});
             this._zr.painter.clearLayer(ecConfig.EFFECT_ZLEVEL);
         },
 

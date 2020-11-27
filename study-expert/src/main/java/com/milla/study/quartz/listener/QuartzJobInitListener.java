@@ -26,7 +26,7 @@ public class QuartzJobInitListener implements CommandLineRunner {
 
     @Autowired
     //所有实现初始化的接口都注入进来，然后遍历执行
-    Map<String, QuartzJobService> scheduleJobServiceMap;
+            Map<String, QuartzJobService> scheduleJobServiceMap;
 
     @Override
     public void run(String... arg0) throws Exception {

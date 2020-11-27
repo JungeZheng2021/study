@@ -39,6 +39,7 @@ public final class PropertiesReaderUtil {
      * in = PropertiesReaderUtil.class.getClassLoader().getResourceAsStream("properties/message_ZH.properties");
      */
     synchronized static private void loadProps(boolean isZh) {
+        System.out.println("--------------");
         logger.debug("start loading properties");
         InputStream in = null;
         if (isZh) {
@@ -104,4 +105,12 @@ public final class PropertiesReaderUtil {
         }
         return propsCN.getProperty(key, defaultValue);
     }
+
+    public static void main(String[] args) {
+        String property = PropertiesReaderUtil.getProperty("1001");
+        System.out.println(property);
+        String property1 = PropertiesReaderUtil.getProperty("1001");
+        System.out.println(property1);
+    }
+
 }

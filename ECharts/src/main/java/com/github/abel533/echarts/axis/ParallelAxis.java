@@ -83,6 +83,7 @@ public class ParallelAxis extends Axis<ParallelAxis> {
         this.nameLocation = nameLocation;
         return this;
     }
+
     public AreaSelectStyle areaSelectStyle() {
         if (this.areaSelectStyle == null) {
             this.areaSelectStyle = new AreaSelectStyle();

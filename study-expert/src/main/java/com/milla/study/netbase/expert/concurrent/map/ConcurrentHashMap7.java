@@ -385,7 +385,7 @@ public class ConcurrentHashMap7<K, V> extends AbstractMap<K, V>
                 int index = (tab.length - 1) & hash;
                 // 返回数组中对应位置的元素（链表头部）
                 HashEntry<K, V> first = entryAt(tab, index);
-            //循环链表
+                //循环链表
                 for (HashEntry<K, V> e = first; ; ) {
                     if (e != null) {// 如果已经存在值，覆盖旧值
                         K k;

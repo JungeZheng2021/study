@@ -230,6 +230,7 @@ public class Treemap extends Series<Treemap> {
         this.zoomToNodeRatio = zoomToNodeRatio;
         return this;
     }
+
     public Object nodeClick() {
         return this.nodeClick;
     }
@@ -267,6 +268,7 @@ public class Treemap extends Series<Treemap> {
         this.roam = roam;
         return this;
     }
+
     public Double squareRatio() {
         return this.squareRatio;
     }
@@ -275,6 +277,7 @@ public class Treemap extends Series<Treemap> {
         this.squareRatio = squareRatio;
         return this;
     }
+
     /**
      * 设置val1,val2值
      *

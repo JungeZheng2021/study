@@ -1,0 +1,15 @@
+spring:
+  mail:
+    port: 25
+    username: caiyb
+    password: cait@2020
+    protocol: smtp
+    default-encoding: utf-8
+    host: email.cnnp.com.cn
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
