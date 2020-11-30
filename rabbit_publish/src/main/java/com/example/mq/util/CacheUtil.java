@@ -1,5 +1,7 @@
 package com.example.mq.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 public abstract class CacheUtil<Q, R> {
     /**
      * 读写锁
@@ -61,19 +64,20 @@ public abstract class CacheUtil<Q, R> {
                             data.put(key, query);
                         }
                     }
+                } catch (Exception e) {
+                    log.error("update cache failed : {}", e);
+                } finally {
                     //在没释放写锁前，加读锁，将其他线程的可能进行的写锁屏蔽-降级写锁处理，保证数据的一致性
                     readLock.lock();
-                } finally {
                     //最终释放写锁-此时仍然存在读锁
                     writeLock.unlock();
                 }
             }
             return (R) data.get(key);
-        } catch (Exception e) {
+        } finally {
             //最终释放读锁
             readLock.unlock();
         }
-        return null;
     }
 
     public Object get(String key) {

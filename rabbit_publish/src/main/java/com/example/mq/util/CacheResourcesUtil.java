@@ -51,17 +51,15 @@ public class CacheResourcesUtil extends CacheUtil<DataQuery, List<String>> {
             String splitText = "article-item-box csdn-tracking-statistics";
             String body = forEntity.getBody();
             String preText = "\" data-articleid=\"";
+            String number = "/readCountWhite.png\" alt=\"\">";
+            String startText = "href=\"";
             String[] split = body.split(splitText);
-
             for (int i = 0; i < split.length; ++i) {
                 String s = split[i];
                 if (StringUtils.hasText(s) && s.startsWith(preText)) {
-                    String number = "/readCountWhite.png\" alt=\"\">";
-                    String startText = "href=\"";
-                    String endText = "\" target=\"_blank\"";
                     int start = s.indexOf(startText);
-                    int end = s.indexOf(endText);
-                    String index = s.substring(start + startText.length(), end);
+                    String index = s.substring(start + startText.length());
+                    index = index.substring(0, index.indexOf("\""));
                     resources.add(index);
                     String id = index.substring(index.lastIndexOf("/") + 1);
                     if (s.contains(number)) {
