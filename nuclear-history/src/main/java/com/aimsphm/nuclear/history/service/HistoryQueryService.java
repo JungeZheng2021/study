@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.history.service;
 
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
+import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 
 import java.util.List;
 
@@ -25,5 +26,12 @@ public interface HistoryQueryService {
      */
     List<HBaseTimeSeriesDataDTO> listHistoryWithSingleTagByScan(HistoryQuerySingleBO singleBO);
 
-    List<HBaseTimeSeriesDataDTO> listHistoryWithSingleTagByRowKeyList(HistoryQuerySingleBO singleBO);
+
+    /**
+     * 根据查询条件获取历史数据
+     *
+     * @param singleBO
+     * @return
+     */
+    HistoryDataVO listHistoryDataWithSingleTagByScan(HistoryQuerySingleBO singleBO);
 }

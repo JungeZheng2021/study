@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>nuclear-core-TW</artifactId>
-    <version>GA-2.0</version>
+    <artifactId>nuclear-core</artifactId>
+    <version>1.0.RELEASE</version>
     <packaging>jar</packaging>
 
     <name>nuclear-core</name>

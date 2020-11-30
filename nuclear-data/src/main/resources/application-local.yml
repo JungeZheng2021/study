@@ -1,3 +1,7 @@
+hbase:
+  config:
+    properties:
+      hbase.zookeeper.quorum: hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181
 eureka:
   client:
     serviceUrl:
@@ -9,6 +13,7 @@ spring:
   application:
     name: nuclear-data
   config:
+    enableRedis: true
     enableHBase: true
     enableMybatisPlus: true
     enableServiceExtImpl: true

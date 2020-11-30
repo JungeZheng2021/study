@@ -44,12 +44,10 @@ public class HistoryQueryController {
     @GetMapping("single")
     @ApiOperation(value = "查询一个测点的历史数据", notes = "PI 测点feature不需要传值,自装测点需要传特征值")
     public HistoryDataVO listHistoryWithSingleTag(HistoryQuerySingleBO singleBO) {
-        HistoryDataVO vo = new HistoryDataVO();
         long stat = System.currentTimeMillis();
-        List<HBaseTimeSeriesDataDTO> data = service.listHistoryWithSingleTagByScan(singleBO);
+        HistoryDataVO data = service.listHistoryDataWithSingleTagByScan(singleBO);
         System.out.println("共计耗时：" + (System.currentTimeMillis() - stat));
-        vo.setActualData(data);
-        return vo;
+        return data;
     }
 
     @GetMapping("multiple")

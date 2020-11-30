@@ -58,4 +58,18 @@ public interface CommonMeasurePointServiceExt extends CommonMeasurePointService 
      * @return
      */
     PointFeatureVO listFeatures(String sensorCode);
+
+    /**
+     * 清除所有的时时点信息
+     */
+    void clearAllPointsData();
+
+    /**
+     * 根据设备id获取测点的列表
+     *
+     * @param deviceId 设备id
+     * @param status
+     * @return
+     */
+    List<CommonMeasurePointDO> listPointsByDeviceId(Long deviceId, Integer status);
 }

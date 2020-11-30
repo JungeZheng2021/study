@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
-import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
+import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service.impl
@@ -104,6 +104,22 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
         }).collect(Collectors.toList());
         vo.setList(list);
         return vo;
+    }
+
+    @Override
+    public void clearAllPointsData() {
+        Set<String> keys = redis.keys(REDIS_POINT_REAL_TIME_PRE + STAR);
+        if (CollectionUtils.isEmpty(keys)) {
+            return;
+        }
+        redis.delete(keys);
+    }
+
+    @Override
+    public List<CommonMeasurePointDO> listPointsByDeviceId(Long deviceId, Integer visible) {
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CommonMeasurePointDO::getDeviceId, deviceId).last("and visible%" + visible + "=0");
+        return this.list(wrapper);
     }
 
     private void store2Redis(MeasurePointVO vo, Double value) {

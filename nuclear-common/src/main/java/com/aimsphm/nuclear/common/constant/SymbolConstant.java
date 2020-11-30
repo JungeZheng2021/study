@@ -14,7 +14,11 @@ public final class SymbolConstant {
     /**
      * 业务中的中划线
      */
-    public static final String DASH = "-" ;
+    public static final String DASH = "-";
+    /**
+     * 星号
+     */
+    public static final String STAR = "*";
 
     private SymbolConstant() {
     }

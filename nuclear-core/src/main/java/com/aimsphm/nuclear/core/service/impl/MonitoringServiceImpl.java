@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.core.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
+import com.aimsphm.nuclear.core.enums.PointVisibleEnum;
 import com.aimsphm.nuclear.core.service.MonitoringService;
 import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
 import com.aimsphm.nuclear.ext.service.RedisDataService;
@@ -106,9 +107,10 @@ public class MonitoringServiceImpl implements MonitoringService {
     @Override
     public List<CommonMeasurePointDO> updatePointsData() {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonMeasurePointDO::getVisible, 1);
+        wrapper.last("visible%" + PointVisibleEnum.DEVICE_MONITOR.getCategory() + "=0");
         List<CommonMeasurePointDO> list = pointServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
+            pointServiceExt.clearAllPointsData();
             return null;
         }
         list.stream().forEach(item -> pointServiceExt.updateMeasurePointsInRedis(item.getTagId(), new Random().nextDouble()));

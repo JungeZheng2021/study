@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.PipedReader;
 import java.util.*;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
@@ -42,6 +43,10 @@ public class VibrationDataServiceImpl implements CommonDataService {
     private HBaseService hBaseService;
     @Autowired
     private CommonMeasurePointServiceExt pointServiceExt;
+    /**
+     * 需要存储到redis中的特征列表
+     */
+    private static final List<String> store2RedisFeatureList = Lists.newArrayList("vec-Rms", "ana-temperature", "ana-humidity", "ana-PPM", "ana-viscosity", "ana-density", "abr-realTime");
 
     @Override
     public void operateData(String topic, String message) {
@@ -72,8 +77,8 @@ public class VibrationDataServiceImpl implements CommonDataService {
         String rowKey = sensorCode + ROW_KEY_SEPARATOR + timestamp / (1000 * 3600) * (1000 * 3600);
         Integer index = Math.toIntExact(timestamp / 1000 % 3600);
         boolean isDriveData = operationDeriveData3600Columns(packet, rowKey, index);
-        //保存到redis中
-        operationRmsData(packet, rowKey, index);
+//        保存到redis中
+//        operationRmsData(packet, rowKey, index);
         //特征数据和其他数据不同时存在
         if (isDriveData) {
             return;
@@ -172,13 +177,17 @@ public class VibrationDataServiceImpl implements CommonDataService {
             if (CollectionUtils.isEmpty(featureList) || !featureList.contains(feature)) {
                 continue;
             }
+            Double value = next.getValue();
+            //是否需要存储到redis
+            if (store2RedisFeatureList.contains(feature)) {
+                pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + feature, value);
+            }
             //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
             try {
                 hBaseService.familyExists(HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA, feature, true, Compression.Algorithm.SNAPPY);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Double value = next.getValue();
             Put put = new Put(Bytes.toBytes(rowKey));
             put.setTimestamp(packet.getTimestamp());
             put.addColumn(Bytes.toBytes(feature), Bytes.toBytes(index), Bytes.toBytes(value));

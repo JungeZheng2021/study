@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.aimsphm.nuclear.data</groupId>
     <artifactId>nuclear-data</artifactId>
-    <version>GA-2.0</version>
+    <version>1.0.RELEASE</version>
     <name>nuclear-data</name>
     <description>Demo project for Spring Boot</description>
 

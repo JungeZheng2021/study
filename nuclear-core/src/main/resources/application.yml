@@ -3,3 +3,6 @@ spring:
     active: dev
   application:
     name: core
+server:
+  servlet:
+    context-path: /service

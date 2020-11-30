@@ -5,10 +5,10 @@ spring:
     password: admin123$
   main:
     allow-bean-definition-overriding: true
-  mybatis-plus-config:
-    enable: true
-  config-service:
-    enable: true
+  config:
+    enableRedis: true
+    enableMybatisPlus: true
+    enableServiceExtImpl: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8

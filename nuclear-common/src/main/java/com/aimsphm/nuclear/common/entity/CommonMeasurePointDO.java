@@ -11,9 +11,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <测点信息实体>
  * @Author: MILLA
- * @CreateDate: 2020-11-23
+ * @CreateDate: 2020-11-30
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-11-23
+ * @UpdateDate: 2020-11-30
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -59,7 +59,7 @@ public class CommonMeasurePointDO extends BaseDO {
     @ApiModelProperty(value = "测点名称", notes = "")
     private String tagName;
 
-    @ApiModelProperty(value = "测点种类", notes = "1：PI测点 2：wifi测点 3：有线测点")
+    @ApiModelProperty(value = "测点种类", notes = "1：网络采集（PI测点） 2：硬件（边缘端）采集 3：算法生成（特征测点）4：指令与反馈")
     private Integer tagType;
 
     @ApiModelProperty(value = "测点描述", notes = "")
@@ -74,10 +74,10 @@ public class CommonMeasurePointDO extends BaseDO {
     @ApiModelProperty(value = "位置编码", notes = "")
     private String locationCode;
 
-    @ApiModelProperty(value = "是否显示", notes = "PI测点和rms测点显示其他测点不显示")
-    private Boolean visible;
+    @ApiModelProperty(value = "状态显示(质数的积)", notes = "总览/检测:3 数据分析:5 历史数据:7 11,13,17...")
+    private Integer visible;
 
-    @ApiModelProperty(value = "测点类型", notes = "0.流量 1.温度 2.转速和电信号 3.振动 4.振动特征-1X 5.振动特征-2X 6.额外公共量7.报警测点8.压力相关9.位移相关")
+    @ApiModelProperty(value = "测点类型：1-温度、2-压力、3-流量、4-液位、5-振动、6-位移、7-电信号、8-声学、9-油质、10-状态类", notes = "")
     private Integer category;
 
     @ApiModelProperty(value = "高预警", notes = "")

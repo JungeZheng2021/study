@@ -70,13 +70,19 @@ public class CommonMeasurePointController {
 
     @GetMapping("features/{sensorCode}")
     @ApiOperation(value = "某个测点编号下的所有特征")
-    public PointFeatureVO getCommonMeasurePointServiceDetails(@PathVariable String sensorCode) {
+    public PointFeatureVO listFeaturesBySensorCode(@PathVariable String sensorCode) {
         return iCommonMeasurePointServiceExt.listFeatures(sensorCode);
+    }
+
+    @GetMapping("{deviceId}/points/{visible}")
+    @ApiOperation(value = "获取某个设备下所有测点信息")
+    public List<CommonMeasurePointDO> listPointsByDeviceId(@PathVariable Long deviceId, @PathVariable Integer visible) {
+        return iCommonMeasurePointServiceExt.listPointsByDeviceId(deviceId, visible);
     }
 
     @GetMapping("features")
     @ApiOperation(value = "测点信息获取某一实体----")
-    public Set<String> getCommonMeasurePointServiceDetails() {
+    public Set<String> listFeatures() {
         return iCommonMeasurePointServiceExt.listFeatures();
     }
 

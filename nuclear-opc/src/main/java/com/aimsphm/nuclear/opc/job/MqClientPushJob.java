@@ -70,12 +70,12 @@ public class MqClientPushJob {
             if (CollectionUtils.isEmpty(list)) {
                 return;
             }
-            Random random = new Random(10000);
+            Random random = new Random();
             ArrayList<DataItem> dataItems = new ArrayList<>();
             list.stream().forEach(item -> {
                 DataItem dataItem = new DataItem();
                 dataItem.setTimestamp(System.currentTimeMillis());
-                dataItem.setValue(random.nextDouble());
+                dataItem.setValue(Math.abs(random.nextInt(500) * random.nextDouble()));
                 dataItem.setItemId(item);
                 dataItems.add(dataItem);
             });

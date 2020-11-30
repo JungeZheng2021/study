@@ -13,6 +13,7 @@ spring:
   application:
     name: nuclear-data
   config:
+    enableRedis: true
     enableHBase: true
     enableMybatisPlus: true
     enableServiceExtImpl: true
