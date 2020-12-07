@@ -24,7 +24,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @RestController
-@Api(tags = "子系统信息-相关接口")
+@Api(tags = "subSystem-子系统信息-相关接口")
 @RequestMapping(value = "/common/subSystem", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonSubSystemController {
     @Autowired

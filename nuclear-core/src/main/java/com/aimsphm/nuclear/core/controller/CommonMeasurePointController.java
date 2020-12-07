@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
+import com.aimsphm.nuclear.common.entity.bo.PointQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
@@ -25,7 +26,7 @@ import java.util.Set;
  * @Version: 1.0
  */
 @RestController
-@Api(tags = "测点信息-相关接口")
+@Api(tags = "point-测点信息-相关接口")
 @RequestMapping(value = "/common/measurePoint", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonMeasurePointController {
     @Autowired
@@ -74,14 +75,14 @@ public class CommonMeasurePointController {
         return iCommonMeasurePointServiceExt.listFeatures(sensorCode);
     }
 
-    @GetMapping("{deviceId}/points/{visible}")
-    @ApiOperation(value = "获取某个设备下所有测点信息")
-    public List<CommonMeasurePointDO> listPointsByDeviceId(@PathVariable Long deviceId, @PathVariable Integer visible) {
-        return iCommonMeasurePointServiceExt.listPointsByDeviceId(deviceId, visible);
+    @GetMapping("/points")
+    @ApiOperation(value = "根据条件获取需要的测点", notes = "优先级为：系统、子系统、设备(比如有系统id就不会再使用子系统id)")
+    public List<CommonMeasurePointDO> listPointsByDeviceId(PointQueryBO query) {
+        return iCommonMeasurePointServiceExt.listPointsByConditions(query);
     }
 
     @GetMapping("features")
-    @ApiOperation(value = "测点信息获取某一实体----")
+    @ApiOperation(value = "获取所有的特征")
     public Set<String> listFeatures() {
         return iCommonMeasurePointServiceExt.listFeatures();
     }

@@ -1,15 +1,22 @@
 package com.aimsphm.nuclear.ext.service.impl;
 
+import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
+import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
+import com.aimsphm.nuclear.common.entity.bo.PointQueryBO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
 import com.aimsphm.nuclear.common.enums.AlarmMessageEnum;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
 import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
+import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.impl.CommonMeasurePointServiceImpl;
+import com.aimsphm.nuclear.ext.service.CommonDeviceServiceExt;
 import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
+import com.aimsphm.nuclear.ext.service.CommonSubSystemServiceExt;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +28,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
-import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
+import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
+import static com.aimsphm.nuclear.common.constant.SymbolConstant.STAR;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service.impl
@@ -43,6 +54,11 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
     @Autowired
     @Qualifier("redisTemplate")
     private RedisTemplate<String, Object> redis;
+
+    @Autowired
+    private CommonDeviceServiceExt deviceServiceExt;
+    @Autowired
+    private CommonSubSystemServiceExt subSystemServiceExt;
 
     @Async
     @Override
@@ -116,14 +132,55 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
     }
 
     @Override
-    public List<CommonMeasurePointDO> listPointsByDeviceId(Long deviceId, Integer visible) {
-        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonMeasurePointDO::getDeviceId, deviceId).last("and visible%" + visible + "=0");
+    public List<CommonMeasurePointDO> listPointsByConditions(PointQueryBO query) {
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = initWrapper(query);
+        if (Objects.nonNull(query.getVisible())) {
+            wrapper.last("and visible%" + query.getVisible() + "=0");
+        }
         return this.list(wrapper);
     }
 
-    private void store2Redis(MeasurePointVO vo, Double value) {
-        vo.setValue(value);
+    /**
+     * 组装查询条件
+     * 目前能支持到系统下公共测点
+     *
+     * @param query 查询条件
+     * @return
+     */
+    private LambdaQueryWrapper<CommonMeasurePointDO> initWrapper(PointQueryBO query) {
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+        if (Objects.isNull(query.getSystemId()) && Objects.isNull(query.getSubSystemId()) && Objects.isNull(query.getDeviceId()) && Objects.isNull(query.getVisible())) {
+            throw new CustomMessageException("参数不全");
+        }
+        if (Objects.nonNull(query.getSystemId())) {
+            wrapper.eq(CommonMeasurePointDO::getSystemId, query.getSystemId());
+            return wrapper;
+        }
+        if (Objects.nonNull(query.getSubSystemId())) {
+            CommonSubSystemDO subSystem = subSystemServiceExt.getById(query.getSubSystemId());
+            if (Objects.isNull(subSystem)) {
+                throw new CustomMessageException("该子系统下没有测点");
+            }
+            wrapper.and(w -> w.eq(CommonMeasurePointDO::getSubSystemId, subSystem.getId())
+                    .or().eq(CommonMeasurePointDO::getSystemId, subSystem.getSystemId()).isNull(CommonMeasurePointDO::getSubSystemId));
+            return wrapper;
+        }
+        CommonDeviceDO device = deviceServiceExt.getById(query.getDeviceId());
+        if (Objects.isNull(device)) {
+            throw new CustomMessageException("该设备下没有测点");
+        }
+        wrapper.and(w -> w.eq(CommonMeasurePointDO::getDeviceId, device.getId())
+                .or().eq(CommonMeasurePointDO::getSubSystemId, device.getSubSystemId()).isNull(CommonMeasurePointDO::getDeviceId)
+                .or().eq(CommonMeasurePointDO::getSystemId, device.getSystemId()).isNull(CommonMeasurePointDO::getDeviceId).isNull(CommonMeasurePointDO::getSubSystemId)
+        );
+        return wrapper;
+    }
+
+    @Override
+    public void store2Redis(MeasurePointVO vo, Double value) {
+        if (Objects.nonNull(value)) {
+            vo.setValue(value);
+        }
         //计算健康状况
         calculateHealthStatus(vo);
         if (StringUtils.hasText(vo.getStatusCause())) {

@@ -24,7 +24,7 @@ import java.util.UUID;
  * @Version: 1.0
  */
 @RestController
-@Api(tags = "传感器信息-相关接口")
+@Api(tags = "sensor-传感器信息-相关接口")
 @RequestMapping(value = "/common/sensor", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonSensorController {
     @Autowired

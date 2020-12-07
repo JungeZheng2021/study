@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.ext.service.impl;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.ext.service.RedisDataService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,10 +36,23 @@ public class RedisDataServiceImpl implements RedisDataService {
         return (List<MeasurePointVO>) multiGetByKeyList(tagList);
     }
 
+    @Override
+    public boolean hasKey(String storeKey) {
+        return redis.hasKey(storeKey);
+    }
+
     private Object multiGetByKeyList(Collection<String> tags) {
         if (CollectionUtils.isEmpty(tags)) {
             return null;
         }
         return redis.opsForValue().multiGet(tags);
+    }
+
+    @Override
+    public Object getByKey(String storeKey) {
+        if (StringUtils.isEmpty(storeKey)) {
+            return null;
+        }
+        return redis.opsForValue().get(storeKey);
     }
 }

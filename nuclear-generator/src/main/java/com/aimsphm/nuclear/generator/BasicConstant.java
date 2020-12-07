@@ -34,7 +34,8 @@ public final class BasicConstant {
             , "common_component"
             , "common_sensor"
             , "common_measure_point"
-            , "monitor_device_state"
+            , "job_device_status"
+            , "job_alarm_event"
     };
 
     /**
@@ -46,7 +47,7 @@ public final class BasicConstant {
      * 基础父类继承字段
      */
     public static String[] SUPER_ENTITY_COLUMNS = {
-            "id", "creator", "modifier", "gmt_modified", "gmt_create", "deleted", "importance"
+            "id", "creator", "modifier", "gmt_modified", "gmt_create", "deleted", "sort"
     };
 
     /**

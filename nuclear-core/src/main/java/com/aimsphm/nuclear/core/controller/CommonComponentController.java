@@ -23,7 +23,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @RestController
-@Api(tags = "组件信息-相关接口")
+@Api(tags = "component-组件信息-相关接口")
 @RequestMapping(value = "/common/component", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonComponentController {
     @Autowired

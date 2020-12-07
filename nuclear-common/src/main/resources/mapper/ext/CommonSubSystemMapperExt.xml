@@ -6,17 +6,4 @@
     <resultMap id="BaseResultMapExt" type="com.aimsphm.nuclear.common.entity.CommonSubSystemDO"
                extends="com.aimsphm.nuclear.common.mapper.CommonSubSystemMapper.BaseResultMap">
     </resultMap>
-
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        id,
-        importance,
-        creator,
-        modifier,
-        gmt_create,
-        gmt_modified,
-        deleted,
-        system_id, sub_system_name, sub_system_desc, sub_system_type, additional_type, forecast_algo_id, trendf_algo_id, trendr_algo_id, faultd_algo_id, vif_algo_id
-    </sql>
-
 </mapper>

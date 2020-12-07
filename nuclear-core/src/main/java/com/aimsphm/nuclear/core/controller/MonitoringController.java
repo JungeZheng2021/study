@@ -26,7 +26,7 @@ import java.util.Map;
  * @Version: 1.0
  */
 @RestController()
-@Api(tags = "系统监测控制类")
+@Api(tags = "monitor-系统监测控制类")
 @RequestMapping(value = "monitor", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MonitoringController {
     @Autowired

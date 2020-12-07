@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * @Package: com.aimsphm.nuclear.common.handler
- * @Description: <>
+ * @Description: <自动填充字段>
  * @Author: milla
  * @CreateDate: 2020/11/14 13:29
  * @UpdateUser: milla
@@ -18,7 +18,7 @@ import java.util.Date;
  * @Version: 1.0
  */
 @Component
-@ConditionalOnProperty(prefix = "spring.config-service", name = "enable", havingValue = "true")
+@ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class FieldFillHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {

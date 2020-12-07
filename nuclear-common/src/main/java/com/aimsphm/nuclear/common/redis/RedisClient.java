@@ -1,17 +1,5 @@
 package com.aimsphm.nuclear.common.redis;
 
-/**
- * @Package: com.aimsphm.nuclear.common.redis
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/11/21 15:44
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/21 15:44
- * @UpdateRemark: <>
- * @Version: 1.0
- */
-
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.Cursor;
@@ -25,7 +13,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Redis工具类
+ * @Package: com.aimsphm.nuclear.common.redis
+ * @Description: <redis工具类>
+ * @Author: MILLA
+ * @CreateDate: 2020/11/21 16:19
+ * @UpdateUser: MILLA
+ * @UpdateDate: 2020/11/21 16:19
+ * @UpdateRemark: <>
+ * @Version: 1.0
  */
 @Component
 @ConditionalOnProperty(prefix = "spring.config", name = "enableRedis", havingValue = "true")
@@ -53,8 +48,8 @@ public class RedisClient {
      *
      * @param keys
      */
-    public void delete(Collection<String> keys) {
-        template.delete(keys);
+    public Long delete(Collection<String> keys) {
+        return template.delete(keys);
     }
 
     /**

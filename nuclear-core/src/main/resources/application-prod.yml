@@ -2,8 +2,6 @@ server:
   port: 8083
   max-http-header-size: 10000000
 spring:
-  jackson:
-    time-zone: GMT+8
   mybatisPlusConfig:
     enable: true
   datasource:
@@ -86,9 +84,6 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
-context:
-  test:
-    app: 123356
 ribbon:
   ConnectTimeout: 3000
   # 请求处理的超时时间

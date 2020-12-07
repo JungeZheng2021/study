@@ -24,4 +24,14 @@ public interface RedisDataService {
      * @return
      */
     List<MeasurePointVO> listPointByRedisKey(Set<String> tagList);
+
+    /**
+     * 判断redis中是否有某个key
+     *
+     * @param storeKey
+     * @return
+     */
+    boolean hasKey(String storeKey);
+
+    Object getByKey(String storeKey);
 }

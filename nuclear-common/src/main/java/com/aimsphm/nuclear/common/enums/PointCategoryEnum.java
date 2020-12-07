@@ -13,41 +13,28 @@ import java.util.Objects;
  * @Version: 1.0
  */
 public enum PointCategoryEnum {
+    //测点类型：1-温度、2-压力、3-流量、4-液位、5-振动、6-位移、7-电信号、8-声学、9-油质、10-状态类
 
-    //-1其他相关[业务中使用] 0.流量 1.温度 2.转速和电信号 3.振动 4.振动特征-1X 5.振动特征-2X 6.额外公共量 7.报警测点
-    SOMETHING_ELSE((byte) -1, "其他相关"),
-    FLOW((byte) 0, "流量相关"),
-    TEMPERATURE((byte) 1, "温度相关"),
-    SPEED_OR_ELECTRIC((byte) 2, "转速与电信号"),
-    VIBRATION((byte) 3, "振动相关"),
-    VIBRATION_F1X((byte) 4, "振动一倍相关"),
-    VIBRATION_F2X((byte) 5, "振动二倍相关"),
-    OTHER_PUBLIC((byte) 6, "额外公共量"),
-    ALARM((byte) 7, "报警相关");
+    TEMPERATURE(1, "温度"),
+    PRESSURE(2, "压力"),
+    FLOW(3, "流量"),
+    LIQUID_LOCATION(4, "流量"),
+    VIBRATION(5, "振动"),
+    DISPLACEMENT(6, "位移"),
+    ELECTRIC(7, "转速与电信号"),
+    ACOUSTICS(8, "声学"),
+    OIL_QUALITY(9, "油质"),
+    STATUS(10, "状态类"),
+    ALARM(11, "报警"),
+    SOMETHING_ELSE(-1, "其他");
 
-    PointCategoryEnum(Byte value, String desc) {
+
+    PointCategoryEnum(Integer value, String desc) {
         this.value = value;
         this.desc = desc;
     }
 
-    public static String getValue(String desc) {
-        if (desc == null) {
-            return null;
-        }
-
-        PointCategoryEnum[] instances = PointCategoryEnum.values();
-        for (PointCategoryEnum i : instances) {
-            if (desc != null && desc.equals(i.getDesc())) {
-                if (i == PointCategoryEnum.SOMETHING_ELSE) {
-                    return "8";
-                }
-                return i.getValue().toString();
-            }
-        }
-        return null;
-    }
-
-    public static String getDesc(byte value) {
+    public static String getDesc(Integer value) {
         PointCategoryEnum typeEnum = getByValue(value);
         if (Objects.isNull(typeEnum)) {
             return PointCategoryEnum.SOMETHING_ELSE.getDesc();
@@ -55,7 +42,7 @@ public enum PointCategoryEnum {
         return typeEnum.getDesc();
     }
 
-    public static PointCategoryEnum getByValue(Byte value) {
+    public static PointCategoryEnum getByValue(Integer value) {
         if (value == null) {
             return null;
         }
@@ -70,7 +57,7 @@ public enum PointCategoryEnum {
         return null;
     }
 
-    public Byte getValue() {
+    public Integer getValue() {
         return value;
     }
 
@@ -78,7 +65,7 @@ public enum PointCategoryEnum {
         return desc;
     }
 
-    private Byte value;
+    private Integer value;
 
     private String desc;
 }

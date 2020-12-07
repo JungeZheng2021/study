@@ -11,9 +11,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <测点信息实体>
  * @Author: MILLA
- * @CreateDate: 2020-11-30
+ * @CreateDate: 2020-12-05
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-11-30
+ * @UpdateDate: 2020-12-05
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -103,5 +103,8 @@ public class CommonMeasurePointDO extends BaseDO {
 
     @ApiModelProperty(value = "关系分组", notes = "")
     private String relatedGroup;
+
+    @ApiModelProperty(value = "重要程度", notes = "")
+    private Integer importance;
 
 }

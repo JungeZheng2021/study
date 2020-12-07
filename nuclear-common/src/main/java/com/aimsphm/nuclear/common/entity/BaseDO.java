@@ -30,8 +30,7 @@ public abstract class BaseDO implements Serializable {
      * 排序字段
      */
     @ApiModelProperty(value = "排序字段", notes = "默认按照记录id正序输出")
-    @TableField(fill = FieldFill.INSERT_UPDATE, update = "12")
-    private Integer importance;
+    private Integer sort;
     /**
      * 创建人
      */

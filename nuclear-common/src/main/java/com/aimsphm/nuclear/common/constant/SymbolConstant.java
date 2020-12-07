@@ -20,6 +20,12 @@ public final class SymbolConstant {
      */
     public static final String STAR = "*";
 
+    /**
+     * 顿号
+     */
+    public static final String SLASH_ZH = "、";
+    public static final String SLASH_EN = "/";
+
     private SymbolConstant() {
     }
 }

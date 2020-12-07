@@ -24,7 +24,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @RestController
-@Api(tags = "电厂信息-相关接口")
+@Api(tags = "site-电厂信息-相关接口")
 @RequestMapping(value = "/common/site", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonSiteController {
     @Autowired

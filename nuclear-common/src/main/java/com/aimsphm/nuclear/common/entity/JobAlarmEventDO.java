@@ -9,22 +9,22 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Package: com.aimsphm.nuclear.common.entity
- * @Description: <设备状态实体>
+ * @Description: <报警事件实体>
  * @Author: MILLA
- * @CreateDate: 2020-11-30
+ * @CreateDate: 2020-12-05
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-11-30
+ * @UpdateDate: 2020-12-05
  * @UpdateRemark: <>
  * @Version: 1.0
  */
 @Data
-@TableName("monitor_device_state")
-@ApiModel(value = "设备状态实体")
-public class MonitorDeviceStateDO extends BaseDO {
+@TableName("job_alarm_event")
+@ApiModel(value = "报警事件实体")
+public class JobAlarmEventDO extends BaseDO {
     /**
      * 序列化时候使用
      */
-    private static final long serialVersionUID = -7182295057448821347L;
+    private static final long serialVersionUID = -5160324752664202338L;
 
     @ApiModelProperty(value = "设备id", notes = "")
     private Long deviceId;

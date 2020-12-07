@@ -1,6 +1,5 @@
 package com.aimsphm.nuclear.core.controller;
 
-import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.redis.RedisClient;
 import com.aimsphm.nuclear.core.service.MonitoringService;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_POINT_REAL_TIME_PRE;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
 
 /**
  * @Package: com.aimsphm.nuclear.pump.controller
@@ -36,8 +35,15 @@ public class RedisDataController {
 
     @GetMapping("")
     @ApiOperation(value = "更新redis所有测点数据")
-    public List<CommonMeasurePointDO> updatePointsData() {
-        return monitoringService.updatePointsData();
+    public List<MeasurePointVO> updatePointsData(boolean defaultValue) {
+        return monitoringService.updatePointsData(defaultValue);
+    }
+
+    @GetMapping("clear")
+    @ApiOperation(value = "清空query_cache开头缓存信息", notes = "query_cache开头一般为业务缓存数据(删除后会重新查询)")
+    public Long removeAllData() {
+        Set<String> keys = client.keys(CACHE_KEY_PREFIX + "*");
+        return client.delete(keys);
     }
 
     @Autowired

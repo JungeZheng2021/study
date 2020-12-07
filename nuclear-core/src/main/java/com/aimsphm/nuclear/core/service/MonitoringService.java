@@ -1,6 +1,5 @@
 package com.aimsphm.nuclear.core.service;
 
-import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 
 import java.util.List;
@@ -29,9 +28,10 @@ public interface MonitoringService {
     /**
      * 更新所有测点的缓存值
      *
+     * @param defaultValue
      * @return
      */
-    List<CommonMeasurePointDO> updatePointsData();
+    List<MeasurePointVO> updatePointsData(boolean defaultValue);
 
     /**
      * 测点监测接口

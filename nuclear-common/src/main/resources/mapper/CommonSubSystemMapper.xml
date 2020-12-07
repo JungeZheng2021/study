@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonSubSystemDO">
         <result column="id" property="id"/>
-        <result column="importance" property="importance"/>
+        <result column="sort" property="sort"/>
         <result column="creator" property="creator"/>
         <result column="modifier" property="modifier"/>
         <result column="gmt_create" property="gmtCreate"/>
@@ -26,7 +26,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,
-        importance,
+        sort,
         creator,
         modifier,
         gmt_create,

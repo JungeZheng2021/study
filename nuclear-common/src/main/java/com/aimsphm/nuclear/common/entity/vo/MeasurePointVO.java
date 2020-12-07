@@ -37,7 +37,7 @@ public class MeasurePointVO extends CommonMeasurePointDO {
 
 
     public String getDesc() {
-        return PointCategoryEnum.getDesc(this.getCategory().byteValue());
+        return PointCategoryEnum.getDesc(this.getCategory());
     }
 
 }

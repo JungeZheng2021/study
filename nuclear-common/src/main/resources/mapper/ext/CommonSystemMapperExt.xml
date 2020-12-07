@@ -6,17 +6,4 @@
     <resultMap id="BaseResultMapExt" type="com.aimsphm.nuclear.common.entity.CommonSystemDO"
                extends="com.aimsphm.nuclear.common.mapper.CommonSystemMapper.BaseResultMap">
     </resultMap>
-
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        id,
-        importance,
-        creator,
-        modifier,
-        gmt_create,
-        gmt_modified,
-        deleted,
-        set_id, system_name, system_desc
-    </sql>
-
 </mapper>

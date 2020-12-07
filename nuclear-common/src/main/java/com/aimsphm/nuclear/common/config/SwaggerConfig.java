@@ -5,10 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -38,14 +34,12 @@ import java.util.List;
 @Configuration
 @EnableKnife4j
 @ConditionalOnProperty(prefix = "spring.config", name = "enableSwagger2", havingValue = "true")
-public class SwaggerConfig implements WebMvcConfigurer {
+public class SwaggerConfig {
 
     @Value("${swagger.enable.active:true}")
     private boolean enableSwagger;
     @Value("${swagger.base.package:com.aimsphm.nuclear}")
     private String basePackage;
-//    @Autowired
-//    private HandlerInterceptor interceptor;//使用父类添加白名单
 
     @Bean
     public Docket createRestApi() {
@@ -80,41 +74,5 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .contact(new Contact("AIMS", "https://www.aimsphm.com/", "info@aimsphm.com"))
                 .version("1.1.0")
                 .build();
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    }
-
-
-    //配置拦截器
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-//        if (!enableSwagger) {
-//            registry.addInterceptor(interceptor).addPathPatterns("/**");
-//            return;
-//        }
-//        //启用swagger
-//        ArrayList<String> list = Lists.newArrayList();
-//        list.add("/swagger-resources/**");
-//        list.add("/swagger-ui.html");
-//        list.add("/swagger-resources");
-//        list.add("/v2/api-docs");
-//        list.add("/webjars/**");
-//        list.add("/error");
-//        registry.addInterceptor(interceptor).addPathPatterns("/**").excludePathPatterns(list);
-    }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowCredentials(true)
-                .allowedHeaders("*")
-                .allowedMethods("*");
     }
 }

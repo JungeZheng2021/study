@@ -42,7 +42,7 @@ public class CommonSubSystemServiceExtImpl extends CommonSubSystemServiceImpl im
         }
         TreeVO<Long, String> vo = new TreeVO(subSystemDO.getId(), subSystemDO.getSubSystemName());
         LambdaQueryWrapper<CommonDeviceDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonDeviceDO::getSubSystemId, id).orderByAsc(CommonDeviceDO::getImportance);
+        wrapper.eq(CommonDeviceDO::getSubSystemId, id).orderByAsc(CommonDeviceDO::getSort);
         List<CommonDeviceDO> list = deviceServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return vo;

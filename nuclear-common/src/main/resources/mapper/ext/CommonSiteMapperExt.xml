@@ -6,17 +6,4 @@
     <resultMap id="BaseResultMapExt" type="com.aimsphm.nuclear.common.entity.CommonSiteDO"
                extends="com.aimsphm.nuclear.common.mapper.CommonSiteMapper.BaseResultMap">
     </resultMap>
-
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        id,
-        importance,
-        creator,
-        modifier,
-        gmt_create,
-        gmt_modified,
-        deleted,
-        site_name, site_desc, parent_district
-    </sql>
-
 </mapper>

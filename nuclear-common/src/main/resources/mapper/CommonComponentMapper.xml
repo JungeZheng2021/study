@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonComponentDO">
         <result column="id" property="id"/>
-        <result column="importance" property="importance"/>
+        <result column="sort" property="sort"/>
         <result column="creator" property="creator"/>
         <result column="modifier" property="modifier"/>
         <result column="gmt_create" property="gmtCreate"/>
@@ -17,11 +17,10 @@
         <result column="component_number" property="componentNumber"/>
         <result column="parent_component_id" property="parentComponentId"/>
     </resultMap>
-
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,
-        importance,
+        sort,
         creator,
         modifier,
         gmt_create,
@@ -29,5 +28,4 @@
         deleted,
         device_type, component_name, component_desc, component_number, parent_component_id
     </sql>
-
 </mapper>

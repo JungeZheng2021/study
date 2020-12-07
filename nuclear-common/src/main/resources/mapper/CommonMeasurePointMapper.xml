@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonMeasurePointDO">
         <result column="id" property="id"/>
-        <result column="importance" property="importance"/>
+        <result column="sort" property="sort"/>
         <result column="creator" property="creator"/>
         <result column="modifier" property="modifier"/>
         <result column="gmt_create" property="gmtCreate"/>
@@ -37,18 +37,19 @@
         <result column="threshold_lower" property="thresholdLower"/>
         <result column="unit" property="unit"/>
         <result column="related_group" property="relatedGroup"/>
+        <result column="importance" property="importance"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,
-        importance,
+        sort,
         creator,
         modifier,
         gmt_create,
         gmt_modified,
         deleted,
-        system_id, sub_system_id, device_id, device_name, sensor_code, sensor_name, feature_type, feature, feature_name, tag_id, tag_name, tag_type, tag_desc, placeholder, location, location_code, visible, category, early_warning_high, early_warning_low, threshold_high, threshold_low, threshold_higher, threshold_lower, unit, related_group
+        system_id, sub_system_id, device_id, device_name, sensor_code, sensor_name, feature_type, feature, feature_name, tag_id, tag_name, tag_type, tag_desc, placeholder, location, location_code, visible, category, early_warning_high, early_warning_low, threshold_high, threshold_low, threshold_higher, threshold_lower, unit, related_group, importance
     </sql>
 
 </mapper>

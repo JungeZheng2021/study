@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.core.constant;
 
+import java.text.MessageFormat;
+
 /**
  * @Package: com.aimsphm.nuclear.core.constant
  * @Description: <常量类>
@@ -11,6 +13,15 @@ package com.aimsphm.nuclear.core.constant;
  * @Version: 1.0
  */
 public final class CoreConstants {
+    /**
+     * 总览中超限测点个数字符串常量
+     */
+    public static final String PANORAMA_TRANSFINITE = "超限测点{0}个";
+    /**
+     * 总览中异常测点个数字符串常量
+     */
+    public static final String PANORAMA_ANOMALY = "异常测点{0}个";
+
     /**
      * 主泵总览key
      */
@@ -58,5 +69,11 @@ public final class CoreConstants {
      * 上年度运行时间
      */
     public static final String PREVIOUS_YEAR_RUNNING_DURATION = "previous_year_running_duration";
+
+    public static void main(String[] args) {
+        String s = "我是{0}的测试";
+        System.out.println(MessageFormat.format(s, "44"));
+    }
+
 
 }

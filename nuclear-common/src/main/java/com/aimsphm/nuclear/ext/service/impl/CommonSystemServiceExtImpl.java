@@ -41,7 +41,7 @@ public class CommonSystemServiceExtImpl extends CommonSystemServiceImpl implemen
         }
         TreeVO<Long, String> vo = new TreeVO(systemDO.getId(), systemDO.getSystemName());
         LambdaQueryWrapper<CommonSubSystemDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonSubSystemDO::getSystemId, id).orderByAsc(CommonSubSystemDO::getImportance);
+        wrapper.eq(CommonSubSystemDO::getSystemId, id).orderByAsc(CommonSubSystemDO::getSort);
         List<CommonSubSystemDO> list = subSystemServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return vo;

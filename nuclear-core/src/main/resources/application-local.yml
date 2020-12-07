@@ -6,12 +6,13 @@ spring:
   main:
     allow-bean-definition-overriding: true
   config:
+    enableRedis: true
     enableSwagger2: true
     enableMybatisPlus: true
     enableServiceExtImpl: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: aims2016
     hikari:
@@ -63,6 +64,7 @@ eureka:
     serviceUrl:
       defaultZone: http://192.168.16.43:8761/eureka/
     fetchRegistry: true
+    register-with-eureka: false
   instance:
     prefer-ip-address: true
 mybatis-plus:

@@ -46,7 +46,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
     /**
      * 需要存储到redis中的特征列表
      */
-    private static final List<String> store2RedisFeatureList = Lists.newArrayList("vec-Rms", "ana-temperature", "ana-humidity", "ana-PPM", "ana-viscosity", "ana-density", "abr-realTime");
+    private static final List<String> store2RedisFeatureList = Lists.newArrayList("vec-Rms", "ana-temperature", "ana-humidity", "ana-PPM", "ana-viscosity", "ana-density", "abr-realTime", "raw-stressWaveStrength");
 
     @Override
     public void operateData(String topic, String message) {
@@ -60,7 +60,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
 //        //暂时没有根据type进行区分
 //        Integer type = sensorDataBO.getType();
         PacketDTO packet = sensorDataBO.getPacket();
-        log.info("topic:{} ,message:{}", topic, packet.getSensorCode());
+        log.info("topic:{} ,message:{},type:{}", topic, packet.getSensorCode(), sensorDataBO.getType());
         batchUpdateAndSave(packet);
     }
 
@@ -78,7 +78,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
         Integer index = Math.toIntExact(timestamp / 1000 % 3600);
         boolean isDriveData = operationDeriveData3600Columns(packet, rowKey, index);
 //        保存到redis中
-//        operationRmsData(packet, rowKey, index);
+        operationRmsData(packet, rowKey, index);
         //特征数据和其他数据不同时存在
         if (isDriveData) {
             return;
@@ -173,6 +173,12 @@ public class VibrationDataServiceImpl implements CommonDataService {
         for (Iterator<Map.Entry<String, Double>> it = features.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, Double> next = it.next();
             String feature = next.getKey();
+            if ("raw-stressWaveStrength".equals(feature) && packet.getSensorCode().equals("6M2RCV245MS-N")) {
+                System.out.println("-----|||");
+            }
+            if ("raw-stressWaveStrength".equals(feature) && packet.getSensorCode().equals("6M2RCV242MS-N")) {
+                System.out.println("-----||242|");
+            }
             //需要保证要添加的特征family是存在的
             if (CollectionUtils.isEmpty(featureList) || !featureList.contains(feature)) {
                 continue;

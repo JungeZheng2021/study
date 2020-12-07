@@ -42,7 +42,7 @@ public class CommonSiteServiceExtImpl extends CommonSiteServiceImpl implements C
         }
         TreeVO<Long, String> vo = new TreeVO(siteDO.getId(), siteDO.getSiteName());
         LambdaQueryWrapper<CommonSetDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonSetDO::getSiteId, id).orderByAsc(CommonSetDO::getImportance);
+        wrapper.eq(CommonSetDO::getSiteId, id).orderByAsc(CommonSetDO::getSort);
         List<CommonSetDO> list = setServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return vo;

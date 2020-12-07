@@ -90,7 +90,7 @@ public class GeneratorApplication {
                 .setEntityTableFieldAnnotationEnable(true)
                 // 乐观锁、逻辑删除、表填充
 //                .setVersionFieldName("version")
-                .setLogicDeleteFieldName("is_deleted")
+                .setLogicDeleteFieldName("deleted")
                 .setTableFillList(Arrays.asList(
                         new TableFill("gmt_modified", FieldFill.UPDATE),
                         new TableFill("gmt_create", FieldFill.INSERT)

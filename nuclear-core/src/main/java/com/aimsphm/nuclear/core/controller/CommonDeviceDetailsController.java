@@ -23,7 +23,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @RestController
-@Api(tags = "设备详细信息-相关接口")
+@Api(tags = "deviceDetails-设备详细信息-相关接口")
 @RequestMapping(value = "/common/deviceDetails", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonDeviceDetailsController {
     @Autowired
