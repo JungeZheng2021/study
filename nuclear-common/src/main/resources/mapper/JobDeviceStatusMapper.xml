@@ -12,23 +12,11 @@
         <result column="gmt_modified" property="gmtModified"/>
         <result column="deleted" property="deleted"/>
         <result column="device_id" property="deviceId"/>
-        <result column="sub_system_id" property="subSystemId"/>
         <result column="device_code" property="deviceCode"/>
-        <result column="device_name" property="deviceName"/>
-        <result column="tag_ids" property="tagIds"/>
-        <result column="event_name" property="eventName"/>
-        <result column="event_category" property="eventCategory"/>
-        <result column="alarm_code" property="alarmCode"/>
-        <result column="alarm_type" property="alarmType"/>
-        <result column="alarm_level" property="alarmLevel"/>
-        <result column="alarm_count" property="alarmCount"/>
-        <result column="alarm_reason" property="alarmReason"/>
-        <result column="alarm_frequency" property="alarmFrequency"/>
-        <result column="alarm_content" property="alarmContent"/>
-        <result column="operate_status" property="operateStatus"/>
-        <result column="gmt_first_alarm" property="gmtFirstAlarm"/>
-        <result column="gmt_last_alarm" property="gmtLastAlarm"/>
-        <result column="remark" property="remark"/>
+        <result column="device_type" property="deviceType"/>
+        <result column="status" property="status"/>
+        <result column="continuous_running_time" property="continuousRunningTime"/>
+        <result column="total_running_time" property="totalRunningTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -40,7 +28,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        device_id, sub_system_id, device_code, device_name, tag_ids, event_name, event_category, alarm_code, alarm_type, alarm_level, alarm_count, alarm_reason, alarm_frequency, alarm_content, operate_status, gmt_first_alarm, gmt_last_alarm, remark
+        device_id, device_code, device_type, status, continuous_running_time, total_running_time
     </sql>
 
 </mapper>

@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.ext.service.CommonDeviceDetailsServiceExt;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @Api(tags = "deviceDetails-设备详细信息-相关接口")
-@RequestMapping(value = "/common/deviceDetails", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/common/device/details", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonDeviceDetailsController {
     @Autowired
     private CommonDeviceDetailsServiceExt iCommonDeviceDetailsServiceExt;
@@ -64,5 +65,11 @@ public class CommonDeviceDetailsController {
     @ApiOperation(value = "设备详细信息删除数据")
     public boolean removeCommonDeviceDetailsService(@PathVariable Long id) {
         return iCommonDeviceDetailsServiceExt.removeById(id);
+    }
+
+    @GetMapping("")
+    @ApiOperation(value = "根据条件获取需要的设备信息")
+    public List<CommonDeviceDetailsDO> listDetailByConditions(CommonQueryBO query) {
+        return iCommonDeviceDetailsServiceExt.listDetailByConditions(query);
     }
 }

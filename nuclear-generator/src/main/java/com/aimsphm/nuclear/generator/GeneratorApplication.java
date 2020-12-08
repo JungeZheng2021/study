@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.po.TableFill;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
+import com.baomidou.mybatisplus.generator.config.rules.IColumnType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.StringUtils;
@@ -202,6 +205,9 @@ public class GeneratorApplication {
                 ;
     }
 
+
+    private final static String DATABASE_DATETIME_TYPE = "datetime";
+
     /**
      * 数据源配置
      *
@@ -218,7 +224,19 @@ public class GeneratorApplication {
                 // 用户名
                 .setUsername(username)
                 // 密码
-                .setPassword(password);
+                .setPassword(password)
+                .setTypeConvert(new MySqlTypeConvert() {
+                    @Override
+                    public IColumnType processTypeConvert(GlobalConfig config, String fieldType) {
+                        //将数据库中datetime转换成date
+                        if (fieldType.toLowerCase().contains(DATABASE_DATETIME_TYPE)) {
+                            return DbColumnType.DATE;
+                        }
+
+                        return super.processTypeConvert(config, fieldType);
+                    }
+                });
+
     }
 
     /**

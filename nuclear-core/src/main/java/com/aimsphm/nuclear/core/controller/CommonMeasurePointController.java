@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
-import com.aimsphm.nuclear.common.entity.bo.PointQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
@@ -77,7 +77,7 @@ public class CommonMeasurePointController {
 
     @GetMapping("/points")
     @ApiOperation(value = "根据条件获取需要的测点", notes = "优先级为：系统、子系统、设备(比如有系统id就不会再使用子系统id)")
-    public List<CommonMeasurePointDO> listPointsByDeviceId(PointQueryBO query) {
+    public List<CommonMeasurePointDO> listPointsByDeviceId(CommonQueryBO query) {
         return iCommonMeasurePointServiceExt.listPointsByConditions(query);
     }
 

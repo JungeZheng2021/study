@@ -10,9 +10,7 @@ import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataWithThresholdVO;
 import com.aimsphm.nuclear.history.service.HistoryQueryService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.hbase.regionserver.NoSuchColumnFamilyException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_FAMILY_NPC_PI_REAL_TIME;
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
 
 /**

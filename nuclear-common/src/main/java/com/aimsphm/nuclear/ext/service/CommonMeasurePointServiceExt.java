@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.ext.service;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
-import com.aimsphm.nuclear.common.entity.bo.PointQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
@@ -80,5 +80,5 @@ public interface CommonMeasurePointServiceExt extends CommonMeasurePointService 
      * @param query 查询条件
      * @return
      */
-    List<CommonMeasurePointDO> listPointsByConditions(PointQueryBO query);
+    List<CommonMeasurePointDO> listPointsByConditions(CommonQueryBO query);
 }

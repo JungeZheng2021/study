@@ -1,8 +1,12 @@
 package com.aimsphm.nuclear.common.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +15,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.*;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -36,13 +43,14 @@ public class WebGlobalConfig extends WebMvcConfigurationSupport {
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         MappingJackson2HttpMessageConverter json = new MappingJackson2HttpMessageConverter();
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         //配置字段对应不上自动放弃该字段
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         //设置时区
-        objectMapper.setTimeZone(TimeZone.getTimeZone(timeZone));
-        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
-        json.setObjectMapper(objectMapper);
+        mapper.setTimeZone(TimeZone.getTimeZone(timeZone));
+        //空值不输出
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
+        json.setObjectMapper(mapper);
         converters.add(json);
     }
 

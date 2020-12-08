@@ -1,6 +1,10 @@
 package com.aimsphm.nuclear.ext.service;
 
+import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
+
+import java.util.List;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service
@@ -14,4 +18,11 @@ import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
  */
 public interface CommonDeviceDetailsServiceExt extends CommonDeviceDetailsService {
 
+    /**
+     * 获取设备信息
+     *
+     * @param query
+     * @return
+     */
+    List<CommonDeviceDetailsDO> listDetailByConditions(CommonQueryBO query);
 }

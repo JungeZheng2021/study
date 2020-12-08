@@ -14,7 +14,7 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-public class PointQueryBO {
+public class CommonQueryBO {
     @ApiModelProperty(value = "系统id", notes = "")
     private Long systemId;
 

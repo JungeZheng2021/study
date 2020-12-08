@@ -3,7 +3,7 @@ package com.aimsphm.nuclear.ext.service.impl;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
-import com.aimsphm.nuclear.common.entity.bo.PointQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
@@ -132,7 +132,7 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
     }
 
     @Override
-    public List<CommonMeasurePointDO> listPointsByConditions(PointQueryBO query) {
+    public List<CommonMeasurePointDO> listPointsByConditions(CommonQueryBO query) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = initWrapper(query);
         if (Objects.nonNull(query.getVisible())) {
             wrapper.last("and visible%" + query.getVisible() + "=0");
@@ -147,7 +147,7 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
      * @param query 查询条件
      * @return
      */
-    private LambdaQueryWrapper<CommonMeasurePointDO> initWrapper(PointQueryBO query) {
+    private LambdaQueryWrapper<CommonMeasurePointDO> initWrapper(CommonQueryBO query) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
         if (Objects.isNull(query.getSystemId()) && Objects.isNull(query.getSubSystemId()) && Objects.isNull(query.getDeviceId()) && Objects.isNull(query.getVisible())) {
             throw new CustomMessageException("参数不全");
@@ -159,7 +159,7 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
         if (Objects.nonNull(query.getSubSystemId())) {
             CommonSubSystemDO subSystem = subSystemServiceExt.getById(query.getSubSystemId());
             if (Objects.isNull(subSystem)) {
-                throw new CustomMessageException("该子系统下没有测点");
+                throw new CustomMessageException("该子系统下没有数据");
             }
             wrapper.and(w -> w.eq(CommonMeasurePointDO::getSubSystemId, subSystem.getId())
                     .or().eq(CommonMeasurePointDO::getSystemId, subSystem.getSystemId()).isNull(CommonMeasurePointDO::getSubSystemId));
@@ -167,7 +167,7 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
         }
         CommonDeviceDO device = deviceServiceExt.getById(query.getDeviceId());
         if (Objects.isNull(device)) {
-            throw new CustomMessageException("该设备下没有测点");
+            throw new CustomMessageException("该设备下没有数据");
         }
         wrapper.and(w -> w.eq(CommonMeasurePointDO::getDeviceId, device.getId())
                 .or().eq(CommonMeasurePointDO::getSubSystemId, device.getSubSystemId()).isNull(CommonMeasurePointDO::getDeviceId)

@@ -17,6 +17,7 @@
         <result column="component_number" property="componentNumber"/>
         <result column="parent_component_id" property="parentComponentId"/>
     </resultMap>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,
@@ -28,4 +29,5 @@
         deleted,
         device_type, component_name, component_desc, component_number, parent_component_id
     </sql>
+
 </mapper>
