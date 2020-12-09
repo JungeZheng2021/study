@@ -16,7 +16,9 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "历史查询单个测点")
-public class HistoryQuerySingleBO extends TimeRangeQueryBO {
+public class HistoryQuerySingleWithFeatureBO extends TimeRangeQueryBO {
     @ApiModelProperty(value = "测点编号", notes = "如果是自装传感器的话包含特征")
-    private String pointId;
+    private String sensorCode;
+    @ApiModelProperty(value = "特征名称-英文", notes = "")
+    private String feature;
 }

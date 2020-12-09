@@ -20,10 +20,10 @@
         <result column="feature_type" property="featureType"/>
         <result column="feature" property="feature"/>
         <result column="feature_name" property="featureName"/>
-        <result column="tag_id" property="tagId"/>
-        <result column="tag_name" property="tagName"/>
-        <result column="tag_type" property="tagType"/>
-        <result column="tag_desc" property="tagDesc"/>
+        <result column="point_id" property="pointId"/>
+        <result column="point_name" property="pointName"/>
+        <result column="point_type" property="pointType"/>
+        <result column="point_desc" property="pointDesc"/>
         <result column="placeholder" property="placeholder"/>
         <result column="location" property="location"/>
         <result column="location_code" property="locationCode"/>
@@ -49,7 +49,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        system_id, sub_system_id, device_id, device_name, sensor_code, sensor_name, feature_type, feature, feature_name, tag_id, tag_name, tag_type, tag_desc, placeholder, location, location_code, visible, category, early_warning_high, early_warning_low, threshold_high, threshold_low, threshold_higher, threshold_lower, unit, related_group, importance
+        system_id, sub_system_id, device_id, device_name, sensor_code, sensor_name, feature_type, feature, feature_name, point_id, point_name, point_type, point_desc, placeholder, location, location_code, visible, category, early_warning_high, early_warning_low, threshold_high, threshold_low, threshold_higher, threshold_lower, unit, related_group, importance
     </sql>
 
 </mapper>

@@ -19,7 +19,13 @@ import java.util.Map;
 @Data
 public class PanoramaVO extends JobDeviceStatusDO {
 
+    @ApiModelProperty(value = "系统id", notes = "")
+    private Long systemId;
+
+    @ApiModelProperty(value = "子系统", notes = "")
+    private Long subSystemId;
+
     @ApiModelProperty(value = "需要显示的条目", notes = "条目是有序的")
-    private Map<String, String> items;
+    private Map<Integer, String> items;
 
 }

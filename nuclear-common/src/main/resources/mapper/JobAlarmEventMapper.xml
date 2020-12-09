@@ -15,7 +15,7 @@
         <result column="sub_system_id" property="subSystemId"/>
         <result column="device_code" property="deviceCode"/>
         <result column="device_name" property="deviceName"/>
-        <result column="tag_ids" property="tagIds"/>
+        <result column="point_ids" property="pointIds"/>
         <result column="event_name" property="eventName"/>
         <result column="event_category" property="eventCategory"/>
         <result column="alarm_code" property="alarmCode"/>
@@ -40,7 +40,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        device_id, sub_system_id, device_code, device_name, tag_ids, event_name, event_category, alarm_code, alarm_type, alarm_level, alarm_count, alarm_reason, alarm_frequency, alarm_content, operate_status, gmt_first_alarm, gmt_last_alarm, remark
+        device_id, sub_system_id, device_code, device_name, point_ids, event_name, event_category, alarm_code, alarm_type, alarm_level, alarm_count, alarm_reason, alarm_frequency, alarm_content, operate_status, gmt_first_alarm, gmt_last_alarm, remark
     </sql>
 
 </mapper>

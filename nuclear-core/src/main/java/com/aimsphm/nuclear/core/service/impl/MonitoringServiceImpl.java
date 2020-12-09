@@ -77,7 +77,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     @Override
     public Map<Integer, Long> countTransfinitePiPoint(Long deviceId) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = initWrapper(deviceId);
-        wrapper.eq(CommonMeasurePointDO::getTagType, 1).isNotNull(CommonMeasurePointDO::getCategory);
+        wrapper.eq(CommonMeasurePointDO::getPointType, 1).isNotNull(CommonMeasurePointDO::getCategory);
         List<MeasurePointVO> points = listPointByWrapper(wrapper);
         if (CollectionUtils.isEmpty(points)) {
             return null;

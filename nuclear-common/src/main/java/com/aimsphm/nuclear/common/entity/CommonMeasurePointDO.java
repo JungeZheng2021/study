@@ -11,9 +11,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <测点信息实体>
  * @Author: MILLA
- * @CreateDate: 2020-12-08
+ * @CreateDate: 2020-12-09
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-08
+ * @UpdateDate: 2020-12-09
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -54,16 +54,16 @@ public class CommonMeasurePointDO extends BaseDO {
     private String featureName;
 
     @ApiModelProperty(value = "测点编号", notes = "")
-    private String tagId;
+    private String pointId;
 
     @ApiModelProperty(value = "测点名称", notes = "")
-    private String tagName;
+    private String pointName;
 
     @ApiModelProperty(value = "测点种类", notes = "1：网络采集（PI测点） 2：硬件（边缘端）采集 3：算法生成（特征测点）4：指令与反馈")
-    private Integer tagType;
+    private Integer pointType;
 
     @ApiModelProperty(value = "测点描述", notes = "")
-    private String tagDesc;
+    private String pointDesc;
 
     @ApiModelProperty(value = "占位符", notes = "同一个设备中的测点占位符不允许重复")
     private String placeholder;
@@ -74,7 +74,7 @@ public class CommonMeasurePointDO extends BaseDO {
     @ApiModelProperty(value = "位置编码", notes = "")
     private String locationCode;
 
-    @ApiModelProperty(value = "状态显示(质数的积)", notes = "总览/检测:3 数据分析:5 历史数据:7 11,13,17...")
+    @ApiModelProperty(value = "状态显示(质数的积)", notes = "秒级数据：2 总览/检测:3 数据分析:5 历史数据:7 11,13,17...")
     private Integer visible;
 
     @ApiModelProperty(value = "测点类型：1-温度、2-压力、3-流量、4-液位、5-振动、6-位移、7-电信号、8-声学、9-油质、10-状态类", notes = "")

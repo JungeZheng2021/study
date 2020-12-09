@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @Package: com.aimsphm.nuclear.common.service
  * @Description: <设备状态服务类>
  * @Author: MILLA
- * @CreateDate: 2020-12-08
+ * @CreateDate: 2020-12-09
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-08
+ * @UpdateDate: 2020-12-09
  * @UpdateRemark: <>
  * @Version: 1.0
  */

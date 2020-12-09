@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.history.service;
 
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
+import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 
@@ -24,7 +25,7 @@ public interface HistoryQueryService {
      * @param singleBO 测点信息
      * @return
      */
-    List<HBaseTimeSeriesDataDTO> listHistoryWithSingleTagByScan(HistoryQuerySingleBO singleBO);
+    List<HBaseTimeSeriesDataDTO> listHistoryDataWithSingleTagByScan(HistoryQuerySingleWithFeatureBO singleBO);
 
 
     /**

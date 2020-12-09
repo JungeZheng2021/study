@@ -35,6 +35,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 年份
      */
+    public static final String YEAR = "yyyy";
     public static final String YEAR_ZH = "yyyy年";
     public static final String YEAR_MONTH_DAY_ZH = "yyyy年MM月dd日";
     public static final String MONTH_ZH = "M月";
@@ -341,7 +342,6 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      */
     public static String format(String pattern, Date date) {
         LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-
         return format(pattern, localDateTime);
     }
 

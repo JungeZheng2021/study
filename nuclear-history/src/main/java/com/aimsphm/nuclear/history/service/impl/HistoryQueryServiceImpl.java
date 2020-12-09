@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.history.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
+import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
@@ -46,8 +47,8 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     }
 
     @Override
-    public List<HBaseTimeSeriesDataDTO> listHistoryWithSingleTagByScan(HistoryQuerySingleBO single) {
-        if (Objects.isNull(single) || Objects.isNull(single.getTagId())
+    public List<HBaseTimeSeriesDataDTO> listHistoryDataWithSingleTagByScan(HistoryQuerySingleWithFeatureBO single) {
+        if (Objects.isNull(single) || Objects.isNull(single.getSensorCode())
                 || Objects.isNull(single.getEnd()) || Objects.isNull(single.getStart()) || single.getEnd() <= single.getStart()) {
             return null;
         }
@@ -56,7 +57,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             family = single.getFeature();
         }
         try {
-            return hBase.listDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, single.getTagId(), single.getStart(), single.getEnd(), family);
+            return hBase.listDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, single.getSensorCode(), single.getStart(), single.getEnd(), family);
         } catch (IOException e) {
             throw new CustomMessageException("查询历史数据失败");
         }
@@ -64,21 +65,21 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     @Override
     public HistoryDataVO listHistoryDataWithSingleTagByScan(HistoryQuerySingleBO singleBO) {
-        String feature = singleBO.getFeature();
-        List<HBaseTimeSeriesDataDTO> dataDTOS = listHistoryWithSingleTagByScan(singleBO);
-        //Pi测点
-        if (StringUtils.isBlank(feature) || !feature.contains(DASH)) {
-            HistoryDataVO vo = new HistoryDataVO();
-            vo.setActualData(dataDTOS);
-            return vo;
-        }
-        //自装测点
-        HistoryDataWithThresholdVO vo = new HistoryDataWithThresholdVO();
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonMeasurePointDO::getSensorCode, singleBO.getTagId()).eq(CommonMeasurePointDO::getFeatureType, feature.split(DASH)[0])
-                .eq(CommonMeasurePointDO::getFeature, feature.split(DASH)[1]);
-        CommonMeasurePointDO one = serviceExt.getOne(wrapper);
-        BeanUtils.copyProperties(one, vo);
+        wrapper.eq(CommonMeasurePointDO::getPointId, singleBO.getPointId());
+        CommonMeasurePointDO point = serviceExt.getOne(wrapper);
+        if (Objects.isNull(point)) {
+            throw new CustomMessageException("要查询的测点不存在");
+        }
+        HistoryQuerySingleWithFeatureBO featureBO = new HistoryQuerySingleWithFeatureBO();
+        if (point.getPointType() != 1 && StringUtils.isNotBlank(point.getFeature())) {
+            featureBO.setFeature(point.getFeatureType().concat(DASH).concat(point.getFeature()));
+        }
+        featureBO.setSensorCode(point.getSensorCode());
+        BeanUtils.copyProperties(singleBO, featureBO);
+        List<HBaseTimeSeriesDataDTO> dataDTOS = listHistoryDataWithSingleTagByScan(featureBO);
+        HistoryDataVO vo = new HistoryDataWithThresholdVO();
+        BeanUtils.copyProperties(point, vo);
         vo.setActualData(dataDTOS);
         return vo;
     }

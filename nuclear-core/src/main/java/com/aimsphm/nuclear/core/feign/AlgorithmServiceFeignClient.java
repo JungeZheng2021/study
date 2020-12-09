@@ -18,7 +18,7 @@ import java.util.Map;
 @FeignClient(value = "algorithm-core")
 public interface AlgorithmServiceFeignClient {
     @ApiOperation(value = "拿到一组tag的滑动平均值", notes = "拿到一组tag的滑动平均值")
-    @GetMapping("mdAlgorithm/getTrendFeatureByTags")
+    @GetMapping("algo")
     public ResponseData<Map<String, List<TrendFeatureCellDTO>>> getTrendFeatureByTags(@RequestParam(required = false, value = "tags") List<String> tags, @RequestParam(required = false, value = "start") Long start, @RequestParam(required = false, value = "end") Long end);
 
     @GetMapping("mdAlgorithm/getVSDataByVSId")

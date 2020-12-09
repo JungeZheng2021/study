@@ -6,7 +6,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 /**
  * @Package: com.aimsphm.nuclear.history
- * @Description: <测点位置配置类>
+ * @Description: <历史查询服务>
  * @Author: MILLA
  * @CreateDate: 2020/6/28 10:54
  * @UpdateUser: MILLA

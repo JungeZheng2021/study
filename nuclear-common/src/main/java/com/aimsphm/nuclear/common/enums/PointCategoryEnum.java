@@ -18,7 +18,7 @@ public enum PointCategoryEnum {
     TEMPERATURE(1, "温度"),
     PRESSURE(2, "压力"),
     FLOW(3, "流量"),
-    LIQUID_LOCATION(4, "流量"),
+    LIQUID_LOCATION(4, "液位"),
     VIBRATION(5, "振动"),
     DISPLACEMENT(6, "位移"),
     ELECTRIC(7, "转速与电信号"),

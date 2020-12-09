@@ -2,9 +2,7 @@ package com.aimsphm.nuclear.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.aimsphm.nuclear.common.entity.BaseDO;
-
 import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import io.swagger.annotations.ApiModel;
@@ -14,9 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <报警事件信息实体>
  * @Author: MILLA
- * @CreateDate: 2020-12-08
+ * @CreateDate: 2020-12-09
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-08
+ * @UpdateDate: 2020-12-09
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -42,7 +40,7 @@ public class JobAlarmEventDO extends BaseDO {
     private String deviceName;
 
     @ApiModelProperty(value = "测点集合", notes = "")
-    private String tagIds;
+    private String pointIds;
 
     @ApiModelProperty(value = "报警事件/事件名称", notes = "")
     private String eventName;

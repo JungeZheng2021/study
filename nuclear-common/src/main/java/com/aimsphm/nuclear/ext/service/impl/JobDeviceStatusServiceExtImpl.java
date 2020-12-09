@@ -27,10 +27,9 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_POINT_I
 public class JobDeviceStatusServiceExtImpl extends JobDeviceStatusServiceImpl implements JobDeviceStatusServiceExt {
 
     @Override
-    @Cacheable(value = REDIS_DEVICE_RUNNING_STATUS, key = "#deviceId")
     public JobDeviceStatusDO getDeviceRunningStatus(Long deviceId) {
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
-        wrapper.orderByDesc(JobDeviceStatusDO::getId).last(" limit 1");
+        wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).orderByDesc(JobDeviceStatusDO::getId).last(" limit 1");
         return this.getOne(wrapper);
     }
 }

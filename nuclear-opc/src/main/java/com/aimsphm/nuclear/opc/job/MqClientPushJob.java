@@ -57,12 +57,12 @@ public class MqClientPushJob {
 
     public List<String> pointList() {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonMeasurePointDO::getTagType, 1);
+        wrapper.eq(CommonMeasurePointDO::getPointType, 1);
         List<CommonMeasurePointDO> list = pointServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        return list.stream().map(item -> item.getTagId()).collect(Collectors.toList());
+        return list.stream().map(item -> item.getPointId()).collect(Collectors.toList());
     }
 
     public void executeFromDatabase(String topic, List<String> list) {

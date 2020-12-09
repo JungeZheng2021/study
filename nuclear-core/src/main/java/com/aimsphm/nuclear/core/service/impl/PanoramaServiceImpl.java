@@ -53,36 +53,43 @@ public class PanoramaServiceImpl implements PanoramaService {
     public List<PanoramaVO> getPanoramaDetails(Long subSystemId) {
         List<PanoramaVO> vo = Lists.newArrayList();
         LambdaQueryWrapper<CommonDeviceDO> wrapper = Wrappers.lambdaQuery(CommonDeviceDO.class);
-        wrapper.and(w -> w.in(CommonDeviceDO::getSubSystemId, 1, 2)).orderByAsc(CommonDeviceDO::getSort);
+        if (Objects.nonNull(subSystemId)) {
+            wrapper.and(w -> w.in(CommonDeviceDO::getSubSystemId, subSystemId)).orderByAsc(CommonDeviceDO::getSort);
+        } else {
+            wrapper.and(w -> w.in(CommonDeviceDO::getSubSystemId, 1, 2)).orderByAsc(CommonDeviceDO::getSort);
+        }
         List<CommonDeviceDO> list = deviceServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return vo;
         }
-        return list.stream().map(item -> getPanoramaVO(item.getId())).collect(Collectors.toList());
+        return list.stream().map(item -> getPanoramaVO(item)).collect(Collectors.toList());
     }
 
-    private PanoramaVO getPanoramaVO(Long deviceId) {
+    private PanoramaVO getPanoramaVO(CommonDeviceDO device) {
         PanoramaVO vo = new PanoramaVO();
+        Long deviceId = device.getId();
         JobDeviceStatusDO status = deviceStatusServiceExt.getDeviceRunningStatus(deviceId);
         if (Objects.isNull(status)) {
             return vo;
         }
         BeanUtils.copyProperties(status, vo);
+        vo.setSystemId(device.getSystemId());
+        vo.setSubSystemId(device.getSubSystemId());
         Map<Integer, Long> anomalyData = Maps.newHashMap();
         //阈值报警
         Map<Integer, Long> transfiniteData = monitoringService.countTransfinitePiPoint(deviceId);
         PointCategoryEnum[] values = PointCategoryEnum.values();
-        Map<String, String> items = Maps.newLinkedHashMap();
+        Map<Integer, String> items = Maps.newLinkedHashMap();
         for (PointCategoryEnum category : values) {
             Integer value = category.getValue();
             Long anomalyCounts = anomalyData.get(value);
             Long transfiniteCounts = transfiniteData.get(value);
             if (Objects.nonNull(anomalyCounts)) {
-                items.put(category.getDesc(), MessageFormat.format(PANORAMA_ANOMALY, anomalyCounts));
+                items.put(category.getValue(), MessageFormat.format(PANORAMA_ANOMALY, anomalyCounts));
             }
             if (Objects.nonNull(transfiniteCounts)) {
                 String old = items.get(category.getDesc());
-                items.put(category.getDesc(), StringUtils.isBlank(old) ? MessageFormat.format(PANORAMA_TRANSFINITE, transfiniteCounts)
+                items.put(category.getValue(), StringUtils.isBlank(old) ? MessageFormat.format(PANORAMA_TRANSFINITE, transfiniteCounts)
                         : old.concat(SLASH_ZH).concat(MessageFormat.format(PANORAMA_TRANSFINITE, transfiniteCounts)));
             }
         }

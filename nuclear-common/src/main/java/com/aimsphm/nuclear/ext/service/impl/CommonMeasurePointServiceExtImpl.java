@@ -77,7 +77,7 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
     @Cacheable(value = REDIS_POINT_INFO_LIST, key = "#itemId")
     public List<MeasurePointVO> getMeasurePointsByTagId(String itemId) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonMeasurePointDO::getTagId, itemId);
+        wrapper.eq(CommonMeasurePointDO::getPointId, itemId);
         List<CommonMeasurePointDO> pointDOList = this.list(wrapper);
         if (CollectionUtils.isEmpty(pointDOList)) {
             return null;
@@ -93,7 +93,7 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
     @Cacheable(value = REDIS_KEY_FEATURES)
     public Set<String> listFeatures() {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.ne(CommonMeasurePointDO::getTagType, 1);
+        wrapper.ne(CommonMeasurePointDO::getPointType, 1);
         List<CommonMeasurePointDO> pointDOList = this.list(wrapper);
         if (CollectionUtils.isEmpty(pointDOList)) {
             return null;
@@ -202,7 +202,7 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
      */
     @Override
     public String getStoreKey(CommonMeasurePointDO vo) {
-        String keyPre = REDIS_POINT_REAL_TIME_PRE + vo.getTagId() + REDIS_KEY_UNDERLINE + vo.getSubSystemId();
+        String keyPre = REDIS_POINT_REAL_TIME_PRE + vo.getPointId() + REDIS_KEY_UNDERLINE + vo.getSubSystemId();
         //如果有设备编号
         if (Objects.nonNull(vo.getDeviceId())) {
             return keyPre + REDIS_KEY_UNDERLINE + vo.getDeviceId();

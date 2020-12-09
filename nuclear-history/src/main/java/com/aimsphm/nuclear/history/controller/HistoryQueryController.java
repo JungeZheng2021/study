@@ -13,6 +13,7 @@ package com.aimsphm.nuclear.history.controller;
 
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
+import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
@@ -42,12 +43,18 @@ public class HistoryQueryController {
     }
 
     @GetMapping("single")
-    @ApiOperation(value = "查询一个测点的历史数据", notes = "PI 测点feature不需要传值,自装测点需要传特征值")
+    @ApiOperation(value = "查询一个测点的历史数据", notes = "pointId是完整测点编号")
     public HistoryDataVO listHistoryWithSingleTag(HistoryQuerySingleBO singleBO) {
         long stat = System.currentTimeMillis();
         HistoryDataVO data = service.listHistoryDataWithSingleTagByScan(singleBO);
         System.out.println("共计耗时：" + (System.currentTimeMillis() - stat));
         return data;
+    }
+
+    @GetMapping("single/feature")
+    @ApiOperation(value = "查询一个测点的历史数据[需要特征值]", notes = "PI 测点feature不需要传值,自装测点需要传特征值")
+    public List<HBaseTimeSeriesDataDTO> listHistoryWithSingleTagByThreshold(HistoryQuerySingleWithFeatureBO singleBO) {
+        return service.listHistoryDataWithSingleTagByScan(singleBO);
     }
 
     @GetMapping("multiple")
