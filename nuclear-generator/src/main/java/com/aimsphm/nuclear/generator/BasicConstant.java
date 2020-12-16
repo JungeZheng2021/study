@@ -25,17 +25,18 @@ public final class BasicConstant {
      * 表名
      */
     public static String[] TABLES = {
-            "common_site"
-            , "common_set"
-            , "common_system"
-            , "common_sub_system"
-            , "common_device"
-            , "common_device_details"
-            , "common_component"
-            , "common_sensor"
-            , "common_measure_point"
-            , "job_device_status"
-            , "job_alarm_event"
+//            "common_site"
+//            , "common_set"
+//            , "common_system"
+//            , "common_sub_system"
+//            , "common_device"
+//            , "common_device_details"
+//            , "common_component"
+//            , "common_sensor"
+//            , "common_measure_point"
+//            "job_device_status"
+            "spark_down_sample_annually"
+//            , "job_alarm_event"
     };
 
     /**

@@ -1346,7 +1346,7 @@ public class RedisClient {
             return true;
         }
         // redis里key的时间
-        String currentValue = (String) this.get(key);
+        String currentValue = String.valueOf(this.get(key));
         // 判断锁是否已经过期，过期则重新设置并获取
         if (currentValue != null && Long.parseLong(currentValue) < System.currentTimeMillis()) {
             // 设置锁并返回旧值

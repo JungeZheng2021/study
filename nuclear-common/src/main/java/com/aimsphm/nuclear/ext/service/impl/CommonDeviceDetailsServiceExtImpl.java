@@ -2,19 +2,20 @@ package com.aimsphm.nuclear.ext.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
-import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
-import com.aimsphm.nuclear.ext.service.CommonDeviceDetailsServiceExt;
+import com.aimsphm.nuclear.common.mapper.CommonDeviceDetailsMapper;
 import com.aimsphm.nuclear.common.service.impl.CommonDeviceDetailsServiceImpl;
+import com.aimsphm.nuclear.ext.service.CommonDeviceDetailsServiceExt;
 import com.aimsphm.nuclear.ext.service.CommonDeviceServiceExt;
 import com.aimsphm.nuclear.ext.service.CommonSubSystemServiceExt;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +32,7 @@ import java.util.Objects;
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
-public class CommonDeviceDetailsServiceExtImpl extends CommonDeviceDetailsServiceImpl implements CommonDeviceDetailsServiceExt {
+public class CommonDeviceDetailsServiceExtImpl extends CommonDeviceDetailsServiceImpl<CommonDeviceDetailsMapper, CommonDeviceDetailsDO> implements CommonDeviceDetailsServiceExt {
     @Autowired
     private CommonDeviceServiceExt deviceServiceExt;
     @Autowired
@@ -40,6 +41,9 @@ public class CommonDeviceDetailsServiceExtImpl extends CommonDeviceDetailsServic
     @Override
     public List<CommonDeviceDetailsDO> listDetailByConditions(CommonQueryBO query) {
         LambdaQueryWrapper<CommonDeviceDetailsDO> wrapper = initWrapper(query);
+        if (Objects.nonNull(query.getVisible())) {
+            wrapper.last("and visible=" + query.getVisible());
+        }
         return this.list(wrapper);
     }
 

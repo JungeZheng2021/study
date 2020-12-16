@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.common.enums;
 
+import java.util.Objects;
+
 /**
  * @Package: com.aimsphm.nuclear.common.enums
  * @Description: <算法报警类型枚举>
@@ -11,20 +13,20 @@ package com.aimsphm.nuclear.common.enums;
  * @Version: 1.0
  */
 public enum AlgorithmLevelEnum {
-    LEVEL_ONE((byte) 1, "1级报警"),
-    LEVEL_TWO((byte) 2, "2级报警"),
-    LEVEL_THREE((byte) 3, "3级报警"),
-    LEVEL_FOUR((byte) 4, "4级报警"),
-    LEVEL_FIVE((byte) 5, "5级报警"),
-    LEVEL_SIX((byte) 6, "6级报警");
+    LEVEL_ONE(1, "1级报警"),
+    LEVEL_TWO(2, "2级报警"),
+    LEVEL_THREE(3, "3级报警"),
+    LEVEL_FOUR(4, "4级报警"),
+    LEVEL_FIVE(5, "5级报警"),
+    LEVEL_SIX(6, "6级报警");
 
-    AlgorithmLevelEnum(byte value, String desc) {
+    AlgorithmLevelEnum(Integer value, String desc) {
         this.value = value;
         this.desc = desc;
 
     }
 
-    public static AlgorithmLevelEnum getByValue(Byte value) {
+    public static AlgorithmLevelEnum getByValue(Integer value) {
         if (value == null) {
             return null;
         }
@@ -39,7 +41,12 @@ public enum AlgorithmLevelEnum {
         return null;
     }
 
-    public Byte getValue() {
+    public static String getDesc(Integer value) {
+        AlgorithmLevelEnum byValue = getByValue(value);
+        return Objects.isNull(byValue) ? null : byValue.getDesc();
+    }
+
+    public Integer getValue() {
         return value;
     }
 
@@ -47,6 +54,6 @@ public enum AlgorithmLevelEnum {
         return desc;
     }
 
-    private Byte value;
+    private Integer value;
     private String desc;
 }

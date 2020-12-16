@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.ext.service.JobDeviceStatusServiceExt;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -35,10 +36,10 @@ public class JobDeviceStatusController {
         return iJobDeviceStatusServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
     }
 
-    @GetMapping("{id}")
-    @ApiOperation(value = "设备状态获取某一实体")
-    public JobDeviceStatusDO getJobDeviceStatusServiceDetails(@PathVariable Long id) {
-        return iJobDeviceStatusServiceExt.getById(id);
+    @GetMapping("{deviceId}")
+    @ApiOperation(value = "根据设备编号获取运行状态")
+    public JobDeviceStatusDO getJobDeviceStatusServiceDetails(@PathVariable Long deviceId) {
+        return iJobDeviceStatusServiceExt.getDeviceRunningStatus(deviceId);
     }
 
     @PostMapping

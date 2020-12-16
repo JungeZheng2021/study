@@ -33,6 +33,22 @@ public final class SymbolConstant {
      * 空字符串
      */
     public static final String EMPTY = "";
+    /**
+     * 数组方括号开始
+     */
+    public static final String LEFT_SQ_BRACKET = "[";
+    /**
+     * 数组方括号结束
+     */
+    public static final String RIGHT_SQ_BRACKET = "]";
+    /**
+     * 逗号
+     */
+    public static final String COMMA = ",";
+    /**
+     * 字符串0
+     */
+    public static final String ZERO = "0";
 
     private SymbolConstant() {
     }
@@ -43,7 +59,6 @@ public final class SymbolConstant {
     String ASTERISK = "*";
     String BACK_SLASH = "\\";
     String COLON = ":";
-    String COMMA = ",";
     String DOLLAR = "$";
     String DOT = ".";
     String DOTDOT = "..";
@@ -81,8 +96,6 @@ public final class SymbolConstant {
     String BACKTICK = "`";
     String SPACE = " ";
     String TILDA = "~";
-    String LEFT_SQ_BRACKET = "[";
-    String RIGHT_SQ_BRACKET = "]";
     String TRUE = "true";
     String UTF_8 = "UTF-8";
     String US_ASCII = "US-ASCII";
@@ -90,7 +103,6 @@ public final class SymbolConstant {
     String Y = "y";
     String YES = "yes";
     String ONE = "1";
-    String ZERO = "0";
     String DOLLAR_LEFT_BRACE = "${";
     String HASH_LEFT_BRACE = "#{";
     String CRLF = "\r\n";

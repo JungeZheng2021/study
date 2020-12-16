@@ -3,9 +3,9 @@ package com.aimsphm.nuclear.common.enums;
 /**
  * @Package: com.aimsphm.nuclear.common.enums
  * @Description: <测点特征类型枚举类(一级特征)>
- * @Author: milla
+ * @Author: MILLA
  * @CreateDate: 2020/11/23 16:55
- * @UpdateUser: milla
+ * @UpdateUser: MILLA
  * @UpdateDate: 2020/11/23 16:55
  * @UpdateRemark: <>
  * @Version: 1.0

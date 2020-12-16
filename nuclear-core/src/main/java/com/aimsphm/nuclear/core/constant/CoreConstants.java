@@ -21,6 +21,20 @@ public final class CoreConstants {
      * 总览中异常测点个数字符串常量
      */
     public static final String PANORAMA_ANOMALY = "异常测点{0}个";
+    /**
+     * 设备启动时间
+     */
+    public static final String START_TIME = "start_time";
+
+    /**
+     * 总运行时间
+     */
+    public static final String TOTAL_RUNNING_DURATION = "total_running_duration";
+    /**
+     * 启停次数
+     */
+    public static final String STOP_TIMES = "stop_times";
+
 
     /**
      * 主泵总览key
@@ -52,15 +66,6 @@ public final class CoreConstants {
      */
     public static final String VALVE_MONITOR = "valve-monitoring";
 
-    /**
-     * 设备启动时间
-     */
-    public static final String START_TIME = "start_time";
-
-    /**
-     * 总运行时间
-     */
-    public static final String TOTAL_RUNNING_DURATION = "total_running_duration";
     /**
      * 本年度运行时间
      */

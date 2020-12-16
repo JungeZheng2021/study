@@ -7,6 +7,7 @@ eureka:
     serviceUrl:
       defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
     fetchRegistry: true
+    register-with-eureka: false
   instance:
     prefer-ip-address: true
 spring:
@@ -18,8 +19,8 @@ spring:
     enableRedis: true
     enableHBase: true
     enableSwagger2: true
-    enableMybatisPlus: true
     enableServiceExtImpl: true
+    enableMybatisPlusDynamicTable: true
   #数据源
   datasource:
     url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?characterEncoding=utf-8&allowMultiQueries=true

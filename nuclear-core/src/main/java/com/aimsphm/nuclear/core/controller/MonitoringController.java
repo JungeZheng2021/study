@@ -1,15 +1,15 @@
 package com.aimsphm.nuclear.core.controller;
 
+import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
+import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
+import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.core.service.MonitoringService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -50,5 +50,27 @@ public class MonitoringController {
         return monitoringService.countTransfinitePiPoint(deviceId);
     }
 
+    @GetMapping("{deviceId}/statistics/warning")
+    @ApiOperation(value = "报警信息统计")
+    public List<List<LabelVO>> listWarningPoint(@PathVariable @NotNull Long deviceId, TimeRangeQueryBO range) {
+        return monitoringService.listWarningPoint(deviceId, range);
+    }
 
+    @GetMapping("{deviceId}/statistics/duration")
+    @ApiOperation(value = "设备运行时长统计")
+    public Map<Integer, Long> listRunningDuration(@PathVariable @NotNull Long deviceId, TimeRangeQueryBO range) {
+        return monitoringService.listRunningDuration(deviceId, range);
+    }
+
+    @GetMapping("{deviceId}/running/status")
+    @ApiOperation(value = "设备运行状态")
+    public DeviceStatusVO getRunningStatus(@PathVariable @NotNull Long deviceId) {
+        return monitoringService.getRunningStatus(deviceId);
+    }
+
+    @PutMapping("{deviceId}/running/status")
+    @ApiOperation(value = "修改设备运行状态-基础值")
+    public boolean modifyDeviceStatus(@RequestBody DeviceStatusVO statusVO) {
+        return monitoringService.modifyDeviceStatus(statusVO);
+    }
 }

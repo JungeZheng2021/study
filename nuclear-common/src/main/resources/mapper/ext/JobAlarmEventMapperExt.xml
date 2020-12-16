@@ -6,4 +6,42 @@
     <resultMap id="BaseResultMapExt" type="com.aimsphm.nuclear.common.entity.JobAlarmEventDO"
                extends="com.aimsphm.nuclear.common.mapper.JobAlarmEventMapper.BaseResultMap">
     </resultMap>
+    <select id="selectWarmingPointsByDeviceId" resultType="com.aimsphm.nuclear.common.entity.vo.LabelVO">
+        SELECT
+            count(p.category) `value`,
+            p.category        `name`
+        FROM
+            common_measure_point p
+        RIGHT JOIN (
+            SELECT substring_index( substring_index( a.point_ids, ',', b.help_topic_id + 1 ), ',', - 1 ) point
+                FROM
+                job_alarm_event a
+                JOIN mysql.help_topic b ON b.help_topic_id  <![CDATA[<]]>  ( length( a.point_ids ) - length( REPLACE ( a.point_ids, ',', '' ))+ 1 )
+         WHERE
+            a.device_id = #{deviceId,jdbcType=BIGINT} and UNIX_TIMESTAMP(a.gmt_last_alarm)*1000 between #{range.start,jdbcType=BIGINT} AND #{range.end,jdbcType=BIGINT}) t
+            ON  p.point_id = t.point
+        GROUP BY
+        p.category
+    </select>
+    <select id="selectWarmingPointsByDateDistribution" resultType="com.aimsphm.nuclear.common.entity.vo.LabelVO">
+        select count(1) `value` ,'一天' as `name`
+            FROM job_alarm_event
+            WHERE device_id = #{deviceId} AND gmt_last_alarm BETWEEN DATE_SUB(NOW(), INTERVAL 1 DAY) AND NOW()
+        UNION ALL
+        select count(1) `value`,'三天' as `name`
+            FROM job_alarm_event
+         WHERE device_id = #{deviceId} AND gmt_last_alarm BETWEEN DATE_SUB(NOW(), INTERVAL 3 DAY) AND NOW()
+        UNION ALL
+        select count(1) `value`,'一周' as `name`
+            FROM job_alarm_event
+            WHERE device_id = #{deviceId} AND gmt_last_alarm BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+        UNION ALL
+        select count(1) `value`,'一个月' as `name`
+            FROM job_alarm_event
+            WHERE device_id = #{deviceId} AND gmt_last_alarm BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()
+        UNION ALL
+            select count(1) `value`,'三个月' as `name`
+            FROM job_alarm_event
+        WHERE device_id = #{deviceId} AND gmt_last_alarm BETWEEN DATE_SUB(NOW(), INTERVAL 3 MONTH) AND NOW()
+    </select>
 </mapper>

@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @Package: com.aimsphm.nuclear.common.mapper
  * @Description: <设备状态Mapper接口>
  * @Author: MILLA
- * @CreateDate: 2020-12-09
+ * @CreateDate: 2020-12-11
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-09
+ * @UpdateDate: 2020-12-11
  * @UpdateRemark: <>
  * @Version: 1.0
  */

@@ -14,7 +14,6 @@ package com.aimsphm.nuclear.history.controller;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.service.HistoryQueryService;
@@ -26,8 +25,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Api(tags = "历史数据查询-相关接口")
@@ -44,24 +43,34 @@ public class HistoryQueryController {
 
     @GetMapping("single")
     @ApiOperation(value = "查询一个测点的历史数据", notes = "pointId是完整测点编号")
-    public HistoryDataVO listHistoryWithSingleTag(HistoryQuerySingleBO singleBO) {
+    public HistoryDataVO listHistoryWithSinglePoint(HistoryQuerySingleBO singleBO) {
         long stat = System.currentTimeMillis();
-        HistoryDataVO data = service.listHistoryDataWithSingleTagByScan(singleBO);
+        HistoryDataVO data = service.listHistoryDataWithPointByScan(singleBO);
         System.out.println("共计耗时：" + (System.currentTimeMillis() - stat));
         return data;
     }
 
     @GetMapping("single/feature")
     @ApiOperation(value = "查询一个测点的历史数据[需要特征值]", notes = "PI 测点feature不需要传值,自装测点需要传特征值")
-    public List<HBaseTimeSeriesDataDTO> listHistoryWithSingleTagByThreshold(HistoryQuerySingleWithFeatureBO singleBO) {
-        return service.listHistoryDataWithSingleTagByScan(singleBO);
+    public List<List<Object>> listHistoryWithSingleTagByThreshold(HistoryQuerySingleWithFeatureBO singleBO) {
+        return service.listHistoryDataWithPointByScan(singleBO);
     }
 
     @GetMapping("multiple")
-    @ApiOperation(value = "查询多个测点的历史数据(多个测点的同一个特征)", notes = "PI 测点feature不需要传值,自装测点需要传特征值")
-    public String listHistoryWithTagList(HistoryQueryMultiBO queryMultiBO) throws IOException {
-        String npc_phm_data = hBaseUtil.tableDescription("npc_phm_data");
-        return npc_phm_data;
+    @ApiOperation(value = "查询多个测点的历史数据", notes = "")
+    public Map<String, HistoryDataVO> listHistoryWithPointList(HistoryQueryMultiBO queryMultiBO) {
+        long l = System.currentTimeMillis();
+        Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
+        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
+        return data;
     }
 
+    @GetMapping("multiple/gets")
+    @ApiOperation(value = "查询多个测点的历史数据-备用", notes = "备用")
+    public Map<String, HistoryDataVO> listHistoryWithPointListByGetList(HistoryQueryMultiBO queryMultiBO) {
+        long l = System.currentTimeMillis();
+        Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByGetList(queryMultiBO);
+        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
+        return data;
+    }
 }

@@ -70,7 +70,7 @@ public class HBaseTests {
 
     private static List<HBaseTimeSeriesDataDTO> listByScan(HBaseUtil hbaseUtil, Long start, Long end, String tag) throws IOException {
         String tableName = "npc_phm_data";
-        return hbaseUtil.listDataWith3600Columns(tableName, tag, start, end, H_BASE_FAMILY_NPC_PI_REAL_TIME);
+        return hbaseUtil.listObjectDataWith3600Columns(tableName, tag, start, end, H_BASE_FAMILY_NPC_PI_REAL_TIME);
 
     }
 

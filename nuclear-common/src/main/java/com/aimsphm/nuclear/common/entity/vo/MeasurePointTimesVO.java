@@ -14,8 +14,12 @@ import lombok.Data;
  */
 @Data
 public class MeasurePointTimesVO {
-    //类型
-    private byte type;
-    //次数
+    /**
+     * 类型
+     */
+    private Integer type;
+    /**
+     * 次数
+     */
     private Long times;
 }

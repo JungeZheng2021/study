@@ -3,9 +3,8 @@ package com.aimsphm.nuclear.common.service.impl;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
 import com.aimsphm.nuclear.common.mapper.CommonDeviceDetailsMapper;
 import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
  * @Package: com.aimsphm.nuclear.common.service.impl
@@ -17,6 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDetailsMapper, CommonDeviceDetailsDO> implements CommonDeviceDetailsService {
+public class CommonDeviceDetailsServiceImpl<M extends BaseMapper<T>, T> extends ServiceImpl<CommonDeviceDetailsMapper, CommonDeviceDetailsDO> implements CommonDeviceDetailsService {
 
 }

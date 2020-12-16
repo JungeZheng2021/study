@@ -1,6 +1,5 @@
 package com.aimsphm.nuclear.history.entity.vo;
 
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -19,7 +18,7 @@ import java.util.List;
 @Data
 public class HistoryDataVO {
     @ApiModelProperty(value = "实测值", notes = "")
-    private List<HBaseTimeSeriesDataDTO> actualData;
-    @ApiModelProperty(value = "预测值", notes = "")
-    private List<HBaseTimeSeriesDataDTO> forecastData;
+    private List<List<Object>> actualData;
+//    @ApiModelProperty(value = "预测值", notes = "")
+//    private List<HBaseTimeSeriesDataDTO> forecastData;
 }

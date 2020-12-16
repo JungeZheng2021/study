@@ -1,6 +1,5 @@
 package com.aimsphm.nuclear.common.util;
 
-import com.aimsphm.nuclear.common.constant.HBaseConstant;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.pojo.EstimateResult;
 import com.aimsphm.nuclear.common.pojo.EstimateTotal;
@@ -29,6 +28,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.*;
+
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATOR;
 
 /**
  * @Package: com.aimsphm.nuclear.common.util
@@ -358,6 +359,38 @@ public class HBaseUtil {
     }
 
     /**
+     * @param tableName 表格名称
+     * @param gets      批量get
+     * @return
+     * @throws IOException
+     */
+    public Map<String, List<HBaseTimeSeriesDataDTO>> selectDataList(String tableName, List<Get> gets) throws IOException {
+        try (Table table = connection.getTable(TableName.valueOf(tableName))) {
+            Result[] results = table.get(gets);
+            Map<String, List<HBaseTimeSeriesDataDTO>> data = new HashMap<>(16);
+            String sensorCode = null;
+            for (Result rs : results) {
+                String rowKey = Bytes.toString(rs.getRow());
+                if (rowKey.contains(ROW_KEY_SEPARATOR)) {
+                    sensorCode = rowKey.split(ROW_KEY_SEPARATOR)[0];
+                    data.putIfAbsent(sensorCode, Lists.newArrayList());
+                }
+                for (Cell cell : rs.listCells()) {
+                    double value = Bytes.toDouble(CellUtil.cloneValue(cell));
+                    Long timestamp = cell.getTimestamp();
+                    HBaseTimeSeriesDataDTO dto = new HBaseTimeSeriesDataDTO();
+                    dto.setTimestamp(timestamp);
+                    dto.setValue(value);
+                    data.get(sensorCode).add(dto);
+                }
+            }
+            return data;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
      * @param tableName   表格名称
      * @param rowKeyStart 时间区间内的开始时间
      * @param rowKeyEnd   时间区间内的结束时间
@@ -397,20 +430,20 @@ public class HBaseUtil {
      * @return
      * @throws IOException
      */
-    public List<HBaseTimeSeriesDataDTO> listDataWith3600Columns(String tableName, String tag, Long startTime, Long endTime, String family) throws IOException {
+    public List<HBaseTimeSeriesDataDTO> listObjectDataWith3600Columns(String tableName, String tag, Long startTime, Long
+            endTime, String family) throws IOException {
         TableName name = TableName.valueOf(tableName);
         try (Table table = connection.getTable(name)) {
             Scan scan = new Scan();
             scan.addFamily(Bytes.toBytes(family));
             Long startRow = startTime / (1000 * 3600) * (1000 * 3600);
             Long endRow = endTime / (1000 * 3600) * (1000 * 3600) + 1;
-            scan.withStartRow(Bytes.toBytes(tag + HBaseConstant.ROW_KEY_SEPARATOR + startRow));
-            scan.withStopRow(Bytes.toBytes(tag + HBaseConstant.ROW_KEY_SEPARATOR + endRow));
+            scan.withStartRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + startRow));
+            scan.withStopRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + endRow));
             ResultScanner scanner = table.getScanner(scan);
 
-            List<HBaseTimeSeriesDataDTO> data = Lists.newArrayList();
+            List<HBaseTimeSeriesDataDTO> items = new ArrayList();
             for (Result rs : scanner) {
-                List<HBaseTimeSeriesDataDTO> items = new ArrayList();
                 for (Cell cell : rs.listCells()) {
                     double value = Bytes.toDouble(CellUtil.cloneValue(cell));
                     Long timestamp = cell.getTimestamp();
@@ -427,9 +460,56 @@ public class HBaseUtil {
                     dto.setValue(value);
                     items.add(dto);
                 }
-                data.addAll(items);
             }
-            return data;
+            return items;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * 根据小时获取数据(时间戳秒级数据分3600列存储)
+     *
+     * @param tableName 表格名称
+     * @param tag       唯一标识
+     * @param startTime 开始行
+     * @param endTime   结束行
+     * @param family    列族
+     * @return
+     * @throws IOException
+     */
+    public List<List<Object>> listDataWith3600Columns(String tableName, String tag, Long startTime, Long
+            endTime, String family) throws IOException {
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            Scan scan = new Scan();
+            scan.addFamily(Bytes.toBytes(family));
+            Long startRow = startTime / (1000 * 3600) * (1000 * 3600);
+            Long endRow = endTime / (1000 * 3600) * (1000 * 3600) + 1;
+            scan.withStartRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + startRow));
+            scan.withStopRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + endRow));
+            ResultScanner scanner = table.getScanner(scan);
+
+            List<List<Object>> items = new ArrayList();
+            for (Result rs : scanner) {
+                for (Cell cell : rs.listCells()) {
+                    double value = Bytes.toDouble(CellUtil.cloneValue(cell));
+                    Long timestamp = cell.getTimestamp();
+                    //如果列的时间戳大于终点查询时间跳出
+                    if (timestamp > endTime) {
+                        break;
+                    }
+                    //如果列的时间戳小于开始时间直接丢弃
+                    if (timestamp < startTime) {
+                        continue;
+                    }
+                    List<Object> item = Lists.newArrayList();
+                    item.add(timestamp);
+                    item.add(value);
+                    items.add(item);
+                }
+            }
+            return items;
         } catch (IOException e) {
             throw e;
         }
@@ -447,7 +527,8 @@ public class HBaseUtil {
      * @return
      * @throws IOException
      */
-    public List<HBaseTimeSeriesDataDTO> listDataWithLimit(String tableName, String family, String prefixKey, Integer rowLimit, Integer columnLimit, Integer total) throws IOException {
+    public List<HBaseTimeSeriesDataDTO> listDataWithLimit(String tableName, String family, String
+            prefixKey, Integer rowLimit, Integer columnLimit, Integer total) throws IOException {
         TableName name = TableName.valueOf(tableName);
         try (Table table = connection.getTable(name)) {
             Scan scan = new Scan();
@@ -537,8 +618,9 @@ public class HBaseUtil {
      * @param withQualifier 列数据集合(以集合方式返回)
      * @param rs            结果集
      */
-    private void assembleModelCellDataWithList(Map<String, Set<String>> familyMap, Map<String, List<Object>> withQualifier,
-                                               Result rs, EstimateTotal et) {
+    private void assembleModelCellDataWithList
+    (Map<String, Set<String>> familyMap, Map<String, List<Object>> withQualifier,
+     Result rs, EstimateTotal et) {
         if (rs.size() == 0) {
             return;
         }
@@ -568,7 +650,8 @@ public class HBaseUtil {
      * @param withQualifier 列数据集合(以集合方式返回)
      * @param rs            结果集
      */
-    private void assembleModelTagCellDataWithList(Map<String, Set<String>> familyMap, Map<String, List<Object>> withQualifier, Result rs) {
+    private void assembleModelTagCellDataWithList
+    (Map<String, Set<String>> familyMap, Map<String, List<Object>> withQualifier, Result rs) {
         if (rs.size() == 0) {
             return;
         }
@@ -597,7 +680,8 @@ public class HBaseUtil {
      * @param withQualifier 列数据集合(以集合方式返回)
      * @param rs            结果集
      */
-    private void assembleCellDataWithList(Map<String, Set<String>> familyMap, Map<String, List<List<Object>>> withQualifier, Result rs) {
+    private void assembleCellDataWithList
+    (Map<String, Set<String>> familyMap, Map<String, List<List<Object>>> withQualifier, Result rs) {
         if (rs.size() == 0) {
             return;
         }
@@ -680,7 +764,8 @@ public class HBaseUtil {
      * @param qualifierMap 列集合
      * @param rs
      */
-    private void assembleCellData(Map<String, Set<String>> familyMap, Map<String, List<Object>> qualifierMap, Result rs) {
+    private void assembleCellData
+    (Map<String, Set<String>> familyMap, Map<String, List<Object>> qualifierMap, Result rs) {
         if (rs.size() == 0) {
             return;
         }

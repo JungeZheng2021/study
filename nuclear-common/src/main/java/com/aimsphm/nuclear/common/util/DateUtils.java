@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.TemporalUnit;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
@@ -74,6 +75,13 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
         System.out.println(dayOfYear);
 
+        boolean sameYear = isSameYear(new Date(), new Date(0));
+        System.out.println(sameYear);
+        int year = transition(new Date()).getYear();
+        System.out.println(year);
+        int year1 = transition(new Date(0)).getYear();
+        System.out.println(year1);
+
         //        System.out.println(previousMonthFirstDay());
 //        System.out.println(previousMonthLastDay());
 //        long until = DateUtils.until(previousMonthFirstDay(), previousMonthLastDay(), ChronoUnit.DAYS) + 1;
@@ -100,6 +108,18 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         LocalDateTime plus = nowDateTime.plus(amountToAdd, unit);
         Instant instant = plus.atZone(ZoneId.systemDefault()).toInstant();
         return Date.from(instant);
+    }
+
+    public static boolean isSameYear(Date date1, Date date2) {
+        if (date1 != null && date2 != null) {
+            Calendar cal1 = Calendar.getInstance();
+            cal1.setTime(date1);
+            Calendar cal2 = Calendar.getInstance();
+            cal2.setTime(date2);
+            return cal1.get(1) == cal2.get(1);
+        } else {
+            throw new IllegalArgumentException("The date must not be null");
+        }
     }
 
     /**
@@ -187,7 +207,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     /**
-     * 将locatDate转换程Date对象
+     * 将LocalDate转换程Date对象
      *
      * @param date
      * @return
@@ -195,6 +215,17 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static Date transition(LocalDate date) {
         ZonedDateTime dateTime = date.atStartOfDay(ZoneId.systemDefault());
         return Date.from(dateTime.toInstant());
+    }
+
+    /**
+     * 将Date转换程LocalDate对象
+     *
+     * @param date
+     * @return
+     */
+    public static LocalDate transition(Date date) {
+        LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return localDateTime.toLocalDate();
     }
 
     /**

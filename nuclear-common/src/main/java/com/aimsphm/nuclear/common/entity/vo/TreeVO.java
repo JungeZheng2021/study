@@ -10,9 +10,9 @@ import java.util.Objects;
 /**
  * @Package: com.aimsphm.nuclear.common.entity.vo
  * @Description: <导航结构树>
- * @Author: milla
+ * @Author: MILLA
  * @CreateDate: 2020/11/06 14:56
- * @UpdateUser: milla
+ * @UpdateUser: MILLA
  * @UpdateDate: 2020/11/06 14:56
  * @UpdateRemark: <>
  * @Version: 1.0

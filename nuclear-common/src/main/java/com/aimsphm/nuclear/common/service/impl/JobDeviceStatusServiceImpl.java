@@ -11,9 +11,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
  * @Package: com.aimsphm.nuclear.common.service.impl
  * @Description: <设备状态服务实现类>
  * @Author: MILLA
- * @CreateDate: 2020-12-09
+ * @CreateDate: 2020-12-11
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-09
+ * @UpdateDate: 2020-12-11
  * @UpdateRemark: <>
  * @Version: 1.0
  */

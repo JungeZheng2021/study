@@ -20,7 +20,5 @@ import java.util.List;
 @ApiModel(value = "历史查询多个测点")
 public class HistoryQueryMultiBO extends TimeRangeQueryBO {
     @ApiModelProperty(value = "测点列表", notes = "")
-    private List<String> tagList;
-    @ApiModelProperty(value = "特征名称-英文", notes = "")
-    private String feature;
+    private List<String> pointIds;
 }

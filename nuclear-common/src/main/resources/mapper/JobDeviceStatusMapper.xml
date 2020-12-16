@@ -17,6 +17,9 @@
         <result column="status" property="status"/>
         <result column="continuous_running_time" property="continuousRunningTime"/>
         <result column="total_running_time" property="totalRunningTime"/>
+        <result column="status_duration" property="statusDuration"/>
+        <result column="gmt_end" property="gmtEnd"/>
+        <result column="gmt_start" property="gmtStart"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -28,7 +31,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        device_id, device_code, device_type, status, continuous_running_time, total_running_time
+        device_id, device_code, device_type, status, continuous_running_time, total_running_time, status_duration, gmt_end, gmt_start
     </sql>
 
 </mapper>

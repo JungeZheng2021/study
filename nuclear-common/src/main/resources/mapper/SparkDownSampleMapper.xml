@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.SparkDownSampleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.SparkDownSample">
+        <result column="id" property="id"/>
+        <result column="sort" property="sort"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="algorithm_type" property="algorithmType"/>
+        <result column="point_id" property="pointId"/>
+        <result column="start_timestamp" property="startTimestamp"/>
+        <result column="points" property="points"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        sort,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        algorithm_type, point_id, start_timestamp, points
+    </sql>
+
+</mapper>

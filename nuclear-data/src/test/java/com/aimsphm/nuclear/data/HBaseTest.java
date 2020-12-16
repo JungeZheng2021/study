@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.data;
 
+import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.data.entity.DataItemDTO;
 import com.google.common.collect.Lists;
@@ -50,8 +51,15 @@ public class HBaseTest {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-//        HBaseUtil hbaseUtil = new HBaseUtil(connection);
-//        hbaseUtil.createTable("t5", Lists.newArrayList("acc-Rems"), Compression.Algorithm.SNAPPY);
+        HBaseUtil hbaseUtil = new HBaseUtil(connection);
+        Get get = new Get("6M2DVC003MI_1605805200000".getBytes());
+        get.addColumn("pRaw".getBytes(), Bytes.toBytes(1));
+        Get get1 = new Get("6M2RCV011MN_1605805200000".getBytes());
+        get1.addColumn("pRaw".getBytes(), Bytes.toBytes(2));
+        Map<String, List<HBaseTimeSeriesDataDTO>> stringListMap = hbaseUtil.selectDataList("npc_phm_data", Lists.newArrayList(get, get1));
+        System.out.println(stringListMap);
+
+        //        hbaseUtil.createTable("t5", Lists.newArrayList("acc-Rems"), Compression.Algorithm.SNAPPY);
 //        String rowKey = UUID.randomUUID().toString().toUpperCase().substring(0, 1) + HBaseConstant.ROW_KEY_SEPARATOR + System.currentTimeMillis();
 //        hbaseUtil.deleteTable("t5");
 //
@@ -71,7 +79,7 @@ public class HBaseTest {
         TableName name = TableName.valueOf("t5");
         Table table = connection.getTable(name);
         Scan scan = new Scan();
-        String family = "acc-Rems" ;
+        String family = "acc-Rems";
         boolean isHasFamily = StringUtils.isEmpty(family);
         if (!isHasFamily) {
             scan.addFamily(Bytes.toBytes(family));
@@ -126,8 +134,8 @@ public class HBaseTest {
         List<Put> putList = Lists.newArrayList();
         Random random = new Random();
 //        for (int i = 200; i > 0; i--) {
-        String sensorCode = "HHH" ;
-        String family = "acc-Rems" ;
+        String sensorCode = "HHH";
+        String family = "acc-Rems";
 //            if (i % 600 == 0) {
 //                family = UUID.randomUUID().toString().toUpperCase().substring(0, 5);
 //                hbaseUtil.addFamily2Table("t5", Lists.newArrayList(family), Compression.Algorithm.SNAPPY);

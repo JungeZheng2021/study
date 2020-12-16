@@ -1,16 +1,15 @@
 package com.aimsphm.nuclear.ext.service.impl;
 
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
-import com.aimsphm.nuclear.ext.service.JobDeviceStatusServiceExt;
 import com.aimsphm.nuclear.common.service.impl.JobDeviceStatusServiceImpl;
+import com.aimsphm.nuclear.ext.service.JobDeviceStatusServiceExt;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_DEVICE_RUNNING_STATUS;
-import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_POINT_INFO_LIST;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service.impl
@@ -27,6 +26,7 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_POINT_I
 public class JobDeviceStatusServiceExtImpl extends JobDeviceStatusServiceImpl implements JobDeviceStatusServiceExt {
 
     @Override
+    @Cacheable(value = REDIS_DEVICE_RUNNING_STATUS, key = "#deviceId")
     public JobDeviceStatusDO getDeviceRunningStatus(Long deviceId) {
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
         wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).orderByDesc(JobDeviceStatusDO::getId).last(" limit 1");

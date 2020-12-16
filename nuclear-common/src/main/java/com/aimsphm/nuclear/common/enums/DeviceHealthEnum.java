@@ -1,5 +1,17 @@
 package com.aimsphm.nuclear.common.enums;
 
+import java.util.Objects;
+
+/**
+ * @Package: com.aimsphm.nuclear.common.enums
+ * @Description: <设备状态枚举>
+ * @Author: MILLA
+ * @CreateDate: 2020/11/23 16:55
+ * @UpdateUser: MILLA
+ * @UpdateDate: 2020/11/23 16:55
+ * @UpdateRemark: <>
+ * @Version: 1.0
+ */
 public enum DeviceHealthEnum {
     Health(0, "健康", "green"),
     Pending(1, "待观察", "lightgreen"),
@@ -17,15 +29,21 @@ public enum DeviceHealthEnum {
         if (value == null) {
             return null;
         }
-
         DeviceHealthEnum[] instances = DeviceHealthEnum.values();
         for (DeviceHealthEnum i : instances) {
             if (value != null && value.equals(i.getValue())) {
                 return i;
             }
         }
-
         return null;
+    }
+
+    public static String getDesc(Integer value) {
+        DeviceHealthEnum healthEnum = getByValue(value);
+        if (Objects.isNull(healthEnum)) {
+            return null;
+        }
+        return healthEnum.desc;
     }
 
     public Integer getValue() {

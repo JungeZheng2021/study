@@ -1,6 +1,9 @@
 package com.aimsphm.nuclear.core.service;
 
+import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
+import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
+import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 
 import java.util.List;
 import java.util.Map;
@@ -48,4 +51,38 @@ public interface MonitoringService {
      * @return
      */
     Map<Integer, Long> countTransfinitePiPoint(Long deviceId);
+
+    /**
+     * 根据时间和设备统计运行时长
+     *
+     * @param deviceId 设备id
+     * @param range    开始时间
+     * @return
+     */
+    Map<Integer, Long> listRunningDuration(Long deviceId, TimeRangeQueryBO range);
+
+    /**
+     * 根据时间和设备统计报警信息
+     *
+     * @param deviceId
+     * @param range
+     * @return
+     */
+    List<List<LabelVO>> listWarningPoint(Long deviceId, TimeRangeQueryBO range);
+
+    /**
+     * 设备运行状态
+     *
+     * @param deviceId 设备id
+     * @return
+     */
+    DeviceStatusVO getRunningStatus(Long deviceId);
+
+    /**
+     * 修改基础信息
+     *
+     * @param statusVO 状态
+     * @return
+     */
+    boolean modifyDeviceStatus(DeviceStatusVO statusVO);
 }
