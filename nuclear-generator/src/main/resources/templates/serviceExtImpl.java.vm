@@ -1,10 +1,18 @@
 package ${cfg.extPackagePre}.${cfg.service}.${cfg.serviceImpl};
 
+import ${package.Entity}.${entity};
+import ${package.Entity}.bo.ConditionsQueryBO;
+import ${package.Entity}.bo.QueryBO;
 import ${cfg.extPackagePre}.${cfg.service}.${table.serviceName}${cfg.classNameExt};
 import ${package.ServiceImpl}.${table.serviceImplName};
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.CaseFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 /**
  * @Package: ${cfg.extPackagePre}.${cfg.service}.${cfg.serviceImpl}
  * @Description: <$!{table.comment}扩展服务实现类>
@@ -24,5 +32,20 @@ open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperNam
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class ${table.serviceName}${cfg.serviceImplNameFix} extends ${table.serviceImplName} implements ${table.serviceName}${cfg.classNameExt} {
 
+    @Override
+    public Page<${entity}> list${entity}ByPageWithParams(QueryBO<${entity}> queryBO) {
+        if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
+            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+        }
+        LambdaQueryWrapper<${entity}> wrapper = queryBO.lambdaQuery();
+        ConditionsQueryBO query = queryBO.getQuery();
+        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+##            wrapper.ge(${entity}::getGmtLastAlarm, new Date(query.getStart())).le(JobAlarmEventDO::getGmtLastAlarm, new Date(query.getEnd()));
+        }
+        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
+##         wrapper.like(JobAlarmEventDO::getAlarmContent, queryBO.getQuery().getKeyword());
+        }
+        return this.page(queryBO.getPage(), wrapper);
+    }
 }
 #end

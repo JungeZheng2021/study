@@ -1,8 +1,8 @@
 package ${cfg.controllerPackage};
 
 import ${package.Entity}.${entity};
-##import ${package.Service}.${table.serviceName};
-import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import ${package.Entity}.bo.ConditionsQueryBO;
+import ${package.Entity}.bo.QueryBO;
 import ${cfg.extPackagePre}.${cfg.service}.${table.serviceName}${cfg.classNameExt};
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -36,38 +36,38 @@ public class ${table.controllerName} {
 
     @GetMapping("list")
     @ApiOperation(value = "$!{table.comment}分页查询")
-    public Page<${entity}> list${table.serviceName}ByPage(QueryBO<${entity}> query) {
-        return i${table.serviceName}${cfg.classNameExt}.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<${entity}> list${entity}ByPageWithParams(Page<${entity}> page, ${entity} entity, ConditionsQueryBO query) {
+        return i${table.serviceName}${cfg.classNameExt}. list${entity}ByPageWithParams(new QueryBO(page, entity, query));
     }
 
     @GetMapping("{id}")
     @ApiOperation(value = "$!{table.comment}获取某一实体")
-    public ${entity} get${table.serviceName}Details(@PathVariable Long id) {
+    public ${entity} get${entity}Details(@PathVariable Long id) {
         return i${table.serviceName}${cfg.classNameExt}.getById(id);
     }
 
     @PostMapping
     @ApiOperation(value = "$!{table.comment}新增数据")
-    public boolean save${table.serviceName}(@RequestBody ${entity} dto) {
+    public boolean save${entity}(@RequestBody ${entity} dto) {
         return i${table.serviceName}${cfg.classNameExt}.save(dto);
     }
 
     @PutMapping("{id}")
     @ApiOperation(value = "$!{table.comment}修改数据")
-    public boolean modify${table.serviceName}(@RequestBody ${entity} dto, @PathVariable Long id) {
+    public boolean modify${entity}(@RequestBody ${entity} dto, @PathVariable Long id) {
         dto.setId(id);
         return i${table.serviceName}${cfg.classNameExt}.updateById(dto);
     }
 
     @DeleteMapping("batch")
     @ApiOperation(value = "$!{table.comment}批量删除数据")
-    public boolean batchRemove${table.serviceName}(@RequestParam(value = "ids") List<Long> ids) {
+    public boolean batchRemove${entity}(@RequestParam(value = "ids") List<Long> ids) {
         return i${table.serviceName}${cfg.classNameExt}.removeByIds(ids);
     }
 
     @DeleteMapping("{id}")
     @ApiOperation(value = "$!{table.comment}删除数据")
-    public boolean remove${table.serviceName}(@PathVariable Long id) {
+    public boolean remove${entity}(@PathVariable Long id) {
         return i${table.serviceName}${cfg.classNameExt}.removeById(id);
     }
 }

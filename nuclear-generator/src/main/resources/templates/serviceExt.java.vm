@@ -1,7 +1,9 @@
 package ${cfg.extPackagePre}.${cfg.service};
 
+import ${package.Entity}.${entity};
+import ${package.Entity}.bo.QueryBO;
 import ${package.Service}.${table.serviceName};
-
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 /**
  * @Package: ${cfg.extPackagePre}.${cfg.service}
  * @Description: <$!{table.comment}扩展服务类>
@@ -17,5 +19,12 @@ interface ${table.serviceName}${cfg.classNameExt} : ${table.serviceName}
 #else
 public interface ${table.serviceName}${cfg.classNameExt} extends ${table.serviceName} {
 
+    /**
+     * 根据条件获取分页查询数据
+     *
+     * @param queryBO 查询条件
+     * @return
+     */
+    Page<${entity}> list${entity}ByPageWithParams(QueryBO<${entity}> queryBO);
 }
 #end
