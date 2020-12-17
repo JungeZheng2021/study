@@ -4,6 +4,7 @@ import ${package.Entity}.${entity};
 import ${package.Entity}.bo.QueryBO;
 import ${package.Service}.${table.serviceName};
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 /**
  * @Package: ${cfg.extPackagePre}.${cfg.service}
  * @Description: <$!{table.comment}扩展服务类>
