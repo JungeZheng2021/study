@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
@@ -34,8 +35,8 @@ public class CommonMeasurePointController {
 
     @GetMapping("list")
     @ApiOperation(value = "测点信息分页查询")
-    public Page<CommonMeasurePointDO> listCommonMeasurePointServiceByPage(QueryBO<CommonMeasurePointDO> query) {
-        return iCommonMeasurePointServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<CommonMeasurePointDO> listCommonMeasurePointServiceByPage(Page<CommonMeasurePointDO> page, CommonMeasurePointDO entity, ConditionsQueryBO query) {
+        return iCommonMeasurePointServiceExt.listCommonMeasurePointByPageWithParams(new QueryBO(page, entity, query));
     }
 
     @GetMapping("{id}")

@@ -1,6 +1,9 @@
 package com.aimsphm.nuclear.ext.service;
 
+import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
+import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.service.JobAlarmEventService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service
@@ -14,4 +17,11 @@ import com.aimsphm.nuclear.common.service.JobAlarmEventService;
  */
 public interface JobAlarmEventServiceExt extends JobAlarmEventService {
 
+    /**
+     * 根据条件获取分页查询数据
+     *
+     * @param queryBO 查询条件
+     * @return
+     */
+    Page<JobAlarmEventDO> listJobAlarmEventByPageWithParams(QueryBO<JobAlarmEventDO> queryBO);
 }

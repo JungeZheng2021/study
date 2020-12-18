@@ -1,10 +1,13 @@
 package com.aimsphm.nuclear.ext.service;
 
+import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 import java.util.Set;
@@ -20,6 +23,13 @@ import java.util.Set;
  * @Version: 1.0
  */
 public interface CommonMeasurePointServiceExt extends CommonMeasurePointService {
+    /**
+     * 根据条件获取分页查询数据
+     *
+     * @param queryBO 查询条件
+     * @return
+     */
+    Page<CommonMeasurePointDO> listCommonMeasurePointByPageWithParams(QueryBO<CommonMeasurePointDO> queryBO);
 
     /**
      * 根据测点id更新redis中的热点数据

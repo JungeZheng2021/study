@@ -70,7 +70,8 @@ public class MonitoringController {
 
     @PutMapping("{deviceId}/running/status")
     @ApiOperation(value = "修改设备运行状态-基础值")
-    public boolean modifyDeviceStatus(@RequestBody DeviceStatusVO statusVO) {
+    public boolean modifyDeviceStatus(@RequestBody DeviceStatusVO statusVO, @PathVariable Long deviceId) {
+        statusVO.setDeviceId(deviceId);
         return monitoringService.modifyDeviceStatus(statusVO);
     }
 }

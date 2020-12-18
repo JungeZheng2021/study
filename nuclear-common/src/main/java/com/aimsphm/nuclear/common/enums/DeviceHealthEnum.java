@@ -59,6 +59,12 @@ public enum DeviceHealthEnum {
     }
 
     private Integer value;
-    private String desc;//描述
-    private String color;//颜色
+    /**
+     * 描述
+     */
+    private String desc;
+    /**
+     * 颜色
+     */
+    private String color;
 }

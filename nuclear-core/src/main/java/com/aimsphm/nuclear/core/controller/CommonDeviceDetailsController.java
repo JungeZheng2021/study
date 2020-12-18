@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.ext.service.CommonDeviceDetailsServiceExt;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -32,8 +33,8 @@ public class CommonDeviceDetailsController {
 
     @GetMapping("list")
     @ApiOperation(value = "设备详细信息分页查询")
-    public Page<CommonDeviceDetailsDO> listCommonDeviceDetailsServiceByPage(QueryBO<CommonDeviceDetailsDO> query) {
-        return iCommonDeviceDetailsServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<CommonDeviceDetailsDO> listCommonDeviceDetailsServiceByPage(Page<CommonDeviceDetailsDO> page, CommonDeviceDetailsDO entity, ConditionsQueryBO query) {
+        return iCommonDeviceDetailsServiceExt.listCommonDeviceDetailsByPageWithParams(new QueryBO(page, entity, query));
     }
 
     @GetMapping("{id}")

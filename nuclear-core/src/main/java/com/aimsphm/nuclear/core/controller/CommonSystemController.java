@@ -1,6 +1,8 @@
 package com.aimsphm.nuclear.core.controller;
 
+import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
 import com.aimsphm.nuclear.common.entity.CommonSystemDO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
 import com.aimsphm.nuclear.ext.service.CommonSystemServiceExt;
@@ -32,8 +34,8 @@ public class CommonSystemController {
 
     @GetMapping("list")
     @ApiOperation(value = "系统信息分页查询")
-    public Page<CommonSystemDO> listCommonSystemServiceByPage(QueryBO<CommonSystemDO> query) {
-        return iCommonSystemServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<CommonSystemDO> listCommonSystemServiceByPage(Page<CommonSystemDO> page, CommonSystemDO entity, ConditionsQueryBO query) {
+        return iCommonSystemServiceExt.listCommonSystemByPageWithParams(new QueryBO<>(page, entity, query));
     }
 
     @GetMapping("{id}")

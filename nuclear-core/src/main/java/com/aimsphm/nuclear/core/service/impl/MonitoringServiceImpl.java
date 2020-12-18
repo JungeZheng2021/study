@@ -5,10 +5,7 @@ import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
 import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
-import com.aimsphm.nuclear.common.enums.AlarmTypeEnum;
-import com.aimsphm.nuclear.common.enums.AlgorithmLevelEnum;
-import com.aimsphm.nuclear.common.enums.DeviceHealthEnum;
-import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
+import com.aimsphm.nuclear.common.enums.*;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
@@ -20,6 +17,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,7 +124,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         List<CommonDeviceDetailsDO> list = detailsServiceExt.listDetailByConditions(bo);
         TimeRangeQueryBO rangeQueryBO = new TimeRangeQueryBO();
         if (CollectionUtils.isNotEmpty(list)) {
-            CommonDeviceDetailsDO totalTImeStartTime = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn()) && "total_running_duration".equals(item.getFieldNameEn())).findFirst().orElse(null);
+            CommonDeviceDetailsDO totalTImeStartTime = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn()) && TOTAL_RUNNING_DURATION.equals(item.getFieldNameEn())).findFirst().orElse(null);
             rangeQueryBO.setStart(Objects.nonNull(totalTImeStartTime) && StringUtils.hasText(totalTImeStartTime.getFieldValue()) ? Long.valueOf(totalTImeStartTime.getFieldValue()) : 1608024678000L);
             Map<String, String> config = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn())).collect(Collectors.toMap(item -> item.getFieldNameEn(), CommonDeviceDetailsDO::getFieldValue, (a, b) -> a));
             String startTime = config.get(START_TIME);
@@ -143,10 +141,12 @@ public class MonitoringServiceImpl implements MonitoringService {
         }
         rangeQueryBO.setEnd(System.currentTimeMillis());
         int count = statusServiceExt.count(stop);
-        Map<Integer, Long> times = listRunningDuration(deviceId, rangeQueryBO);
-        long sum = times.entrySet().stream().filter(item -> item.getKey() < DeviceHealthEnum.Stop.getValue()).collect(Collectors.summarizingLong(item -> item.getValue())).getSum();
-        status.setTotalRunningTime(Objects.isNull(status.getContinuousRunningTime()) ? sum : sum + status.getContinuousRunningTime());
         status.setStopTimes(Objects.isNull(status.getStopTimes()) ? count : count + status.getStopTimes());
+        Map<Integer, Long> times = listRunningDuration(deviceId, rangeQueryBO);
+        if (MapUtils.isNotEmpty(times)) {
+            long sum = times.entrySet().stream().filter(item -> item.getKey() < DeviceHealthEnum.Stop.getValue()).collect(Collectors.summarizingLong(item -> item.getValue())).getSum();
+            status.setTotalRunningTime(Objects.isNull(status.getTotalRunningTime()) ? sum : sum + status.getTotalRunningTime());
+        }
         return status;
     }
 
@@ -156,12 +156,12 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (Objects.isNull(statusVO.getDeviceId())) {
             return false;
         }
+        if (Objects.isNull(statusVO.getStopTimes()) && StringUtils.isEmpty(statusVO.getStartTime()) && Objects.isNull(statusVO.getTotalRunningTime())) {
+            return false;
+        }
         CommonDeviceDO device = deviceServiceExt.getById(statusVO.getDeviceId());
         if (Objects.isNull(device)) {
             throw new CustomMessageException("要修改的设备不存在");
-        }
-        if (Objects.isNull(statusVO.getStopTimes()) && StringUtils.isEmpty(statusVO.getStartTime()) && Objects.isNull(statusVO.getTotalRunningTime())) {
-            return false;
         }
         List<CommonDeviceDetailsDO> list = initDefaultConfig(device);
         updateDetails(list, statusVO);
@@ -174,13 +174,13 @@ public class MonitoringServiceImpl implements MonitoringService {
             String fieldValue = details.getFieldValue();
             switch (fieldName) {
                 case START_TIME:
-                    details.setFieldValue(Objects.isNull(statusVO) ? fieldValue : String.valueOf(statusVO.getStartTime()));
+                    details.setFieldValue(Objects.isNull(statusVO.getStartTime()) ? fieldValue : String.valueOf(statusVO.getStartTime()));
                     break;
                 case TOTAL_RUNNING_DURATION:
-                    details.setFieldValue(Objects.isNull(statusVO) ? fieldValue : String.valueOf(statusVO.getTotalRunningTime()));
+                    details.setFieldValue(Objects.isNull(statusVO.getTotalRunningTime()) ? fieldValue : String.valueOf(statusVO.getTotalRunningTime()));
                     break;
                 case STOP_TIMES:
-                    details.setFieldValue(Objects.isNull(statusVO) ? fieldValue : String.valueOf(statusVO.getStopTimes()));
+                    details.setFieldValue(Objects.isNull(statusVO.getStopTimes()) ? fieldValue : String.valueOf(statusVO.getStopTimes()));
                     break;
             }
         }
@@ -199,6 +199,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         BeanUtils.copyProperties(device, startTime);
         startTime.setFieldNameEn(START_TIME);
         startTime.setFieldNameZh("启动时间");
+        startTime.setUnit(UnitEnum.MILLION_SECOND.getValue().toString());
         startTime.setFieldValue(String.valueOf(System.currentTimeMillis()));
         startTime.setVisible(false);
         CommonDeviceDetailsDO totalTime = new CommonDeviceDetailsDO();
@@ -210,6 +211,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         BeanUtils.copyProperties(totalTime, stopTime);
         stopTime.setFieldNameZh("启停次数");
         stopTime.setFieldNameEn(STOP_TIMES);
+        startTime.setUnit(UnitEnum.TIMES.getValue().toString());
         List<CommonDeviceDetailsDO> details = Lists.newArrayList(startTime, totalTime, stopTime);
         detailsServiceExt.saveBatch(details);
         return details;
@@ -221,7 +223,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         Long startTime = range.getStart();
         Long endTime = range.getEnd();
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
-        wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).ge(JobDeviceStatusDO::getGmtStart, new Date(startTime));
+        wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).ge(JobDeviceStatusDO::getGmtStart, new Date(startTime)).le(JobDeviceStatusDO::getGmtStart, new Date(endTime));
         List<JobDeviceStatusDO> list = statusServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;

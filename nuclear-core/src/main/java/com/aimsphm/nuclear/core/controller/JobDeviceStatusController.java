@@ -1,8 +1,9 @@
 package com.aimsphm.nuclear.core.controller;
 
+import com.aimsphm.nuclear.common.entity.CommonSystemDO;
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
-import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.ext.service.JobDeviceStatusServiceExt;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -32,38 +33,38 @@ public class JobDeviceStatusController {
 
     @GetMapping("list")
     @ApiOperation(value = "设备状态分页查询")
-    public Page<JobDeviceStatusDO> listJobDeviceStatusServiceByPage(QueryBO<JobDeviceStatusDO> query) {
-        return iJobDeviceStatusServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<JobDeviceStatusDO> listJobDeviceStatusServiceByPage(Page<JobDeviceStatusDO> page, JobDeviceStatusDO entity, ConditionsQueryBO query) {
+        return iJobDeviceStatusServiceExt.listJobDeviceStatusByPageWithParams(new QueryBO<>(page, entity, query));
     }
 
     @GetMapping("{deviceId}")
     @ApiOperation(value = "根据设备编号获取运行状态")
-    public JobDeviceStatusDO getJobDeviceStatusServiceDetails(@PathVariable Long deviceId) {
+    public JobDeviceStatusDO getJobDeviceStatusDetails(@PathVariable Long deviceId) {
         return iJobDeviceStatusServiceExt.getDeviceRunningStatus(deviceId);
     }
 
     @PostMapping
     @ApiOperation(value = "设备状态新增数据")
-    public boolean saveJobDeviceStatusService(@RequestBody JobDeviceStatusDO dto) {
+    public boolean saveJobDeviceStatus(@RequestBody JobDeviceStatusDO dto) {
         return iJobDeviceStatusServiceExt.save(dto);
     }
 
     @PutMapping("{id}")
     @ApiOperation(value = "设备状态修改数据")
-    public boolean modifyJobDeviceStatusService(@RequestBody JobDeviceStatusDO dto, @PathVariable Long id) {
+    public boolean modifyJobDeviceStatus(@RequestBody JobDeviceStatusDO dto, @PathVariable Long id) {
         dto.setId(id);
         return iJobDeviceStatusServiceExt.updateById(dto);
     }
 
     @DeleteMapping("batch")
     @ApiOperation(value = "设备状态批量删除数据")
-    public boolean batchRemoveJobDeviceStatusService(@RequestParam(value = "ids") List<Long> ids) {
+    public boolean batchRemoveJobDeviceStatus(@RequestParam(value = "ids") List<Long> ids) {
         return iJobDeviceStatusServiceExt.removeByIds(ids);
     }
 
     @DeleteMapping("{id}")
     @ApiOperation(value = "设备状态删除数据")
-    public boolean removeJobDeviceStatusService(@PathVariable Long id) {
+    public boolean removeJobDeviceStatus(@PathVariable Long id) {
         return iJobDeviceStatusServiceExt.removeById(id);
     }
 }

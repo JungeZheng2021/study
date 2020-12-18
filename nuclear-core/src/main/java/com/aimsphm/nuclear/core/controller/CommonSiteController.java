@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonSiteDO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
 import com.aimsphm.nuclear.ext.service.CommonSiteServiceExt;
@@ -32,8 +33,8 @@ public class CommonSiteController {
 
     @GetMapping("list")
     @ApiOperation(value = "电厂信息分页查询")
-    public Page<CommonSiteDO> listCommonSiteServiceByPage(QueryBO<CommonSiteDO> query) {
-        return iCommonSiteServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<CommonSiteDO> listCommonSiteServiceByPage(Page<CommonSiteDO> page, CommonSiteDO entity, ConditionsQueryBO query) {
+        return iCommonSiteServiceExt.listCommonSiteByPageWithParams(new QueryBO<>(page, entity, query));
     }
 
     @GetMapping("{id}")
@@ -72,7 +73,5 @@ public class CommonSiteController {
     public TreeVO getCommonSiteTree(@PathVariable Long id) {
         return iCommonSiteServiceExt.listCommonSetTree(id);
     }
-
-
 }
 

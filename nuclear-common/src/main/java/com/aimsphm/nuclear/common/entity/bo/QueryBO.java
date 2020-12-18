@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.common.entity.bo;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import io.swagger.annotations.ApiModel;
@@ -27,9 +28,19 @@ public class QueryBO<T> {
     @ApiModelProperty(value = "实体参数", notes = "")
     private T entity;
 
-    public QueryWrapper initQueryWrapper() {
-        QueryWrapper wrapper = new QueryWrapper<>();
-        wrapper.setEntity(entity);
-        return wrapper;
+    @ApiModelProperty(value = "条件查询", notes = "")
+    private ConditionsQueryBO query;
+
+    public QueryBO(Page<T> page, T entity, ConditionsQueryBO query) {
+        this.page = page;
+        this.entity = entity;
+        this.query = query;
+    }
+
+    public QueryBO() {
+    }
+
+    public LambdaQueryWrapper<T> lambdaQuery() {
+        return Wrappers.lambdaQuery(entity);
     }
 }

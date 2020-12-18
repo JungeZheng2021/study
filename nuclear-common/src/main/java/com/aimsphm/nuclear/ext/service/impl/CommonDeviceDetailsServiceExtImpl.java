@@ -4,6 +4,8 @@ import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
 import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.CommonDeviceDetailsMapper;
 import com.aimsphm.nuclear.common.service.impl.CommonDeviceDetailsServiceImpl;
@@ -11,11 +13,13 @@ import com.aimsphm.nuclear.ext.service.CommonDeviceDetailsServiceExt;
 import com.aimsphm.nuclear.ext.service.CommonDeviceServiceExt;
 import com.aimsphm.nuclear.ext.service.CommonSubSystemServiceExt;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.CaseFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +41,20 @@ public class CommonDeviceDetailsServiceExtImpl extends CommonDeviceDetailsServic
     private CommonDeviceServiceExt deviceServiceExt;
     @Autowired
     private CommonSubSystemServiceExt subSystemServiceExt;
+
+    @Override
+    public Page<CommonDeviceDetailsDO> listCommonDeviceDetailsByPageWithParams(QueryBO<CommonDeviceDetailsDO> queryBO) {
+        if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
+            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+        }
+        LambdaQueryWrapper<CommonDeviceDetailsDO> wrapper = queryBO.lambdaQuery();
+        ConditionsQueryBO query = queryBO.getQuery();
+        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        }
+        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
+        }
+        return this.page(queryBO.getPage(), wrapper);
+    }
 
     @Override
     public List<CommonDeviceDetailsDO> listDetailByConditions(CommonQueryBO query) {

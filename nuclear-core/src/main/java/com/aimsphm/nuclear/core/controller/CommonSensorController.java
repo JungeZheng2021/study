@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonSensorDO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.ext.service.CommonSensorServiceExt;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -32,8 +33,8 @@ public class CommonSensorController {
 
     @GetMapping("list")
     @ApiOperation(value = "传感器信息分页查询")
-    public Page<CommonSensorDO> listCommonSensorServiceByPage(QueryBO<CommonSensorDO> query) {
-        return iCommonSensorServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<CommonSensorDO> listCommonSensorServiceByPage(Page<CommonSensorDO> page, CommonSensorDO entity, ConditionsQueryBO query) {
+        return iCommonSensorServiceExt.listCommonSensorByPageWithParams(new QueryBO<>(page, entity, query));
     }
 
     @GetMapping("{id}")

@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonSetDO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
 import com.aimsphm.nuclear.ext.service.CommonSetServiceExt;
@@ -32,8 +33,8 @@ public class CommonSetController {
 
     @GetMapping("list")
     @ApiOperation(value = "机组信息分页查询")
-    public Page<CommonSetDO> listCommonSetServiceByPage(QueryBO<CommonSetDO> query) {
-        return iCommonSetServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<CommonSetDO> listCommonSetServiceByPage(Page<CommonSetDO> page, CommonSetDO entity, ConditionsQueryBO query) {
+        return iCommonSetServiceExt.listCommonSetByPageWithParams(new QueryBO<>(page, entity, query));
     }
 
     @GetMapping("{id}")

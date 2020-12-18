@@ -1,7 +1,11 @@
 package com.aimsphm.nuclear.ext.service;
 
+import com.aimsphm.nuclear.common.entity.CommonSensorDO;
+import com.aimsphm.nuclear.common.entity.CommonSetDO;
+import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
 import com.aimsphm.nuclear.common.service.CommonSetService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service
@@ -14,6 +18,13 @@ import com.aimsphm.nuclear.common.service.CommonSetService;
  * @Version: 1.0
  */
 public interface CommonSetServiceExt extends CommonSetService {
+    /**
+     * 根据条件获取分页查询数据
+     *
+     * @param queryBO 查询条件
+     * @return
+     */
+    Page<CommonSetDO> listCommonSetByPageWithParams(QueryBO<CommonSetDO> queryBO);
 
     /**
      * 获取某机组信息结构树

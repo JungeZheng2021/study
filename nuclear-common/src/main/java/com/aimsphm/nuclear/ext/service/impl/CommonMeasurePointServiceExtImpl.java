@@ -4,6 +4,8 @@ import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
@@ -17,6 +19,8 @@ import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
 import com.aimsphm.nuclear.ext.service.CommonSubSystemServiceExt;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.CaseFormat;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +63,20 @@ public class CommonMeasurePointServiceExtImpl extends CommonMeasurePointServiceI
     private CommonDeviceServiceExt deviceServiceExt;
     @Autowired
     private CommonSubSystemServiceExt subSystemServiceExt;
+
+    @Override
+    public Page<CommonMeasurePointDO> listCommonMeasurePointByPageWithParams(QueryBO<CommonMeasurePointDO> queryBO) {
+        if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
+            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+        }
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = queryBO.lambdaQuery();
+        ConditionsQueryBO query = queryBO.getQuery();
+        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        }
+        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
+        }
+        return this.page(queryBO.getPage(), wrapper);
+    }
 
     @Async
     @Override

@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.ext.service.CommonDeviceServiceExt;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -30,9 +31,9 @@ public class CommonDeviceController {
     private CommonDeviceServiceExt iCommonDeviceServiceExt;
 
     @GetMapping("list")
-    @ApiOperation(value = "设备信息分页查询")
-    public Page<CommonDeviceDO> listCommonDeviceServiceByPage(QueryBO<CommonDeviceDO> query) {
-        return iCommonDeviceServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    @ApiOperation(value = "分页查询", notes = "多条件组合查询")
+    public Page<CommonDeviceDO> listCommonDeviceDOByPageWithParams(Page<CommonDeviceDO> page, CommonDeviceDO entity, ConditionsQueryBO query) {
+        return iCommonDeviceServiceExt.listCommonDeviceByPageWithParams(new QueryBO(page, entity, query));
     }
 
     @GetMapping("{id}")

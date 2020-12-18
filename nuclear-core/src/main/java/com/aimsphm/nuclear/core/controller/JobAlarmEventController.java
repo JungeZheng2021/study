@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.ext.service.JobAlarmEventServiceExt;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -31,8 +32,8 @@ public class JobAlarmEventController {
 
     @GetMapping("list")
     @ApiOperation(value = "报警事件分页查询")
-    public Page<JobAlarmEventDO> listJobAlarmEventServiceByPage(QueryBO<JobAlarmEventDO> query) {
-        return iJobAlarmEventServiceExt.page(query.getPage() == null ? new Page() : query.getPage(), query.initQueryWrapper());
+    public Page<JobAlarmEventDO> listJobAlarmEventByPageWithParams(Page<JobAlarmEventDO> page, JobAlarmEventDO entity, ConditionsQueryBO query) {
+        return iJobAlarmEventServiceExt.listJobAlarmEventByPageWithParams(new QueryBO(page, entity, query));
     }
 
     @GetMapping("{id}")
