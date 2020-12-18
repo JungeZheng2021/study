@@ -3,7 +3,7 @@ package com.aimsphm.nuclear.core.controller;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
-import com.aimsphm.nuclear.ext.service.CommonDeviceServiceExt;
+import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping(value = "/common/device", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonDeviceController {
     @Autowired
-    private CommonDeviceServiceExt iCommonDeviceServiceExt;
+    private CommonDeviceService iCommonDeviceServiceExt;
 
     @GetMapping("list")
     @ApiOperation(value = "分页查询", notes = "多条件组合查询")

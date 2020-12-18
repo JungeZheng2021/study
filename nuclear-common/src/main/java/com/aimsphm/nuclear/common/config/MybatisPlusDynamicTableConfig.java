@@ -23,7 +23,7 @@ import java.util.HashMap;
  * @Version: 1.0
  */
 @Configuration
-@MapperScan("com.aimsphm.nuclear.ext.mapper**")
+@MapperScan("com.aimsphm.nuclear.common.mapper**")
 @ConditionalOnProperty(prefix = "spring.config", name = "enableMybatisPlusDynamicTable", havingValue = "true")
 public class MybatisPlusDynamicTableConfig {
 

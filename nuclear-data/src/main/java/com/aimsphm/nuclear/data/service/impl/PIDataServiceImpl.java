@@ -5,7 +5,7 @@ import com.aimsphm.nuclear.common.entity.dto.HBaseColumnItemDTO;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.entity.DataItemDTO;
 import com.aimsphm.nuclear.data.service.HBaseService;
-import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATO
 @Slf4j
 public class PIDataServiceImpl implements CommonDataService {
     @Autowired
-    private CommonMeasurePointServiceExt pointServiceExt;
+    private CommonMeasurePointService pointServiceExt;
     @Autowired
     private HBaseService hBaseService;
 

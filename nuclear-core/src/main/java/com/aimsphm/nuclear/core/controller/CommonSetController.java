@@ -4,7 +4,7 @@ import com.aimsphm.nuclear.common.entity.CommonSetDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
-import com.aimsphm.nuclear.ext.service.CommonSetServiceExt;
+import com.aimsphm.nuclear.common.service.CommonSetService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +29,7 @@ import java.util.List;
 @RequestMapping(value = "/common/set", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonSetController {
     @Autowired
-    private CommonSetServiceExt iCommonSetServiceExt;
+    private CommonSetService iCommonSetServiceExt;
 
     @GetMapping("list")
     @ApiOperation(value = "机组信息分页查询")

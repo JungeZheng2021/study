@@ -1,10 +1,9 @@
 package com.aimsphm.nuclear.core.controller;
 
-import com.aimsphm.nuclear.common.entity.CommonSystemDO;
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
-import com.aimsphm.nuclear.ext.service.JobDeviceStatusServiceExt;
+import com.aimsphm.nuclear.common.service.JobDeviceStatusService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +28,7 @@ import java.util.List;
 @RequestMapping(value = "/job/deviceStatus", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JobDeviceStatusController {
     @Autowired
-    private JobDeviceStatusServiceExt iJobDeviceStatusServiceExt;
+    private JobDeviceStatusService iJobDeviceStatusServiceExt;
 
     @GetMapping("list")
     @ApiOperation(value = "设备状态分页查询")

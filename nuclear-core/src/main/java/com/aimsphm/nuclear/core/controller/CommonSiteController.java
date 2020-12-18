@@ -4,7 +4,7 @@ import com.aimsphm.nuclear.common.entity.CommonSiteDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
-import com.aimsphm.nuclear.ext.service.CommonSiteServiceExt;
+import com.aimsphm.nuclear.common.service.CommonSiteService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +29,7 @@ import java.util.List;
 @RequestMapping(value = "/common/site", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonSiteController {
     @Autowired
-    private CommonSiteServiceExt iCommonSiteServiceExt;
+    private CommonSiteService iCommonSiteServiceExt;
 
     @GetMapping("list")
     @ApiOperation(value = "电厂信息分页查询")

@@ -3,9 +3,8 @@ package com.aimsphm.nuclear.opc.job;
 import com.aimsphm.nuclear.opc.client.MqPushClient;
 import com.aimsphm.nuclear.opc.model.DataItem;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
-import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class MqClientPushJob {
     private MqPushClient client;
 
     @Autowired
-    private CommonMeasurePointServiceExt pointServiceExt;
+    private CommonMeasurePointService pointServiceExt;
 
     /**
      * 定时器 每10秒执行一次

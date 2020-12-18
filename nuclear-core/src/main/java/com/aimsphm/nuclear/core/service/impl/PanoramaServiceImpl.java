@@ -3,11 +3,11 @@ package com.aimsphm.nuclear.core.service.impl;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
+import com.aimsphm.nuclear.common.service.JobDeviceStatusService;
 import com.aimsphm.nuclear.core.entity.vo.PanoramaVO;
 import com.aimsphm.nuclear.core.service.MonitoringService;
 import com.aimsphm.nuclear.core.service.PanoramaService;
-import com.aimsphm.nuclear.ext.service.CommonDeviceServiceExt;
-import com.aimsphm.nuclear.ext.service.JobDeviceStatusServiceExt;
+import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,9 +42,9 @@ import static com.aimsphm.nuclear.core.constant.CoreConstants.PANORAMA_TRANSFINI
 public class PanoramaServiceImpl implements PanoramaService {
 
     @Autowired
-    private CommonDeviceServiceExt deviceServiceExt;
+    private CommonDeviceService deviceService;
     @Autowired
-    private JobDeviceStatusServiceExt deviceStatusServiceExt;
+    private JobDeviceStatusService deviceStatusService;
     @Autowired
     private MonitoringService monitoringService;
 
@@ -58,7 +57,7 @@ public class PanoramaServiceImpl implements PanoramaService {
         } else {
             wrapper.and(w -> w.in(CommonDeviceDO::getSubSystemId, 1, 2)).orderByAsc(CommonDeviceDO::getSort);
         }
-        List<CommonDeviceDO> list = deviceServiceExt.list(wrapper);
+        List<CommonDeviceDO> list = deviceService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return vo;
         }
@@ -68,7 +67,7 @@ public class PanoramaServiceImpl implements PanoramaService {
     private PanoramaVO getPanoramaVO(CommonDeviceDO device) {
         PanoramaVO vo = new PanoramaVO();
         Long deviceId = device.getId();
-        JobDeviceStatusDO status = deviceStatusServiceExt.getDeviceRunningStatus(deviceId);
+        JobDeviceStatusDO status = deviceStatusService.getDeviceRunningStatus(deviceId);
         if (Objects.isNull(status)) {
             return vo;
         }

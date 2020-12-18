@@ -3,7 +3,7 @@ package com.aimsphm.nuclear.core.controller;
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
-import com.aimsphm.nuclear.ext.service.JobAlarmEventServiceExt;
+import com.aimsphm.nuclear.common.service.JobAlarmEventService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping(value = "/job/alarmEvent", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JobAlarmEventController {
     @Autowired
-    private JobAlarmEventServiceExt iJobAlarmEventServiceExt;
+    private JobAlarmEventService iJobAlarmEventServiceExt;
 
     @GetMapping("list")
     @ApiOperation(value = "报警事件分页查询")

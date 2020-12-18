@@ -10,8 +10,8 @@ import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
-import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
-import com.aimsphm.nuclear.ext.service.SparkDownSampleServiceExt;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
+import com.aimsphm.nuclear.common.service.SparkDownSampleService;
 import com.aimsphm.nuclear.history.entity.enums.TableNameEnum;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataWithThresholdVO;
@@ -50,9 +50,9 @@ import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
 public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     @Autowired
-    private CommonMeasurePointServiceExt serviceExt;
+    private CommonMeasurePointService serviceExt;
     @Autowired
-    private SparkDownSampleServiceExt downSampleServiceExt;
+    private SparkDownSampleService downSampleServiceExt;
 
     private HBaseUtil hBase;
 

@@ -4,7 +4,7 @@ import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
-import com.aimsphm.nuclear.ext.service.CommonDeviceDetailsServiceExt;
+import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +29,7 @@ import java.util.List;
 @RequestMapping(value = "/common/device/details", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonDeviceDetailsController {
     @Autowired
-    private CommonDeviceDetailsServiceExt iCommonDeviceDetailsServiceExt;
+    private CommonDeviceDetailsService iCommonDeviceDetailsServiceExt;
 
     @GetMapping("list")
     @ApiOperation(value = "设备详细信息分页查询")

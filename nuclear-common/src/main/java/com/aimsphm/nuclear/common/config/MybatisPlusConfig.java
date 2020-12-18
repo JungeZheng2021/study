@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
  * @Version: 1.0
  */
 @Configuration
-@MapperScan("com.aimsphm.nuclear.ext.mapper**")
+@MapperScan("com.aimsphm.nuclear.common.mapper**")
 @ConditionalOnProperty(prefix = "spring.config", name = "enableMybatisPlus", havingValue = "true")
 public class MybatisPlusConfig {
 

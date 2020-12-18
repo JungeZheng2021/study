@@ -5,7 +5,7 @@ import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
-import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,7 +31,7 @@ import java.util.Set;
 @RequestMapping(value = "/common/measurePoint", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonMeasurePointController {
     @Autowired
-    private CommonMeasurePointServiceExt iCommonMeasurePointServiceExt;
+    private CommonMeasurePointService iCommonMeasurePointServiceExt;
 
     @GetMapping("list")
     @ApiOperation(value = "测点信息分页查询")

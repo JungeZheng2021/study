@@ -3,7 +3,7 @@ package com.aimsphm.nuclear.core.controller;
 import com.aimsphm.nuclear.common.entity.CommonSensorDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
-import com.aimsphm.nuclear.ext.service.CommonSensorServiceExt;
+import com.aimsphm.nuclear.common.service.CommonSensorService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +29,7 @@ import java.util.UUID;
 @RequestMapping(value = "/common/sensor", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonSensorController {
     @Autowired
-    private CommonSensorServiceExt iCommonSensorServiceExt;
+    private CommonSensorService iCommonSensorServiceExt;
 
     @GetMapping("list")
     @ApiOperation(value = "传感器信息分页查询")

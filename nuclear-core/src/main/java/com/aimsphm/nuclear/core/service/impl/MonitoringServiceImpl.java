@@ -7,11 +7,12 @@ import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.enums.*;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
+import com.aimsphm.nuclear.common.mapper.JobAlarmEventMapper;
+import com.aimsphm.nuclear.common.service.*;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.core.enums.PointVisibleEnum;
 import com.aimsphm.nuclear.core.service.MonitoringService;
-import com.aimsphm.nuclear.ext.mapper.JobAlarmEventMapperExt;
 import com.aimsphm.nuclear.ext.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -43,17 +44,17 @@ import static com.aimsphm.nuclear.core.constant.CoreConstants.*;
 @Service
 public class MonitoringServiceImpl implements MonitoringService {
     @Autowired
-    private CommonMeasurePointServiceExt pointServiceExt;
+    private CommonMeasurePointService pointService;
     @Autowired
-    private JobAlarmEventServiceExt eventServiceExt;
+    private JobAlarmEventService eventService;
     @Autowired
-    private JobAlarmEventMapperExt eventMapperExt;
+    private JobAlarmEventMapper eventMapper;
     @Autowired
-    private CommonDeviceServiceExt deviceServiceExt;
+    private CommonDeviceService deviceService;
     @Autowired
     private RedisDataService redisDataService;
     @Autowired
-    private JobDeviceStatusServiceExt statusServiceExt;
+    private JobDeviceStatusService statusService;
 
     /**
      * 时间戳长度
@@ -61,7 +62,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     private static final Integer TIMESTAMPS_LENGTH = 13;
 
     @Autowired
-    private CommonDeviceDetailsServiceExt detailsServiceExt;
+    private CommonDeviceDetailsService detailsService;
 
     @Override
     public Map<String, MeasurePointVO> getMonitorInfo(Long deviceId) {
@@ -77,7 +78,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     private LambdaQueryWrapper<CommonMeasurePointDO> initWrapper(Long deviceId) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
-        CommonDeviceDO device = deviceServiceExt.getById(deviceId);
+        CommonDeviceDO device = deviceService.getById(deviceId);
         if (Objects.isNull(device)) {
             return wrapper;
         }
@@ -116,12 +117,12 @@ public class MonitoringServiceImpl implements MonitoringService {
         DeviceStatusVO status = new DeviceStatusVO();
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
         wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).orderByDesc(JobDeviceStatusDO::getId).last(" limit 1");
-        JobDeviceStatusDO one = statusServiceExt.getOne(wrapper);
+        JobDeviceStatusDO one = statusService.getOne(wrapper);
         status.setStatus(Objects.isNull(one) ? DeviceHealthEnum.Stop.getValue() : one.getStatus());
         CommonQueryBO bo = new CommonQueryBO();
         bo.setDeviceId(deviceId);
         bo.setVisible(0);
-        List<CommonDeviceDetailsDO> list = detailsServiceExt.listDetailByConditions(bo);
+        List<CommonDeviceDetailsDO> list = detailsService.listDetailByConditions(bo);
         TimeRangeQueryBO rangeQueryBO = new TimeRangeQueryBO();
         if (CollectionUtils.isNotEmpty(list)) {
             CommonDeviceDetailsDO totalTImeStartTime = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn()) && TOTAL_RUNNING_DURATION.equals(item.getFieldNameEn())).findFirst().orElse(null);
@@ -140,7 +141,7 @@ public class MonitoringServiceImpl implements MonitoringService {
             stop.ge(JobDeviceStatusDO::getGmtStart, rangeQueryBO.getStart());
         }
         rangeQueryBO.setEnd(System.currentTimeMillis());
-        int count = statusServiceExt.count(stop);
+        int count = statusService.count(stop);
         status.setStopTimes(Objects.isNull(status.getStopTimes()) ? count : count + status.getStopTimes());
         Map<Integer, Long> times = listRunningDuration(deviceId, rangeQueryBO);
         if (MapUtils.isNotEmpty(times)) {
@@ -159,13 +160,13 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (Objects.isNull(statusVO.getStopTimes()) && StringUtils.isEmpty(statusVO.getStartTime()) && Objects.isNull(statusVO.getTotalRunningTime())) {
             return false;
         }
-        CommonDeviceDO device = deviceServiceExt.getById(statusVO.getDeviceId());
+        CommonDeviceDO device = deviceService.getById(statusVO.getDeviceId());
         if (Objects.isNull(device)) {
             throw new CustomMessageException("要修改的设备不存在");
         }
         List<CommonDeviceDetailsDO> list = initDefaultConfig(device);
         updateDetails(list, statusVO);
-        return detailsServiceExt.updateBatchById(list);
+        return detailsService.updateBatchById(list);
     }
 
     private void updateDetails(List<CommonDeviceDetailsDO> list, DeviceStatusVO statusVO) {
@@ -190,7 +191,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         CommonQueryBO bo = new CommonQueryBO();
         bo.setDeviceId(device.getId());
         bo.setVisible(0);
-        List<CommonDeviceDetailsDO> list = detailsServiceExt.listDetailByConditions(bo);
+        List<CommonDeviceDetailsDO> list = detailsService.listDetailByConditions(bo);
         if (CollectionUtils.isNotEmpty(list)) {
             return list;
         }
@@ -213,7 +214,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         stopTime.setFieldNameEn(STOP_TIMES);
         startTime.setUnit(UnitEnum.TIMES.getValue().toString());
         List<CommonDeviceDetailsDO> details = Lists.newArrayList(startTime, totalTime, stopTime);
-        detailsServiceExt.saveBatch(details);
+        detailsService.saveBatch(details);
         return details;
     }
 
@@ -224,7 +225,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         Long endTime = range.getEnd();
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
         wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).ge(JobDeviceStatusDO::getGmtStart, new Date(startTime)).le(JobDeviceStatusDO::getGmtStart, new Date(endTime));
-        List<JobDeviceStatusDO> list = statusServiceExt.list(wrapper);
+        List<JobDeviceStatusDO> list = statusService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
@@ -268,11 +269,11 @@ public class MonitoringServiceImpl implements MonitoringService {
 
 
     private List<LabelVO> listWarmingPointByDateDistribution(Long deviceId) {
-        return eventMapperExt.selectWarmingPointsByDateDistribution(deviceId);
+        return eventMapper.selectWarmingPointsByDateDistribution(deviceId);
     }
 
     private List<LabelVO> listWarmingPointByPointType(Long deviceId, TimeRangeQueryBO range) {
-        List<LabelVO> pointList = eventMapperExt.selectWarmingPointsByDeviceId(deviceId, range);
+        List<LabelVO> pointList = eventMapper.selectWarmingPointsByDeviceId(deviceId, range);
         if (CollectionUtils.isEmpty(pointList)) {
             return Lists.newArrayList();
         }
@@ -283,7 +284,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     private List<List<LabelVO>> listWarmingPointByAlarmTypeAndLevel(Long deviceId, TimeRangeQueryBO range) {
         LambdaQueryWrapper<JobAlarmEventDO> wrapper = Wrappers.lambdaQuery(JobAlarmEventDO.class);
         wrapper.eq(JobAlarmEventDO::getDeviceId, deviceId).ge(JobAlarmEventDO::getGmtLastAlarm, new Date(range.getStart())).le(JobAlarmEventDO::getGmtLastAlarm, new Date(range.getEnd()));
-        List<JobAlarmEventDO> list = eventServiceExt.list(wrapper);
+        List<JobAlarmEventDO> list = eventService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return Lists.newArrayList(Lists.newArrayList(), Lists.newArrayList());
         }
@@ -296,11 +297,11 @@ public class MonitoringServiceImpl implements MonitoringService {
     }
 
     private List<MeasurePointVO> listPointByWrapper(LambdaQueryWrapper<CommonMeasurePointDO> wrapper) {
-        List<CommonMeasurePointDO> list = pointServiceExt.list(wrapper);
+        List<CommonMeasurePointDO> list = pointService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        Set<String> tagList = list.stream().map(item -> pointServiceExt.getStoreKey(item)).collect(Collectors.toSet());
+        Set<String> tagList = list.stream().map(item -> pointService.getStoreKey(item)).collect(Collectors.toSet());
         if (CollectionUtils.isEmpty(tagList)) {
             return null;
         }
@@ -319,13 +320,13 @@ public class MonitoringServiceImpl implements MonitoringService {
     public List<MeasurePointVO> updatePointsData(boolean defaultValue) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
         wrapper.last("and visible%" + PointVisibleEnum.DEVICE_MONITOR.getCategory() + "=0");
-        List<CommonMeasurePointDO> list = pointServiceExt.list(wrapper);
+        List<CommonMeasurePointDO> list = pointService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
-            pointServiceExt.clearAllPointsData();
+            pointService.clearAllPointsData();
             return null;
         }
         list.stream().forEach(item -> {
-            String storeKey = pointServiceExt.getStoreKey(item);
+            String storeKey = pointService.getStoreKey(item);
             Object obj = redisDataService.getByKey(storeKey);
             MeasurePointVO vo = new MeasurePointVO();
             if (Objects.nonNull(obj)) {
@@ -339,9 +340,9 @@ public class MonitoringServiceImpl implements MonitoringService {
                 System.out.println(vo.getValue());
             }
             BeanUtils.copyProperties(item, vo);
-            pointServiceExt.store2Redis(vo, defaultValue ? new Random().nextDouble() : null);
+            pointService.store2Redis(vo, defaultValue ? new Random().nextDouble() : null);
         });
-        return redisDataService.listPointByRedisKey(list.stream().map(item -> pointServiceExt.getStoreKey(item)).collect(Collectors.toSet()));
+        return redisDataService.listPointByRedisKey(list.stream().map(item -> pointService.getStoreKey(item)).collect(Collectors.toSet()));
     }
 
 }

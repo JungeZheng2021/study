@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.core.test;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
-import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public class NuclearCoreApplicationTest {
     private static final Logger log = LoggerFactory.getLogger(NuclearCoreApplicationTest.class);
 
     @Autowired
-    private CommonMeasurePointServiceExt serviceExt;
+    private CommonMeasurePointService serviceExt;
 
     @Test
     public void testContent() {

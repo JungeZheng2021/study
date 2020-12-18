@@ -6,7 +6,7 @@ import com.aimsphm.nuclear.data.entity.dto.PacketDTO;
 import com.aimsphm.nuclear.data.entity.dto.SensorDataDTO;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
-import com.aimsphm.nuclear.ext.service.CommonMeasurePointServiceExt;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.PipedReader;
 import java.util.*;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
@@ -42,7 +41,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
     @Autowired
     private HBaseService hBaseService;
     @Autowired
-    private CommonMeasurePointServiceExt pointServiceExt;
+    private CommonMeasurePointService pointServiceExt;
     /**
      * 需要存储到redis中的特征列表
      */
