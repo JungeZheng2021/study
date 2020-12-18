@@ -21,8 +21,7 @@ import java.util.*;
 import static com.aimsphm.nuclear.generator.BasicConstant.*;
 import static com.aimsphm.nuclear.generator.PackageInfoConstant.*;
 import static com.aimsphm.nuclear.generator.TemplateConstant.*;
-import static com.baomidou.mybatisplus.core.toolkit.StringPool.SLASH;
-import static com.baomidou.mybatisplus.core.toolkit.StringPool.UNDERSCORE;
+import static com.baomidou.mybatisplus.core.toolkit.StringPool.*;
 
 /**
  * @Package: com.aimsphm.nuclear.generator
@@ -152,6 +151,12 @@ public class GeneratorApplication {
                     }
                     sb.append(SLASH + CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, url));
                     map.put(tableName + "path", sb.toString());
+                }
+                String format = String.format(Objects.isNull(globalConfig().getEntityName()) ? EMPTY : globalConfig().getEntityName(), EMPTY);
+                //配置原实体名称
+                if (StringUtils.isNotBlank(format)) {
+                    this.getConfig().getTableInfoList().stream().filter(item -> item.getEntityName().endsWith(format)).
+                            forEach(item -> map.put(item.getEntityName(), item.getEntityName().substring(0, item.getEntityName().lastIndexOf(format))));
                 }
                 this.setMap(map);
             }

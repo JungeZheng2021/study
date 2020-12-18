@@ -35,7 +35,8 @@ public final class BasicConstant {
 //            , "common_sensor"
 //            , "common_measure_point"
 //            "job_device_status"
-            "spark_down_sample_annually"
+            "algorithm_config"
+//            "spark_down_sample_annually"
 //            , "job_alarm_event"
     };
 

@@ -35,7 +35,7 @@ open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperNam
 public class ${table.serviceName}${cfg.serviceImplNameFix} extends ${table.serviceImplName}<${table.mapperName}, ${entity}> implements ${table.serviceName}${cfg.classNameExt} {
 
     @Override
-    public Page<${entity}> list${entity}ByPageWithParams(QueryBO<${entity}> queryBO) {
+    public Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(QueryBO<${entity}> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
             queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }

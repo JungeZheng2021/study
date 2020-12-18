@@ -26,6 +26,6 @@ public interface ${table.serviceName}${cfg.classNameExt} extends ${table.service
      * @param queryBO 查询条件
      * @return
      */
-    Page<${entity}> list${entity}ByPageWithParams(QueryBO<${entity}> queryBO);
+    Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(QueryBO<${entity}> queryBO);
 }
 #end
