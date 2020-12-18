@@ -2,6 +2,10 @@ package ${package.Service};
 
 import ${package.Entity}.${entity};
 import ${superServiceClassPackage};
+#if(!$!{cfg.isCreateExt})
+import ${package.Entity}.bo.QueryBO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+#end
 
 /**
  * @Package: ${package.Service}
@@ -17,6 +21,16 @@ import ${superServiceClassPackage};
 interface ${table.serviceName} : ${superServiceClass}<${entity}>
 #else
 public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
+    ##不需要扩展
+#if(!$!{cfg.isCreateExt})
 
+    /**
+     * 根据条件获取分页查询数据
+     *
+     * @param queryBO 查询条件
+     * @return
+     */
+    Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(QueryBO<${entity}> queryBO);
+#end
 }
 #end

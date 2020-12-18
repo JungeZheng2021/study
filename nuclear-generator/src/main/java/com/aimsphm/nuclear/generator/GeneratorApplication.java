@@ -44,19 +44,21 @@ public class GeneratorApplication {
      * 执行自动代码生成程序
      */
     private static void builder() {
-        builder(false);
+        builder(false, true);
     }
 
+
     /**
-     * 执行自动代码生成程序
+     * 自动执行builder
      *
-     * @param isCreateExt
+     * @param isCreateExt    是否创建扩展类
+     * @param isFileOverride 是否覆盖已经存在的文件
      */
-    private static void builder(boolean isCreateExt) {
+    private static void builder(boolean isCreateExt, boolean isFileOverride) {
         new AutoGenerator().setGlobalConfig(globalConfig())
                 .setDataSource(dataSourceConfig())
                 .setStrategy(strategyConfig())
-                .setCfg(injectionConfig(isCreateExt))
+                .setCfg(injectionConfig(isCreateExt, isFileOverride))
                 .setPackageInfo(
                         new PackageConfig()
                                 .setParent(PACKAGE_PARENT)
@@ -112,8 +114,9 @@ public class GeneratorApplication {
      * 自定义配置
      *
      * @param isCreateExt
+     * @param isFileOverride
      */
-    private static InjectionConfig injectionConfig(boolean isCreateExt) {
+    private static InjectionConfig injectionConfig(boolean isCreateExt, boolean isFileOverride) {
         return new InjectionConfig() {
             @Override
             public void initMap() {
@@ -136,6 +139,8 @@ public class GeneratorApplication {
                 map.put("serviceImplNameFix", EXT_SERVICE_CLASSNAME_IMPL);
                 //类名扩展后缀
                 map.put("classNameExt", EXT_ClASS_NAME);
+                //是否生成扩展类
+                map.put("isCreateExt", isCreateExt);
                 for (String tableName : TABLES) {
                     //指定每个类的serialVersionUID
                     long serialVersionUID = UUID.nameUUIDFromBytes(tableName.getBytes()).getLeastSignificantBits();
@@ -167,19 +172,28 @@ public class GeneratorApplication {
                     File file = new File(filePath);
                     //是否是扩展文件
                     boolean extFile = filePath.contains(EXT_ClASS_NAME) || filePath.contains(CONTROLLER_CLASS_NAME);
+                    configBuilder.getGlobalConfig().getEntityName();
                     //文件是否存在
                     boolean exist = file.exists();
-                    //如果需要强制生成可设置isCreateExt字段为true,如果扩展类曾经生成过就跳过生成
-                    if (!isCreateExt && exist && extFile) {
+                    //已经生成的扩展类不需要覆盖
+                    if (exist && extFile) {
                         return false;
                     }
+                    //文件不存在的话直接创建
                     if (!exist) {
                         file.getParentFile().mkdirs();
+                        return true;
                     }
-                    return !exist || configBuilder.getGlobalConfig().isFileOverride();
+                    //如果没有扩展类 -service文件也不能更新[里面已经有些逻辑了] - *Mapper.java文件也不能更新
+                    boolean overrideService = !isCreateExt && (filePath.contains("service") || (filePath.endsWith(DOT_JAVA) && filePath.contains("Mapper")));
+                    if (overrideService) {
+                        return false;
+                    }
+                    //是配置了覆盖的话会创建文件
+                    return configBuilder.getGlobalConfig().isFileOverride() || isFileOverride;
                 })
                 // 自定义输出文件
-                .setFileOutConfigList(fileOutConfigList());
+                .setFileOutConfigList(fileOutConfigList(isCreateExt));
     }
 
     /**
@@ -245,12 +259,13 @@ public class GeneratorApplication {
     }
 
     /**
-     * 自定义输出路径
+     * 自定义输出路径-包括扩展
      *
      * @param
+     * @param isCreateExt
      * @return
      */
-    private static List<FileOutConfig> fileOutConfigList() {
+    private static List<FileOutConfig> fileOutConfigList(boolean isCreateExt) {
         List<FileOutConfig> list = new ArrayList<>();
         // 当前项目路径
         String projectPath = System.getProperty("user.dir");
@@ -298,27 +313,29 @@ public class GeneratorApplication {
                 return projectPath + XML_OUTPUT_PATH_EXT + tableInfo.getMapperName() + EXT_ClASS_NAME + StringPool.DOT_XML;
             }
         });
-        // mapperExt文件输出
-        list.add(new FileOutConfig(MAPPER_TEMPLATE_EXT) {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                return projectPath + MAPPER_OUTPUT_PATH_EXT + tableInfo.getMapperName() + EXT_ClASS_NAME + StringPool.DOT_JAVA;
-            }
-        });
-        // serviceExt文件输出
-        list.add(new FileOutConfig(SERVICE_TEMPLATE_EXT) {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                return projectPath + SERVICE_OUTPUT_PATH_EXT + tableInfo.getServiceName() + EXT_ClASS_NAME + StringPool.DOT_JAVA;
-            }
-        });
-        // serviceExt impl文件输出
-        list.add(new FileOutConfig(SERVICE_IMPL_TEMPLATE_EXT) {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                return projectPath + SERVICE_IMPL_OUTPUT_PATH_EXT + tableInfo.getServiceName() + EXT_SERVICE_CLASSNAME_IMPL + StringPool.DOT_JAVA;
-            }
-        });
+        if (isCreateExt) {
+            // mapperExt文件输出
+            list.add(new FileOutConfig(MAPPER_TEMPLATE_EXT) {
+                @Override
+                public String outputFile(TableInfo tableInfo) {
+                    return projectPath + MAPPER_OUTPUT_PATH_EXT + tableInfo.getMapperName() + EXT_ClASS_NAME + StringPool.DOT_JAVA;
+                }
+            });
+            // serviceExt文件输出
+            list.add(new FileOutConfig(SERVICE_TEMPLATE_EXT) {
+                @Override
+                public String outputFile(TableInfo tableInfo) {
+                    return projectPath + SERVICE_OUTPUT_PATH_EXT + tableInfo.getServiceName() + EXT_ClASS_NAME + StringPool.DOT_JAVA;
+                }
+            });
+            // serviceExt impl文件输出
+            list.add(new FileOutConfig(SERVICE_IMPL_TEMPLATE_EXT) {
+                @Override
+                public String outputFile(TableInfo tableInfo) {
+                    return projectPath + SERVICE_IMPL_OUTPUT_PATH_EXT + tableInfo.getServiceName() + EXT_SERVICE_CLASSNAME_IMPL + StringPool.DOT_JAVA;
+                }
+            });
+        }
         //----------------------------------------------------------------------------------------------------
 
         // controller文件输出

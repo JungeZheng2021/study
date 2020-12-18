@@ -3,9 +3,23 @@ package ${package.ServiceImpl};
 import ${package.Entity}.${entity};
 import ${package.Mapper}.${table.mapperName};
 import ${package.Service}.${table.serviceName};
+#if($!{cfg.isCreateExt})
 import ${superServiceImplClassPackage};
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+#else
+import ${package.Entity}.bo.ConditionsQueryBO;
+import ${package.Entity}.bo.QueryBO;
+import ${superServiceImplClassPackage};
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.CaseFormat;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.Objects;
+
+#end
 /**
  * @Package: ${package.ServiceImpl}
  * @Description: <$!{table.comment}服务实现类>
@@ -16,14 +30,33 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-##@Service
 #if(${kotlin})
 open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>(), ${table.serviceName} {
 
 }
-#else
-##@ConditionalOnProperty(prefix = "spring.config-service", name = "enable", havingValue = "true", matchIfMissing = false)
+#elseif(${cfg.isCreateExt})
 public class ${table.serviceImplName}<M extends BaseMapper<T>, T> extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
 
+}
+#else
+@Service
+@ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
+public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+
+    @Override
+    public Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(QueryBO<${entity}> queryBO) {
+        if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
+            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+        }
+        LambdaQueryWrapper<${entity}> wrapper = queryBO.lambdaQuery();
+        ConditionsQueryBO query = queryBO.getQuery();
+        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+##            wrapper.ge(${entity}::getGmtLastAlarm, new Date(query.getStart())).le(JobAlarmEventDO::getGmtLastAlarm, new Date(query.getEnd()));
+        }
+        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
+##         wrapper.like(JobAlarmEventDO::getAlarmContent, queryBO.getQuery().getKeyword());
+        }
+        return this.page(queryBO.getPage(), wrapper);
+    }
 }
 #end

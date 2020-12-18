@@ -3,7 +3,11 @@ package ${cfg.controllerPackage};
 import ${package.Entity}.${entity};
 import ${package.Entity}.bo.ConditionsQueryBO;
 import ${package.Entity}.bo.QueryBO;
+#if(${cfg.isCreateExt})
 import ${cfg.extPackagePre}.${cfg.service}.${table.serviceName}${cfg.classNameExt};
+#else
+import ${package.Service}.${table.serviceName};
+#end
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,45 +33,48 @@ import java.util.List;
 @Api(tags = "$!{table.comment}-相关接口")
 @RequestMapping(value = "${cfg.get($path)}", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ${table.controllerName} {
-##    @Autowired
-##    private ${table.serviceName} i${table.serviceName};
+
     @Autowired
-    private ${table.serviceName}${cfg.classNameExt} i${table.serviceName}${cfg.classNameExt};
+#if(${cfg.isCreateExt})
+    private ${table.serviceName}${cfg.classNameExt} service;
+#else
+    private ${table.serviceName} service;
+#end
 
     @GetMapping("list")
     @ApiOperation(value = "$!{table.comment}分页查询", notes = "多条件组合查询")
     public Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(Page<${entity}> page, ${entity} entity, ConditionsQueryBO query) {
-        return i${table.serviceName}${cfg.classNameExt}.list${cfg.get(${entity})}ByPageWithParams(new QueryBO(page, entity, query));
+        return service.list${cfg.get(${entity})}ByPageWithParams(new QueryBO(page, entity, query));
     }
 
     @GetMapping("{id}")
     @ApiOperation(value = "$!{table.comment}获取某一实体")
     public ${entity} get${cfg.get(${entity})}Details(@PathVariable Long id) {
-        return i${table.serviceName}${cfg.classNameExt}.getById(id);
+        return service.getById(id);
     }
 
     @PostMapping
     @ApiOperation(value = "$!{table.comment}新增数据")
     public boolean save${cfg.get(${entity})}(@RequestBody ${entity} dto) {
-        return i${table.serviceName}${cfg.classNameExt}.save(dto);
+        return service.save(dto);
     }
 
     @PutMapping("{id}")
     @ApiOperation(value = "$!{table.comment}修改数据")
     public boolean modify${cfg.get(${entity})}(@RequestBody ${entity} dto, @PathVariable Long id) {
         dto.setId(id);
-        return i${table.serviceName}${cfg.classNameExt}.updateById(dto);
+        return service.updateById(dto);
     }
 
     @DeleteMapping("batch")
     @ApiOperation(value = "$!{table.comment}批量删除数据")
     public boolean batchRemove${cfg.get(${entity})}(@RequestParam(value = "ids") List<Long> ids) {
-        return i${table.serviceName}${cfg.classNameExt}.removeByIds(ids);
+        return service.removeByIds(ids);
     }
 
     @DeleteMapping("{id}")
     @ApiOperation(value = "$!{table.comment}删除数据")
     public boolean remove${cfg.get(${entity})}(@PathVariable Long id) {
-        return i${table.serviceName}${cfg.classNameExt}.removeById(id);
+        return service.removeById(id);
     }
 }
