@@ -14,7 +14,6 @@ import com.aimsphm.nuclear.common.service.CommonSubSystemService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +59,7 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
     @Override
     public List<CommonDeviceDetailsDO> listDetailByConditions(CommonQueryBO query) {
         LambdaQueryWrapper<CommonDeviceDetailsDO> wrapper = initWrapper(query);
-        if (Objects.nonNull(query.getVisible())) {
-            wrapper.last("and visible=" + query.getVisible());
-        }
+        wrapper.last("and visible=" + (Objects.isNull(query.getVisible()) ? 1 : query.getVisible()));
         return this.list(wrapper);
     }
 
