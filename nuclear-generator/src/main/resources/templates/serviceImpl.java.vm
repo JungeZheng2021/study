@@ -1,24 +1,25 @@
 package ${package.ServiceImpl};
 
 import ${package.Entity}.${entity};
+#if($!{cfg.isCreateExt})
 import ${package.Mapper}.${table.mapperName};
 import ${package.Service}.${table.serviceName};
-#if($!{cfg.isCreateExt})
 import ${superServiceImplClassPackage};
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 #else
 import ${package.Entity}.bo.ConditionsQueryBO;
 import ${package.Entity}.bo.QueryBO;
-import ${superServiceImplClassPackage};
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import ${superServiceImplClassPackage};
 import com.google.common.base.CaseFormat;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
-
 #end
 /**
  * @Package: ${package.ServiceImpl}

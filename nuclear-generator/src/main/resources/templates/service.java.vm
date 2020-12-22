@@ -1,11 +1,11 @@
 package ${package.Service};
 
 import ${package.Entity}.${entity};
-import ${superServiceClassPackage};
 #if(!$!{cfg.isCreateExt})
 import ${package.Entity}.bo.QueryBO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 #end
+import ${superServiceClassPackage};
 
 /**
  * @Package: ${package.Service}
