@@ -115,9 +115,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     @Override
     public DeviceStatusVO getRunningStatus(Long deviceId) {
         DeviceStatusVO status = new DeviceStatusVO();
-        LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
-        wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).orderByDesc(JobDeviceStatusDO::getId).last(" limit 1");
-        JobDeviceStatusDO one = statusService.getOne(wrapper);
+        JobDeviceStatusDO one = statusService.getDeviceRunningStatus(deviceId);
         status.setStatus(Objects.isNull(one) ? DeviceHealthEnum.Stop.getValue() : one.getStatus());
         CommonQueryBO bo = new CommonQueryBO();
         bo.setDeviceId(deviceId);

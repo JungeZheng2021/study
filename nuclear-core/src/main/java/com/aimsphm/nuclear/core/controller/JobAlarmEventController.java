@@ -1,6 +1,9 @@
 package com.aimsphm.nuclear.core.controller;
 
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
+import com.aimsphm.nuclear.common.entity.bo.AlarmEventQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.service.JobAlarmEventService;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -32,8 +36,14 @@ public class JobAlarmEventController {
 
     @GetMapping("list")
     @ApiOperation(value = "报警事件分页查询")
-    public Page<JobAlarmEventDO> listJobAlarmEventByPageWithParams(Page<JobAlarmEventDO> page, JobAlarmEventDO entity, ConditionsQueryBO query) {
+    public Page<JobAlarmEventDO> listJobAlarmEventByPageWithParams(Page<JobAlarmEventDO> page, JobAlarmEventDO entity, AlarmEventQueryBO query) {
         return iJobAlarmEventServiceExt.listJobAlarmEventByPageWithParams(new QueryBO(page, entity, query));
+    }
+
+    @GetMapping("list/export")
+    @ApiOperation(value = "报警事件导出")
+    public void listJobAlarmEventByPageWithParams(JobAlarmEventDO entity, AlarmEventQueryBO query, HttpServletResponse response) {
+        iJobAlarmEventServiceExt.listJobAlarmEventWithParams(new QueryBO(null, entity, query), response);
     }
 
     @GetMapping("{id}")
@@ -66,4 +76,11 @@ public class JobAlarmEventController {
     public boolean removeJobAlarmEventService(@PathVariable Long id) {
         return iJobAlarmEventServiceExt.removeById(id);
     }
+
+    @GetMapping("/points")
+    @ApiOperation(value = "报警事件中的测点列表")
+    public List<CommonMeasurePointDO> listPointByConditions(CommonQueryBO queryBO) {
+        return iJobAlarmEventServiceExt.listPointByConditions(queryBO);
+    }
+
 }

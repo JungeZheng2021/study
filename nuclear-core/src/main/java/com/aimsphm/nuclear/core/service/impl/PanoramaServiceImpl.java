@@ -4,6 +4,7 @@ import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
 import com.aimsphm.nuclear.common.service.JobDeviceStatusService;
+import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.core.entity.vo.PanoramaVO;
 import com.aimsphm.nuclear.core.service.MonitoringService;
 import com.aimsphm.nuclear.core.service.PanoramaService;
@@ -67,10 +68,11 @@ public class PanoramaServiceImpl implements PanoramaService {
     private PanoramaVO getPanoramaVO(CommonDeviceDO device) {
         PanoramaVO vo = new PanoramaVO();
         Long deviceId = device.getId();
-        JobDeviceStatusDO status = deviceStatusService.getDeviceRunningStatus(deviceId);
+        DeviceStatusVO status = monitoringService.getRunningStatus(device.getId());
         if (Objects.isNull(status)) {
             return vo;
         }
+        BeanUtils.copyProperties(device, vo);
         BeanUtils.copyProperties(status, vo);
         vo.setSystemId(device.getSystemId());
         vo.setSubSystemId(device.getSubSystemId());

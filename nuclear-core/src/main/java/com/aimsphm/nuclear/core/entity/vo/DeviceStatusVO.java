@@ -26,6 +26,12 @@ public class DeviceStatusVO extends JobDeviceStatusDO {
     @ApiModelProperty(value = "启动时间", notes = "")
     private Long startTime;
 
+    @ApiModelProperty(value = "持续运行时常", notes = "单位毫秒")
+    private Long continuousRunningTime;
+
+    @ApiModelProperty(value = "共计运行时常", notes = "单位毫秒")
+    private Long totalRunningTime;
+
     public DeviceStatusVO() {
         //初始化
         init();
