@@ -17,8 +17,6 @@ import java.util.List;
  */
 @Data
 public class HistoryDataVO {
-    @ApiModelProperty(value = "实测值", notes = "")
-    private List<List<Object>> actualData;
-//    @ApiModelProperty(value = "预测值", notes = "")
-//    private List<HBaseTimeSeriesDataDTO> forecastData;
+    @ApiModelProperty(value = "显示值", notes = "实测值、预测值、去噪处理[滑动平均值]")
+    private List<List<Object>> chartData;
 }

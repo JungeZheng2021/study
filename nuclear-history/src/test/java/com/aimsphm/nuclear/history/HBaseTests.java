@@ -56,6 +56,7 @@ public class HBaseTests {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         HBaseUtil hbaseUtil = new HBaseUtil(connection);
+
         Long start = 1600006002123L;
         Long end = System.currentTimeMillis();
         String tag = "6M2DVC003MI";

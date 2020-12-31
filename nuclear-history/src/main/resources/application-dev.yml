@@ -12,12 +12,11 @@ eureka:
 spring:
   application:
     name: history
-  config-service:
-    enable: true
   config:
     enableRedis: true
     enableHBase: true
     enableSwagger2: true
+    enableAlgorithm: true
     enableServiceExtImpl: true
     enableMybatisPlusDynamicTable: true
   #数据源
@@ -84,6 +83,8 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
+  global-config:
+    banner: false
 feign:
   hystrix:
     enabled: true #feign开启hystrix支持

@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.history.service;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
+import com.aimsphm.nuclear.history.entity.vo.EventDataVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 
 import java.util.List;
@@ -52,4 +53,12 @@ public interface HistoryQueryService {
      * @return
      */
     Map<String, HistoryDataVO> listHistoryDataWithPointIdsByGetList(HistoryQueryMultiBO queryMultiBO);
+
+    /**
+     * 从hbase中获取实测值、估计值、残差、获取实时报警等信息
+     *
+     * @param queryMultiBO
+     * @return
+     */
+    Map<String, EventDataVO> listDataWithPointList(HistoryQueryMultiBO queryMultiBO);
 }

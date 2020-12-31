@@ -1,18 +1,23 @@
 package com.aimsphm.nuclear.history.service.impl;
 
+import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
+import com.aimsphm.nuclear.algorithm.util.WhetherTreadLocal;
 import com.aimsphm.nuclear.common.config.DynamicTableTreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
+import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
 import com.aimsphm.nuclear.common.entity.SparkDownSample;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
+import com.aimsphm.nuclear.common.service.JobAlarmRealtimeService;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.SparkDownSampleService;
 import com.aimsphm.nuclear.history.entity.enums.TableNameEnum;
+import com.aimsphm.nuclear.history.entity.vo.EventDataVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataWithThresholdVO;
 import com.aimsphm.nuclear.history.service.HistoryQueryService;
@@ -22,6 +27,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Get;
@@ -29,6 +35,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,12 +53,15 @@ import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 @Service
 public class HistoryQueryServiceImpl implements HistoryQueryService {
 
-    @Autowired
+    @Resource
     private CommonMeasurePointService serviceExt;
-    @Autowired
+    @Resource
+    private JobAlarmRealtimeService realtimeService;
+    @Resource
     private SparkDownSampleService downSampleServiceExt;
 
     private HBaseUtil hBase;
@@ -100,8 +110,11 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         BeanUtils.copyProperties(single, featureBO);
         List<List<Object>> dataDTOS = listHistoryDataWithPointByScan(featureBO);
         HistoryDataVO vo = new HistoryDataWithThresholdVO();
-        BeanUtils.copyProperties(point, vo);
-        vo.setActualData(dataDTOS);
+        if (Objects.isNull(WhetherTreadLocal.INSTANCE.getWhether()) || WhetherTreadLocal.INSTANCE.getWhether()) {
+            BeanUtils.copyProperties(point, vo);
+            WhetherTreadLocal.INSTANCE.remove();
+        }
+        vo.setChartData(dataDTOS);
         return vo;
     }
 
@@ -114,11 +127,8 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     @Override
     public Map<String, HistoryDataVO> listHistoryDataWithPointIdsByScan(HistoryQueryMultiBO multi) {
+        checkParam(multi);
         HashMap<String, HistoryDataVO> result = new HashMap<>(16);
-        if (Objects.isNull(multi) || CollectionUtils.isEmpty(multi.getPointIds())
-                || Objects.isNull(multi.getEnd()) || Objects.isNull(multi.getStart()) || multi.getEnd() <= multi.getStart()) {
-            return result;
-        }
         Map<String, HistoryDataVO> data = listHistoryDataWithPointIdsFromMysql(multi);
         if (Objects.nonNull(data)) {
             return data;
@@ -155,9 +165,12 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             List<String> points = collect.get(pointId);
             String collect1 = points.stream().collect(Collectors.joining(COMMA));
             HistoryDataVO vo = new HistoryDataWithThresholdVO();
-            BeanUtils.copyProperties(point, vo);
+            if (Objects.isNull(WhetherTreadLocal.INSTANCE.getWhether()) || WhetherTreadLocal.INSTANCE.getWhether()) {
+                BeanUtils.copyProperties(point, vo);
+                WhetherTreadLocal.INSTANCE.remove();
+            }
             try {
-                vo.setActualData(mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class));
+                vo.setChartData(mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -219,6 +232,50 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             throw new CustomMessageException("查询历史数据失败");
         }
         return result;
+    }
+
+    @Override
+    public Map<String, EventDataVO> listDataWithPointList(HistoryQueryMultiBO multi) {
+        checkParam(multi);
+        HashMap<String, EventDataVO> data = Maps.newHashMap();
+        List<String> pointIds = multi.getPointIds();
+        try {
+            List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, multi.getStart(), multi.getEnd(), H_BASE_FAMILY_NPC_ESTIMATE, pointIds, multi.getModelId());
+            if (CollectionUtils.isEmpty(collect)) {
+                return null;
+            }
+            Map<String, List<PointEstimateDataBO>> collect1 = collect.stream().collect(Collectors.groupingBy(x -> x.getPointId()));
+            pointIds.stream().forEach(pointId -> {
+                EventDataVO vo = new EventDataVO();
+                CommonMeasurePointDO point = getPoint(pointId);
+                if (Objects.isNull(point)) {
+                    return;
+                }
+                BeanUtils.copyProperties(point, vo);
+                List<PointEstimateDataBO> v = collect1.get(pointId);
+                List actualData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getActual())).collect(Collectors.toList());
+                List estimatedData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getEstimate())).collect(Collectors.toList());
+                List residualData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getResidual())).collect(Collectors.toList());
+                vo.setActualData(actualData);
+                vo.setEstimatedData(estimatedData);
+                vo.setResidualData(residualData);
+                List<JobAlarmRealtimeDO> realtimeList = realtimeService.listRealTime(pointId, multi.getStart(), multi.getEnd(), multi.getModelId());
+                if (CollectionUtils.isNotEmpty(realtimeList)) {
+                    vo.setAlarmData(realtimeList.stream().map(x -> x.getGmtAlarmTime().getTime()).collect(Collectors.toList()));
+                }
+                data.put(pointId, vo);
+            });
+        } catch (IOException e) {
+            log.error("select Estimate data failed..{}", e);
+        }
+        return data;
+    }
+
+    private void checkParam(HistoryQueryMultiBO multi) {
+        if (Objects.isNull(multi) || CollectionUtils.isEmpty(multi.getPointIds())
+                || Objects.isNull(multi.getEnd()) || Objects.isNull(multi.getStart()) || multi.getEnd() <= multi.getStart()) {
+            throw new CustomMessageException("some parameter is missing");
+        }
     }
 
     private List<Get> initGetListByConditions(HistoryQueryMultiBO multi) {

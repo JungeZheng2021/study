@@ -2,17 +2,10 @@ hbase:
   config:
     properties:
       hbase.zookeeper.quorum: hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
-    fetchRegistry: true
-    register-with-eureka: false
-  instance:
-    prefer-ip-address: true
 server:
   port: 8083
   max-http-header-size: 10000000
+
 spring:
   main:
     allow-bean-definition-overriding: true
@@ -29,7 +22,7 @@ spring:
     username: root
     password: aims2016
     hikari:
-      pool-name: historyHikariPool
+      pool-name: coreHikariPool
       maximum-pool-size: 12
       connection-timeout: 30000
       minimum-idle: 10
@@ -72,6 +65,14 @@ spring:
     port: 25
     username: mail@aimsphm.com
     password: Qazx1234
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
+    fetchRegistry: true
+    register-with-eureka: false
+  instance:
+    prefer-ip-address: true
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   typeAliasesPackage: com.aimsphm.nuclear.*.entity
@@ -112,3 +113,4 @@ ribbon:
   ConnectTimeout: 3000
   # 请求处理的超时时间
   ReadTimeout: 60000
+
