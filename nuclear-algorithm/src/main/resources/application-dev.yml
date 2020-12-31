@@ -1,0 +1,115 @@
+hbase:
+  config:
+    properties:
+      hbase.zookeeper.quorum: hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181
+server:
+  port: 8085
+  max-http-header-size: 10000000
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  config:
+    enableRedis: true
+    enableHBase: true
+    enableSwagger2: true
+    enableAlgorithm: true
+    enableMybatisPlus: true
+    enableServiceExtImpl: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: aims2016
+    hikari:
+      pool-name: coreHikariPool
+      maximum-pool-size: 12
+      connection-timeout: 30000
+      minimum-idle: 10
+      idle-timeout: 500000
+      max-lifetime: 540000
+      connection-test-query: SELECT 1
+      auto-commit: true
+  rabbitmqconfig:
+    enable: true
+  rabbitmq:
+    first:
+      host: 192.168.16.44
+      port: 5672
+      username: admin
+      password: admin123$
+    second:
+      host: 192.168.16.45
+      port: 5672
+      username: admin
+      password: admin123$
+  redis:
+    password: aims2016
+    cluster:
+      nodes:
+        - 192.168.16.43:6378
+        - 192.168.16.43:6379
+        - 192.168.16.44:6378
+        - 192.168.16.44:6379
+        - 192.168.16.45:6378
+        - 192.168.16.45:6379
+      max-redirects: 5
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: 1000
+        min-idle: 20
+        max-idle: 50
+  mail:
+    host: 192.168.16.28
+    port: 25
+    username: mail@aimsphm.com
+    password: Qazx1234
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
+    fetchRegistry: true
+    register-with-eureka: false
+  instance:
+    prefer-ip-address: true
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  typeAliasesPackage: com.aimsphm.nuclear.*.entity
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 2
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+    #逻辑删除配置（下面3个配置）
+    logic-delete-value: 0
+    logic-not-delete-value: 1
+    # SQL 解析缓存，开启后多租户 @SqlParser 注解生效
+    sql-parser-cache: true
+    banner: false
+  configuration:
+    map-underscore-to-camel-case: true
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: false
+feign:
+  hystrix:
+    enabled: true #feign开启hystrix支持
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 40000
+        timeout:
+          enable: false
+ribbon:
+  ConnectTimeout: 3000
+  # 请求处理的超时时间
+  ReadTimeout: 60000
