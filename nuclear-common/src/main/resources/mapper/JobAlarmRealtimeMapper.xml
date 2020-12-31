@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO">
+        <result column="id" property="id"/>
+        <result column="sort" property="sort"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="alarm_code" property="alarmCode"/>
+        <result column="model_id" property="modelId"/>
+        <result column="sub_system_id" property="subSystemId"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="point_ids" property="pointIds"/>
+        <result column="gmt_alarm_time" property="gmtAlarmTime"/>
+        <result column="event_id" property="eventId"/>
+        <result column="evaluation" property="evaluation"/>
+        <result column="alarm_level" property="alarmLevel"/>
+        <result column="alarm_type" property="alarmType"/>
+        <result column="trend" property="trend"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        sort,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        alarm_code, model_id, sub_system_id, device_id, point_ids, gmt_alarm_time, event_id, evaluation, alarm_level, alarm_type, trend
+    </sql>
+
+</mapper>

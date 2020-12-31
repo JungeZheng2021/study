@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.aimsphm.nuclear.common.entity.JobDeviceStatusDO">
+<mapper namespace="com.aimsphm.nuclear.common.entity.AlgorithmDeviceModelDO">
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.JobDeviceStatusDO">
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmDeviceModelDO">
         <result column="id" property="id"/>
         <result column="sort" property="sort"/>
         <result column="creator" property="creator"/>
@@ -11,10 +11,14 @@
         <result column="gmt_modified" property="gmtModified"/>
         <result column="deleted" property="deleted"/>
         <result column="device_id" property="deviceId"/>
+        <result column="device_code" property="deviceCode"/>
+        <result column="algorithm_id" property="algorithmId"/>
+        <result column="pkl_path" property="pklPath"/>
+        <result column="device_model_name" property="deviceModelName"/>
+        <result column="remark" property="remark"/>
+        <result column="gmt_training_data_from" property="gmtTrainingDataFrom"/>
+        <result column="gmt_training_data_to" property="gmtTrainingDataTo"/>
         <result column="status" property="status"/>
-        <result column="status_duration" property="statusDuration"/>
-        <result column="gmt_start" property="gmtStart"/>
-        <result column="gmt_end" property="gmtEnd"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -26,7 +30,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        device_id, status, status_duration, gmt_start, gmt_end
+        device_id, device_code, algorithm_id, pkl_path, device_model_name, remark, gmt_training_data_from, gmt_training_data_to, status
     </sql>
 
 </mapper>

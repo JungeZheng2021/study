@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.aimsphm.nuclear.common.entity.JobDeviceStatusDO">
+<mapper namespace="com.aimsphm.nuclear.common.entity.AlgorithmConfigDO">
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.JobDeviceStatusDO">
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmConfigDO">
         <result column="id" property="id"/>
         <result column="sort" property="sort"/>
         <result column="creator" property="creator"/>
@@ -10,11 +10,12 @@
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
         <result column="deleted" property="deleted"/>
-        <result column="device_id" property="deviceId"/>
-        <result column="status" property="status"/>
-        <result column="status_duration" property="statusDuration"/>
-        <result column="gmt_start" property="gmtStart"/>
-        <result column="gmt_end" property="gmtEnd"/>
+        <result column="algorithm_name" property="algorithmName"/>
+        <result column="mode" property="mode"/>
+        <result column="algorithm_file_name" property="algorithmFileName"/>
+        <result column="folder_name" property="folderName"/>
+        <result column="algorithm_type" property="algorithmType"/>
+        <result column="invoking_url" property="invokingUrl"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -26,7 +27,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        device_id, status, status_duration, gmt_start, gmt_end
+        algorithm_name, mode, algorithm_file_name, folder_name, algorithm_type, invoking_url
     </sql>
 
 </mapper>
