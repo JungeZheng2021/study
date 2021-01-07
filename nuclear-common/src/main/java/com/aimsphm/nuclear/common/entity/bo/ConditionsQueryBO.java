@@ -15,6 +15,6 @@ import lombok.Data;
  */
 @Data
 public class ConditionsQueryBO extends TimeRangeQueryBO {
-    @ApiModelProperty(value = "结束时间")
+    @ApiModelProperty(value = "查询关键字")
     private String keyword;
 }

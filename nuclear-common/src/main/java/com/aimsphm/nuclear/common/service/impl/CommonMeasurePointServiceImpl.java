@@ -1,11 +1,13 @@
 package com.aimsphm.nuclear.common.service.impl;
 
+import com.aimsphm.nuclear.common.entity.AlgorithmModelPointDO;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
@@ -14,19 +16,16 @@ import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
 import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.CommonMeasurePointMapper;
-import com.aimsphm.nuclear.common.service.CommonDeviceService;
-import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
-import com.aimsphm.nuclear.common.service.CommonSubSystemService;
+import com.aimsphm.nuclear.common.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -34,6 +33,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -57,14 +57,25 @@ import static com.aimsphm.nuclear.common.constant.SymbolConstant.STAR;
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePointMapper, CommonMeasurePointDO> implements CommonMeasurePointService {
-    @Autowired
+    @Resource
     @Qualifier("redisTemplate")
     private RedisTemplate<String, Object> redis;
 
-    @Autowired
+    @Resource
     private CommonDeviceService deviceServiceExt;
-    @Autowired
+    @Resource
     private CommonSubSystemService subSystemServiceExt;
+    @Resource
+    private JobAlarmThresholdService thresholdService;
+    @Resource
+    private AlgorithmModelPointService algorithmModelPointService;
+
+    /**
+     * 缓存队列的长度
+     */
+    @Value("${customer.config.cache_queue_data_size:60}")
+    private Integer CACHE_QUEUE_DATA_SIZE;
+
 
     @Override
     public Page<CommonMeasurePointDO> listCommonMeasurePointByPageWithParams(QueryBO<CommonMeasurePointDO> queryBO) {
@@ -82,7 +93,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
 
     @Async
     @Override
-    public void updateMeasurePointsInRedis(String itemId, Double value) {
+    public void updateMeasurePointsInRedis(String itemId, Double value, Long timestamp) {
         if (StringUtils.isEmpty(itemId)) {
             return;
         }
@@ -91,6 +102,40 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             return;
         }
         vos.stream().forEach(item -> store2Redis(item, value));
+        //缓存指定长度的队列
+        cacheQueueData(vos, timestamp);
+        //        TODO :// 上线要将下列代码恢复
+//        thresholdService.saveOrUpdateThresholdAlarmList(vos);
+
+    }
+
+    /**
+     * 缓存队列数据
+     *
+     * @param vos
+     * @param timestamp
+     */
+    private void cacheQueueData(List<MeasurePointVO> vos, Long timestamp) {
+        for (MeasurePointVO point : vos) {
+            Long id = point.getId();
+            LambdaQueryWrapper<AlgorithmModelPointDO> query = Wrappers.lambdaQuery(AlgorithmModelPointDO.class);
+            query.eq(AlgorithmModelPointDO::getPointId, point.getId());
+            int count = algorithmModelPointService.count(query);
+            if (count == 0) {
+                continue;
+            }
+            String key = REDIS_QUEUE_REAL_TIME_PRE + id;
+            Long size = redis.opsForList().size(key);
+            HBaseTimeSeriesDataDTO data = new HBaseTimeSeriesDataDTO();
+            data.setValue(point.getValue());
+            data.setTimestamp(timestamp);
+            if (size.intValue() == CACHE_QUEUE_DATA_SIZE) {
+                redis.opsForList().rightPush(key, data);
+                redis.opsForList().leftPop(key);
+                continue;
+            }
+            redis.opsForList().rightPush(key, data);
+        }
     }
 
     @Override
@@ -245,6 +290,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             //等于1看作为异常
             if (Objects.nonNull(vo.getValue()) && vo.getValue().intValue() == 1) {
                 vo.setStatus(AlarmMessageEnum.ALARM_TEXT.getColor());
+                vo.setAlarmLevel(AlarmMessageEnum.ALARM_TEXT.getLevel());
                 vo.setStatusCause(AlarmMessageEnum.ALARM_TEXT.getText());
                 return true;
             }
@@ -254,12 +300,14 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         //高高报
         if (Objects.nonNull(vo.getThresholdHigher()) && Objects.nonNull(vo.getValue()) && vo.getValue() > vo.getThresholdHigher()) {
             vo.setStatus(AlarmMessageEnum.HIGH_HIGH_ALARM.getColor());
+            vo.setAlarmLevel(AlarmMessageEnum.HIGH_HIGH_ALARM.getLevel());
             vo.setStatusCause(AlarmMessageEnum.HIGH_HIGH_ALARM.getText() + vo.getThresholdHigher());
             return true;
         }
         //低低报
         if (Objects.nonNull(vo.getThresholdLower()) && Objects.nonNull(vo.getValue()) && vo.getValue() < vo.getThresholdLower()) {
             vo.setStatus(AlarmMessageEnum.LOW_LOW_ALARM.getColor());
+            vo.setAlarmLevel(AlarmMessageEnum.LOW_LOW_ALARM.getLevel());
             vo.setStatusCause(AlarmMessageEnum.LOW_LOW_ALARM.getText() + vo.getThresholdLower());
             return true;
         }
@@ -268,6 +316,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
                 && vo.getValue() > vo.getThresholdHigh() && vo.getValue() <= vo.getThresholdHigher();
         if (isHighAlarm) {
             vo.setStatus(AlarmMessageEnum.HIGH_ALARM.getColor());
+            vo.setAlarmLevel(AlarmMessageEnum.HIGH_ALARM.getLevel());
             vo.setStatusCause(AlarmMessageEnum.HIGH_ALARM.getText() + vo.getThresholdHigh());
             return true;
         }
@@ -276,18 +325,21 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
                 && vo.getValue() >= vo.getThresholdLower() && vo.getValue() < vo.getThresholdLow();
         if (isLowAlarm) {
             vo.setStatus(AlarmMessageEnum.LOW_ALARM.getColor());
+            vo.setAlarmLevel(AlarmMessageEnum.LOW_ALARM.getLevel());
             vo.setStatusCause(AlarmMessageEnum.LOW_ALARM.getText() + vo.getThresholdLow());
             return true;
         }
         //高预警
         if (Objects.nonNull(vo.getEarlyWarningHigh()) && Objects.nonNull(vo.getValue()) && vo.getValue() > vo.getEarlyWarningHigh()) {
             vo.setStatus(AlarmMessageEnum.HIGH_EARLY_ALARM.getColor());
+            vo.setAlarmLevel(AlarmMessageEnum.HIGH_EARLY_ALARM.getLevel());
             vo.setStatusCause(AlarmMessageEnum.HIGH_EARLY_ALARM.getText() + vo.getEarlyWarningHigh());
             return true;
         }
         //低预警
         if (Objects.nonNull(vo.getEarlyWarningLow()) && Objects.nonNull(vo.getValue()) && vo.getValue() < vo.getEarlyWarningLow()) {
             vo.setStatus(AlarmMessageEnum.LOW_EARLY_ALARM.getColor());
+            vo.setAlarmLevel(AlarmMessageEnum.LOW_EARLY_ALARM.getLevel());
             vo.setStatusCause(AlarmMessageEnum.LOW_EARLY_ALARM.getText() + vo.getEarlyWarningLow());
             return true;
         }

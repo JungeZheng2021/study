@@ -24,6 +24,9 @@ public class CommonQueryBO {
     @ApiModelProperty(value = "设备id", notes = "")
     private Long deviceId;
 
+    @ApiModelProperty(value = "模型id", notes = "传此参数就不考虑deviceId和subSystemId")
+    private Long modelId;
+
     @ApiModelProperty(value = "状态显示(质数的积)", notes = "总览/检测:3 数据分析:5 历史数据:7 11,13,17...")
     private Integer visible;
 

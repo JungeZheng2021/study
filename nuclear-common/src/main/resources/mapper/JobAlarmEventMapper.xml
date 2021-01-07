@@ -25,7 +25,7 @@
         <result column="alarm_reason" property="alarmReason"/>
         <result column="alarm_frequency" property="alarmFrequency"/>
         <result column="alarm_content" property="alarmContent"/>
-        <result column="event_status" property="eventStatus"/>
+        <result column="alarm_status" property="alarmStatus"/>
         <result column="gmt_first_alarm" property="gmtFirstAlarm"/>
         <result column="gmt_last_alarm" property="gmtLastAlarm"/>
         <result column="remark" property="remark"/>
@@ -40,7 +40,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        device_id, sub_system_id, model_id, device_code, device_name, point_ids, event_name, event_category, alarm_code, alarm_type, alarm_level, alarm_count, alarm_reason, alarm_frequency, alarm_content, event_status, gmt_first_alarm, gmt_last_alarm, remark
+        device_id, sub_system_id, model_id, device_code, device_name, point_ids, event_name, event_category, alarm_code, alarm_type, alarm_level, alarm_count, alarm_reason, alarm_frequency, alarm_content, alarm_status, gmt_first_alarm, gmt_last_alarm, remark
     </sql>
 
 </mapper>

@@ -2,9 +2,8 @@ package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
-import com.aimsphm.nuclear.common.entity.bo.AlarmEventQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.AlarmQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.service.JobAlarmEventService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,13 +35,13 @@ public class JobAlarmEventController {
 
     @GetMapping("list")
     @ApiOperation(value = "报警事件分页查询")
-    public Page<JobAlarmEventDO> listJobAlarmEventByPageWithParams(Page<JobAlarmEventDO> page, JobAlarmEventDO entity, AlarmEventQueryBO query) {
+    public Page<JobAlarmEventDO> listJobAlarmEventByPageWithParams(Page<JobAlarmEventDO> page, JobAlarmEventDO entity, AlarmQueryBO query) {
         return iJobAlarmEventServiceExt.listJobAlarmEventByPageWithParams(new QueryBO(page, entity, query));
     }
 
     @GetMapping("list/export")
     @ApiOperation(value = "报警事件导出")
-    public void listJobAlarmEventByPageWithParams(JobAlarmEventDO entity, AlarmEventQueryBO query, HttpServletResponse response) {
+    public void listJobAlarmEventByPageWithParams(JobAlarmEventDO entity, AlarmQueryBO query, HttpServletResponse response) {
         iJobAlarmEventServiceExt.listJobAlarmEventWithParams(new QueryBO(null, entity, query), response);
     }
 

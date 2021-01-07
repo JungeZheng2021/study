@@ -77,7 +77,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
         Integer index = Math.toIntExact(timestamp / 1000 % 3600);
         boolean isDriveData = operationDeriveData3600Columns(packet, rowKey, index);
 //        保存到redis中
-        operationRmsData(packet, rowKey, index);
+        operationRmsData(packet, rowKey, index, timestamp);
         //特征数据和其他数据不同时存在
         if (isDriveData) {
             return;
@@ -90,15 +90,16 @@ public class VibrationDataServiceImpl implements CommonDataService {
     /**
      * 操作Rms值
      *
-     * @param packet 数据包
-     * @param rowKey 行键
-     * @param index  索引值
+     * @param packet    数据包
+     * @param rowKey    行键
+     * @param index     索引值
+     * @param timestamp
      */
-    private void operationRmsData(PacketDTO packet, String rowKey, Integer index) {
+    private void operationRmsData(PacketDTO packet, String rowKey, Integer index, Long timestamp) {
         if (Objects.isNull(packet.getVecRms())) {
             return;
         }
-        pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + H_BASE_FAMILY_NPC_SENSOR_RMS, packet.getVecRms());
+        pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + H_BASE_FAMILY_NPC_SENSOR_RMS, packet.getVecRms(), timestamp);
         insert2HBase(rowKey, index, packet.getTimestamp(), packet.getVecRms(), H_BASE_FAMILY_NPC_SENSOR_RMS);
     }
 
@@ -185,7 +186,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
             Double value = next.getValue();
             //是否需要存储到redis
             if (store2RedisFeatureList.contains(feature)) {
-                pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + feature, value);
+                pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + feature, value, packet.getTimestamp());
             }
             //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
             try {

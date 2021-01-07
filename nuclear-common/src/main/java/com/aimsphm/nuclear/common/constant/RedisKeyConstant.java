@@ -18,6 +18,11 @@ public final class RedisKeyConstant {
     public static final String REDIS_POINT_REAL_TIME_PRE = "real_time:";
 
     /**
+     * 实时数据队列
+     */
+    public static final String REDIS_QUEUE_REAL_TIME_PRE = "queue:real_time:";
+
+    /**
      * redis key中的下划线
      */
     public static final String REDIS_KEY_UNDERLINE = "_";

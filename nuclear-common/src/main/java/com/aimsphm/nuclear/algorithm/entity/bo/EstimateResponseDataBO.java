@@ -18,5 +18,5 @@ import java.util.List;
 @Data
 public class EstimateResponseDataBO extends EstimateDataBO {
     @ApiModelProperty(value = "返回的结果", notes = "")
-    private List<PointEstimateResultsDataBO> modelEstimateResult;
+    private List<PointEstimateDataBO> estimateResults;
 }

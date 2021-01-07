@@ -21,4 +21,6 @@ import java.util.List;
 public class HistoryQueryMultiBO extends TimeRangeQueryBO {
     @ApiModelProperty(value = "测点列表", notes = "")
     private List<String> pointIds;
+    @ApiModelProperty(value = "模型id", notes = "查询实测值、估计值、残差时会用到")
+    private Long modelId;
 }

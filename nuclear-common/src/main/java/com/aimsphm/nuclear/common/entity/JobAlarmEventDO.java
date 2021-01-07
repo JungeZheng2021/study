@@ -12,9 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <报警事件信息实体>
  * @Author: MILLA
- * @CreateDate: 2020-12-09
+ * @CreateDate: 2021-01-05
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-09
+ * @UpdateDate: 2021-01-05
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -33,6 +33,9 @@ public class JobAlarmEventDO extends BaseDO {
     @ApiModelProperty(value = "子系统id", notes = "")
     private Long subSystemId;
 
+    @ApiModelProperty(value = "模型id", notes = "")
+    private Long modelId;
+
     @ApiModelProperty(value = "设备编号", notes = "")
     private String deviceCode;
 
@@ -45,7 +48,7 @@ public class JobAlarmEventDO extends BaseDO {
     @ApiModelProperty(value = "报警事件/事件名称", notes = "")
     private String eventName;
 
-    @ApiModelProperty(value = "事件分类", notes = "")
+    @ApiModelProperty(value = "事件分类", notes = "-暂时未用")
     private Integer eventCategory;
 
     @ApiModelProperty(value = "报警编号", notes = "")
@@ -54,23 +57,23 @@ public class JobAlarmEventDO extends BaseDO {
     @ApiModelProperty(value = "报警类型:", notes = "-1其他、1阈值、2波动、3尖峰、4阶跃、5算法")
     private Integer alarmType;
 
-    @ApiModelProperty(value = "报警级别", notes = "1：1级报警、2：2级报警、3：3级报警、4：4级报警、5：5级报警")
+    @ApiModelProperty(value = "报警级别", notes = "算法--1：1级报警、2：2级报警、3：3级报警、4：4级报警、5：5级报警；阈值--1：低低报 2：低报 3：低预警 4：高预警 5：高报 6：高高报")
     private Integer alarmLevel;
 
     @ApiModelProperty(value = "报警发生次数", notes = "")
     private Integer alarmCount;
 
-    @ApiModelProperty(value = "报警原因", notes = "")
+    @ApiModelProperty(value = "报警原因", notes = "-暂时未用")
     private String alarmReason;
 
     @ApiModelProperty(value = "报警频率", notes = "")
     private Double alarmFrequency;
 
-    @ApiModelProperty(value = "报警内容", notes = "")
+    @ApiModelProperty(value = "报警内容", notes = "-暂时未用")
     private String alarmContent;
 
-    @ApiModelProperty(value = "处理状态", notes = "")
-    private Integer operateStatus;
+    @ApiModelProperty(value = "事件状态", notes = "")
+    private Integer alarmStatus;
 
     @ApiModelProperty(value = "开始报警时间", notes = "")
     private Date gmtFirstAlarm;

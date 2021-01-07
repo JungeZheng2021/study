@@ -126,15 +126,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             return;
         }
         result.stream().filter(Objects::nonNull).forEach(item -> {
-            List<PointEstimateResultsDataBO> bos = item.getModelEstimateResult();
-            if (CollectionUtils.isEmpty(bos)) {
-                return;
-            }
-            PointEstimateResultsDataBO dataBO = bos.get(0);
-            if (Objects.isNull(dataBO)) {
-                return;
-            }
-            List<PointEstimateDataBO> dataList = dataBO.getEstimateResults();
+            List<PointEstimateDataBO> dataList = item.getEstimateResults();
             if (CollectionUtils.isEmpty(dataList)) {
                 return;
             }
@@ -262,6 +254,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         status.setGmtEnd(null);
         status.setGmtStart(currentDate);
         status.setStatus(healthStatus);
+        status.setStatusDuration(0L);
         statusService.save(status);
     }
 

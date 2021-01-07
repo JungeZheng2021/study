@@ -18,7 +18,7 @@ import java.io.Serializable;
 public final class ResponseData<T> implements Serializable {
     private static final long serialVersionUID = 7824278330465676943L;
 
-    private static final String SUCCESS_CODE = "1000";
+    public static final String SUCCESS_CODE = "1000";
 
     private static final String SUCCESS_MSG = "success";
     /**

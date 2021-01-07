@@ -220,15 +220,20 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         }
         List<Get> getList = initGetListByConditions(multi);
         try {
-            Map<String, List<HBaseTimeSeriesDataDTO>> data = hBase.selectDataList(H_BASE_TABLE_NPC_PHM_DATA, getList);
+//            Map<String, List<HBaseTimeSeriesDataDTO>> data = hBase.selectDataList(H_BASE_TABLE_NPC_PHM_DATA, getList);
             multi.getPointIds().stream().forEach(item -> {
                 CommonMeasurePointDO point = getPoint(item);
                 HistoryDataVO vo = new HistoryDataWithThresholdVO();
                 BeanUtils.copyProperties(point, vo);
-//                vo.setActualData(data.get(point.getSensorCode()));
+                List<Object> list = Lists.newArrayList(System.currentTimeMillis(), new Random().nextDouble());
+                List<List<Object>> data = new ArrayList<>();
+                data.add(list);
+                vo.setChartData(data);
+                ArrayList<Long> list1 = Lists.newArrayList(1L, 3L, 4L);
+                vo.setChartData1(list1);
                 result.putIfAbsent(item, vo);
             });
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CustomMessageException("查询历史数据失败");
         }
         return result;

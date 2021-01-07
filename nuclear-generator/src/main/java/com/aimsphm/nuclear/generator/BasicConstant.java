@@ -20,7 +20,7 @@ public final class BasicConstant {
     /**
      * 生成的实体类忽略表前缀: 不需要则置空
      */
-    public static String ENTITY_IGNORE_PREFIX = "md_";
+    public static String ENTITY_IGNORE_PREFIX = "";
     /**
      * 表名
      */
@@ -35,9 +35,14 @@ public final class BasicConstant {
 //            , "common_sensor"
 //            , "common_measure_point"
 //            "job_device_status"
-            "algorithm_config"
+            "algorithm_config",
+            "algorithm_device_model",
+            "algorithm_model",
+            "algorithm_model_point",
 //            "spark_down_sample_annually"
-//            , "job_alarm_event"
+            "job_alarm_realtime",
+            "job_alarm_event",
+//            "job_alarm_threshold"
     };
 
     /**

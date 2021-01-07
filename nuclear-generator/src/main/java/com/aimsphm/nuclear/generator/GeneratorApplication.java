@@ -148,7 +148,7 @@ public class GeneratorApplication {
                     //计算controller的路径
                     StringBuilder sb = new StringBuilder();
                     if (StringUtils.contains(tableName, UNDERSCORE)) {
-                        sb.append(SLASH + tableName.substring(0, tableName.indexOf(UNDERSCORE)));
+                        sb.append(tableName.substring(0, tableName.indexOf(UNDERSCORE)));
                         String url = tableName.substring(tableName.indexOf(UNDERSCORE) + 1);
                         sb.append(SLASH + CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, url));
                         map.put(tableName + "path", sb.toString());

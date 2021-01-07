@@ -14,7 +14,7 @@
         <result column="model_id" property="modelId"/>
         <result column="sub_system_id" property="subSystemId"/>
         <result column="device_id" property="deviceId"/>
-        <result column="point_ids" property="pointIds"/>
+        <result column="point_id" property="pointId"/>
         <result column="gmt_alarm_time" property="gmtAlarmTime"/>
         <result column="event_id" property="eventId"/>
         <result column="evaluation" property="evaluation"/>
@@ -32,7 +32,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        alarm_code, model_id, sub_system_id, device_id, point_ids, gmt_alarm_time, event_id, evaluation, alarm_level, alarm_type, trend
+        alarm_code, model_id, sub_system_id, device_id, point_id, gmt_alarm_time, event_id, evaluation, alarm_level, alarm_type, trend
     </sql>
 
 </mapper>

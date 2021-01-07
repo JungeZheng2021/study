@@ -49,6 +49,10 @@ public final class SymbolConstant {
      * 字符串0
      */
     public static final String ZERO = "0";
+    /**
+     * 冒号
+     */
+    public static final String COLON = "0";
 
     private SymbolConstant() {
     }
@@ -58,7 +62,7 @@ public final class SymbolConstant {
     String AT = "@";
     String ASTERISK = "*";
     String BACK_SLASH = "\\";
-    String COLON = ":";
+
     String DOLLAR = "$";
     String DOT = ".";
     String DOTDOT = "..";

@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.algorithm.entity.dto;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.EstimateResponseDataBO;
+import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -32,5 +33,5 @@ public class StateMonitorResponseDTO {
     private List<EstimateResponseDataBO> modelEstimateResult;
 
     @ApiModelProperty(value = "报警事件结果", notes = "")
-    private List<AlarmEventDTO> txAlarmEvent;
+    private List<JobAlarmRealtimeDO> realtimeAlarm;
 }

@@ -3,10 +3,9 @@ package com.aimsphm.nuclear.common.service.impl;
 import com.aimsphm.nuclear.common.entity.SparkDownSample;
 import com.aimsphm.nuclear.common.mapper.SparkDownSampleMapper;
 import com.aimsphm.nuclear.common.service.SparkDownSampleService;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service.impl

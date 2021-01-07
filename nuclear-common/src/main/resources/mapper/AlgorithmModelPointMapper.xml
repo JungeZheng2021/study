@@ -10,7 +10,10 @@
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
         <result column="deleted" property="deleted"/>
+        <result column="sub_system_id" property="subSystemId"/>
+        <result column="device_id" property="deviceId"/>
         <result column="model_id" property="modelId"/>
+        <result column="algorithm_id" property="algorithmId"/>
         <result column="point_id" property="pointId"/>
     </resultMap>
 
@@ -23,7 +26,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        model_id, point_id
+        sub_system_id, device_id, model_id, algorithm_id, point_id
     </sql>
 
 </mapper>

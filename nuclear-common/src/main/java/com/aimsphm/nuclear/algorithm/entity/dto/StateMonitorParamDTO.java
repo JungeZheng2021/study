@@ -33,6 +33,4 @@ public class StateMonitorParamDTO {
     private List<PointDataBO> sensorData;
 
     private List<EstimateParamDataBO> modelEstimateResult;
-
-    private List<JobAlarmEventDO> txAlarmEvent;
 }

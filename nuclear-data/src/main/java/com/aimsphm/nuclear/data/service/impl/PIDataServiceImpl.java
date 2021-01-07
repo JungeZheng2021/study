@@ -65,7 +65,7 @@ public class PIDataServiceImpl implements CommonDataService {
             BigDecimal value = (BigDecimal) dataItem.getValue();
             double v = value.doubleValue();
             item.setValue(v);
-            pointServiceExt.updateMeasurePointsInRedis(dataItem.getItemId(), v);
+            pointServiceExt.updateMeasurePointsInRedis(dataItem.getItemId(), v, dataItem.getTimestamp());
 
             Long timestamp = item.getTimestamp();
             //3600列的索引

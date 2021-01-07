@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.util;
 
+import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.pojo.EstimateResult;
 import com.aimsphm.nuclear.common.pojo.EstimateTotal;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
@@ -516,6 +518,47 @@ public class HBaseUtil {
     }
 
     /**
+     * @param tableName  表格名称
+     * @param start      开始rowKey
+     * @param end        结束rowKey
+     * @param family     列族
+     * @param qualifiers 列集合
+     * @return
+     * @throws IOException
+     */
+    public List<PointEstimateDataBO> selectModelDataList(String tableName, Long start, Long end, String family, List<String> qualifiers, Long modelId) throws IOException {
+        TableName name = TableName.valueOf(tableName);
+        String rowKeyStart = modelId + ROW_KEY_SEPARATOR + start;
+        String rowKeyEnd = modelId + ROW_KEY_SEPARATOR + end;
+        try (Table table = connection.getTable(name)) {
+            Scan scan = new Scan();
+            boolean isHasFamily = StringUtils.isEmpty(family);
+            boolean isHasQualifier = CollectionUtils.isEmpty(qualifiers);
+            if (!isHasFamily) {
+                scan.addFamily(Bytes.toBytes(family));
+                if (!isHasQualifier) {
+                    qualifiers.stream().forEach(x -> {
+                        scan.addColumn(Bytes.toBytes(family), Bytes.toBytes(x));
+                    });
+                }
+            }
+            scan.withStartRow(Bytes.toBytes(rowKeyStart));
+            scan.withStopRow(Bytes.toBytes(rowKeyEnd));
+            ResultScanner scanner = table.getScanner(scan);
+            List<PointEstimateDataBO> data = new ArrayList<>();
+            for (Result rs : scanner) {
+                for (Cell cell : rs.listCells()) {
+                    PointEstimateDataBO object = (PointEstimateDataBO) getObject(CellUtil.cloneValue(cell), PointEstimateDataBO.class);
+                    data.add(object);
+                }
+            }
+            return data;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
      * 获取数据列表
      *
      * @param tableName   表格名称
@@ -613,37 +656,6 @@ public class HBaseUtil {
         }
     }
 
-    /**
-     * @param familyMap     列族集合
-     * @param withQualifier 列数据集合(以集合方式返回)
-     * @param rs            结果集
-     */
-    private void assembleModelCellDataWithList
-    (Map<String, Set<String>> familyMap, Map<String, List<Object>> withQualifier,
-     Result rs, EstimateTotal et) {
-        if (rs.size() == 0) {
-            return;
-        }
-        for (Cell cell : rs.listCells()) {
-            String family = Bytes.toString(CellUtil.cloneFamily(cell));
-            String qualifier = Bytes.toString(CellUtil.cloneQualifier(cell));
-            String value = Bytes.toString(CellUtil.cloneValue(cell));
-            EstimateResult es = gson.fromJson(value, EstimateResult.class);
-            et.getEstimateResults().add(es);
-//            long timestamp = cell.getTimestamp();
-//
-//            if (!withQualifier.containsKey(qualifier)) {
-//                withQualifier.put(qualifier, Lists.newArrayList());
-//            }
-//            if (!familyMap.containsKey(family)) {
-//                familyMap.put(family, Sets.newHashSet());
-//            }
-//            familyMap.get(family).add(qualifier);
-//            withQualifier.get(qualifier).add(es);
-
-//            withQualifier.get(qualifier).add(Lists.newArrayList(timestamp, es));
-        }
-    }
 
     /**
      * @param familyMap     列族集合

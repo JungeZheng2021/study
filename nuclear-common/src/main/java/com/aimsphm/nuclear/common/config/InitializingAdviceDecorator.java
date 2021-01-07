@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ import java.util.List;
  */
 @Configuration
 public class InitializingAdviceDecorator implements InitializingBean {
-    @Autowired
+    @Resource
     private RequestMappingHandlerAdapter adapter;
 
     @Override
