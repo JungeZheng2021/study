@@ -29,27 +29,14 @@ import java.io.IOException;
 @ConditionalOnProperty(prefix = "spring.config", name = "enableAlgorithm", havingValue = "true")
 public class StateMonitorServiceImpl implements AlgorithmHandlerService<StateMonitorParamDTO, StateMonitorResponseDTO> {
 
-    private AlgorithmServiceFeignClient algorithmClient;
+    private AlgorithmServiceFeignClient client;
 
-    public StateMonitorServiceImpl(AlgorithmServiceFeignClient algorithmClient) {
-        this.algorithmClient = algorithmClient;
+    public StateMonitorServiceImpl(AlgorithmServiceFeignClient client) {
+        this.client = client;
     }
 
     @Override
     public Object getInvokeCustomerData(StateMonitorParamDTO params) {
-        StateMonitorResponseDTO data = invokeServer(params, AlgorithmTypeEnum.STATE_MONITOR.getType(), StateMonitorResponseDTO.class);
-        return data;
-    }
-
-    @Override
-    public ResponseData<StateMonitorResponseDTO> getInvokeServer(AlgorithmParamDTO<StateMonitorParamDTO> params) {
-        log.info("请求参数");
-        try {
-            log.info("{}", new ObjectMapper().writeValueAsString(params));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        checkParams(params);
-        return algorithmClient.algorithmInvokeByParams(params);
+        return invokeServer(client, params, AlgorithmTypeEnum.STATE_MONITOR.getType(), StateMonitorResponseDTO.class);
     }
 }

@@ -26,6 +26,4 @@ public class AlarmQueryBO extends ConditionsQueryBO {
 
     @ApiModelProperty(value = "持续时间", notes = "")
     private Integer duration;
-
-
 }

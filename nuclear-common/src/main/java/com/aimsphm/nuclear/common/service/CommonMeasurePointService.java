@@ -32,11 +32,20 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
 
     /**
      * 根据测点id更新redis中的热点数据
-     *  @param itemId 测点id
-     * @param value  对应的值
+     *
+     * @param itemId    测点id
+     * @param value     对应的值
      * @param timestamp
      */
     void updateMeasurePointsInRedis(String itemId, Double value, Long timestamp);
+
+    /**
+     * 根据测点id获取测点信息
+     *
+     * @param pointId 测点Id
+     * @return
+     */
+    CommonMeasurePointDO getPointByPointId(String pointId);
 
     /**
      * 根据测点id获取测点列表(考虑一个测点可能会被多个设备/系统共用)
@@ -44,7 +53,7 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @param itemId 测点id
      * @return
      */
-    List<MeasurePointVO> getMeasurePointsByTagId(String itemId);
+    List<MeasurePointVO> getMeasurePointsByPointId(String itemId);
 
     /**
      * 获取所有的特征值

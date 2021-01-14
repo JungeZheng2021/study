@@ -21,7 +21,7 @@ public class HBaseParamDTO {
     @ApiModelProperty(value = "列族", required = true)
     private String family;
     @ApiModelProperty(value = "行键值", required = true)
-    private String tag;
+    private String pointId;
     @ApiModelProperty(value = "时间戳[可做rowKey组成部分]")
     private Long timestamp;
 }

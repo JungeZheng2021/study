@@ -116,7 +116,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
         if (Objects.isNull(vecData) || vecData.length == 0) {
             return;
         }
-        insert2HBase(rowKey, index, packet.getTimestamp(), vecData, H_BASE_FAMILY_NPC_VIBRATION_RAW);
+        insert2HBase(rowKey, index, packet.getTimestamp(), vecData, H_BASE_FAMILY_NPC_VIBRATION_CALCULATE);
     }
 
     /**
@@ -132,7 +132,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
         if (Objects.isNull(data) || data.length == 0) {
             return;
         }
-        insert2HBase(rowKey, index, packet.getTimestamp(), data, H_BASE_FAMILY_NPC_VIBRATION_CALCULATE);
+        insert2HBase(rowKey, index, packet.getTimestamp(), data, H_BASE_FAMILY_NPC_VIBRATION_RAW);
     }
 
     /**

@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,11 +44,9 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
-@Api(tags = "历史数据查询-相关接口")
+@Api(tags = "History-历史数据查询-相关接口")
 @RequestMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
 public class HistoryQueryController {
-    @Autowired
-    HBaseUtil hBaseUtil;
 
     private HistoryQueryService service;
 
@@ -122,48 +121,5 @@ public class HistoryQueryController {
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByGetList(queryMultiBO);
         System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
-    }
-
-    @GetMapping("demo")
-    @ApiOperation(value = "获取某一实体")
-    public void getDeviceStateMonitorInfo1(HttpServletResponse response) throws IOException {
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding("utf-8");
-        response.setHeader("Content-disposition", "attachment;filename=" + System.currentTimeMillis() + ".xlsx");
-        List<List<Object>> list = new ArrayList<>();
-        List<Object> item = new ArrayList<Object>() {{
-            add(System.currentTimeMillis());
-            add(new Random().nextDouble() * 1000);
-        }};
-        List<Object> item1 = new ArrayList<Object>() {{
-            add(System.currentTimeMillis());
-            add(new Random().nextDouble() * 1000);
-        }};
-        List<Object> item2 = new ArrayList<Object>() {{
-            add(System.currentTimeMillis());
-            add(new Random().nextDouble() * 1000);
-        }};
-        List<Object> item3 = new ArrayList<Object>() {{
-            add(System.currentTimeMillis());
-            add(new Random().nextDouble() * 1000);
-        }};
-        List<Object> item4 = new ArrayList<Object>() {{
-            add(System.currentTimeMillis());
-            add(new Random().nextDouble() * 1000);
-        }};
-        list.add(item);
-        list.add(item1);
-        list.add(item2);
-        list.add(item3);
-        list.add(item4);
-        ExcelWriter writer = EasyExcel.write(response.getOutputStream()).build();
-        List<String> timestamp = Lists.newArrayList("timestamp");
-        List<String> value = Lists.newArrayList("value");
-        List<List<String>> headers = new ArrayList<>();
-        headers.add(timestamp);
-        headers.add(value);
-        WriteSheet writeSheet = EasyExcel.writerSheet(1, "测试").head(headers).build();
-        writer.write(list, writeSheet);
-        writer.finish();
     }
 }

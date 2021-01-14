@@ -97,7 +97,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (StringUtils.isEmpty(itemId)) {
             return;
         }
-        List<MeasurePointVO> vos = this.getMeasurePointsByTagId(itemId);
+        List<MeasurePointVO> vos = this.getMeasurePointsByPointId(itemId);
         if (CollectionUtils.isEmpty(vos)) {
             return;
         }
@@ -139,8 +139,15 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     }
 
     @Override
+    public CommonMeasurePointDO getPointByPointId(String pointId) {
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CommonMeasurePointDO::getPointId, pointId).last("limit 1");
+        return this.getOne(wrapper);
+    }
+
+    @Override
     @Cacheable(value = REDIS_POINT_INFO_LIST, key = "#itemId")
-    public List<MeasurePointVO> getMeasurePointsByTagId(String itemId) {
+    public List<MeasurePointVO> getMeasurePointsByPointId(String itemId) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(CommonMeasurePointDO::getPointId, itemId);
         List<CommonMeasurePointDO> pointDOList = this.list(wrapper);

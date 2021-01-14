@@ -51,13 +51,29 @@ public class HBaseTest {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        Long timestamp = 1605757290472L;
+        long s = timestamp / (1000 * 3600) * (1000 * 3600);
+        Integer index = Math.toIntExact(timestamp / 1000 % 3600);
+        Long timestamp1 = 1605757291472L;
+        long s1 = timestamp1 / (1000 * 3600) * (1000 * 3600);
+        Integer index1 = Math.toIntExact(timestamp1 / 1000 % 3600);
+        System.out.println(index1);
+        Integer index2 = Math.toIntExact(timestamp1 / (1000 % 3600));
+        System.out.println(index2);
+//
         HBaseUtil hbaseUtil = new HBaseUtil(connection);
-        Get get = new Get("6M2DVC003MI_1605805200000".getBytes());
-        get.addColumn("pRaw".getBytes(), Bytes.toBytes(1));
-        Get get1 = new Get("6M2RCV011MN_1605805200000".getBytes());
-        get1.addColumn("pRaw".getBytes(), Bytes.toBytes(2));
-        Map<String, List<HBaseTimeSeriesDataDTO>> stringListMap = hbaseUtil.selectDataList("npc_phm_data", Lists.newArrayList(get, get1));
-        System.out.println(stringListMap);
+        Get get = new Get(("6M2DVC301MV-N_" + s).getBytes());
+        get.addColumn("vRaw".getBytes(), Bytes.toBytes(index));
+        Get get1 = new Get(("6M2DVC301MV-N_" + s1).getBytes());
+        get1.addColumn("vRaw".getBytes(), Bytes.toBytes(index1));
+//        Get get1 = new Get("6M2DVC301MV-N_1600071200000".getBytes());
+//        get1.addColumn("vRaw".getBytes(), Bytes.toBytes(2));
+        Map<String, Map<Long, Object>> data = hbaseUtil.selectObjectDataWithGets("npc_phm_data", Lists.newArrayList(get, get1));
+        data.forEach((k, v) -> {
+            System.out.println("key:" + k + " value:" + v);
+        });
+//        Map<String, List<HBaseTimeSeriesDataDTO>> stringListMap = hbaseUtil.selectDataList("npc_phm_data", Lists.newArrayList(get));
+//        System.out.println(stringListMap);
 
         //        hbaseUtil.createTable("t5", Lists.newArrayList("acc-Rems"), Compression.Algorithm.SNAPPY);
 //        String rowKey = UUID.randomUUID().toString().toUpperCase().substring(0, 1) + HBaseConstant.ROW_KEY_SEPARATOR + System.currentTimeMillis();

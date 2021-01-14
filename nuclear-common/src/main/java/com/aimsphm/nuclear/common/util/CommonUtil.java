@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.aimsphm.nuclear.common.constant.RedisKeyConstant;
-import com.aimsphm.nuclear.common.entity.bo.HColumnQueryExtendBO;
+import com.aimsphm.nuclear.common.entity.bo.HBaseQueryExtendBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
@@ -21,13 +21,13 @@ public class CommonUtil {
         return queryWrapper;
     }
 
-    public static HColumnQueryExtendBO buildQueryBo(String tagId, Long start, Long end) {
-        HColumnQueryExtendBO queryBO = new HColumnQueryExtendBO();
+    public static HBaseQueryExtendBO buildQueryBo(String tagId, Long start, Long end) {
+        HBaseQueryExtendBO queryBO = new HBaseQueryExtendBO();
         queryBO.setStartTime(start);
         queryBO.setEndTime(end);
         queryBO.setTableName(RedisKeyConstant.HBASE_TABLE_NAME);
         queryBO.setFamily(RedisKeyConstant.HBASE_CF);
-        queryBO.setTag(tagId);
+        queryBO.setPointId(tagId);
         return queryBO;
     }
 

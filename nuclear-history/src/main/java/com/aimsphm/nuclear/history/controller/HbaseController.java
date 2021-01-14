@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.history.controller;
 
-import com.aimsphm.nuclear.common.entity.bo.HColumnQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.HBaseQueryBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseColumnItemDTO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseColumnItemsDTO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseFamilyDTO;
@@ -109,7 +110,13 @@ public class HbaseController {
 
     @GetMapping(value = "data")
     @ApiOperation(value = "获取一定时间区间内的数据", notes = "按照不同的列族和列进行返回")
-    public List<Map<String, Object>> listData(HColumnQueryBO queryBo) {
+    public List<Map<String, Object>> listData(HBaseQueryBO queryBo) {
         return service.listData(queryBo);
+    }
+
+    @GetMapping(value = "data/array")
+    @ApiOperation(value = "获取一定时间区间内的数据", notes = "指定列族返回数组[振动数据]")
+    public Map<String, Map<Long, Object>> listArrayData(DataAnalysisQueryBO query) {
+        return service.listArrayData(query);
     }
 }

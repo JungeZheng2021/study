@@ -57,7 +57,7 @@ public class PIDataServiceImpl implements CommonDataService {
         List<Put> putList = Lists.newArrayList();
         for (DataItemDTO dataItem : dataItems) {
             HBaseColumnItemDTO item = new HBaseColumnItemDTO();
-            item.setTag(dataItem.getItemId());
+            item.setPointId(dataItem.getItemId());
             item.setTimestamp(dataItem.getTimestamp());
             item.setTableName(HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA);
             item.setFamily(HBaseConstant.H_BASE_FAMILY_NPC_PI_REAL_TIME);
@@ -71,7 +71,7 @@ public class PIDataServiceImpl implements CommonDataService {
             //3600列的索引
             Integer index = Math.toIntExact(timestamp / 1000 % 3600);
             item.setQualifier(index);
-            String rowKey = item.getTag() + ROW_KEY_SEPARATOR + item.getTimestamp() / (1000 * 3600) * (1000 * 3600);
+            String rowKey = item.getPointId() + ROW_KEY_SEPARATOR + item.getTimestamp() / (1000 * 3600) * (1000 * 3600);
             Put put = new Put(Bytes.toBytes(rowKey));
             if (item.getTimestamp() != null) {
                 put.setTimestamp(item.getTimestamp());

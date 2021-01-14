@@ -32,15 +32,15 @@ import java.util.stream.IntStream;
 @ConditionalOnProperty(prefix = "spring.config", name = "enableAlgorithm", havingValue = "true")
 public class MovingAverageServiceImpl implements AlgorithmHandlerService<MovingAverageParamDTO, MovingAverageResponseDTO> {
 
-    private AlgorithmServiceFeignClient algorithmClient;
+    private AlgorithmServiceFeignClient client;
 
-    public MovingAverageServiceImpl(AlgorithmServiceFeignClient algorithmClient) {
-        this.algorithmClient = algorithmClient;
+    public MovingAverageServiceImpl(AlgorithmServiceFeignClient client) {
+        this.client = client;
     }
 
     @Override
     public Object getInvokeCustomerData(MovingAverageParamDTO params) {
-        MovingAverageResponseDTO data = invokeServer(params, AlgorithmTypeEnum.MOVING_AVERAGE.getType(), MovingAverageResponseDTO.class);
+        MovingAverageResponseDTO data = invokeServer(client, params, AlgorithmTypeEnum.MOVING_AVERAGE.getType(), MovingAverageResponseDTO.class);
         if (Objects.isNull(data) || CollectionUtils.isEmpty(data.getSmoothedSignal())) {
             return null;
         }
@@ -55,11 +55,5 @@ public class MovingAverageServiceImpl implements AlgorithmHandlerService<MovingA
             objects.set(1, aDouble);
         });
         return signal;
-    }
-
-    @Override
-    public ResponseData<MovingAverageResponseDTO> getInvokeServer(AlgorithmParamDTO<MovingAverageParamDTO> params) {
-        checkParams(params);
-        return algorithmClient.algorithmInvokeByParams(params);
     }
 }

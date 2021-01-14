@@ -1,8 +1,10 @@
 package com.aimsphm.nuclear.history.service;
 
+import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,4 +34,12 @@ public interface AlgorithmQueryService {
      * @return
      */
     Map<String, HistoryDataVO> listPredictionInfo(HistoryQueryMultiBO multiBo);
+
+    /**
+     * 振动分析算法
+     *
+     * @param query 查询条件
+     * @return
+     */
+    Map<String, List<List<List<Object>>>> listVibrationAnalysisData(DataAnalysisQueryMultiBO query);
 }

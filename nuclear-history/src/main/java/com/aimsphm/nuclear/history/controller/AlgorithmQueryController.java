@@ -11,6 +11,7 @@ package com.aimsphm.nuclear.history.controller;
  * @Version: 1.0
  */
 
+import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.service.AlgorithmQueryService;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -47,5 +49,24 @@ public class AlgorithmQueryController {
         Map<String, HistoryDataVO> data = service.listPredictionInfo(multiBo);
         System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
+    }
+
+    @GetMapping("analysis/vibration")
+    @ApiOperation(value = "振动分析绘图", notes = "")
+    public Map<String, List<List<List<Object>>>> listVibrationAnalysisData(DataAnalysisQueryMultiBO query) {
+//        long l = System.currentTimeMillis();
+        return service.listVibrationAnalysisData(query);
+//        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
+//        return data;
+    }
+
+    @GetMapping("analysis/vibration/export")
+    @ApiOperation(value = "振动分析绘图数据导出", notes = "")
+    public Map<String, HistoryDataVO> listVibrationAnalysisDataExport(HistoryQueryMultiBO queryMultiBO) {
+//        long l = System.currentTimeMillis();
+//        Map<String, HistoryDataVO> data = service.listAnalysisDataWithPointList(queryMultiBO);
+//        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
+//        return data;
+        return null;
     }
 }

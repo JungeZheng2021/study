@@ -2,10 +2,11 @@ package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.JobAlarmThresholdDO;
 import com.aimsphm.nuclear.common.entity.bo.AlarmQueryBO;
-import com.aimsphm.nuclear.common.entity.bo.JobAlarmEventBO;
 import com.aimsphm.nuclear.common.entity.bo.JobAlarmThresholdBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
+import com.aimsphm.nuclear.common.enums.ThresholdAlarmStatusEnum;
+import com.aimsphm.nuclear.common.enums.ThresholdDurationEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.JobAlarmThresholdMapper;
 import com.aimsphm.nuclear.common.service.JobAlarmThresholdService;
@@ -57,26 +58,54 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
 
     private Wrapper<JobAlarmThresholdDO> initialWrapper(QueryBO<JobAlarmThresholdDO> queryBO) {
         JobAlarmThresholdDO entity = queryBO.getEntity();
-        Integer eventStatus = entity.getAlarmStatus();
+        Integer alarmStatus = entity.getAlarmStatus();
         if (Objects.nonNull(queryBO.getPage()) && Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
             queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<JobAlarmThresholdDO> wrapper = queryBO.lambdaQuery();
         AlarmQueryBO query = (AlarmQueryBO) queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
-            wrapper.ge(JobAlarmThresholdDO::getGmtLastAlarm, new Date(query.getStart())).le(JobAlarmThresholdDO::getGmtLastAlarm, new Date(query.getEnd()));
+        Long start = query.getStart();
+        Long end = query.getEnd();
+        if (Objects.nonNull(start) && Objects.nonNull(end) && end > start) {
+            wrapper.and(x -> x.ge(JobAlarmThresholdDO::getGmtEndAlarm, new Date(start)).le(JobAlarmThresholdDO::getGmtStartAlarm, new Date(end))
+                    .or(y -> y.isNull(JobAlarmThresholdDO::getGmtEndAlarm).lt(JobAlarmThresholdDO::getGmtStartAlarm, new Date(end))));
         }
-        if (Objects.nonNull(eventStatus)) {
+        if (Objects.nonNull(alarmStatus)) {
             if (CollectionUtils.isEmpty(query.getAlarmStatusList())) {
-                query.setAlarmStatusList(Lists.newArrayList(eventStatus));
+                query.setAlarmStatusList(Lists.newArrayList(alarmStatus));
             } else {
-                query.getAlarmStatusList().add(eventStatus);
+                query.getAlarmStatusList().add(alarmStatus);
             }
             entity.setAlarmStatus(null);
+        }
+        Integer operateStatus = entity.getOperateStatus();
+        if (Objects.nonNull(operateStatus)) {
+            if (CollectionUtils.isEmpty(query.getOperateStatusList())) {
+                query.setOperateStatusList(Lists.newArrayList(operateStatus));
+            } else {
+                query.getOperateStatusList().add(operateStatus);
+            }
+            entity.setOperateStatus(null);
         }
         if (!CollectionUtils.isEmpty(query.getOperateStatusList())) {
             wrapper.in(JobAlarmThresholdDO::getOperateStatus, query.getOperateStatusList());
         }
+        if (!CollectionUtils.isEmpty(query.getAlarmStatusList())) {
+            wrapper.in(JobAlarmThresholdDO::getAlarmStatus, query.getAlarmStatusList());
+        }
+        if (Objects.nonNull(query.getDuration())) {
+            ThresholdDurationEnum durationEnum = ThresholdDurationEnum.getByValue(query.getDuration());
+            Long start1 = durationEnum.getStart();
+            Long end1 = durationEnum.getEnd();
+            StringBuilder pre = new StringBuilder("ifNull(UNIX_TIMESTAMP(gmt_end_alarm),UNIX_TIMESTAMP(NOW()))- UNIX_TIMESTAMP(gmt_start_alarm)");
+            StringBuilder sb = new StringBuilder(pre);
+            sb.append(" > ").append(start1);
+            if (Objects.nonNull(end1)) {
+                sb.append(" and ").append(pre).append(" <= ").append(end1);
+            }
+            wrapper.apply(sb.toString());
+        }
+        wrapper.orderByDesc(JobAlarmThresholdDO::getId);
         return wrapper;
     }
 
@@ -97,7 +126,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
                     .orderByDesc(JobAlarmThresholdDO::getId).last(" limit 1");
             JobAlarmThresholdDO one = this.getOne(query);
             //当前已经存在或者是已经被忽略了不保存
-            boolean isNeedSave = Objects.nonNull(one) && (Objects.isNull(one.getGmtLastAlarm()) || one.getOperateStatus() == 3);
+            boolean isNeedSave = Objects.nonNull(one) && (Objects.isNull(one.getGmtEndAlarm()) || one.getOperateStatus() == 3);
             if (isNeedSave) {
                 return;
             }
@@ -107,7 +136,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
             alarmThreshold.setAlarmReason(item.getStatusCause());
             //1：阈值 5： 算法
             alarmThreshold.setAlarmType(1);
-            alarmThreshold.setGmtFirstAlarm(new Date());
+            alarmThreshold.setGmtStartAlarm(new Date());
             alarmThreshold.setPointId(item.getPointId());
             this.save(alarmThreshold);
         });
@@ -127,7 +156,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
                 JobAlarmThresholdBO eventBO = new JobAlarmThresholdBO();
                 BeanUtils.copyProperties(x, eventBO);
                 eventBO.setId(Long.valueOf(index.getAndIncrement()));
-                Double subtract = BigDecimalUtils.subtract(Objects.isNull(x.getGmtLastAlarm()) ? System.currentTimeMillis() : x.getGmtLastAlarm().getTime() / 1000, x.getGmtFirstAlarm().getTime() / 1000);
+                Double subtract = BigDecimalUtils.subtract(Objects.isNull(x.getGmtEndAlarm()) ? System.currentTimeMillis() : x.getGmtEndAlarm().getTime() / 1000, x.getGmtStartAlarm().getTime() / 1000);
                 eventBO.setDuration(subtract.toString());
                 return eventBO;
             }).collect(Collectors.toList());
@@ -148,10 +177,10 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
         List<String> collect = vos.stream().map(x -> x.getPointId()).collect(Collectors.toList());
         LambdaUpdateWrapper<JobAlarmThresholdDO> wrapper = Wrappers.lambdaUpdate(JobAlarmThresholdDO.class);
         //状态修改成已结束
-        wrapper.set(JobAlarmThresholdDO::getAlarmStatus, 1);
-        wrapper.set(JobAlarmThresholdDO::getGmtLastAlarm, new Date());
-        wrapper.eq(JobAlarmThresholdDO::getAlarmStatus, 0).notIn(JobAlarmThresholdDO::getPointId, collect);
-        wrapper.isNull(JobAlarmThresholdDO::getGmtLastAlarm);
+        wrapper.set(JobAlarmThresholdDO::getAlarmStatus, ThresholdAlarmStatusEnum.FINISHED.getValue());
+        wrapper.set(JobAlarmThresholdDO::getGmtEndAlarm, new Date());
+        wrapper.eq(JobAlarmThresholdDO::getAlarmStatus, ThresholdAlarmStatusEnum.IN_ACTIVITY.getValue()).notIn(JobAlarmThresholdDO::getPointId, collect);
+        wrapper.isNull(JobAlarmThresholdDO::getGmtEndAlarm);
         boolean update = this.update(wrapper);
         log.warn("更新状态：" + update);
     }

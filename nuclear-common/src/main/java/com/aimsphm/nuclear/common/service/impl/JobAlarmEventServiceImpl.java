@@ -111,6 +111,12 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
         if (!CollectionUtils.isEmpty(query.getAlarmStatusList())) {
             wrapper.in(JobAlarmEventDO::getAlarmStatus, query.getAlarmStatusList());
         }
+        String pointIds = entity.getPointIds();
+        if (StringUtils.hasText(pointIds)) {
+            entity.setPointIds(null);
+            wrapper.apply("FIND_IN_SET('" + pointIds + "',point_ids) > 0");
+        }
+        wrapper.orderByDesc(JobAlarmEventDO::getId);
         return wrapper;
     }
 

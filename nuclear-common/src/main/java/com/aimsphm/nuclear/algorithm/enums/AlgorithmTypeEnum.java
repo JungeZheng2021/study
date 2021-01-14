@@ -15,8 +15,20 @@ import java.util.Objects;
  */
 public enum AlgorithmTypeEnum {
     MOVING_AVERAGE("MA", "滑动平均值"),
+
     TREND_FORECAST("TF", "趋势预测"),
-    STATE_MONITOR("HCM-PAF", "主送风机预警算法");
+
+    STATE_MONITOR("HCM-PAF", "主送风机预警算法"),
+
+    DATA_ANALYSIS("ANALYSIS", "数据分析"),
+    DATA_ANALYSIS_TIME_DOMAIN("TIME-DOMAIN", "时域波形"),
+    DATA_ANALYSIS_FRE_DOMAIN("FRE-DOMAIN", "频域波形"),
+    DATA_ANALYSIS_ENVELOPE("ENVE-FRE", "包络谱"),
+    DATA_ANALYSIS_DWP_TIME("DWP-TIME", "小波包时域波形"),
+    DATA_ANALYSIS_DWP_FRE("DWP-FRE", "小波包频域波形"),
+    DATA_ANALYSIS_DWP_ENVELOPE("DWP-ENVE-FRE", "小波包包络谱"),
+
+    OTHERS("-1", "其他");
 
 
     AlgorithmTypeEnum(String type, String desc) {

@@ -230,7 +230,6 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 data.add(list);
                 vo.setChartData(data);
                 ArrayList<Long> list1 = Lists.newArrayList(1L, 3L, 4L);
-                vo.setChartData1(list1);
                 result.putIfAbsent(item, vo);
             });
         } catch (Exception e) {

@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -33,15 +34,12 @@ import java.util.stream.IntStream;
 @ConditionalOnProperty(prefix = "spring.config", name = "enableAlgorithm", havingValue = "true")
 public class PredictionServiceImpl implements AlgorithmHandlerService<PredictionParamDTO, PredictionResponseDTO> {
 
-    private AlgorithmServiceFeignClient algorithmClient;
-
-    public PredictionServiceImpl(AlgorithmServiceFeignClient algorithmClient) {
-        this.algorithmClient = algorithmClient;
-    }
+    @Resource
+    private AlgorithmServiceFeignClient client;
 
     @Override
     public Object getInvokeCustomerData(PredictionParamDTO params) {
-        PredictionResponseDTO data = invokeServer(params, AlgorithmTypeEnum.TREND_FORECAST.getType(), PredictionResponseDTO.class);
+        PredictionResponseDTO data = invokeServer(client, params, AlgorithmTypeEnum.TREND_FORECAST.getType(), PredictionResponseDTO.class);
         if (Objects.isNull(data) || CollectionUtils.isEmpty(data.getPredSignal()) ||
                 CollectionUtils.isEmpty(data.getPredTimestamp())) {
             return null;
@@ -58,11 +56,5 @@ public class PredictionServiceImpl implements AlgorithmHandlerService<Prediction
             list.add(Lists.newArrayList(timestamp, value));
         });
         return list;
-    }
-
-    @Override
-    public ResponseData<PredictionResponseDTO> getInvokeServer(AlgorithmParamDTO<PredictionParamDTO> params) {
-        checkParams(params);
-        return algorithmClient.algorithmInvokeByParams(params);
     }
 }

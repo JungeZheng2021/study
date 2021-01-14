@@ -3,7 +3,6 @@ package com.aimsphm.nuclear.common.util;
 import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.pojo.EstimateResult;
-import com.aimsphm.nuclear.common.pojo.EstimateTotal;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -619,6 +618,45 @@ public class HBaseUtil {
         }
     }
 
+
+    /**
+     * 获取非时序数据[振动原始数据专用]
+     *
+     * @param tableName
+     * @param gets
+     * @return
+     * @throws IOException
+     */
+    public Map<String, Map<Long, Object>> selectObjectDataWithGets(String tableName, List<Get> gets) throws IOException {
+        if (CollectionUtils.isEmpty(gets)) {
+            return null;
+        }
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            Result[] results = table.get(gets);
+            Map<String, Map<Long, Object>> data = new LinkedHashMap();
+            String sensorCode = null;
+            for (Result rs : results) {
+                if (rs.size() == 0) {
+                    continue;
+                }
+                String rowKey = Bytes.toString(rs.getRow());
+                if (rowKey.contains(ROW_KEY_SEPARATOR)) {
+                    sensorCode = rowKey.split(ROW_KEY_SEPARATOR)[0];
+                    data.putIfAbsent(sensorCode, Maps.newHashMap());
+                }
+                for (Cell cell : rs.listCells()) {
+                    Object object = getObject(CellUtil.cloneValue(cell), List.class);
+                    Long timestamp = cell.getTimestamp();
+                    data.get(sensorCode).put(timestamp, object);
+                }
+            }
+            return data;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
     /**
      * @param tableName   表格名称
      * @param rowKeyStart 开始rowKey
@@ -648,7 +686,6 @@ public class HBaseUtil {
             Map<String, List<List<Object>>> dataWithQualifier = Maps.newHashMap();
             for (Result rs : scanner) {
                 assembleCellDataWithList(familyMap, dataWithQualifier, rs);
-
             }
             return assembleReturnDataWithList(dataWithQualifier, familyMap.entrySet());
         } catch (IOException e) {
@@ -944,6 +981,26 @@ public class HBaseUtil {
             return Bytes.toBytes((BigDecimal) object);
         }
         return ByteUtil.toBytes(object);
+    }
+
+    /**
+     * 获取3600列的column索引
+     *
+     * @param timestamp
+     * @return
+     */
+    public Integer indexOf3600(Long timestamp) {
+        return Math.toIntExact(timestamp / 1000 % 3600);
+    }
+
+    /**
+     * 获取3600列数据的rowKey
+     *
+     * @param timestamp 时间戳
+     * @return
+     */
+    public Long rowKeyOf3600(Long timestamp) {
+        return timestamp / (1000 * 3600) * (1000 * 3600);
     }
 
     /**

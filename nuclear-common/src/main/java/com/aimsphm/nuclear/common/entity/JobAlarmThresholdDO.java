@@ -12,9 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <阈值报警信息实体>
  * @Author: MILLA
- * @CreateDate: 2021-01-04
+ * @CreateDate: 2021-01-07
  * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-04
+ * @UpdateDate: 2021-01-07
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -70,10 +70,10 @@ public class JobAlarmThresholdDO extends BaseDO {
     private Integer operateStatus;
 
     @ApiModelProperty(value = "开始报警时间", notes = "")
-    private Date gmtFirstAlarm;
+    private Date gmtStartAlarm;
 
     @ApiModelProperty(value = "最后报警时间", notes = "")
-    private Date gmtLastAlarm;
+    private Date gmtEndAlarm;
 
     @ApiModelProperty(value = "备注", notes = "")
     private String remark;

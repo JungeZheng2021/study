@@ -21,9 +21,10 @@ public class MonitorJob {
     private AlgorithmService algorithmService;
 
     /**
+     * 设备状态监测算法
      * 每55分钟执行一次
      */
-    @Scheduled(cron = "* */55 * * * ?")
+    @Scheduled(cron = "0 */55 * * * ?")
     @DistributedLock("MonitorJobDistributeLock")
     public void monitor() {
         try {
@@ -31,7 +32,7 @@ public class MonitorJob {
         } catch (Exception e) {
             log.error("invoke algorithm server failed: {}", e);
         } finally {
-            
+
         }
     }
 

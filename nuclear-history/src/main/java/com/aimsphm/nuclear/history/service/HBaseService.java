@@ -1,13 +1,10 @@
 package com.aimsphm.nuclear.history.service;
 
 
-import com.aimsphm.nuclear.common.entity.bo.HColumnQueryBO;
-import com.aimsphm.nuclear.common.entity.bo.HColumnQueryExtendBO;
-import com.aimsphm.nuclear.common.entity.bo.HModelEstimateQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.HBaseQueryBO;
 import com.aimsphm.nuclear.common.entity.dto.*;
-import com.aimsphm.nuclear.common.pojo.EstimateResult;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +30,7 @@ public interface HBaseService {
 
     void saveItemsData2Table(HBaseColumnItemsDTO itemsDTO);
 
-    List<Map<String, Object>> listData(HColumnQueryBO queryBo);
+    List<Map<String, Object>> listData(HBaseQueryBO queryBo);
 
     void removeDataFromTable(String tableName, String rowKey, HBaseFamilyDTO removeDTO);
 
@@ -46,8 +43,15 @@ public interface HBaseService {
     void removeFamilyFromTable(String tableName, String family);
 
 
-    Object getNewestData(HColumnQueryBO queryBo);
+    Object getNewestData(HBaseQueryBO queryBo);
 
     void saveItemData2TableByHour(HBaseColumnItemDTO itemDTO);
 
+    /**
+     * 获取原始数据[只要是数据是数组的都可以获取]
+     *
+     * @param query 查询条件
+     * @return map
+     */
+    Map<String, Map<Long, Object>> listArrayData(DataAnalysisQueryBO query);
 }

@@ -1,13 +1,13 @@
 package com.aimsphm.nuclear.algorithm.service;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.AlgorithmParamDTO;
+import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.response.ResponseData;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.Assert;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -30,47 +30,44 @@ public interface AlgorithmHandlerService<P, R> {
      */
     Object getInvokeCustomerData(P params);
 
-    /**
-     * 获取调用算法结果
-     *
-     * @param query 请求参数
-     * @return
-     */
-    ResponseData<R> getInvokeServer(AlgorithmParamDTO<P> query);
 
     /**
-     * 调用算法服务端
+     * 调用算法服务
      *
-     * @param params
-     * @param type
-     * @param clazz
+     * @param client 算法客户端
+     * @param params 请求参数
+     * @param type   算法类型
+     * @param clazz  返回值类型
      * @return
      */
-    default R invokeServer(P params, String type, Class<R> clazz) {
+    default R invokeServer(AlgorithmServiceFeignClient client, P params, String type, Class<R> clazz) {
         try {
-            Object o = execute(params, type);
+            Assert.notNull(client, "algorithm client is null");
+            Object o = execute(client, params, type);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             String s = mapper.writeValueAsString(o);
             return mapper.readValue(s, clazz);
         } catch (Exception e) {
-            throw new CustomMessageException("算法结果异常");
+            throw new CustomMessageException("algorithm Invoke failed");
         }
     }
 
+
     /**
-     * 执行调用
+     * 真正执行算法调用
      *
-     * @param params
-     * @param type
+     * @param client 算法客户端
+     * @param params 请求参数
+     * @param type   算法类型
      * @return
      */
-    default R execute(P params, String type) {
+    default R execute(AlgorithmServiceFeignClient client, P params, String type) {
         AlgorithmParamDTO<P> query = new AlgorithmParamDTO();
         query.setData(params);
         query.setAlgorithmType(type);
         checkParams(query);
-        ResponseData<R> responseData = getInvokeServer(query);
+        ResponseData<R> responseData = client.algorithmInvokeByParams(query);
         checkSuccess(responseData);
         return responseData.getData();
     }
@@ -82,7 +79,7 @@ public interface AlgorithmHandlerService<P, R> {
      * @param response
      */
     default void checkSuccess(ResponseData<R> response) {
-        Assert.isTrue(Objects.nonNull(response) && response.getCode().equalsIgnoreCase("200"), "调用算法失败");
+        Assert.isTrue(Objects.nonNull(response) && "200".equalsIgnoreCase(response.getCode()), "algorithm Invoke failed");
     }
 
     /**
@@ -91,7 +88,7 @@ public interface AlgorithmHandlerService<P, R> {
      * @param params
      */
     default void checkParams(AlgorithmParamDTO<P> params) {
-        Assert.notNull(params.getAlgorithmType(), "算法类型不能为空");
-        Assert.notNull(params.getData(), "算法输入数据不能空");
+        Assert.notNull(params.getAlgorithmType(), "algorithm type can not be null");
+        Assert.notNull(params.getData(), "algorithm input data can not be null");
     }
 }

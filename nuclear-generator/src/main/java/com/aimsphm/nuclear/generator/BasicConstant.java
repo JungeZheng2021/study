@@ -35,14 +35,16 @@ public final class BasicConstant {
 //            , "common_sensor"
 //            , "common_measure_point"
 //            "job_device_status"
-            "algorithm_config",
-            "algorithm_device_model",
-            "algorithm_model",
-            "algorithm_model_point",
+//            "algorithm_config",
+//            "algorithm_device_model",
+//            "algorithm_model",
+//            "algorithm_model_point",
 //            "spark_down_sample_annually"
-            "job_alarm_realtime",
-            "job_alarm_event",
+//            "job_alarm_realtime",
+//            "job_alarm_event",
 //            "job_alarm_threshold"
+            "analysis_favorite",
+            "analysis_favorite_remark"
     };
 
     /**

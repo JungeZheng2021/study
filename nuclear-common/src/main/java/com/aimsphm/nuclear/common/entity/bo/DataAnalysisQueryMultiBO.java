@@ -1,0 +1,27 @@
+package com.aimsphm.nuclear.common.entity.bo;
+
+import com.aimsphm.nuclear.common.entity.dto.HBaseParamDTO;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.util.List;
+
+/**
+ * @Package: com.aimsphm.nuclear.common.entity.bo
+ * @Description: <振动分析调用算法>
+ * @Author: MILLA
+ * @CreateDate: 2020/3/6 10:58
+ * @UpdateUser: MILLA
+ * @UpdateDate: 2020/3/6 10:58
+ * @UpdateRemark: <>
+ * @Version: 1.0
+ */
+@Data
+public class DataAnalysisQueryMultiBO {
+
+    @ApiModelProperty(value = "表格名称", notes = "")
+    private String type;
+
+    @ApiModelProperty(value = "查询点集合")
+    private List<HBaseParamDTO> list;
+}
