@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.AnalysisFavoriteDO;
 import com.aimsphm.nuclear.common.entity.AnalysisFavoriteRemarkDO;
+import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.AnalysisFavoriteVO;
@@ -9,6 +10,7 @@ import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.AnalysisFavoriteMapper;
 import com.aimsphm.nuclear.common.service.AnalysisFavoriteRemarkService;
 import com.aimsphm.nuclear.common.service.AnalysisFavoriteService;
+import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -31,7 +33,7 @@ import java.util.stream.Collectors;
  * @CreateDate: 2021-01-14
  * @UpdateUser: MILLA
  * @UpdateDate: 2021-01-14
- * @UpdateRemark: <>
+ * @UpdateRemark: <>s
  * @Version: 1.0
  */
 @Service
@@ -39,7 +41,10 @@ import java.util.stream.Collectors;
 public class AnalysisFavoriteServiceImpl extends ServiceImpl<AnalysisFavoriteMapper, AnalysisFavoriteDO> implements AnalysisFavoriteService {
 
     @Resource
-    AnalysisFavoriteRemarkService remarkService;
+    private AnalysisFavoriteRemarkService remarkService;
+
+    @Resource
+    private CommonDeviceService deviceService;
 
     @Override
     public Page<AnalysisFavoriteDO> listAnalysisFavoriteByPageWithParams(QueryBO<AnalysisFavoriteDO> queryBO) {
@@ -72,6 +77,11 @@ public class AnalysisFavoriteServiceImpl extends ServiceImpl<AnalysisFavoriteMap
         if (this.count(wrapper) > 0) {
             throw new CustomMessageException("this favorite has been already exist");
         }
+        CommonDeviceDO deviceDO = deviceService.getById(entity.getDeviceId());
+        if (Objects.isNull(deviceDO)) {
+            throw new CustomMessageException("deviceId can not be null");
+        }
+        entity.setDeviceName(deviceDO.getDeviceName());
         boolean save = this.save(entity);
         String remark = entity.getRemark();
         if (StringUtils.isBlank(remark)) {
@@ -84,7 +94,7 @@ public class AnalysisFavoriteServiceImpl extends ServiceImpl<AnalysisFavoriteMap
     }
 
     private void checkParams(AnalysisFavoriteDO entity) {
-        if (StringUtils.isBlank(entity.getPointId()) || Objects.isNull(entity.getAcquisitionTime())) {
+        if (StringUtils.isBlank(entity.getPointId()) || Objects.isNull(entity.getAcquisitionTime()) || Objects.isNull(entity.getDeviceId())) {
             throw new CustomMessageException("params can not be null");
         }
     }

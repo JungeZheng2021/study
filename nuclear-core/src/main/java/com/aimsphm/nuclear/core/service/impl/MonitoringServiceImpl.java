@@ -13,7 +13,7 @@ import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.core.enums.PointVisibleEnum;
 import com.aimsphm.nuclear.core.service.MonitoringService;
-import com.aimsphm.nuclear.ext.service.*;
+import com.aimsphm.nuclear.ext.service.RedisDataService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,17 +44,17 @@ import static com.aimsphm.nuclear.core.constant.CoreConstants.*;
  */
 @Service
 public class MonitoringServiceImpl implements MonitoringService {
-    @Autowired
+    @Resource
     private CommonMeasurePointService pointService;
-    @Autowired
+    @Resource
     private JobAlarmEventService eventService;
-    @Autowired
+    @Resource
     private JobAlarmEventMapper eventMapper;
-    @Autowired
+    @Resource
     private CommonDeviceService deviceService;
-    @Autowired
+    @Resource
     private RedisDataService redisDataService;
-    @Autowired
+    @Resource
     private JobDeviceStatusService statusService;
 
     /**
@@ -61,7 +62,7 @@ public class MonitoringServiceImpl implements MonitoringService {
      */
     private static final Integer TIMESTAMPS_LENGTH = 13;
 
-    @Autowired
+    @Resource
     private CommonDeviceDetailsService detailsService;
 
     @Override
@@ -330,12 +331,6 @@ public class MonitoringServiceImpl implements MonitoringService {
             if (Objects.nonNull(obj)) {
                 MeasurePointVO find = (MeasurePointVO) obj;
                 BeanUtils.copyProperties(find, vo);
-            }
-            if (Objects.isNull(vo)) {
-                System.out.println(vo);
-            }
-            if (Objects.isNull(vo.getValue())) {
-                System.out.println(vo.getValue());
             }
             BeanUtils.copyProperties(item, vo);
             pointService.store2Redis(vo, defaultValue ? new Random().nextDouble() : null);

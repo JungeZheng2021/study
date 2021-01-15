@@ -1,14 +1,12 @@
 package com.aimsphm.nuclear.core.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
-import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
-import com.aimsphm.nuclear.common.service.JobDeviceStatusService;
+import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.core.entity.vo.PanoramaVO;
 import com.aimsphm.nuclear.core.service.MonitoringService;
 import com.aimsphm.nuclear.core.service.PanoramaService;
-import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -16,9 +14,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +40,9 @@ import static com.aimsphm.nuclear.core.constant.CoreConstants.PANORAMA_TRANSFINI
 @Service
 public class PanoramaServiceImpl implements PanoramaService {
 
-    @Autowired
+    @Resource
     private CommonDeviceService deviceService;
-    @Autowired
-    private JobDeviceStatusService deviceStatusService;
-    @Autowired
+    @Resource
     private MonitoringService monitoringService;
 
     @Override
