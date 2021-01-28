@@ -35,7 +35,13 @@ public class OpcApplication {
         scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "otherdata1.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
         scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "pumpdata.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
         scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeFromDatabase("pi.data", tagList), 1000, 1000, TimeUnit.MILLISECONDS);
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeFromDatabase1("JSNPC.Download", tagList), 1000, 5 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeFromDatabase1("JSNPC.Download", tagList), 1000, 5 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+        //变压器
+        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "ZAS_2020_11_06_2021_01_06_1s_part2.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
+        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "ZAS_sensordata_2020_11_6_2021_1_6_1s.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
+//        pushJob.execute1("D:\\Desktop\\work\\核电\\样本数据\\ZAS_2020_11_06_2021_01_06_1s_part2.csv", topic, 1604592000000L);
+//        pushJob.execute1("D:\\Desktop\\work\\核电\\样本数据\\ZAS_sensordata_2020_11_6_2021_1_6_1s.csv", topic, 1604592000000L);
+        System.out.println("做完了");
     }
 
 }

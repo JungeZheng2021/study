@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aimsphm.nuclear.common.entity.CommonSensorDO">
-
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonSensorDO">
         <result column="id" property="id"/>
@@ -12,14 +11,30 @@
         <result column="gmt_modified" property="gmtModified"/>
         <result column="deleted" property="deleted"/>
         <result column="sensor_code" property="sensorCode"/>
+        <result column="sensor_model" property="sensorModel"/>
+        <result column="sensor_serial_number" property="sensorSerialNumber"/>
         <result column="sensor_name" property="sensorName"/>
         <result column="edge_id" property="edgeId"/>
+        <result column="edge_code" property="edgeCode"/>
         <result column="edge_name" property="edgeName"/>
         <result column="device_name" property="deviceName"/>
         <result column="device_id" property="deviceId"/>
-        <result column="sensor_location" property="sensorLocation"/>
-        <result column="sensor_type" property="sensorType"/>
+        <result column="location_code" property="locationCode"/>
+        <result column="category" property="category"/>
         <result column="sensor_desc" property="sensorDesc"/>
+        <result column="acc_frequency_min" property="accFrequencyMin"/>
+        <result column="acc_frequency_max" property="accFrequencyMax"/>
+        <result column="vec_frequency_min" property="vecFrequencyMin"/>
+        <result column="vec_frequency_max" property="vecFrequencyMax"/>
+        <result column="envelope_filter_min" property="envelopeFilterMin"/>
+        <result column="envelope_filter_max" property="envelopeFilterMax"/>
+        <result column="envelope_bandwidth" property="envelopeBandwidth"/>
+        <result column="offset_frequency_min" property="offsetFrequencyMin"/>
+        <result column="offset_frequency_max" property="offsetFrequencyMax"/>
+        <result column="sensitivity" property="sensitivity"/>
+        <result column="viscosity_calculate_method" property="viscosityCalculateMethod"/>
+        <result column="sample_period" property="samplePeriod"/>
+        <result column="config_status" property="configStatus"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -31,7 +46,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        sensor_code, sensor_name, edge_id, edge_name, device_name, device_id, sensor_location, sensor_type, sensor_desc
+        sensor_code, sensor_model, sensor_serial_number, sensor_name, edge_id, edge_code, edge_name, device_name, device_id, location_code, category, sensor_desc, acc_frequency_min, acc_frequency_max, vec_frequency_min, vec_frequency_max, envelope_filter_min, envelope_filter_max, envelope_bandwidth, offset_frequency_min, offset_frequency_max, sensitivity, viscosity_calculate_method, sample_period, config_status
     </sql>
 
 </mapper>

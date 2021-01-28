@@ -21,6 +21,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -29,6 +30,7 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_DEVICE_RUNNING_STATUS;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.ZERO;
 import static com.aimsphm.nuclear.core.constant.CoreConstants.*;
 
@@ -117,7 +119,7 @@ public class MonitoringServiceImpl implements MonitoringService {
     public DeviceStatusVO getRunningStatus(Long deviceId) {
         DeviceStatusVO status = new DeviceStatusVO();
         JobDeviceStatusDO one = statusService.getDeviceRunningStatus(deviceId);
-        status.setStatus(Objects.isNull(one) ? DeviceHealthEnum.Stop.getValue() : one.getStatus());
+        status.setStatus(Objects.isNull(one) ? DeviceHealthEnum.STOP.getValue() : one.getStatus());
         CommonQueryBO bo = new CommonQueryBO();
         bo.setDeviceId(deviceId);
         bo.setVisible(0);
@@ -132,10 +134,11 @@ public class MonitoringServiceImpl implements MonitoringService {
             String stopTimes = config.get(STOP_TIMES);
             status.setTotalRunningTime(StringUtils.hasText(totalRunningDuration) ? Long.valueOf(totalRunningDuration) : 0L);
             status.setStopTimes(StringUtils.hasText(stopTimes) ? Integer.valueOf(stopTimes) : 0);
+            status.setStartTime(StringUtils.hasText(startTime) ? Long.valueOf(startTime) : 0L);
             status.setContinuousRunningTime(StringUtils.hasText(startTime) ? System.currentTimeMillis() - Long.valueOf(startTime) : 0L);
         }
         LambdaQueryWrapper<JobDeviceStatusDO> stop = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
-        stop.eq(JobDeviceStatusDO::getDeviceId, deviceId).eq(JobDeviceStatusDO::getStatus, DeviceHealthEnum.Stop.getValue());
+        stop.eq(JobDeviceStatusDO::getDeviceId, deviceId).eq(JobDeviceStatusDO::getStatus, DeviceHealthEnum.STOP.getValue());
         if (Objects.nonNull(rangeQueryBO.getStart())) {
             stop.ge(JobDeviceStatusDO::getGmtStart, rangeQueryBO.getStart());
         }
@@ -144,7 +147,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         status.setStopTimes(Objects.isNull(status.getStopTimes()) ? count : count + status.getStopTimes());
         Map<Integer, Long> times = listRunningDuration(deviceId, rangeQueryBO);
         if (MapUtils.isNotEmpty(times)) {
-            long sum = times.entrySet().stream().filter(item -> item.getKey() < DeviceHealthEnum.Stop.getValue()).collect(Collectors.summarizingLong(item -> item.getValue())).getSum();
+            long sum = times.entrySet().stream().filter(item -> item.getKey() < DeviceHealthEnum.STOP.getValue()).collect(Collectors.summarizingLong(item -> item.getValue())).getSum();
             status.setTotalRunningTime(Objects.isNull(status.getTotalRunningTime()) ? sum : sum + status.getTotalRunningTime());
         }
         return status;
@@ -152,6 +155,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = REDIS_DEVICE_RUNNING_STATUS, key = "#statusVO.deviceId")
     public boolean modifyDeviceStatus(DeviceStatusVO statusVO) {
         if (Objects.isNull(statusVO.getDeviceId())) {
             return false;

@@ -46,6 +46,10 @@ public final class RedisKeyConstant {
      * 设备运行状态
      */
     public static final String REDIS_DEVICE_RUNNING_STATUS = CACHE_KEY_PREFIX + "device_status:";
+    /**
+     * 振动分析数据
+     */
+    public static final String REDIS_DATA_ANALYSIS_VIBRATION = CACHE_KEY_PREFIX + "data_analysis:vibration:";
 
     //-----------------------------
 

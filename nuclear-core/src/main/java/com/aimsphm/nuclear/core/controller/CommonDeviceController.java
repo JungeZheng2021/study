@@ -32,6 +32,12 @@ public class CommonDeviceController {
 
     @GetMapping("list")
     @ApiOperation(value = "分页查询", notes = "多条件组合查询")
+    public List<CommonDeviceDO> listCommonDeviceDOWithParams(CommonDeviceDO entity, ConditionsQueryBO query) {
+        return iCommonDeviceServiceExt.listCommonDeviceWithParams(new QueryBO(entity, query));
+    }
+
+    @GetMapping("page")
+    @ApiOperation(value = "分页查询", notes = "多条件组合查询")
     public Page<CommonDeviceDO> listCommonDeviceDOByPageWithParams(Page<CommonDeviceDO> page, CommonDeviceDO entity, ConditionsQueryBO query) {
         return iCommonDeviceServiceExt.listCommonDeviceByPageWithParams(new QueryBO(page, entity, query));
     }

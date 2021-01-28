@@ -4,15 +4,17 @@ import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +32,7 @@ import java.util.Set;
 @Api(tags = "point-测点信息-相关接口")
 @RequestMapping(value = "/common/measurePoint", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CommonMeasurePointController {
-    @Autowired
+    @Resource
     private CommonMeasurePointService iCommonMeasurePointServiceExt;
 
     @GetMapping("list")
@@ -80,6 +82,18 @@ public class CommonMeasurePointController {
     @ApiOperation(value = "根据条件获取需要的测点", notes = "优先级为：系统、子系统、设备(比如有系统id就不会再使用子系统id)")
     public List<CommonMeasurePointDO> listPointsByDeviceId(CommonQueryBO query) {
         return iCommonMeasurePointServiceExt.listPointsByConditions(query);
+    }
+
+    @GetMapping("/entities")
+    @ApiOperation(value = "根据条件获取需要的测点", notes = "不包括使用deviceId和subSystemId查询")
+    public List<CommonMeasurePointDO> listPointsByEntity(CommonMeasurePointDO entity) {
+        return iCommonMeasurePointServiceExt.list(Wrappers.lambdaQuery(entity));
+    }
+
+    @GetMapping("/locations")
+    @ApiOperation(value = "获取所有的测点位置", notes = "全量去重数据")
+    public List<LabelVO> listLocationInfo() {
+        return iCommonMeasurePointServiceExt.listLocationInfo();
     }
 
     @GetMapping("features")

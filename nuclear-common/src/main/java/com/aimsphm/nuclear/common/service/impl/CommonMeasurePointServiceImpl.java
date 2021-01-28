@@ -8,6 +8,7 @@ import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
+import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
@@ -23,6 +24,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.collections4.CollectionUtils;
+import org.assertj.core.util.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -210,6 +212,20 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             wrapper.last("and visible%" + query.getVisible() + "=0");
         }
         return this.list(wrapper);
+    }
+
+    @Override
+    public List<LabelVO> listLocationInfo() {
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+        wrapper.select(CommonMeasurePointDO::getLocation, CommonMeasurePointDO::getLocationCode).isNotNull(CommonMeasurePointDO::getLocationCode);
+        List<CommonMeasurePointDO> list = this.list(wrapper);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        Map<String, List<CommonMeasurePointDO>> collect = list.stream().collect(Collectors.groupingBy(x -> x.getLocationCode()));
+        List<LabelVO> labelList = Lists.newArrayList();
+        collect.forEach((k, v) -> labelList.add(new LabelVO(v.get(0).getLocation(), k)));
+        return labelList;
     }
 
     /**

@@ -3,7 +3,7 @@ hbase:
     properties:
       hbase.zookeeper.quorum: hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181
 server:
-  port: 8083
+  port: 8089
   max-http-header-size: 10000000
 
 spring:
@@ -70,7 +70,7 @@ eureka:
     serviceUrl:
       defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
     fetchRegistry: true
-    register-with-eureka: false
+    register-with-eureka: true
   instance:
     prefer-ip-address: true
 mybatis-plus:

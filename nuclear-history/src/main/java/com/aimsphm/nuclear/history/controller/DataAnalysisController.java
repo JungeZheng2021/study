@@ -40,4 +40,13 @@ public class DataAnalysisController {
         System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
     }
+
+    @GetMapping("vibration/export")
+    @ApiOperation(value = "振动分析-数据导出", notes = "")
+    public Map<String, HistoryDataVO> listAnalysisDataWithPointListExport(HistoryQueryMultiBO queryMultiBO) {
+        long l = System.currentTimeMillis();
+        Map<String, HistoryDataVO> data = service.listAnalysisDataWithPointList(queryMultiBO);
+        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
+        return data;
+    }
 }

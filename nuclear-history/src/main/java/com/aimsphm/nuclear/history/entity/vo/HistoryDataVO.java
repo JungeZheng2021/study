@@ -19,4 +19,6 @@ import java.util.List;
 public class HistoryDataVO {
     @ApiModelProperty(value = "显示值", notes = "实测值、预测值、去噪处理[滑动平均值]")
     private List<List<Object>> chartData;
+    @ApiModelProperty(value = "标注/标记", notes = "振动分析")
+    private List<List<Object>> labelData;
 }

@@ -13,11 +13,11 @@ import java.util.Objects;
  * @Version: 1.0
  */
 public enum DeviceHealthEnum {
-    Health(0, "健康", "green"),
-    Pending(1, "待观察", "lightgreen"),
-    Warning(2, "预警", "orange"),
-    Alarm(3, "报警", "red"),
-    Stop(4, "停机", "gray");
+    HEALTH(0, "健康", "green"),
+    PENDING(1, "待观察", "lightgreen"),
+    WARNING(2, "预警", "orange"),
+    ALARM(3, "报警", "red"),
+    STOP(4, "停机", "gray");
 
     private DeviceHealthEnum(Integer value, String desc, String color) {
         this.value = value;

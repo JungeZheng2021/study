@@ -47,7 +47,7 @@
             <level>ERROR</level>
         </filter>
     </appender>
-    <logger name="com.aimsphm" level="DEBUG"/>
+    <!--    <logger name="com.aimsphm" level="DEBUG"/>-->
     <root level="info">
         <appender-ref ref="stdout"/>
         <appender-ref ref="logFile"/>

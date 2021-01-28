@@ -18,4 +18,9 @@ public interface AlgorithmService {
      * @return
      */
     void getDeviceStateMonitorInfo();
+
+    /**
+     * 设备启停状态判断
+     */
+    void getDeviceStartAndStopMonitorInfo();
 }

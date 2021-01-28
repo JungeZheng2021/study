@@ -16,12 +16,12 @@ import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
 
-@SpringBootApplication(scanBasePackages = {"com.aimsphm.nuclear"})
 @EnableEurekaClient
 @EnableTransactionManagement
 @EnableScheduling
 @EnableCaching
-@EnableFeignClients
+@EnableFeignClients(basePackages = {"com.aimsphm.nuclear"})
+@SpringBootApplication(scanBasePackages = {"com.aimsphm.nuclear"})
 public class NuclearCoreApplication {
     @Bean
     @LoadBalanced

@@ -37,6 +37,11 @@ public class QueryBO<T> {
         this.query = query;
     }
 
+    public QueryBO(T entity, ConditionsQueryBO query) {
+        this.entity = entity;
+        this.query = query;
+    }
+
     public QueryBO() {
     }
 

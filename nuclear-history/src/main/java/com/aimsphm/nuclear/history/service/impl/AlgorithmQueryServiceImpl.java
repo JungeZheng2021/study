@@ -12,11 +12,13 @@ import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseParamDTO;
+import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.service.AlgorithmQueryService;
 import com.aimsphm.nuclear.history.service.HBaseService;
 import com.aimsphm.nuclear.history.service.HistoryQueryService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -26,6 +28,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -99,49 +102,71 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
         Assert.notNull(query, "params can not be null");
         AlgorithmTypeEnum type = AlgorithmTypeEnum.getByValue(query.getType());
         Assert.notNull(type, "this algorithm is not supported");
-        List<HBaseParamDTO> list = query.getList();
-        if (CollectionUtils.isEmpty(list)) {
+        if (CollectionUtils.isEmpty(query.getPointIds()) || CollectionUtils.isEmpty(query.getTimestamps())) {
             return null;
         }
-        List<HBaseParamDTO> params = list.stream().filter(x -> StringUtils.hasText(x.getPointId()) && Objects.nonNull(x.getTimestamp())).map(item -> {
-            CommonMeasurePointDO point = pointService.getPointByPointId(item.getPointId());
+        Assert.isTrue(query.getPointIds().size() == query.getTimestamps().size(), "pointIds's size cant match timestamps's size");
+        List<String> pointIds = query.getPointIds();
+        List<Long> timestamps = query.getTimestamps();
+        List<HBaseParamDTO> params = Lists.newArrayList();
+        List<CommonMeasurePointDO> pointList = new ArrayList<>(pointIds.size());
+        for (int i = 0; i < pointIds.size(); i++) {
+            String pointId = pointIds.get(i);
+            Long timestamp = timestamps.get(i);
+            CommonMeasurePointDO point = pointService.getPointByPointId(pointId);
+            pointList.add(point);
+            if (Objects.isNull(point)) {
+                continue;
+            }
             HBaseParamDTO paramDTO = new HBaseParamDTO();
             paramDTO.setPointId(point.getSensorCode());
             paramDTO.setFamily(H_BASE_FAMILY_NPC_VIBRATION_RAW);
-            paramDTO.setTimestamp(item.getTimestamp());
-            return paramDTO;
-        }).collect(Collectors.toList());
+            paramDTO.setTimestamp(timestamp);
+            params.add(paramDTO);
+        }
         DataAnalysisQueryBO analysisQuery = new DataAnalysisQueryBO();
         analysisQuery.setParams(params);
         analysisQuery.setTableName(H_BASE_TABLE_NPC_PHM_DATA);
         Map<String, Map<Long, Object>> retVal = hBaseService.listArrayData(analysisQuery);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.DATA_ANALYSIS.getType());
-
-        list.stream().filter(x -> StringUtils.hasText(x.getPointId()) && Objects.nonNull(x.getTimestamp())).forEach(item -> {
-            CommonMeasurePointDO point = pointService.getPointByPointId(item.getPointId());
+        for (int i = 0; i < pointIds.size(); i++) {
+            Long timestamp = timestamps.get(i);
+            CommonMeasurePointDO point = pointList.get(i);
             if (Objects.isNull(point)) {
-                return;
+                continue;
             }
             Map<Long, Object> map = retVal.get(point.getSensorCode());
             if (MapUtils.isEmpty(map)) {
-                return;
+                continue;
             }
-            Object o = map.get(item.getTimestamp());
+            Object o = map.get(timestamp);
             if (Objects.isNull(o)) {
-                return;
+                continue;
             }
             AnalysisVibrationParamDTO param = new AnalysisVibrationParamDTO();
             param.setSignal((Double[]) o);
-            //TODO 以下参数还需要从表中获取
             param.setFs(25000);
+
+            //TODO 以下参数还需要从表中获取
+            //根据sensorCode查询以下配置
             param.setMinFrequency(0);
             param.setMaxFrequency(10000);
-            param.setSignalType(3);
+
+            if (PointFeatureEnum.ACC.getValue().equals(point.getFeatureType())) {
+                param.setSignalType(3);
+            }
+            if (PointFeatureEnum.VEC.getValue().equals(point.getFeatureType())) {
+                param.setSignalType(2);
+            }
+            //信号类型为空的话不执行的调用
+            if (Objects.isNull(param.getSignalType())) {
+                continue;
+            }
             param.setMaxLevel(3);
             param.setType(type.getType());
             AnalysisVibrationResponseDTO response = (AnalysisVibrationResponseDTO) algorithm.getInvokeCustomerData(param);
             result.put(point.getPointId(), response.getCurve());
-        });
+        }
         return result;
     }
 }

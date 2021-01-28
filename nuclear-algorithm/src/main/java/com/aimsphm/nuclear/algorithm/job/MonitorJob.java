@@ -24,7 +24,7 @@ public class MonitorJob {
      * 设备状态监测算法
      * 每55分钟执行一次
      */
-    @Scheduled(cron = "0 */55 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     @DistributedLock("MonitorJobDistributeLock")
     public void monitor() {
         try {

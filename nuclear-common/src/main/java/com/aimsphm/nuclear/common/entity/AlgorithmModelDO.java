@@ -11,9 +11,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <算法模型信息实体>
  * @Author: MILLA
- * @CreateDate: 2021-01-05
+ * @CreateDate: 2021-01-20
  * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-05
+ * @UpdateDate: 2021-01-20
  * @UpdateRemark: <>
  * @Version: 1.0
  */

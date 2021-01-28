@@ -22,5 +22,4 @@ public class SensorDataDTO {
      * 数据包
      */
     private PacketDTO packet;
-
 }

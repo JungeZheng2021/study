@@ -2,19 +2,19 @@ package com.aimsphm.nuclear.data.service.impl;
 
 import com.aimsphm.nuclear.common.constant.HBaseConstant;
 import com.aimsphm.nuclear.common.entity.dto.HBaseColumnItemDTO;
-import com.aimsphm.nuclear.data.service.CommonDataService;
-import com.aimsphm.nuclear.data.entity.DataItemDTO;
-import com.aimsphm.nuclear.data.service.HBaseService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
+import com.aimsphm.nuclear.data.entity.DataItemDTO;
+import com.aimsphm.nuclear.data.service.CommonDataService;
+import com.aimsphm.nuclear.data.service.HBaseService;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,9 +34,9 @@ import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATO
 @Service("pi")
 @Slf4j
 public class PIDataServiceImpl implements CommonDataService {
-    @Autowired
+    @Resource
     private CommonMeasurePointService pointServiceExt;
-    @Autowired
+    @Resource
     private HBaseService hBaseService;
 
     @Override

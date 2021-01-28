@@ -97,7 +97,6 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         HistoryQueryMultiBO multi = new HistoryQueryMultiBO();
         multi.setPointIds(Lists.newArrayList(single.getPointId()));
         BeanUtils.copyProperties(single, multi);
-        listHistoryDataWithPointIdsFromMysql(multi);
         Map<String, HistoryDataVO> data = listHistoryDataWithPointIdsFromMysql(multi);
         if (Objects.nonNull(data)) {
             return data.get(single.getPointId());
@@ -186,14 +185,19 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         if (StringUtils.isBlank(tableName)) {
             return null;
         }
-        int endYear = DateUtils.transition(new Date(end)).getYear();
-        int startYear = DateUtils.transition(new Date(start)).getYear();
-        List<SparkDownSample> list = Lists.newArrayList();
-        for (int year = startYear; year <= endYear; year++) {
-            resetTableName(tableName, year);
-            list.addAll(listSparkDownSampleByPointIdsAndRangeTime(multi.getPointIds(), start, end));
+        //如果是天表[天表根据年份分表-需要将跨跃2年的部分拼接起来]
+        if (TableNameEnum.DAILY.getValue().equals(tableName)) {
+            int endYear = DateUtils.transition(new Date(end)).getYear();
+            int startYear = DateUtils.transition(new Date(start)).getYear();
+            List<SparkDownSample> list = Lists.newArrayList();
+            for (int year = startYear; year <= endYear; year++) {
+                resetTableName(tableName, year);
+                list.addAll(listSparkDownSampleByPointIdsAndRangeTime(multi.getPointIds(), start, end));
+            }
+            return list;
         }
-        return list;
+        resetTableName(tableName, null);
+        return listSparkDownSampleByPointIdsAndRangeTime(multi.getPointIds(), start, end);
     }
 
     private List<SparkDownSample> listSparkDownSampleByPointIdsAndRangeTime(List<String> pointIds, Long start, Long end) {
@@ -203,12 +207,12 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         return downSampleServiceExt.list(wrapper);
     }
 
-    private void resetTableName(String tableName, int year) {
-        if (tableName.equals(TableNameEnum.DAILY.getValue())) {
-            DynamicTableTreadLocal.INSTANCE.setTableName(tableName + UNDERLINE + year);
+    private void resetTableName(String tableName, Integer year) {
+        if (Objects.isNull(year)) {
+            DynamicTableTreadLocal.INSTANCE.setTableName(tableName);
             return;
         }
-        DynamicTableTreadLocal.INSTANCE.setTableName(tableName);
+        DynamicTableTreadLocal.INSTANCE.setTableName(tableName + UNDERLINE + year);
     }
 
     @Override

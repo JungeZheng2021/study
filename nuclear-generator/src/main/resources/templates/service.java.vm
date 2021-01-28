@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 #end
 import ${superServiceClassPackage};
 
+import java.util.List;
+
 /**
  * @Package: ${package.Service}
  * @Description: <$!{table.comment}服务类>
@@ -31,6 +33,14 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
      * @return
      */
     Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(QueryBO<${entity}> queryBO);
+
+    /**
+     * 根据条件获取分页查询数据
+     *
+     * @param queryBO 查询条件
+     * @return
+     */
+    List<${entity}> list${cfg.get(${entity})}WithParams(QueryBO<${entity}> queryBO);
 #end
 }
 #end

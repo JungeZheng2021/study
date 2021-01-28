@@ -10,8 +10,8 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.enums.AlarmEvaluationEnum;
 import com.aimsphm.nuclear.common.enums.AlgorithmLevelEnum;
+import com.aimsphm.nuclear.common.enums.DeviceHealthEnum;
 import com.aimsphm.nuclear.common.enums.EventStatusEnum;
-import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.*;
 import com.aimsphm.nuclear.common.util.BigDecimalUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
@@ -91,16 +91,32 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         LambdaUpdateWrapper<JobAlarmEventDO> update = Wrappers.lambdaUpdate(JobAlarmEventDO.class);
         update.set(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.FINISHED.getValue()).ne(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.FINISHED.getValue()).le(JobAlarmEventDO::getGmtLastAlarm, new Date(System.currentTimeMillis() - days15));
         eventService.update(update);
-        List<StateMonitorParamDTO> data = operateParams(AlgorithmTypeEnum.STATE_MONITOR.getType());
+        List<StateMonitorParamDTO> data = operateParams(AlgorithmTypeEnum.STATE_MONITOR.getType(), 1);
         if (CollectionUtils.isEmpty(data)) {
             return;
         }
-        long invokingTime = System.currentTimeMillis();
         data.stream().filter(Objects::nonNull).forEach(item -> {
             item.setAlgorithmPeriod(period);
-            item.setInvokingTime(invokingTime);
+            item.setInvokingTime(System.currentTimeMillis());
             StateMonitorResponseDTO response = (StateMonitorResponseDTO) handlerService.getInvokeCustomerData(item);
             saveResult(response);
+        });
+    }
+
+    @Override
+    public void getDeviceStartAndStopMonitorInfo() {
+        List<StateMonitorParamDTO> data = operateParams(AlgorithmTypeEnum.STATE_MONITOR.getType(), 0);
+        if (CollectionUtils.isEmpty(data)) {
+            return;
+        }
+        data.stream().filter(Objects::nonNull).forEach(item -> {
+            item.setAlgorithmPeriod(period);
+            item.setInvokingTime(System.currentTimeMillis());
+            StateMonitorResponseDTO response = (StateMonitorResponseDTO) handlerService.getInvokeCustomerData(item);
+            if (Objects.isNull(response)) {
+                return;
+            }
+            updateDeviceStatus(response.getDeviceId(), response.getHealthStatus());
         });
     }
 
@@ -109,9 +125,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         if (Objects.isNull(response)) {
             return;
         }
-        Long deviceId = response.getDeviceId();
-        Integer healthStatus = response.getHealthStatus();
-        updateDeviceStatus(deviceId, healthStatus);
         saveRealtimeAlarm(response.getRealtimeAlarm());
         saveEstimateResult(response.getModelEstimateResult());
     }
@@ -222,40 +235,39 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     /**
-     * 更新设备状态
+     * 更新设备状态启停状态
      *
-     * @param deviceId     设备id
-     * @param healthStatus 健康状态
+     * @param deviceId  设备id
+     * @param stopStart 健康状态
      */
-    private void updateDeviceStatus(Long deviceId, Integer healthStatus) {
+    private void updateDeviceStatus(Long deviceId, Integer stopStart) {
         CommonDeviceDO device = deviceService.getById(deviceId);
         if (Objects.isNull(device)) {
             return;
         }
         JobDeviceStatusDO status = statusService.getDeviceRunningStatus(deviceId);
-        //保存一个新的状态
+        //之前没有状态，且现在是停机需要保存
         if (Objects.isNull(status)) {
+            Integer newStatus = statusService.getDeviceCurrentStatus(deviceId, DeviceHealthEnum.STOP.getValue().equals(stopStart));
             JobDeviceStatusDO newOne = new JobDeviceStatusDO();
-            newOne.setStatus(healthStatus);
+            newOne.setStatus(newStatus);
             newOne.setDeviceId(deviceId);
             newOne.setGmtStart(new Date());
             statusService.save(newOne);
             return;
-
         }
-        if (status.equals(healthStatus)) {
+        // 停机状态1.本次和上次都是停机状态
+        if (status.getStatus().equals(stopStart) && DeviceHealthEnum.STOP.getValue().equals(stopStart)) {
             return;
         }
-        Date currentDate = new Date();
-        status.setGmtEnd(currentDate);
-        status.setStatusDuration(currentDate.getTime() - status.getGmtStart().getTime());
-        //更新结束时间
-        statusService.updateById(status);
-        status.setGmtEnd(null);
-        status.setGmtStart(currentDate);
-        status.setStatus(healthStatus);
-        status.setStatusDuration(0L);
-        statusService.save(status);
+        // 停机状态2.直接修改上次状态持续时间，记录本次停机开始时间
+        if (DeviceHealthEnum.STOP.getValue().equals(stopStart)) {
+            statusService.saveOrUpdateDeviceStatus(status, stopStart);
+            return;
+        }
+        //以下是非停机状态
+        //启动报警状态且启停状态是启动状态，需要计算设备状态
+        statusService.updateDeviceStatusWithCalculate(status, device.getEnableMonitor());
     }
 
     /**
@@ -263,58 +275,68 @@ public class AlgorithmServiceImpl implements AlgorithmService {
      *
      * @return
      */
-    private List<StateMonitorParamDTO> operateParams(String type) {
+    private List<StateMonitorParamDTO> operateParams(String type, Integer modelType) {
         LambdaQueryWrapper<AlgorithmConfigDO> wrapper = Wrappers.lambdaQuery(AlgorithmConfigDO.class);
         wrapper.eq(AlgorithmConfigDO::getAlgorithmType, type);
         AlgorithmConfigDO algorithmConfig = configService.getOne(wrapper);
         if (Objects.isNull(algorithmConfig)) {
             return Lists.newArrayList();
         }
-        LambdaQueryWrapper<AlgorithmDeviceModelDO> deviceModelWrapper = Wrappers.lambdaQuery(AlgorithmDeviceModelDO.class);
-        deviceModelWrapper.eq(AlgorithmDeviceModelDO::getAlgorithmId, algorithmConfig.getId());
-        List<AlgorithmDeviceModelDO> deviceModelList = deviceModelService.list(deviceModelWrapper);
-        if (CollectionUtils.isEmpty(deviceModelList)) {
+        LambdaQueryWrapper<AlgorithmModelDO> modelWrapper = Wrappers.lambdaQuery(AlgorithmModelDO.class);
+        modelWrapper.eq(AlgorithmModelDO::getModelType, modelType);
+        List<AlgorithmModelDO> modelList = modelService.list(modelWrapper);
+        if (CollectionUtils.isEmpty(modelList)) {
             return Lists.newArrayList();
         }
-        //设备层级
-        List<StateMonitorParamDTO> collect = deviceModelList.stream().map(x -> {
-            CommonDeviceDO device = deviceService.getById(x.getDeviceId());
-            if (Objects.isNull(device)) {
+        LambdaQueryWrapper<AlgorithmModelPointDO> modePointWrapper = Wrappers.lambdaQuery(AlgorithmModelPointDO.class);
+        modePointWrapper.in(AlgorithmModelPointDO::getModelId, modelList.stream().map(x -> x.getId()).collect(Collectors.toSet()));
+        List<AlgorithmModelPointDO> pointDOS = pointService.list(modePointWrapper);
+        if (CollectionUtils.isEmpty(pointDOS)) {
+            return Lists.newArrayList();
+        }
+        Map<Long, List<AlgorithmModelPointDO>> pointMap = pointDOS.stream().collect(Collectors.groupingBy(x -> x.getDeviceId()));
+        Map<Long, List<AlgorithmModelDO>> deviceModelList = modelList.stream().collect(Collectors.groupingBy(x -> x.getDeviceId()));
+        List<StateMonitorParamDTO> collect = deviceModelList.entrySet().stream().map(x -> {
+            Long deviceId = x.getKey();
+            List<AlgorithmModelDO> value = x.getValue();
+            CommonDeviceDO device = deviceService.getById(deviceId);
+            //设备不存在或者是 设备未开启报警且modelType不是启停模型 1：开启 0:未开启
+            boolean isNeed = Objects.isNull(device) || (!device.getEnableMonitor() && modelType != 0);
+            if (isNeed) {
                 return null;
             }
             StateMonitorParamDTO param = new StateMonitorParamDTO();
             param.setDeviceName(device.getDeviceName());
-            param.setDeviceId(x.getDeviceId());
-            Long id = x.getId();
-            LambdaQueryWrapper<AlgorithmModelDO> modelWrapper = Wrappers.lambdaQuery(AlgorithmModelDO.class);
-            modelWrapper.eq(AlgorithmModelDO::getDeviceModelId, id);
-            List<AlgorithmModelDO> modelList = modelService.list(modelWrapper);
-            if (CollectionUtils.isEmpty(modelList)) {
-                return param;
+            param.setDeviceId(deviceId);
+            param.setModelIds(value.stream().map(v -> v.getId()).distinct().collect(Collectors.toList()));
+            param.setOnlyCondition(1);
+            //启停算法不需要残值值
+            if (modelType != 0) {
+                param.setOnlyCondition(0);
+                param.setModelEstimateResult(listEstimateData(value, pointMap));
             }
-            List<AlgorithmModelPointDO> pointList = Lists.newArrayList();
-            param.setModelEstimateResult(listEstimateData(modelList, pointList));
-            param.setSensorData(listPointData(pointList));
+            param.setSensorData(listPointData(pointMap.get(deviceId)));
+            //两个参数都是空的话不调用算法
+            if (CollectionUtils.isEmpty(param.getSensorData()) && CollectionUtils.isEmpty(param.getModelEstimateResult())) {
+                return null;
+            }
             return param;
         }).filter(Objects::nonNull).collect(Collectors.toList());
         return collect;
     }
 
-    private List<EstimateParamDataBO> listEstimateData(List<AlgorithmModelDO> modelList, List<AlgorithmModelPointDO> pointList) {
+    private List<EstimateParamDataBO> listEstimateData(List<AlgorithmModelDO> modelList, Map<Long, List<AlgorithmModelPointDO>> pointMap) {
         return modelList.stream().map(m -> {
             EstimateParamDataBO bo = new EstimateParamDataBO();
             bo.setModelId(m.getId());
             bo.setModelName(m.getModelName());
-            LambdaQueryWrapper<AlgorithmModelPointDO> modePointWrapper = Wrappers.lambdaQuery(AlgorithmModelPointDO.class);
-            modePointWrapper.eq(AlgorithmModelPointDO::getModelId, m.getId());
-            List<AlgorithmModelPointDO> pointDOS = pointService.list(modePointWrapper);
+            List<AlgorithmModelPointDO> pointDOS = pointMap.get(m.getDeviceId());
             if (CollectionUtils.isEmpty(pointDOS)) {
                 return bo;
             }
-            pointList.addAll(pointDOS);
             LambdaQueryWrapper<CommonMeasurePointDO> pointsWrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
             pointsWrapper.select(CommonMeasurePointDO::getPointId);
-            pointsWrapper.in(CommonMeasurePointDO::getId, pointList.stream().map(item -> item.getPointId()).collect(Collectors.toList()));
+            pointsWrapper.in(CommonMeasurePointDO::getId, pointDOS.stream().map(item -> item.getPointId()).collect(Collectors.toList()));
             List<CommonMeasurePointDO> list = pointsService.list(pointsWrapper);
             bo.setEstimateTotal(listPointEstimateResultsData(m.getId(), list));
             return bo;

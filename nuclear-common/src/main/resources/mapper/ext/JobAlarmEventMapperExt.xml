@@ -23,6 +23,18 @@
         GROUP BY
         p.category
     </select>
+    <select id="selectWarmingStatusPoints" resultType="com.aimsphm.nuclear.common.entity.vo.LabelVO">
+        SELECT
+            count( p.category ) `value`,
+            p.category `name`
+        FROM
+            common_measure_point p
+        RIGHT JOIN (SELECT substring_index( substring_index( a.point_ids, ',', b.help_topic_id + 1 ), ',', - 1 ) point
+                FROM  job_alarm_event a JOIN mysql.help_topic b ON b.help_topic_id <![CDATA[<]]> ( length( a.point_ids ) - length( REPLACE ( a.point_ids, ',', '' ))+ 1 )
+        WHERE a.device_id = #{deviceId}  AND a.alarm_status IN ( 1, 2 )  ) t ON p.point_id = t.point
+        GROUP BY
+            p.category
+    </select>
     <select id="selectWarmingPointsByDateDistribution" resultType="com.aimsphm.nuclear.common.entity.vo.LabelVO">
         select count(1) `value` ,'一天' as `name`
             FROM job_alarm_event

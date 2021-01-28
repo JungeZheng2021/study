@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Package: com.aimsphm.nuclear.common.entity.bo
@@ -23,4 +24,9 @@ public class HistoryQueryMultiBO extends TimeRangeQueryBO {
     private List<String> pointIds;
     @ApiModelProperty(value = "模型id", notes = "查询实测值、估计值、残差时会用到")
     private Long modelId;
+
+    public String key() {
+        return this.getPointIds().stream().sorted().collect(Collectors.joining()).concat(String.valueOf(this.getStart())).concat(String.valueOf(this.getEnd()));
+    }
+
 }

@@ -1,12 +1,13 @@
 package com.aimsphm.nuclear.data.service.impl;
 
 import com.aimsphm.nuclear.common.constant.HBaseConstant;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
+import com.aimsphm.nuclear.common.service.CommonSensorService;
 import com.aimsphm.nuclear.common.util.ByteUtil;
 import com.aimsphm.nuclear.data.entity.dto.PacketDTO;
 import com.aimsphm.nuclear.data.entity.dto.SensorDataDTO;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
-import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +17,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
+import static com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum.SETTINGS_STATUS;
 
 /**
  * @Package: com.aimsphm.nuclear.common.service.ext.service.impl
@@ -38,10 +40,14 @@ import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
 @Slf4j
 @Service("vibration")
 public class VibrationDataServiceImpl implements CommonDataService {
-    @Autowired
+    @Resource
     private HBaseService hBaseService;
-    @Autowired
+
+    @Resource
     private CommonMeasurePointService pointServiceExt;
+
+    @Resource
+    private CommonSensorService sensorService;
     /**
      * 需要存储到redis中的特征列表
      */
@@ -56,11 +62,22 @@ public class VibrationDataServiceImpl implements CommonDataService {
         if (Objects.isNull(sensorDataBO) || Objects.isNull(sensorDataBO.getType()) || Objects.isNull(sensorDataBO.getPacket())) {
             return;
         }
-//        //暂时没有根据type进行区分
-//        Integer type = sensorDataBO.getType();
+        Integer type = sensorDataBO.getType();
         PacketDTO packet = sensorDataBO.getPacket();
+        //传感器设置结果
+        if (SETTINGS_STATUS.getType().equals(type)) {
+            settingSensorConfigStatus(packet);
+            return;
+        }
         log.info("topic:{} ,message:{},type:{}", topic, packet.getSensorCode(), sensorDataBO.getType());
         batchUpdateAndSave(packet);
+    }
+
+    private void settingSensorConfigStatus(PacketDTO packet) {
+        if (Objects.isNull(packet) || Objects.isNull(packet.getConfigResult()) || StringUtils.isBlank(packet.getEdgeCode())) {
+            return;
+        }
+        sensorService.updateConfigStatus(packet.getEdgeCode(), packet.getConfigResult());
     }
 
     private void batchUpdateAndSave(PacketDTO packet) {

@@ -36,9 +36,9 @@ public enum SensorDataCategoryEnum {
      */
     OIL_SETTINGS(21),
     /**
-     * 油质传感器设置结果
+     * 传感器设置结果
      */
-    OIL_SETTING_STATUS(16),
+    SETTINGS_STATUS(16),
     /**
      * 波形采集设置
      */

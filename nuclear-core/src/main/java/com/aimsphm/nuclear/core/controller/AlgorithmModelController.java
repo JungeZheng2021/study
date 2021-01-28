@@ -4,6 +4,7 @@ import com.aimsphm.nuclear.common.entity.AlgorithmModelDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.service.AlgorithmModelService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -28,10 +30,16 @@ import java.util.List;
 @RequestMapping(value = "algorithm/model", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AlgorithmModelController {
 
-    @Autowired
+    @Resource
     private AlgorithmModelService service;
 
     @GetMapping("list")
+    @ApiOperation(value = "算法模型信息查询", notes = "多条件组合查询")
+    public List<AlgorithmModelDO> listAlgorithmModelWithParams(AlgorithmModelDO entity, ConditionsQueryBO query) {
+        return service.listAlgorithmModelWithParams(new QueryBO(entity, query));
+    }
+
+    @GetMapping("pages")
     @ApiOperation(value = "算法模型信息分页查询", notes = "多条件组合查询")
     public Page<AlgorithmModelDO> listAlgorithmModelByPageWithParams(Page<AlgorithmModelDO> page, AlgorithmModelDO entity, ConditionsQueryBO query) {
         return service.listAlgorithmModelByPageWithParams(new QueryBO(page, entity, query));

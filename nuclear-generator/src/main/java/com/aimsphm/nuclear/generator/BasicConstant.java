@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.annotation.DbType;
 /**
  * @Package: com.aimsphm.nuclear.generator
  * @Description: <表格和数据源配置项>
- * @Author: milla
+ * @Author: MILLA
  * @CreateDate: 2020/11/12 17:48
- * @UpdateUser: milla
+ * @UpdateUser: MILLA
  * @UpdateDate: 2020/11/12 17:48
  * @UpdateRemark: <>
  * @Version: 1.0
@@ -32,19 +32,20 @@ public final class BasicConstant {
 //            , "common_device"
 //            , "common_device_details"
 //            , "common_component"
-//            , "common_sensor"
+            "common_sensor"
+//            "common_sensor_settings"
 //            , "common_measure_point"
 //            "job_device_status"
 //            "algorithm_config",
 //            "algorithm_device_model",
-//            "algorithm_model",
+//            "algorithm_model"
 //            "algorithm_model_point",
 //            "spark_down_sample_annually"
 //            "job_alarm_realtime",
 //            "job_alarm_event",
 //            "job_alarm_threshold"
-            "analysis_favorite",
-            "analysis_favorite_remark"
+//            "analysis_favorite",
+//            "analysis_favorite_remark"
     };
 
     /**

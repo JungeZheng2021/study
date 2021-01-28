@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableCaching
 @EnableFeignClients
 @SpringBootApplication(scanBasePackages = "com.aimsphm.nuclear")
-@RestController
 public class NuclearDataApplication {
 
     public static void main(String[] args) {

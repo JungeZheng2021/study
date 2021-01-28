@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.algorithm.entity.dto;
 import com.aimsphm.nuclear.algorithm.entity.bo.EstimateParamDataBO;
 import com.aimsphm.nuclear.algorithm.entity.bo.PointDataBO;
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -23,6 +24,12 @@ public class StateMonitorParamDTO {
     private Long invokingTime;
 
     private Integer algorithmPeriod;
+
+    @ApiModelProperty(value = "只输出设备运行状态", notes = "1")
+    private Integer onlyCondition;
+
+    @ApiModelProperty(value = "设备模型id集合")
+    private List<Long> modelIds;
 
     private Long subSystemId;
 

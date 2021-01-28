@@ -42,6 +42,12 @@ public class ${table.controllerName} {
 #end
 
     @GetMapping("list")
+    @ApiOperation(value = "$!{table.comment}列表查询", notes = "多条件组合查询")
+    public List<${entity}> list${cfg.get(${entity})}WithParams(${entity} entity, ConditionsQueryBO query) {
+        return service.list${cfg.get(${entity})}WithParams(new QueryBO(entity, query));
+    }
+
+    @GetMapping("pages")
     @ApiOperation(value = "$!{table.comment}分页查询", notes = "多条件组合查询")
     public Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(Page<${entity}> page, ${entity} entity, ConditionsQueryBO query) {
         return service.list${cfg.get(${entity})}ByPageWithParams(new QueryBO(page, entity, query));

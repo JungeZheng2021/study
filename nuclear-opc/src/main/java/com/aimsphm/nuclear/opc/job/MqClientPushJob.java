@@ -10,9 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,9 +46,47 @@ public class MqClientPushJob {
                 log.error("文件目录不存在:{}", path);
                 return;
             }
-            readDataFromFile(path, topic);
+            readDataFromFile(file, topic);
         } catch (Exception e) {
             log.error("执行异常-文件数据:{}", e);
+        }
+    }
+
+    public void execute1(String path, String topic, long start) {
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                log.error("文件目录不存在:{}", path);
+                return;
+            }
+            readDataFromFile1(path, topic, start);
+        } catch (Exception e) {
+            log.error("执行异常-文件数据:{}", e);
+        }
+    }
+
+    private void readDataFromFile1(String path, String topic, long start) throws IOException, InterruptedException {
+        BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
+        String line;
+        String header = reader.readLine();
+        String[] split = header.split(SEPARATOR);
+        List<String> headers = Arrays.asList(split);
+        ArrayList<DataItem> dataItems = new ArrayList<>();
+        while ((line = reader.readLine()) != null) {
+            dataItems.clear();
+            String[] values = line.split(SEPARATOR);
+            start += 1000;
+            for (int i = 0; i < values.length; i++) {
+                double value = Double.parseDouble(values[i]);
+                DataItem item = new DataItem();
+                item.setItemId(headers.get(i));
+                item.setValue(value);
+                item.setTimestamp(start);
+                dataItems.add(item);
+            }
+            Thread.sleep(30L);
+            client.send2Mq(dataItems, topic);
+            log.info("文件目录为：{}数据发送成功,测点个数：{}", path, headers.size());
         }
     }
 
@@ -87,8 +123,8 @@ public class MqClientPushJob {
 
     final static String SEPARATOR = ",";
 
-    private void readDataFromFile(String path, String topic) throws Exception {
-        BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
+    private void readDataFromFile(File file, String topic) throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
         String header = reader.readLine();
         String[] split = header.split(SEPARATOR);
@@ -107,7 +143,7 @@ public class MqClientPushJob {
             }
             client.send2Mq(dataItems, topic);
             Thread.sleep(1000L);
-            log.info("文件目录为：{}数据发送成功,测点个数：{}", path, headers.size());
+            log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
         }
     }
 

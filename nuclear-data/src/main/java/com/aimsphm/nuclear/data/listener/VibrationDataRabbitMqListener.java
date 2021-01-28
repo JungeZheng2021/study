@@ -6,11 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.LongAdder;
 @Slf4j
 @Component
 public class VibrationDataRabbitMqListener {
-    @Autowired
+    @Resource
     @Qualifier("vibration")
     private CommonDataService service;
     final LongAdder count = new LongAdder();

@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.common.service;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.entity.vo.PointFeatureVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -99,4 +100,11 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @return
      */
     List<CommonMeasurePointDO> listPointsByConditions(CommonQueryBO query);
+
+    /**
+     * 获取所有测点的位置信息
+     *
+     * @return
+     */
+    List<LabelVO> listLocationInfo();
 }

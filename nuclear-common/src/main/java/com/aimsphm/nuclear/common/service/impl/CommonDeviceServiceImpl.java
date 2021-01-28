@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -34,12 +34,23 @@ public class CommonDeviceServiceImpl extends ServiceImpl<CommonDeviceMapper, Com
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
             queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
+        return this.page(queryBO.getPage(), customerConditions(queryBO));
+    }
+
+    @Override
+    public List<CommonDeviceDO> listCommonDeviceWithParams(QueryBO<CommonDeviceDO> queryBO) {
+        return this.list(customerConditions(queryBO));
+    }
+
+    private LambdaQueryWrapper<CommonDeviceDO> customerConditions(QueryBO<CommonDeviceDO> queryBO) {
         LambdaQueryWrapper<CommonDeviceDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
         if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
-        return this.page(queryBO.getPage(), wrapper);
+        return wrapper;
     }
+
+
 }

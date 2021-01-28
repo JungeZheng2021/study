@@ -1,6 +1,5 @@
 package com.aimsphm.nuclear.common.entity.bo;
 
-import com.aimsphm.nuclear.common.entity.dto.HBaseParamDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -19,9 +18,12 @@ import java.util.List;
 @Data
 public class DataAnalysisQueryMultiBO {
 
-    @ApiModelProperty(value = "表格名称", notes = "")
+    @ApiModelProperty(value = "算法类型", notes = "")
     private String type;
 
-    @ApiModelProperty(value = "查询点集合")
-    private List<HBaseParamDTO> list;
+    @ApiModelProperty(value = "多个测点", notes = "和时间戳一一对应")
+    private List<String> pointIds;
+
+    @ApiModelProperty(value = "多个时间戳", notes = "和测点一一对应")
+    private List<Long> timestamps;
 }

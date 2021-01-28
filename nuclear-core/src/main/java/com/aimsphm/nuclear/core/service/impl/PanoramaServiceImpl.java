@@ -1,7 +1,9 @@
 package com.aimsphm.nuclear.core.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
+import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
+import com.aimsphm.nuclear.common.mapper.JobAlarmEventMapper;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.core.entity.vo.PanoramaVO;
@@ -45,6 +47,9 @@ public class PanoramaServiceImpl implements PanoramaService {
     @Resource
     private MonitoringService monitoringService;
 
+    @Resource
+    private JobAlarmEventMapper eventMapper;
+
     @Override
     public List<PanoramaVO> getPanoramaDetails(Long subSystemId) {
         List<PanoramaVO> vo = Lists.newArrayList();
@@ -72,9 +77,11 @@ public class PanoramaServiceImpl implements PanoramaService {
         BeanUtils.copyProperties(status, vo);
         vo.setSystemId(device.getSystemId());
         vo.setSubSystemId(device.getSubSystemId());
-        Map<Integer, Long> anomalyData = Maps.newHashMap();
         //阈值报警
         Map<Integer, Long> transfiniteData = monitoringService.countTransfinitePiPoint(deviceId);
+        //算法报警
+        List<LabelVO> labelVOS = eventMapper.selectWarmingStatusPoints(deviceId);
+        Map<Integer, Long> anomalyData = labelVOS.stream().collect(Collectors.toMap(x -> (Integer) x.getName(), x -> (Long) x.getValue()));
         PointCategoryEnum[] values = PointCategoryEnum.values();
         Map<Integer, String> items = Maps.newLinkedHashMap();
         for (PointCategoryEnum category : values) {
@@ -85,7 +92,7 @@ public class PanoramaServiceImpl implements PanoramaService {
                 items.put(category.getValue(), MessageFormat.format(PANORAMA_ANOMALY, anomalyCounts));
             }
             if (Objects.nonNull(transfiniteCounts)) {
-                String old = items.get(category.getDesc());
+                String old = items.get(category.getValue());
                 items.put(category.getValue(), StringUtils.isBlank(old) ? MessageFormat.format(PANORAMA_TRANSFINITE, transfiniteCounts)
                         : old.concat(SLASH_ZH).concat(MessageFormat.format(PANORAMA_TRANSFINITE, transfiniteCounts)));
             }

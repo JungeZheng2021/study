@@ -8,6 +8,7 @@ spring:
     enableRedis: true
     enableSwagger2: true
     enableMybatisPlus: true
+    enableDataService: true
     enableServiceExtImpl: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

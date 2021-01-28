@@ -32,4 +32,31 @@ public interface JobDeviceStatusService extends IService<JobDeviceStatusDO> {
      * @return
      */
     JobDeviceStatusDO getDeviceRunningStatus(Long deviceId);
+
+    /**
+     * 计算设备的状态
+     *
+     * @param status
+     * @param enableMonitor
+     */
+    void updateDeviceStatusWithCalculate(JobDeviceStatusDO status, Boolean enableMonitor);
+
+    /**
+     * 更新或者是保存设备状态
+     *
+     * @param status       原来的状态
+     * @param healthStatus 新的状态
+     */
+    void saveOrUpdateDeviceStatus(JobDeviceStatusDO status, Integer healthStatus);
+
+    /**
+     * 获取设备当前的健康状态
+     *
+     * @param deviceId 设备id
+     * @param isStop   是否停机
+     * @return
+     */
+    Integer getDeviceCurrentStatus(Long deviceId, boolean isStop);
+
+
 }

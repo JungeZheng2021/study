@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.data.entity.dto;
 
+import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsDTO;
 import lombok.Data;
 
 import java.util.Map;
@@ -58,4 +59,15 @@ public class PacketDTO {
      * 秒级别rms值
      */
     private Double vecRms;
+
+
+    /**
+     * -----配置信息参数-----------
+     * 边缘端编号
+     */
+    private String edgeCode;
+    /**
+     * 配置信息结果
+     */
+    private ConfigSettingsDTO configResult;
 }

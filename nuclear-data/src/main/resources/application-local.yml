@@ -5,7 +5,7 @@ hbase:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://192.168.16.43:8761/eureka/
+      defaultZone: http://192.168.16.38:8761/eureka/
     fetchRegistry: true
   instance:
     prefer-ip-address: true
@@ -15,6 +15,7 @@ spring:
   config:
     enableRedis: true
     enableHBase: true
+    enableSwagger2: true
     enableMybatisPlus: true
     enableServiceExtImpl: true
   #数据源

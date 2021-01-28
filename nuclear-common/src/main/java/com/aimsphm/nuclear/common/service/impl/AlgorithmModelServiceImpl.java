@@ -13,7 +13,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
+
 /**
  * @Package: com.aimsphm.nuclear.common.service.impl
  * @Description: <算法模型信息服务实现类>
@@ -33,12 +35,22 @@ public class AlgorithmModelServiceImpl extends ServiceImpl<AlgorithmModelMapper,
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
             queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
+        return this.page(queryBO.getPage(), customerConditions(queryBO));
+    }
+
+    private LambdaQueryWrapper<AlgorithmModelDO> customerConditions(QueryBO<AlgorithmModelDO> queryBO) {
         LambdaQueryWrapper<AlgorithmModelDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
         if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
+            wrapper.like(AlgorithmModelDO::getModelName, query.getKeyword());
         }
-        return this.page(queryBO.getPage(), wrapper);
+        return wrapper;
+    }
+
+    @Override
+    public List<AlgorithmModelDO> listAlgorithmModelWithParams(QueryBO<AlgorithmModelDO> queryBO) {
+        return this.list(customerConditions(queryBO));
     }
 }

@@ -29,6 +29,14 @@ public interface JobAlarmEventMapper extends BaseMapper<JobAlarmEventDO> {
     List<LabelVO> selectWarmingPointsByDeviceId(@Param("deviceId") Long deviceId, @Param("range") TimeRangeQueryBO range);
 
     /**
+     * 获取测点的个数
+     *
+     * @param deviceId 设备id
+     * @return
+     */
+    List<LabelVO> selectWarmingStatusPoints(@Param("deviceId") Long deviceId);
+
+    /**
      * 报警时间分布
      *
      * @param deviceId 设备id

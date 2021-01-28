@@ -14,16 +14,17 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_FAMILY_NPC_VIBRATION_RAW;
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_DATA_ANALYSIS_VIBRATION;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_DEVICE_RUNNING_STATUS;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.springframework.util.StringUtils.hasText;
@@ -49,8 +50,8 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
     private CommonMeasurePointService pointService;
 
     @Override
-    public Map<String, HistoryDataVO> listAnalysisDataWithPointList(HistoryQueryMultiBO queryMultiBO) {
-        Map<String, HistoryDataVO> historyData = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
+    public Map<String, HistoryDataVO> listAnalysisDataWithPointList(HistoryQueryMultiBO bo) {
+        Map<String, HistoryDataVO> historyData = service.listHistoryDataWithPointIdsByScan(bo);
         if (MapUtils.isEmpty(historyData)) {
             return null;
         }
@@ -81,11 +82,17 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
             String sensorCode = x.getKey();
             List<List<Object>> chartData = x.getValue().getChartData();
             if (!retVal.containsKey(sensorCode)) {
-                chartData.stream().forEach(list -> list.add(false));
                 return;
             }
+            //组装标注信息
             Map<Long, Object> timestampValue = retVal.get(sensorCode);
-            chartData.stream().forEach(list -> list.add(timestampValue.containsKey(list.get(0))));
+            List<List<Object>> collect = chartData.stream().filter(list -> timestampValue.containsKey(list.get(0))).map(list -> {
+                List<Object> item = new ArrayList<>();
+                item.addAll(list);
+                item.add(true);
+                return item;
+            }).collect(Collectors.toList());
+            x.getValue().setLabelData(collect);
         });
     }
 

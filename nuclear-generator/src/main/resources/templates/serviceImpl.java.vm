@@ -19,8 +19,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 #end
+
 /**
  * @Package: ${package.ServiceImpl}
  * @Description: <$!{table.comment}服务实现类>
@@ -49,15 +51,28 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
             queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
+        return this.page(queryBO.getPage(), customerConditions(queryBO));
+    }
+    
+    /**
+     * 拼装查询条件
+     *
+     * @param queryBO
+     * @return
+     */
+    private LambdaQueryWrapper<${entity}> customerConditions(QueryBO<${entity}> queryBO) {
         LambdaQueryWrapper<${entity}> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
         if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
-##            wrapper.ge(${entity}::getGmtLastAlarm, new Date(query.getStart())).le(JobAlarmEventDO::getGmtLastAlarm, new Date(query.getEnd()));
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-##         wrapper.like(JobAlarmEventDO::getAlarmContent, queryBO.getQuery().getKeyword());
         }
-        return this.page(queryBO.getPage(), wrapper);
+        return wrapper;
+    }
+
+    @Override
+    public List<${entity}> list${cfg.get(${entity})}WithParams(QueryBO<${entity}> queryBO) {
+        return this.list(customerConditions(queryBO));
     }
 }
 #end
