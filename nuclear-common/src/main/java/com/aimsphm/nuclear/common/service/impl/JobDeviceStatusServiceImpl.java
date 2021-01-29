@@ -5,6 +5,7 @@ import com.aimsphm.nuclear.common.entity.JobAlarmThresholdDO;
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
 import com.aimsphm.nuclear.common.enums.DeviceHealthEnum;
 import com.aimsphm.nuclear.common.enums.EventStatusEnum;
 import com.aimsphm.nuclear.common.enums.ThresholdAlarmStatusEnum;
@@ -65,7 +66,7 @@ public class JobDeviceStatusServiceImpl extends ServiceImpl<JobDeviceStatusMappe
     }
 
     @Override
-    @Cacheable(value = REDIS_DEVICE_RUNNING_STATUS, key = "#deviceId")
+//    @Cacheable(value = REDIS_DEVICE_RUNNING_STATUS, key = "#deviceId")
     public JobDeviceStatusDO getDeviceRunningStatus(Long deviceId) {
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
         wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).orderByDesc(JobDeviceStatusDO::getId).last(" limit 1");
@@ -82,7 +83,7 @@ public class JobDeviceStatusServiceImpl extends ServiceImpl<JobDeviceStatusMappe
         if (enableMonitor) {
             currentStatus = getDeviceCurrentStatus(status.getDeviceId(), false);
         }
-        //两次状态没有变化不做任何曹祖
+        //两次状态没有变化不做任何操作
         if (currentStatus.equals(deviceStatus)) {
             return;
         }
@@ -114,6 +115,16 @@ public class JobDeviceStatusServiceImpl extends ServiceImpl<JobDeviceStatusMappe
         }
         //什么都不存在是健康状态
         return DeviceHealthEnum.HEALTH.getValue();
+    }
+
+    @Override
+    public int countStopStatus(Long deviceId, TimeRangeQueryBO rangeQueryBO) {
+        LambdaQueryWrapper<JobDeviceStatusDO> stop = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
+        stop.eq(JobDeviceStatusDO::getDeviceId, deviceId).eq(JobDeviceStatusDO::getStatus, DeviceHealthEnum.STOP.getValue());
+        if (Objects.nonNull(rangeQueryBO.getStart())) {
+            stop.ge(JobDeviceStatusDO::getGmtStart, new Date(rangeQueryBO.getStart()));
+        }
+        return this.count(stop);
     }
 
     @Override

@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,7 +116,13 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     @Override
     public DeviceStatusVO getRunningStatus(Long deviceId) {
+        CommonDeviceDO byId = deviceService.getById(deviceId);
+        if (Objects.isNull(byId)) {
+            return null;
+        }
         DeviceStatusVO status = new DeviceStatusVO();
+        status.setDeviceId(deviceId);
+        status.setDeviceName(byId.getDeviceName());
         JobDeviceStatusDO one = statusService.getDeviceRunningStatus(deviceId);
         status.setStatus(Objects.isNull(one) ? DeviceHealthEnum.STOP.getValue() : one.getStatus());
         CommonQueryBO bo = new CommonQueryBO();
@@ -126,8 +131,8 @@ public class MonitoringServiceImpl implements MonitoringService {
         List<CommonDeviceDetailsDO> list = detailsService.listDetailByConditions(bo);
         TimeRangeQueryBO rangeQueryBO = new TimeRangeQueryBO();
         if (CollectionUtils.isNotEmpty(list)) {
-            CommonDeviceDetailsDO totalTImeStartTime = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn()) && TOTAL_RUNNING_DURATION.equals(item.getFieldNameEn())).findFirst().orElse(null);
-            rangeQueryBO.setStart(Objects.nonNull(totalTImeStartTime) && StringUtils.hasText(totalTImeStartTime.getFieldValue()) ? Long.valueOf(totalTImeStartTime.getFieldValue()) : 1608024678000L);
+            CommonDeviceDetailsDO totalTimeStartTime = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn()) && TOTAL_RUNNING_DURATION.equals(item.getFieldNameEn())).findFirst().orElse(null);
+            rangeQueryBO.setStart(Objects.nonNull(totalTimeStartTime) ? totalTimeStartTime.getGmtModified().getTime() : null);
             Map<String, String> config = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn())).collect(Collectors.toMap(item -> item.getFieldNameEn(), CommonDeviceDetailsDO::getFieldValue, (a, b) -> a));
             String startTime = config.get(START_TIME);
             String totalRunningDuration = config.get(TOTAL_RUNNING_DURATION);
@@ -135,15 +140,14 @@ public class MonitoringServiceImpl implements MonitoringService {
             status.setTotalRunningTime(StringUtils.hasText(totalRunningDuration) ? Long.valueOf(totalRunningDuration) : 0L);
             status.setStopTimes(StringUtils.hasText(stopTimes) ? Integer.valueOf(stopTimes) : 0);
             status.setStartTime(StringUtils.hasText(startTime) ? Long.valueOf(startTime) : 0L);
-            status.setContinuousRunningTime(StringUtils.hasText(startTime) ? System.currentTimeMillis() - Long.valueOf(startTime) : 0L);
+            //当前状态影响可持续运行时常
+            if (DeviceHealthEnum.STOP.getValue().equals(status.getStatus())) {
+                status.setContinuousRunningTime(0L);
+            } else {
+                status.setContinuousRunningTime(StringUtils.hasText(startTime) ? System.currentTimeMillis() - Long.valueOf(startTime) : 0L);
+            }
         }
-        LambdaQueryWrapper<JobDeviceStatusDO> stop = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
-        stop.eq(JobDeviceStatusDO::getDeviceId, deviceId).eq(JobDeviceStatusDO::getStatus, DeviceHealthEnum.STOP.getValue());
-        if (Objects.nonNull(rangeQueryBO.getStart())) {
-            stop.ge(JobDeviceStatusDO::getGmtStart, rangeQueryBO.getStart());
-        }
-        rangeQueryBO.setEnd(System.currentTimeMillis());
-        int count = statusService.count(stop);
+        int count = statusService.countStopStatus(deviceId, rangeQueryBO);
         status.setStopTimes(Objects.isNull(status.getStopTimes()) ? count : count + status.getStopTimes());
         Map<Integer, Long> times = listRunningDuration(deviceId, rangeQueryBO);
         if (MapUtils.isNotEmpty(times)) {
@@ -223,25 +227,26 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     @Override
     public Map<Integer, Long> listRunningDuration(Long deviceId, TimeRangeQueryBO range) {
-        checkRangeTime(range);
         Long startTime = range.getStart();
-        Long endTime = range.getEnd();
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
-        wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).ge(JobDeviceStatusDO::getGmtStart, new Date(startTime)).le(JobDeviceStatusDO::getGmtStart, new Date(endTime));
+        wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).lt(JobDeviceStatusDO::getStatus, DeviceHealthEnum.STOP.getValue());
+        if (Objects.nonNull(startTime)) {
+            wrapper.ge(JobDeviceStatusDO::getGmtStart, new Date(startTime));
+        }
         List<JobDeviceStatusDO> list = statusService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
         Map<Integer, Long> collect = list.stream().collect(Collectors.groupingBy(item -> item.getStatus(), TreeMap::new, Collectors.summingLong(item -> item.getStatusDuration())));
         JobDeviceStatusDO first = list.get(0);
-        if (first.getGmtStart().getTime() < startTime) {
+        if (Objects.nonNull(startTime) && first.getGmtStart().getTime() < startTime) {
             Integer status = first.getStatus();
             collect.put(status, startTime - first.getGmtStart().getTime() + collect.get(status));
         }
         JobDeviceStatusDO last = list.get(list.size() - 1);
         if (Objects.isNull(last.getGmtEnd())) {
             Integer status = last.getStatus();
-            collect.put(status, endTime - last.getGmtStart().getTime() + collect.get(status));
+            collect.put(status, System.currentTimeMillis() - last.getGmtStart().getTime() + collect.get(status));
         }
         return collect;
     }

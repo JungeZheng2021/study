@@ -2,6 +2,8 @@ package com.aimsphm.nuclear.common.service;
 
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -59,4 +61,12 @@ public interface JobDeviceStatusService extends IService<JobDeviceStatusDO> {
     Integer getDeviceCurrentStatus(Long deviceId, boolean isStop);
 
 
+    /**
+     * 计算统计设备的次数
+     *
+     * @param deviceId     设备id
+     * @param rangeQueryBO 起止时间
+     * @return
+     */
+    int countStopStatus(Long deviceId, TimeRangeQueryBO rangeQueryBO);
 }

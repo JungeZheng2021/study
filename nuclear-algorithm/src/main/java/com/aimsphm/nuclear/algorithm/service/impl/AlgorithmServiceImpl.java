@@ -58,13 +58,13 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     @Resource
     private AlgorithmConfigService configService;
     @Resource
-    private AlgorithmDeviceModelService deviceModelService;
-    @Resource
     private AlgorithmModelPointService pointService;
     @Resource
     private AlgorithmModelService modelService;
     @Resource
     private JobDeviceStatusService statusService;
+    @Resource
+    private CommonDeviceDetailsService detailsService;
     @Resource
     private JobAlarmEventService eventService;
     @Resource
@@ -266,6 +266,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             return;
         }
         //以下是非停机状态
+        //上一次是停机，本次是启动需要改动 最近启动配置
+        if (DeviceHealthEnum.STOP.getValue().equals(status.getStatus()) && !DeviceHealthEnum.STOP.getValue().equals(stopStart)) {
+            detailsService.updateLastStartTime(deviceId);
+        }
         //启动报警状态且启停状态是启动状态，需要计算设备状态
         statusService.updateDeviceStatusWithCalculate(status, device.getEnableMonitor());
     }

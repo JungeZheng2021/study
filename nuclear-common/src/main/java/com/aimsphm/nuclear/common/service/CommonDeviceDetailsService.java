@@ -34,4 +34,11 @@ public interface CommonDeviceDetailsService extends IService<CommonDeviceDetails
      * @return
      */
     List<CommonDeviceDetailsDO> listDetailByConditions(CommonQueryBO query);
+
+    /**
+     * 更新最后启动时间
+     *
+     * @param deviceId
+     */
+    void updateLastStartTime(Long deviceId);
 }

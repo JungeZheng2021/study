@@ -22,7 +22,7 @@ public final class CoreConstants {
      */
     public static final String PANORAMA_ANOMALY = "异常测点{0}个";
     /**
-     * 设备启动时间
+     * 设备启动时间 - 最新的启动时间
      */
     public static final String START_TIME = "start_time";
 

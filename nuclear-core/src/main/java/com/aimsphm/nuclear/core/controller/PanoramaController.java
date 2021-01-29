@@ -4,12 +4,12 @@ import com.aimsphm.nuclear.core.entity.vo.PanoramaVO;
 import com.aimsphm.nuclear.core.service.PanoramaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -26,7 +26,7 @@ import java.util.List;
 @Api(tags = "panorama-系统总览控制类")
 @RequestMapping(value = "panorama", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PanoramaController {
-    @Autowired
+    @Resource
     private PanoramaService panoramaService;
 
     @GetMapping("details")

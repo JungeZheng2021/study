@@ -12,6 +12,7 @@ import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.aimsphm.nuclear.common.service.CommonSubSystemService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -21,8 +22,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service.impl
@@ -37,9 +40,11 @@ import java.util.Objects;
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDetailsMapper, CommonDeviceDetailsDO> implements CommonDeviceDetailsService {
-    @Autowired
+
+    private static final String START_TIME = "start_time";
+    @Resource
     private CommonDeviceService deviceServiceExt;
-    @Autowired
+    @Resource
     private CommonSubSystemService subSystemServiceExt;
 
     @Override
@@ -63,6 +68,14 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
         return this.list(wrapper);
     }
 
+    @Override
+    public void updateLastStartTime(Long deviceId) {
+        LambdaUpdateWrapper<CommonDeviceDetailsDO> update = Wrappers.lambdaUpdate(CommonDeviceDetailsDO.class);
+        update.eq(CommonDeviceDetailsDO::getDeviceId, deviceId).eq(CommonDeviceDetailsDO::getVisible, false).eq(CommonDeviceDetailsDO::getFieldNameEn, START_TIME)
+                .set(CommonDeviceDetailsDO::getFieldValue, System.currentTimeMillis());
+        this.update(update);
+    }
+
     /**
      * 组装查询条件
      * 目前能支持到系统下公共设别明细
@@ -72,7 +85,8 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
      */
     private LambdaQueryWrapper<CommonDeviceDetailsDO> initWrapper(CommonQueryBO query) {
         LambdaQueryWrapper<CommonDeviceDetailsDO> wrapper = Wrappers.lambdaQuery(CommonDeviceDetailsDO.class);
-        if (Objects.isNull(query.getSystemId()) && Objects.isNull(query.getSubSystemId()) && Objects.isNull(query.getDeviceId()) && Objects.isNull(query.getVisible())) {
+        boolean needAll = Objects.isNull(query.getSystemId()) && Objects.isNull(query.getSubSystemId()) && Objects.isNull(query.getDeviceId()) && Objects.isNull(query.getVisible());
+        if (needAll) {
             throw new CustomMessageException("参数不全");
         }
         if (Objects.nonNull(query.getSystemId())) {

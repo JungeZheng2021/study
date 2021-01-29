@@ -20,6 +20,10 @@ import java.util.Map;
 @Data
 @ApiModel(value = "设备状态显示实体")
 public class DeviceStatusVO extends JobDeviceStatusDO {
+
+    @ApiModelProperty(value = "设备名称", notes = "")
+    private String deviceName;
+
     @ApiModelProperty(value = "启停次数", notes = "")
     private Integer stopTimes;
 
