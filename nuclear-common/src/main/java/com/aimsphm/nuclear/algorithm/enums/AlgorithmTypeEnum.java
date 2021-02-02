@@ -28,6 +28,8 @@ public enum AlgorithmTypeEnum {
     DATA_ANALYSIS_DWP_FRE("DWP-FRE", "小波包频域波形"),
     DATA_ANALYSIS_DWP_ENVELOPE("DWP-ENVE-FRE", "小波包包络谱"),
 
+    FAULT_DIAGNOSIS("DIAGNOSIS", "故障推理"),
+
     OTHERS("-1", "其他");
 
 

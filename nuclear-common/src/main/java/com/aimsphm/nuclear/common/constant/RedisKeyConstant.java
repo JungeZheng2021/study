@@ -26,6 +26,11 @@ public final class RedisKeyConstant {
      * redis key中的下划线
      */
     public static final String REDIS_KEY_UNDERLINE = "_";
+
+    /**
+     * redis key 已经就绪后缀
+     */
+    public static final String REDIS_KEY_READY = REDIS_KEY_UNDERLINE + "ready";
     /**
      * 冒号
      */
@@ -34,6 +39,10 @@ public final class RedisKeyConstant {
      * 缓存前缀[查询缓存的key前缀]
      */
     public static final String CACHE_KEY_PREFIX = "query_cache:";
+    /**
+     * 缓存前缀[算法缓存数据的前缀]
+     */
+    public static final String ALGORITHM_CACHE_KEY_PREFIX = "algorithm:";
     /**
      * 所有的特征
      */
@@ -50,7 +59,27 @@ public final class RedisKeyConstant {
      * 振动分析数据
      */
     public static final String REDIS_DATA_ANALYSIS_VIBRATION = CACHE_KEY_PREFIX + "data_analysis:vibration:";
+    /**
+     * 算法要使用的波形数据
+     */
+    public static final String REDIS_WAVE_DATA = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:";
+    /**
+     * 算法要使用的波形数据- 数据ready标识
+     */
 
+    public static final String REDIS_WAVE_DATA_TYPE = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:%s_%s";
+
+    public static final String REDIS_WAVE_DATA_VEC = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:%s_vec";
+
+    public static final String REDIS_WAVE_DATA_ACC = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:%s_acc";
+
+    public static final String REDIS_WAVE_DATA_ACC_READY = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:%s_acc_ready";
+
+    public static final String REDIS_WAVE_DATA_VEC_READY = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:%s_vec_ready";
+
+    public static void main(String[] args) {
+        System.out.println(String.format(REDIS_WAVE_DATA_ACC_READY, "88888"));
+    }
     //-----------------------------
 
     static public final String I18N_PREFIX = "nuclear__";

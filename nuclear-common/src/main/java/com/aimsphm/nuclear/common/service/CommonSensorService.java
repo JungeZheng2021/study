@@ -7,6 +7,7 @@ import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsDTO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,4 +53,12 @@ public interface CommonSensorService extends IService<CommonSensorDO> {
      * @param result
      */
     void updateConfigStatus(String edgeCode, ConfigSettingsDTO result);
+
+    /**
+     * 根据sensorCode列表获取传感器信息
+     *
+     * @param sensorCodeList sensorCode列表
+     * @return
+     */
+    List<CommonSensorDO> listCommonSensorBySensorCodeList(ArrayList<String> sensorCodeList);
 }

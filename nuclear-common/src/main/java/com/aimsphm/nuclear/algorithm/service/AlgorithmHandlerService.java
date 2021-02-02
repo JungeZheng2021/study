@@ -4,8 +4,11 @@ import com.aimsphm.nuclear.algorithm.entity.dto.AlgorithmParamDTO;
 import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.response.ResponseData;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.Objects;
@@ -21,6 +24,7 @@ import java.util.Objects;
  * @Version: 1.0
  */
 public interface AlgorithmHandlerService<P, R> {
+    Logger log = LoggerFactory.getLogger(AlgorithmHandlerService.class);
 
     /**
      * 获取调用算法结果-需要的组装类型
@@ -67,6 +71,7 @@ public interface AlgorithmHandlerService<P, R> {
         query.setData(params);
         query.setAlgorithmType(type);
         checkParams(query);
+        log.debug("algorithm params: {}", JSON.toJSONString(query));
         ResponseData<R> responseData = client.algorithmInvokeByParams(query);
         checkSuccess(responseData);
         return responseData.getData();

@@ -3,18 +3,24 @@ package com.aimsphm.nuclear.core.controller;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.redis.RedisClient;
 import com.aimsphm.nuclear.core.service.MonitoringService;
+import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.CACHE_KEY_PREFIX;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_POINT_REAL_TIME_PRE;
 
 /**
  * @Package: com.aimsphm.nuclear.pump.controller
@@ -50,6 +56,9 @@ public class RedisDataController {
     @Qualifier("redisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
     @Autowired
     RedisClient client;
 
@@ -73,8 +82,25 @@ public class RedisDataController {
         return true;
     }
 
+    @PostMapping("data/{key}")
+    @ApiOperation(value = "增加key的值-指定对象增加", notes = "后期删除")
+    public Object postKey(@PathVariable String key, @RequestBody Object object) {
+        redisTemplate.opsForValue().set(key, JSON.toJSONString(object));
+        stringRedisTemplate.opsForValue().set(key + "_str", JSON.toJSONString(object));
+        return object;
+    }
+
+    @GetMapping("data/{key}")
+    @ApiOperation(value = "增加key的值-指定对象增加", notes = "后期删除")
+    public Map<String, Object> postKey(@PathVariable String key) {
+        return new HashMap<String, Object>(16) {{
+            put(key, redisTemplate.opsForValue().get(key));
+            put(key + "_str", stringRedisTemplate.opsForValue().get(key + "_str"));
+        }};
+    }
+
     @GetMapping("delete/{pre}")
-    @ApiOperation(value = "根据key进行删除", notes = "后期删除")
+    @ApiOperation(value = "根据key前缀进行删除", notes = "后期删除")
     public Long delete(@PathVariable String pre) {
         Set<String> keys = redisTemplate.keys(pre + "*");
         return redisTemplate.delete(keys);

@@ -14,14 +14,13 @@ import java.util.Objects;
  */
 public enum PointCategoryEnum {
     //测点类型：1-温度、2-压力、3-流量、4-液位、5-振动、6-位移、7-电信号、8-声学、9-油质、10-状态类
-
     TEMPERATURE(1, "温度"),
     PRESSURE(2, "压力"),
     FLOW(3, "流量"),
     LIQUID_LOCATION(4, "液位"),
     VIBRATION(5, "振动"),
     DISPLACEMENT(6, "位移"),
-    ELECTRIC(7, "转速与电信号"),
+    ELECTRIC(7, "电信号"),
     ACOUSTICS(8, "声学"),
     OIL_QUALITY(9, "油质"),
     STATUS(10, "状态类"),

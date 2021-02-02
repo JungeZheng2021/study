@@ -4,12 +4,12 @@ import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.ext.service.RedisDataService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +27,7 @@ import java.util.Set;
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableRedis", havingValue = "true")
 public class RedisDataServiceImpl implements RedisDataService {
-    @Autowired
+    @Resource
     @Qualifier(value = "redisTemplate")
     private RedisTemplate<String, Object> redis;
 

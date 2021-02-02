@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -106,6 +107,13 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
         updateSoundConfigStatus(edgeCode, result);
         updateVibrationConfigStatus(edgeCode, result);
 
+    }
+
+    @Override
+    public List<CommonSensorDO> listCommonSensorBySensorCodeList(ArrayList<String> sensorCodeList) {
+        LambdaQueryWrapper<CommonSensorDO> wrapper = Wrappers.lambdaQuery(CommonSensorDO.class);
+        wrapper.in(CommonSensorDO::getSensorCode, sensorCodeList);
+        return this.list(wrapper);
     }
 
     private void updateSoundConfigStatus(String edgeCode, ConfigSettingsDTO result) {

@@ -71,6 +71,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private JobAlarmRealtimeService realtimeService;
     @Resource
     private AlgorithmAsyncService asyncService;
+
     @Resource(name = "HCM-PAF")
     private AlgorithmHandlerService handlerService;
 
@@ -173,6 +174,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private void saveOrUpdateEvent(Long modelId, List<JobAlarmRealtimeDO> value) {
         JobAlarmRealtimeDO firstAlarm = value.get(0);
+//        List<String> pointIdList = value.stream().map(x -> x.getPointId()).collect(Collectors.toList());
+        //生成故障推理 - 暂时不使用自动推理
+//        asyncService.faultDiagnosis(pointIdList);
         String pointIds = value.stream().map(x -> x.getPointId()).collect(Collectors.joining(COMMA));
         String codeList = value.stream().map(x -> x.getAlarmCode()).collect(Collectors.joining(COMMA));
         long highLevelCount = value.stream().filter(x -> AlarmEvaluationEnum.HIGHER.getValue().equals(x.getEvaluation()) || AlarmEvaluationEnum.LOWER.getValue().equals(x.getEvaluation())).count();

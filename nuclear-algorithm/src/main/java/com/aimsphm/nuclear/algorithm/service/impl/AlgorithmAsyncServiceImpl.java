@@ -1,6 +1,6 @@
 package com.aimsphm.nuclear.algorithm.service.impl;
 
-import com.aimsphm.nuclear.algorithm.entity.bo.*;
+import com.aimsphm.nuclear.algorithm.entity.bo.PointDataBO;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmAsyncService;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
@@ -14,10 +14,9 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_QUEUE_REAL_TIME_PRE;
 
 /**
@@ -36,6 +35,8 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
 
     @Resource
     private HBaseUtil hBase;
+
+
     @Resource
     @Qualifier("redisTemplate")
     private RedisTemplate<String, Object> redis;
@@ -65,4 +66,10 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
             countDownLatch.countDown();
         }
     }
+
+    @Async
+    @Override
+    public void faultDiagnosis(List<String> pointIdList) {
+    }
+
 }

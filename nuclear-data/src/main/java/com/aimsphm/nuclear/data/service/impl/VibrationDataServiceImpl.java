@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -24,8 +25,10 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
 import static com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum.SETTINGS_STATUS;
+import static com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum.WAVEFORM_DATA;
 
 /**
  * @Package: com.aimsphm.nuclear.common.service.ext.service.impl
@@ -40,6 +43,11 @@ import static com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum.SETTINGS_STA
 @Slf4j
 @Service("vibration")
 public class VibrationDataServiceImpl implements CommonDataService {
+
+    @Resource
+    private StringRedisTemplate redis;
+
+
     @Resource
     private HBaseService hBaseService;
 
@@ -69,8 +77,34 @@ public class VibrationDataServiceImpl implements CommonDataService {
             settingSensorConfigStatus(packet);
             return;
         }
+        //请求的波形数据
+        if (WAVEFORM_DATA.getType().equals(type)) {
+            updateWaveDate2Redis(packet);
+            return;
+        }
         log.info("topic:{} ,message:{},type:{}", topic, packet.getSensorCode(), sensorDataBO.getType());
         batchUpdateAndSave(packet);
+
+    }
+
+    private void updateWaveDate2Redis(PacketDTO packet) {
+        log.info("wave data coming.....................{}", packet.getSensorCode());
+        String sensorCode = packet.getSensorCode();
+        //加速度
+        Double[] accData = packet.getData();
+        //速度
+        Double[] vecData = packet.getVecData();
+        Map<String, Object> accValue = new HashMap<>(16);
+        accValue.put("signal", accData);
+        accValue.put("fs", packet.getAcqFrequency());
+
+        Map<String, Object> vecValue = new HashMap<>(16);
+        vecValue.put("signal", vecData);
+        vecValue.put("fs", packet.getAcqFrequency());
+        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_ACC_READY, sensorCode), "1");
+        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_VEC_READY, sensorCode), "1");
+        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_VEC, sensorCode), JSON.toJSONString(accValue));
+        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_ACC, sensorCode), JSON.toJSONString(vecValue));
     }
 
     private void settingSensorConfigStatus(PacketDTO packet) {

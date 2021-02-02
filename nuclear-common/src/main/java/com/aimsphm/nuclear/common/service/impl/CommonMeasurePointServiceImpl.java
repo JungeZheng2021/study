@@ -106,8 +106,11 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         vos.stream().forEach(item -> store2Redis(item, value));
         //缓存指定长度的队列
         cacheQueueData(vos, timestamp);
+        long l = System.currentTimeMillis();
         //        TODO :// 上线要将下列代码恢复
-//        thresholdService.saveOrUpdateThresholdAlarmList(vos);
+        if (l % 13 * 123 * 1000 == 0) {
+            thresholdService.saveOrUpdateThresholdAlarmList(vos);
+        }
 
     }
 
@@ -226,6 +229,17 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         List<LabelVO> labelList = Lists.newArrayList();
         collect.forEach((k, v) -> labelList.add(new LabelVO(v.get(0).getLocation(), k)));
         return labelList;
+    }
+
+    @Override
+    public List<String> listSensorCodeByPointList(List<String> pointIdList) {
+        LambdaQueryWrapper<CommonMeasurePointDO> query = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+        query.in(CommonMeasurePointDO::getPointId, pointIdList);
+        List<CommonMeasurePointDO> list = this.list(query);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        return list.stream().map(x -> x.getSensorCode()).distinct().collect(Collectors.toList());
     }
 
     /**
