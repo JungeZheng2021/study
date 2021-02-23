@@ -18,6 +18,7 @@
         <result column="device_name" property="deviceName"/>
         <result column="gmt_diagnosis" property="gmtDiagnosis"/>
         <result column="diagnosis_result" property="diagnosisResult"/>
+        <result column="status" property="status"/>
         <result column="remark" property="remark"/>
     </resultMap>
 
@@ -30,7 +31,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        event_id, device_id, sub_system_id, model_id, device_code, device_name, gmt_diagnosis, diagnosis_result, remark
+        event_id, device_id, sub_system_id, model_id, device_code, device_name, gmt_diagnosis, diagnosis_result, status, remark
     </sql>
 
 </mapper>

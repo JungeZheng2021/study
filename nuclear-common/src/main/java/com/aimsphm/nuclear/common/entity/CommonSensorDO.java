@@ -11,9 +11,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <传感器信息实体>
  * @Author: MILLA
- * @CreateDate: 2021-01-25
+ * @CreateDate: 2021-02-04
  * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-25
+ * @UpdateDate: 2021-02-04
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -50,13 +50,19 @@ public class CommonSensorDO extends BaseDO {
     @ApiModelProperty(value = "设备名称", notes = "")
     private String deviceName;
 
+    @ApiModelProperty(value = "子系统id", notes = "")
+    private Long subSystemId;
+
     @ApiModelProperty(value = "设备Id", notes = "")
     private Long deviceId;
 
-    @ApiModelProperty(value = "位置编码", notes = "")
+    @ApiModelProperty(value = "位置", notes = "")
     private String locationCode;
 
-    @ApiModelProperty(value = "类型（1：温度，2：压力，3：流量，4：液位，5：振动，6：声学，7：油质，8：电信号，9：位移）	测点类型：1-温度、2-压力、3-流量、4-液位、5-振动、6-位移、7-电信号、8-声学、9-油质、10-状态类", notes = "")
+    @ApiModelProperty(value = "位置编码", notes = "")
+    private String location;
+
+    @ApiModelProperty(value = "测点类型", notes = "1-温度、2-压力、3-流量、4-液位、5-振动、6-位移、7-电信号、8-声学、9-油质、10-状态类")
     private Integer category;
 
     @ApiModelProperty(value = "描述", notes = "")

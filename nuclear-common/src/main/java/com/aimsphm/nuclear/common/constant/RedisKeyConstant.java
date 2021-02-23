@@ -28,10 +28,6 @@ public final class RedisKeyConstant {
     public static final String REDIS_KEY_UNDERLINE = "_";
 
     /**
-     * redis key 已经就绪后缀
-     */
-    public static final String REDIS_KEY_READY = REDIS_KEY_UNDERLINE + "ready";
-    /**
      * 冒号
      */
     public static final String REDIS_KEY_COLON = ":";
@@ -73,13 +69,6 @@ public final class RedisKeyConstant {
 
     public static final String REDIS_WAVE_DATA_ACC = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:%s_acc";
 
-    public static final String REDIS_WAVE_DATA_ACC_READY = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:%s_acc_ready";
-
-    public static final String REDIS_WAVE_DATA_VEC_READY = ALGORITHM_CACHE_KEY_PREFIX + "wave_data:%s_vec_ready";
-
-    public static void main(String[] args) {
-        System.out.println(String.format(REDIS_WAVE_DATA_ACC_READY, "88888"));
-    }
     //-----------------------------
 
     static public final String I18N_PREFIX = "nuclear__";

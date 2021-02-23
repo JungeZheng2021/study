@@ -1,6 +1,9 @@
 package com.aimsphm.nuclear.data.service.impl;
 
 import com.aimsphm.nuclear.common.constant.HBaseConstant;
+import com.aimsphm.nuclear.common.entity.BizOriginalDataDO;
+import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
+import com.aimsphm.nuclear.common.service.BizOriginalDataService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.CommonSensorService;
 import com.aimsphm.nuclear.common.util.ByteUtil;
@@ -17,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -47,9 +51,11 @@ public class VibrationDataServiceImpl implements CommonDataService {
     @Resource
     private StringRedisTemplate redis;
 
-
     @Resource
     private HBaseService hBaseService;
+
+    @Resource
+    private BizOriginalDataService service;
 
     @Resource
     private CommonMeasurePointService pointServiceExt;
@@ -77,10 +83,13 @@ public class VibrationDataServiceImpl implements CommonDataService {
             settingSensorConfigStatus(packet);
             return;
         }
-        //请求的波形数据
+        //波形数据
         if (WAVEFORM_DATA.getType().equals(type)) {
-            updateWaveDate2Redis(packet);
-            return;
+            try {
+                updateWaveDate2Redis(packet);
+            } catch (Exception e) {
+                log.info("wave data save failed...{}", e);
+            }
         }
         log.info("topic:{} ,message:{},type:{}", topic, packet.getSensorCode(), sensorDataBO.getType());
         batchUpdateAndSave(packet);
@@ -88,6 +97,11 @@ public class VibrationDataServiceImpl implements CommonDataService {
     }
 
     private void updateWaveDate2Redis(PacketDTO packet) {
+        BizOriginalDataDO dataDO = new BizOriginalDataDO();
+        BeanUtils.copyProperties(packet, dataDO);
+        dataDO.setDataType(PointCategoryEnum.VIBRATION.getValue());
+        service.save(dataDO);
+
         log.info("wave data coming.....................{}", packet.getSensorCode());
         String sensorCode = packet.getSensorCode();
         //加速度
@@ -101,10 +115,8 @@ public class VibrationDataServiceImpl implements CommonDataService {
         Map<String, Object> vecValue = new HashMap<>(16);
         vecValue.put("signal", vecData);
         vecValue.put("fs", packet.getAcqFrequency());
-        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_ACC_READY, sensorCode), "1");
-        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_VEC_READY, sensorCode), "1");
-        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_VEC, sensorCode), JSON.toJSONString(accValue));
-        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_ACC, sensorCode), JSON.toJSONString(vecValue));
+        redis.opsForValue().setIfAbsent(String.format(REDIS_WAVE_DATA_VEC, sensorCode), JSON.toJSONString(vecValue));
+        redis.opsForValue().setIfAbsent(String.format(REDIS_WAVE_DATA_ACC, sensorCode), JSON.toJSONString(accValue));
     }
 
     private void settingSensorConfigStatus(PacketDTO packet) {

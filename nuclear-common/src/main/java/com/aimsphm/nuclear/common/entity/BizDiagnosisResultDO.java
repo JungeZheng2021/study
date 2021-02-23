@@ -2,9 +2,7 @@ package com.aimsphm.nuclear.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.aimsphm.nuclear.common.entity.BaseDO;
-
 import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import io.swagger.annotations.ApiModel;
@@ -14,9 +12,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <故障诊断信息实体>
  * @Author: MILLA
- * @CreateDate: 2021-02-01
+ * @CreateDate: 2021-02-03
  * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-01
+ * @UpdateDate: 2021-02-03
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -53,6 +51,10 @@ public class BizDiagnosisResultDO extends BaseDO {
     @ApiModelProperty(value = "故障推理结果", notes = "规则id集合")
     private String diagnosisResult;
 
+    @ApiModelProperty(value = "诊断状态", notes = "1:生成中 2:生成成功 3:生成失败")
+    private Integer status;
+
     @ApiModelProperty(value = "备注", notes = "")
     private String remark;
+
 }

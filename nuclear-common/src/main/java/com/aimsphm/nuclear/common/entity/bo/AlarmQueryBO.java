@@ -21,6 +21,9 @@ public class AlarmQueryBO extends ConditionsQueryBO {
     @ApiModelProperty(value = "事件分类", notes = "可多选")
     private List<Integer> alarmStatusList;
 
+    @ApiModelProperty(value = "报警界别", notes = "可多选")
+    private List<Integer> alarmLevelList;
+
     @ApiModelProperty(value = "处理状态", notes = "可多选")
     private List<Integer> operateStatusList;
 

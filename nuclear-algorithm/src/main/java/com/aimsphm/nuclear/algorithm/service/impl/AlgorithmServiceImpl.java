@@ -291,7 +291,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             return Lists.newArrayList();
         }
         LambdaQueryWrapper<AlgorithmModelDO> modelWrapper = Wrappers.lambdaQuery(AlgorithmModelDO.class);
-        modelWrapper.eq(AlgorithmModelDO::getModelType, modelType);
+        modelWrapper.eq(AlgorithmModelDO::getAlgorithmId, algorithmConfig.getId());
+//        if (Objects.nonNull(modelType)) {
+//            modelWrapper.eq(AlgorithmModelDO::getModelType, modelType);
+//        }
         List<AlgorithmModelDO> modelList = modelService.list(modelWrapper);
         if (CollectionUtils.isEmpty(modelList)) {
             return Lists.newArrayList();

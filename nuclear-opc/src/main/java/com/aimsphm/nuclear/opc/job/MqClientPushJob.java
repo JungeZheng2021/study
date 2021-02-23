@@ -110,7 +110,11 @@ public class MqClientPushJob {
             list.stream().forEach(item -> {
                 DataItem dataItem = new DataItem();
                 dataItem.setTimestamp(System.currentTimeMillis());
-                dataItem.setValue(Math.abs(random.nextInt(500) * random.nextDouble()));
+                if ("6M2DVC004MI".equals(item)) {
+                    dataItem.setValue(42.4 + 0.1 * random.nextDouble());
+                } else {
+                    dataItem.setValue(Math.abs(random.nextInt(500) * random.nextDouble()));
+                }
                 dataItem.setItemId(item);
                 dataItems.add(dataItem);
             });
@@ -140,6 +144,14 @@ public class MqClientPushJob {
                 item.setValue(value);
                 item.setTimestamp(System.currentTimeMillis());
                 dataItems.add(item);
+            }
+            if (file.getName().contains("ZAS_sensordata")) {
+                DataItem item = new DataItem();
+                item.setItemId("20ZAS-ET01-I02-DCN");
+                item.setValue(1.0);
+                item.setTimestamp(System.currentTimeMillis());
+                dataItems.add(item);
+//                log.info("新增测点{}", item);
             }
             client.send2Mq(dataItems, topic);
             Thread.sleep(1000L);

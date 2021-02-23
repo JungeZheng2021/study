@@ -165,7 +165,7 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
             param.setMaxLevel(3);
             param.setType(type.getType());
             AnalysisVibrationResponseDTO response = (AnalysisVibrationResponseDTO) algorithm.getInvokeCustomerData(param);
-            result.put(point.getPointId(), response.getCurve());
+            result.put(point.getPointId() + timestamp, response.getCurve());
         }
         return result;
     }

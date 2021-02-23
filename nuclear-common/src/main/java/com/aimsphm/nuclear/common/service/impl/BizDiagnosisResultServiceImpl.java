@@ -6,6 +6,7 @@ import com.aimsphm.nuclear.common.entity.BizDiagnosisResultDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.enums.DataStatusEnum;
 import com.aimsphm.nuclear.common.mapper.BizDiagnosisResultMapper;
 import com.aimsphm.nuclear.common.service.AlgorithmRulesConclusionService;
 import com.aimsphm.nuclear.common.service.BizDiagnosisResultService;
@@ -16,9 +17,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -84,27 +85,39 @@ public class BizDiagnosisResultServiceImpl extends ServiceImpl<BizDiagnosisResul
     }
 
     @Override
-    public List<AlgorithmRulesConclusionDO> listRulesConclusion(Long eventId) {
+    public boolean getDiagnosisResult(Long eventId) {
+        LambdaQueryWrapper<BizDiagnosisResultDO> wrapper = Wrappers.lambdaQuery(BizDiagnosisResultDO.class);
+        wrapper.eq(BizDiagnosisResultDO::getEventId, eventId).eq(BizDiagnosisResultDO::getStatus, DataStatusEnum.RUNNING.getValue()).orderByDesc(BizDiagnosisResultDO::getGmtDiagnosis).last("limit 1");
+        return this.count(wrapper) > 0;
+    }
+
+    @Async
+    @Override
+    public void saveRulesConclusion(Long eventId) {
         JobAlarmEventDO byId = eventService.getById(eventId);
         if (Objects.isNull(byId) || StringUtils.isEmpty(byId.getPointIds())) {
-            return null;
+            return;
         }
         List<String> collect = Arrays.stream(byId.getPointIds().split(COMMA)).collect(Collectors.toList());
         BizDiagnosisResultDO resultDO = new BizDiagnosisResultDO();
         resultDO.setEventId(eventId);
-        BeanUtils.copyProperties(byId, resultDO);
+        resultDO.setDeviceId(byId.getDeviceId());
+        resultDO.setSubSystemId(byId.getSubSystemId());
+        resultDO.setModelId(byId.getModelId());
+        resultDO.setDeviceCode(byId.getDeviceCode());
+        resultDO.setDeviceName(byId.getDeviceName());
+        resultDO.setStatus(DataStatusEnum.RUNNING.getValue());
+        this.save(resultDO);
+        //推理
         diagnosisService.faultDiagnosis(collect, resultDO, 0);
-        String result = resultDO.getDiagnosisResult();
-        if (StringUtils.isEmpty(result)) {
-            return null;
-        }
-        return conclusionService.listAlgorithmRulesConclusionWithRuleIds(result.split(COMMA));
+        this.updateById(resultDO);
+
     }
 
     @Override
     public List<AlgorithmRulesConclusionDO> lastRulesConclusionWithEventId(Long eventId) {
         LambdaQueryWrapper<BizDiagnosisResultDO> wrapper = Wrappers.lambdaQuery(BizDiagnosisResultDO.class);
-        wrapper.eq(BizDiagnosisResultDO::getEventId, eventId).orderByDesc(BizDiagnosisResultDO::getGmtDiagnosis).last("limit 1");
+        wrapper.eq(BizDiagnosisResultDO::getEventId, eventId).eq(BizDiagnosisResultDO::getStatus, DataStatusEnum.SUCCESS.getValue()).orderByDesc(BizDiagnosisResultDO::getGmtDiagnosis).last("limit 1");
         BizDiagnosisResultDO one = this.getOne(wrapper);
         if (Objects.isNull(one) || StringUtils.isEmpty(one.getDiagnosisResult())) {
             return null;

@@ -18,7 +18,9 @@ public enum AlgorithmTypeEnum {
 
     TREND_FORECAST("TF", "趋势预测"),
 
-    STATE_MONITOR("HCM-PAF", "主送风机预警算法"),
+    STATE_MONITOR("HCM", "状态监测算法"),
+
+    STATE_START_STOP("START-STOP", "启停状态算法"),
 
     DATA_ANALYSIS("ANALYSIS", "数据分析"),
     DATA_ANALYSIS_TIME_DOMAIN("TIME-DOMAIN", "时域波形"),

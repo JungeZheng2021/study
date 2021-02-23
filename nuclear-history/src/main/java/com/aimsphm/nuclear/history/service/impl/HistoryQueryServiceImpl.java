@@ -158,7 +158,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 .collect(Collectors.groupingBy(item -> item.getPointId().trim(), Collectors.mapping(item -> item.getPoints(), Collectors.toList())));
         for (String pointId : multi.getPointIds()) {
             CommonMeasurePointDO point = getPoint(pointId);
-            if (Objects.isNull(point)) {
+            if (Objects.isNull(point) || CollectionUtils.isEmpty(collect.get(pointId))) {
                 continue;
             }
             List<String> points = collect.get(pointId);
@@ -169,7 +169,9 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 WhetherTreadLocal.INSTANCE.remove();
             }
             try {
-                vo.setChartData(mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class));
+                List<List<Object>> charData = mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class);
+                List<List<Object>> collect2 = charData.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(x -> (Long) x.get(0)))), ArrayList::new));
+                vo.setChartData(collect2);
             } catch (IOException e) {
                 e.printStackTrace();
             }

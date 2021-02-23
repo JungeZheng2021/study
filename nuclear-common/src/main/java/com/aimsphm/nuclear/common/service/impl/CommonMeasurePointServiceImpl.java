@@ -1,9 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
-import com.aimsphm.nuclear.common.entity.AlgorithmModelPointDO;
-import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
-import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
-import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
+import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
@@ -24,7 +21,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.collections4.CollectionUtils;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,10 +61,16 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
 
     @Resource
     private CommonDeviceService deviceServiceExt;
+
+    @Resource
+    private CommonSensorService sensorService;
+
     @Resource
     private CommonSubSystemService subSystemServiceExt;
+
     @Resource
     private JobAlarmThresholdService thresholdService;
+
     @Resource
     private AlgorithmModelPointService algorithmModelPointService;
 
@@ -106,9 +108,8 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         vos.stream().forEach(item -> store2Redis(item, value));
         //缓存指定长度的队列
         cacheQueueData(vos, timestamp);
-        long l = System.currentTimeMillis();
         //        TODO :// 上线要将下列代码恢复
-        if (l % 13 * 123 * 1000 == 0) {
+        if (timestamp % 9317 == 0) {
             thresholdService.saveOrUpdateThresholdAlarmList(vos);
         }
 
@@ -218,17 +219,18 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     }
 
     @Override
-    public List<LabelVO> listLocationInfo() {
-        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
-        wrapper.select(CommonMeasurePointDO::getLocation, CommonMeasurePointDO::getLocationCode).isNotNull(CommonMeasurePointDO::getLocationCode);
-        List<CommonMeasurePointDO> list = this.list(wrapper);
+    public List<LabelVO> listLocationInfo(Long subSystemId) {
+        LambdaQueryWrapper<CommonSensorDO> wrapper = Wrappers.lambdaQuery(CommonSensorDO.class);
+        wrapper.select(CommonSensorDO::getLocation, CommonSensorDO::getLocationCode).isNotNull(CommonSensorDO::getLocationCode);
+        if (Objects.nonNull(subSystemId)) {
+            wrapper.eq(CommonSensorDO::getSubSystemId, subSystemId);
+        }
+        List<CommonSensorDO> list = sensorService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        Map<String, List<CommonMeasurePointDO>> collect = list.stream().collect(Collectors.groupingBy(x -> x.getLocationCode()));
-        List<LabelVO> labelList = Lists.newArrayList();
-        collect.forEach((k, v) -> labelList.add(new LabelVO(v.get(0).getLocation(), k)));
-        return labelList;
+        Map<String, CommonSensorDO> collect = list.stream().collect(Collectors.toMap(x -> x.getLocationCode(), x -> x, (a, b) -> a));
+        return collect.entrySet().stream().map(x -> new LabelVO(x.getValue().getLocation(), x.getKey())).collect(Collectors.toList());
     }
 
     @Override

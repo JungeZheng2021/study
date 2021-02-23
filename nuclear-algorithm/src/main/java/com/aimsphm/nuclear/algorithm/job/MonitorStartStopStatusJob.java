@@ -27,17 +27,18 @@ public class MonitorStartStopStatusJob {
 
     /**
      * 设备状态监测算法
-     * 每15秒执行一次
+     * 一分钟(每分钟的57秒)执行一次执行一次
      */
-    @Scheduled(cron = "0/15 * * * * ?")
+    @Scheduled(cron = "57 0/3 * * * ? ")
     @DistributedLock("monitorStartStopStatus")
     public void monitorStartStopStatus() {
         try {
+            log.info("device  start and stop running..................");
             algorithmService.getDeviceStartAndStopMonitorInfo();
         } catch (Exception e) {
             log.error("invoke algorithm server failed: {}", e);
         } finally {
-
+            log.info("device  start and stop finished..................");
         }
     }
 

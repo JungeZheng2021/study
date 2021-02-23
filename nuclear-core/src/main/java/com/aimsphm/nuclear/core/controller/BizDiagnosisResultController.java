@@ -75,10 +75,16 @@ public class BizDiagnosisResultController {
         return service.removeById(id);
     }
 
+    @PostMapping("event/{eventId}")
+    @ApiOperation(value = "根据事件id生成故障推理结果")
+    public void saveRulesConclusion(@PathVariable Long eventId) {
+        service.saveRulesConclusion(eventId);
+    }
+
     @GetMapping("event/{eventId}")
-    @ApiOperation(value = "根据事件id获取故障推理结果")
-    public List<AlgorithmRulesConclusionDO> listRulesConclusion(@PathVariable Long eventId) {
-        return service.listRulesConclusion(eventId);
+    @ApiOperation(value = "故障推理状态-根据事件id获取")
+    public boolean getDiagnosisResult(@PathVariable Long eventId) {
+        return service.getDiagnosisResult(eventId);
     }
 
     @GetMapping("event/{eventId}/last")

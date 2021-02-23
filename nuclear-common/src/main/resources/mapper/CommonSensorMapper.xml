@@ -18,8 +18,10 @@
         <result column="edge_code" property="edgeCode"/>
         <result column="edge_name" property="edgeName"/>
         <result column="device_name" property="deviceName"/>
+        <result column="sub_system_id" property="subSystemId"/>
         <result column="device_id" property="deviceId"/>
         <result column="location_code" property="locationCode"/>
+        <result column="location" property="location"/>
         <result column="category" property="category"/>
         <result column="sensor_desc" property="sensorDesc"/>
         <result column="acc_frequency_min" property="accFrequencyMin"/>
@@ -46,7 +48,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        sensor_code, sensor_model, sensor_serial_number, sensor_name, edge_id, edge_code, edge_name, device_name, device_id, location_code, category, sensor_desc, acc_frequency_min, acc_frequency_max, vec_frequency_min, vec_frequency_max, envelope_filter_min, envelope_filter_max, envelope_bandwidth, offset_frequency_min, offset_frequency_max, sensitivity, viscosity_calculate_method, sample_period, config_status
+        sensor_code, sensor_model, sensor_serial_number, sensor_name, edge_id, edge_code, edge_name, device_name, sub_system_id, device_id, location_code, location, category, sensor_desc, acc_frequency_min, acc_frequency_max, vec_frequency_min, vec_frequency_max, envelope_filter_min, envelope_filter_max, envelope_bandwidth, offset_frequency_min, offset_frequency_max, sensitivity, viscosity_calculate_method, sample_period, config_status
     </sql>
 
 </mapper>

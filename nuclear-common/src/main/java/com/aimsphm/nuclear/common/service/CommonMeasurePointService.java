@@ -105,8 +105,9 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * 获取所有测点的位置信息
      *
      * @return
+     * @param subSystemId
      */
-    List<LabelVO> listLocationInfo();
+    List<LabelVO> listLocationInfo(Long subSystemId);
 
     /**
      * 根据测点id列表获取sensorCode列表

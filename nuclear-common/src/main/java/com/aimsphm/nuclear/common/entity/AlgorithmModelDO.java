@@ -36,9 +36,6 @@ public class AlgorithmModelDO extends BaseDO {
     private Long algorithmId;
 
     @ApiModelProperty(value = "", notes = "")
-    private Long deviceModelId;
-
-    @ApiModelProperty(value = "", notes = "")
     private String modelName;
 
     @ApiModelProperty(value = "", notes = "")

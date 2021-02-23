@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.aimsphm.nuclear.common.entity.AlgorithmConfigDO">
+<mapper namespace="com.aimsphm.nuclear.common.entity.AlgorithmRulesConclusionDO">
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmConfigDO">
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmRulesConclusionDO">
         <result column="id" property="id"/>
+        <result column="deleted" property="deleted"/>
         <result column="sort" property="sort"/>
         <result column="creator" property="creator"/>
         <result column="modifier" property="modifier"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
-        <result column="deleted" property="deleted"/>
-        <result column="algorithm_name" property="algorithmName"/>
-        <result column="algorithm_type" property="algorithmType"/>
+        <result column="rule_id" property="ruleId"/>
+        <result column="conclusion" property="conclusion"/>
+        <result column="reason" property="reason"/>
+        <result column="suggest" property="suggest"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,
+        deleted,
         sort,
         creator,
         modifier,
         gmt_create,
         gmt_modified,
-        deleted,
-        algorithm_name, algorithm_type
+        rule_id, conclusion, reason, suggest
     </sql>
 
 </mapper>

@@ -28,11 +28,12 @@ public class MonitorJob {
     @DistributedLock("MonitorJobDistributeLock")
     public void monitor() {
         try {
+            log.info("device status running..................");
             algorithmService.getDeviceStateMonitorInfo();
         } catch (Exception e) {
             log.error("invoke algorithm server failed: {}", e);
         } finally {
-
+            log.info("device status finished..................");
         }
     }
 

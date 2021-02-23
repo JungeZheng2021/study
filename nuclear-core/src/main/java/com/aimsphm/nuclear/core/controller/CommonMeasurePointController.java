@@ -91,9 +91,9 @@ public class CommonMeasurePointController {
     }
 
     @GetMapping("/locations")
-    @ApiOperation(value = "获取所有的测点位置", notes = "全量去重数据")
-    public List<LabelVO> listLocationInfo() {
-        return iCommonMeasurePointServiceExt.listLocationInfo();
+    @ApiOperation(value = "数据分析-获取所有的测点位置", notes = "全量去重数据")
+    public List<LabelVO> listLocationInfo(Long subSystemId) {
+        return iCommonMeasurePointServiceExt.listLocationInfo(subSystemId);
     }
 
     @GetMapping("features")

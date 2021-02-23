@@ -172,26 +172,37 @@ public class MonitoringServiceImpl implements MonitoringService {
             throw new CustomMessageException("要修改的设备不存在");
         }
         List<CommonDeviceDetailsDO> list = initDefaultConfig(device);
-        updateDetails(list, statusVO);
-        return detailsService.updateBatchById(list);
+        List<CommonDeviceDetailsDO> data = updateDetails(list, statusVO);
+        return detailsService.updateBatchById(data);
     }
 
-    private void updateDetails(List<CommonDeviceDetailsDO> list, DeviceStatusVO statusVO) {
+    private List<CommonDeviceDetailsDO> updateDetails(List<CommonDeviceDetailsDO> list, DeviceStatusVO status) {
+        List<CommonDeviceDetailsDO> updateList = Lists.newArrayList();
         for (CommonDeviceDetailsDO details : list) {
             String fieldName = details.getFieldNameEn();
             String fieldValue = details.getFieldValue();
             switch (fieldName) {
                 case START_TIME:
-                    details.setFieldValue(Objects.isNull(statusVO.getStartTime()) ? fieldValue : String.valueOf(statusVO.getStartTime()));
+                    if (status.getStartTime() != 0 && !String.valueOf(status.getStartTime()).equals(fieldValue)) {
+                        details.setFieldValue(String.valueOf(status.getStartTime()));
+                        updateList.add(details);
+                    }
                     break;
                 case TOTAL_RUNNING_DURATION:
-                    details.setFieldValue(Objects.isNull(statusVO.getTotalRunningTime()) ? fieldValue : String.valueOf(statusVO.getTotalRunningTime()));
+                    if (status.getTotalRunningTime() != 0 && !String.valueOf(status.getTotalRunningTime()).equals(fieldValue)) {
+                        details.setFieldValue(String.valueOf(status.getTotalRunningTime()));
+                        updateList.add(details);
+                    }
                     break;
                 case STOP_TIMES:
-                    details.setFieldValue(Objects.isNull(statusVO.getStopTimes()) ? fieldValue : String.valueOf(statusVO.getStopTimes()));
+                    if (status.getStopTimes() != 0 && !String.valueOf(status.getStopTimes()).equals(fieldValue)) {
+                        details.setFieldValue(String.valueOf(status.getStopTimes()));
+                        updateList.add(details);
+                    }
                     break;
             }
         }
+        return updateList;
     }
 
     private List<CommonDeviceDetailsDO> initDefaultConfig(CommonDeviceDO device) {
@@ -229,9 +240,9 @@ public class MonitoringServiceImpl implements MonitoringService {
     public Map<Integer, Long> listRunningDuration(Long deviceId, TimeRangeQueryBO range) {
         Long startTime = range.getStart();
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
-        wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId).lt(JobDeviceStatusDO::getStatus, DeviceHealthEnum.STOP.getValue());
+        wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId);
         if (Objects.nonNull(startTime)) {
-            wrapper.ge(JobDeviceStatusDO::getGmtStart, new Date(startTime));
+            wrapper.apply("ifNull(gmt_end,now())>{0}", new Date(startTime));
         }
         List<JobDeviceStatusDO> list = statusService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
@@ -239,14 +250,17 @@ public class MonitoringServiceImpl implements MonitoringService {
         }
         Map<Integer, Long> collect = list.stream().collect(Collectors.groupingBy(item -> item.getStatus(), TreeMap::new, Collectors.summingLong(item -> item.getStatusDuration())));
         JobDeviceStatusDO first = list.get(0);
-        if (Objects.nonNull(startTime) && first.getGmtStart().getTime() < startTime) {
+        if (Objects.nonNull(startTime) && Objects.nonNull(first.getGmtEnd())) {
             Integer status = first.getStatus();
-            collect.put(status, startTime - first.getGmtStart().getTime() + collect.get(status));
+            if (startTime > first.getGmtStart().getTime()) {
+                collect.put(status, collect.get(status) - (startTime - first.getGmtStart().getTime()));
+            }
         }
         JobDeviceStatusDO last = list.get(list.size() - 1);
         if (Objects.isNull(last.getGmtEnd())) {
+            long time = last.getGmtStart().getTime();
             Integer status = last.getStatus();
-            collect.put(status, System.currentTimeMillis() - last.getGmtStart().getTime() + collect.get(status));
+            collect.put(status, System.currentTimeMillis() - (time >= startTime ? time : startTime) + collect.get(status));
         }
         return collect;
     }

@@ -73,6 +73,7 @@ public interface AlgorithmHandlerService<P, R> {
         checkParams(query);
         log.debug("algorithm params: {}", JSON.toJSONString(query));
         ResponseData<R> responseData = client.algorithmInvokeByParams(query);
+        log.info("algorithm server response: {}", JSON.toJSONString(responseData));
         checkSuccess(responseData);
         return responseData.getData();
     }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.aimsphm.nuclear.common.entity.AlgorithmConfigDO">
+<mapper namespace="com.aimsphm.nuclear.common.entity.AlgorithmRulesParameterDO">
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmConfigDO">
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmRulesParameterDO">
         <result column="id" property="id"/>
         <result column="sort" property="sort"/>
         <result column="creator" property="creator"/>
@@ -10,8 +10,13 @@
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
         <result column="deleted" property="deleted"/>
-        <result column="algorithm_name" property="algorithmName"/>
-        <result column="algorithm_type" property="algorithmType"/>
+        <result column="rule_id" property="ruleId"/>
+        <result column="name" property="name"/>
+        <result column="value" property="value"/>
+        <result column="sensor_code" property="sensorCode"/>
+        <result column="sensor_signal_type" property="sensorSignalType"/>
+        <result column="parameter_order" property="parameterOrder"/>
+        <result column="parameter_type" property="parameterType"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -23,7 +28,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        algorithm_name, algorithm_type
+        rule_id, name, value, sensor_code, sensor_signal_type, parameter_order, parameter_type
     </sql>
 
 </mapper>

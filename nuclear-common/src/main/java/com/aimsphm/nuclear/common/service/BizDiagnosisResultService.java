@@ -42,7 +42,7 @@ public interface BizDiagnosisResultService extends IService<BizDiagnosisResultDO
      * @param eventId 事件id
      * @return
      */
-    List<AlgorithmRulesConclusionDO> listRulesConclusion(Long eventId);
+    boolean getDiagnosisResult(Long eventId);
 
     /**
      * 获取上一次推理结果
@@ -51,4 +51,12 @@ public interface BizDiagnosisResultService extends IService<BizDiagnosisResultDO
      * @return
      */
     List<AlgorithmRulesConclusionDO> lastRulesConclusionWithEventId(Long eventId);
+
+    /**
+     * 生成故障推理记录
+     *
+     * @param eventId 事件id
+     */
+    void saveRulesConclusion(Long eventId);
+
 }
