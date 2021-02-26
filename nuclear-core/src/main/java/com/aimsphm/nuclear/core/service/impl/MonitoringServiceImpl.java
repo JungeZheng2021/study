@@ -241,6 +241,9 @@ public class MonitoringServiceImpl implements MonitoringService {
         Long startTime = range.getStart();
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
         wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId);
+        if (Objects.nonNull(range.getEnd())) {
+            wrapper.and(e -> e.le(JobDeviceStatusDO::getGmtEnd, new Date(range.getEnd())).or(d -> d.isNull(JobDeviceStatusDO::getGmtEnd)));
+        }
         if (Objects.nonNull(startTime)) {
             wrapper.apply("ifNull(gmt_end,now())>{0}", new Date(startTime));
         }
@@ -260,7 +263,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (Objects.isNull(last.getGmtEnd())) {
             long time = last.getGmtStart().getTime();
             Integer status = last.getStatus();
-            collect.put(status, System.currentTimeMillis() - (time >= startTime ? time : startTime) + collect.get(status));
+            collect.put(status, System.currentTimeMillis() - (time >= (Objects.isNull(startTime) ? 0 : startTime) ? time : startTime) + collect.get(status));
         }
         return collect;
     }
@@ -318,7 +321,8 @@ public class MonitoringServiceImpl implements MonitoringService {
         return Lists.newArrayList(typeList, levelList);
     }
 
-    private List<MeasurePointVO> listPointByWrapper(LambdaQueryWrapper<CommonMeasurePointDO> wrapper) {
+    @Override
+    public List<MeasurePointVO> listPointByWrapper(LambdaQueryWrapper<CommonMeasurePointDO> wrapper) {
         List<CommonMeasurePointDO> list = pointService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;

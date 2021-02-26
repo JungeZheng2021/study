@@ -1,9 +1,11 @@
 package com.aimsphm.nuclear.core.service;
 
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
 import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,15 @@ public interface MonitoringService {
      * @return
      */
     Map<String, MeasurePointVO> getMonitorInfo(Long deviceId);
+
+
+    /**
+     * 获取redis中的测点信息
+     *
+     * @param wrapper
+     * @return
+     */
+    List<MeasurePointVO> listPointByWrapper(LambdaQueryWrapper<CommonMeasurePointDO> wrapper);
 
     /**
      * 更新所有测点的缓存值

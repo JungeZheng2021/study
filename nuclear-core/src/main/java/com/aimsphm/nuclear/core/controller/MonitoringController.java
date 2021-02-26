@@ -7,10 +7,10 @@ import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.core.service.MonitoringService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
 @Api(tags = "monitor-系统监测控制类")
 @RequestMapping(value = "monitor", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MonitoringController {
-    @Autowired
+    @Resource
     private MonitoringService monitoringService;
 
     @GetMapping("device/{deviceId}")
