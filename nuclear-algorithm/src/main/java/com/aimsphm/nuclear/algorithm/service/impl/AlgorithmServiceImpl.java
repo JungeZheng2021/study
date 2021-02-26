@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +51,7 @@ import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
  */
 @Slf4j
 @Service
+@Scope("prototype")
 public class AlgorithmServiceImpl implements AlgorithmService {
     @Resource
     private CommonDeviceService deviceService;
@@ -88,11 +90,11 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private Integer days15 = 15 * 86400 * 1000;
 
     @Override
-    public void getDeviceStateMonitorInfo() {
+    public void getDeviceStateMonitorInfo(Long deviceId) {
         LambdaUpdateWrapper<JobAlarmEventDO> update = Wrappers.lambdaUpdate(JobAlarmEventDO.class);
         update.set(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.FINISHED.getValue()).ne(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.FINISHED.getValue()).le(JobAlarmEventDO::getGmtLastAlarm, new Date(System.currentTimeMillis() - days15));
         eventService.update(update);
-        List<StateMonitorParamDTO> data = operateParams(AlgorithmTypeEnum.STATE_MONITOR.getType(), 1);
+        List<StateMonitorParamDTO> data = operateParams(deviceId, AlgorithmTypeEnum.STATE_MONITOR.getType(), 1);
         if (CollectionUtils.isEmpty(data)) {
             return;
         }
@@ -105,8 +107,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public void getDeviceStartAndStopMonitorInfo() {
-        List<StateMonitorParamDTO> data = operateParams(AlgorithmTypeEnum.STATE_MONITOR.getType(), 0);
+    public void getDeviceStartAndStopMonitorInfo(Long deviceId) {
+        List<StateMonitorParamDTO> data = operateParams(deviceId, AlgorithmTypeEnum.STATE_START_STOP.getType(), 0);
         if (CollectionUtils.isEmpty(data)) {
             return;
         }
@@ -283,7 +285,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
      *
      * @return
      */
-    private List<StateMonitorParamDTO> operateParams(String type, Integer modelType) {
+    private List<StateMonitorParamDTO> operateParams(Long deviceId, String type, Integer modelType) {
         LambdaQueryWrapper<AlgorithmConfigDO> wrapper = Wrappers.lambdaQuery(AlgorithmConfigDO.class);
         wrapper.eq(AlgorithmConfigDO::getAlgorithmType, type);
         AlgorithmConfigDO algorithmConfig = configService.getOne(wrapper);
@@ -291,10 +293,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             return Lists.newArrayList();
         }
         LambdaQueryWrapper<AlgorithmModelDO> modelWrapper = Wrappers.lambdaQuery(AlgorithmModelDO.class);
-        modelWrapper.eq(AlgorithmModelDO::getAlgorithmId, algorithmConfig.getId());
-//        if (Objects.nonNull(modelType)) {
-//            modelWrapper.eq(AlgorithmModelDO::getModelType, modelType);
-//        }
+        modelWrapper.eq(AlgorithmModelDO::getAlgorithmId, algorithmConfig.getId()).eq(AlgorithmModelDO::getDeviceId, deviceId);
         List<AlgorithmModelDO> modelList = modelService.list(modelWrapper);
         if (CollectionUtils.isEmpty(modelList)) {
             return Lists.newArrayList();
@@ -308,7 +307,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         Map<Long, List<AlgorithmModelPointDO>> pointMap = pointDOS.stream().collect(Collectors.groupingBy(x -> x.getDeviceId()));
         Map<Long, List<AlgorithmModelDO>> deviceModelList = modelList.stream().collect(Collectors.groupingBy(x -> x.getDeviceId()));
         List<StateMonitorParamDTO> collect = deviceModelList.entrySet().stream().map(x -> {
-            Long deviceId = x.getKey();
             List<AlgorithmModelDO> value = x.getValue();
             CommonDeviceDO device = deviceService.getById(deviceId);
             //设备不存在或者是 设备未开启报警且modelType不是启停模型 1：开启 0:未开启
@@ -395,11 +393,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             String family = item.getPointType() == 1 ? H_BASE_FAMILY_NPC_PI_REAL_TIME : item.getFeatureType() + DASH + item.getFeature();
             asyncService.listPointDataFromHBase(family, item.getId(), item.getSensorCode(), data, countDownLatch);
             collect.add(data);
-            log.info("测试异步是否生成： " + System.currentTimeMillis());
         }
         try {
             countDownLatch.await();
-            log.info("最后完成： " + System.currentTimeMillis());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
