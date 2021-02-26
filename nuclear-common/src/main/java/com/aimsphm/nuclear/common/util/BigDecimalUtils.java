@@ -98,8 +98,8 @@ public final class BigDecimalUtils {
      * @return double
      */
     public static Double add(double v1, double v2) {
-        BigDecimal n1 = new BigDecimal(Double.toString(v1));
-        BigDecimal n2 = new BigDecimal(Double.toString(v2));
+        BigDecimal n1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal n2 = new BigDecimal(String.valueOf(v2));
         return n1.add(n2).doubleValue();
     }
 
@@ -111,8 +111,8 @@ public final class BigDecimalUtils {
      * @return double
      */
     public static Double subtract(double v1, double v2) {
-        BigDecimal n1 = new BigDecimal(Double.toString(v1));
-        BigDecimal n2 = new BigDecimal(Double.toString(v2));
+        BigDecimal n1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal n2 = new BigDecimal(String.valueOf(v2));
         return n1.subtract(n2).doubleValue();
     }
 
@@ -124,8 +124,8 @@ public final class BigDecimalUtils {
      * @return double
      */
     public static Double multiply(double v1, double v2) {
-        BigDecimal n1 = new BigDecimal(Double.toString(v1));
-        BigDecimal n2 = new BigDecimal(Double.toString(v2));
+        BigDecimal n1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal n2 = new BigDecimal(String.valueOf(v2));
         return n1.multiply(n2).doubleValue();
     }
 
@@ -141,8 +141,8 @@ public final class BigDecimalUtils {
     }
 
     public static Double divide(double v1, double v2, Integer digit) {
-        BigDecimal n1 = new BigDecimal(Double.toString(v1));
-        BigDecimal n2 = new BigDecimal(Double.toString(v2));
+        BigDecimal n1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal n2 = new BigDecimal(String.valueOf(v2));
         return n1.divide(n2, Objects.isNull(digit) ? DIGIT : digit, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
@@ -154,8 +154,8 @@ public final class BigDecimalUtils {
      * @return
      */
     public static int compare(double v1, double v2) {
-        BigDecimal n1 = new BigDecimal(Double.toString(v1));
-        BigDecimal n2 = new BigDecimal(Double.toString(v2));
+        BigDecimal n1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal n2 = new BigDecimal(String.valueOf(v2));
         return n1.compareTo(n2);
     }
 }

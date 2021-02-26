@@ -6,6 +6,7 @@ import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.CommonDeviceMapper;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
@@ -40,6 +41,13 @@ public class CommonDeviceServiceImpl extends ServiceImpl<CommonDeviceMapper, Com
     @Override
     public List<CommonDeviceDO> listCommonDeviceWithParams(QueryBO<CommonDeviceDO> queryBO) {
         return this.list(customerConditions(queryBO));
+    }
+
+    @Override
+    public List<CommonDeviceDO> listCommonDeviceBySubSystemId(Long subSystemId) {
+        LambdaQueryWrapper<CommonDeviceDO> wrapper = Wrappers.lambdaQuery(CommonDeviceDO.class);
+        wrapper.eq(CommonDeviceDO::getSubSystemId, subSystemId);
+        return this.list(wrapper);
     }
 
     private LambdaQueryWrapper<CommonDeviceDO> customerConditions(QueryBO<CommonDeviceDO> queryBO) {

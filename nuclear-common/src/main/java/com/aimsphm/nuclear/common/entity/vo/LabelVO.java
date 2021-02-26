@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.common.entity.vo;
 
 import lombok.Data;
-import org.apache.ibatis.annotations.ConstructorArgs;
 
 /**
  * @Package: com.aimsphm.nuclear.common.entity.vo
@@ -13,6 +12,7 @@ import org.apache.ibatis.annotations.ConstructorArgs;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Data
 public class LabelVO {
     /**
      * 名称
@@ -29,21 +29,5 @@ public class LabelVO {
     }
 
     public LabelVO() {
-    }
-
-    public Object getName() {
-        return name;
-    }
-
-    public void setName(Object name) {
-        this.name = name;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public void setValue(Object value) {
-        this.value = value;
     }
 }

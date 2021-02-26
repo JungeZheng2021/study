@@ -2,8 +2,6 @@ package com.aimsphm.nuclear.common.quartz.dto;
 
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @Package: com.aimsphm.nuclear.common.quartz.dto
  * @Description: <任务实体>
@@ -48,20 +46,4 @@ public class QuartzJobDTO {
      * 任务分组
      */
     private String jobGroup;
-    /**
-     * 创建者
-     */
-    private String creator;
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-    /**
-     * 更新者
-     */
-    private String modifier;
-    /**
-     * 更新时间
-     */
-    private Date modifyTime;
 }

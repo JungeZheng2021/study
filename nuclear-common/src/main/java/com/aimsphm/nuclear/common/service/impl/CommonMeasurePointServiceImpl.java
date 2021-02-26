@@ -12,6 +12,7 @@ import com.aimsphm.nuclear.common.entity.vo.TreeVO;
 import com.aimsphm.nuclear.common.enums.AlarmMessageEnum;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
 import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
+import com.aimsphm.nuclear.common.enums.PointVisibleEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.CommonMeasurePointMapper;
 import com.aimsphm.nuclear.common.service.*;
@@ -152,6 +153,20 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     }
 
     @Override
+    public Boolean isNeedDownSample(String pointId) {
+        CommonMeasurePointDO point = this.getPointByPointId(pointId);
+        if (Objects.isNull(point)) {
+            throw new CustomMessageException("the point not exist");
+        }
+        return isNeedDownSample(point);
+    }
+
+    @Override
+    public Boolean isNeedDownSample(CommonMeasurePointDO point) {
+        return Objects.isNull(point.getVisible()) || point.getVisible() % PointVisibleEnum.DOWN_SAMPLE.getValue() == 0;
+    }
+
+    @Override
     @Cacheable(value = REDIS_POINT_INFO_LIST, key = "#itemId")
     public List<MeasurePointVO> getMeasurePointsByPointId(String itemId) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
@@ -242,6 +257,13 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             return null;
         }
         return list.stream().map(x -> x.getSensorCode()).distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommonMeasurePointDO> listOilPoint(Long deviceId) {
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+        wrapper.eq(CommonMeasurePointDO::getDeviceId, deviceId).eq(CommonMeasurePointDO::getCategory, PointCategoryEnum.OIL_QUALITY.getValue());
+        return this.list(wrapper);
     }
 
     /**

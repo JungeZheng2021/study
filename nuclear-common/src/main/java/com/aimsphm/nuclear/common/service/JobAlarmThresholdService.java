@@ -43,4 +43,12 @@ public interface JobAlarmThresholdService extends IService<JobAlarmThresholdDO> 
      * @param response
      */
     void listJobAlarmThresholdByPageWithParams(QueryBO queryBO, HttpServletResponse response);
+
+    /**
+     * 仍然存在的阈值报警
+     *
+     * @param deviceId 设备id
+     * @return
+     */
+    List<JobAlarmThresholdDO> listCurrentThresholdAlarm(Long deviceId);
 }

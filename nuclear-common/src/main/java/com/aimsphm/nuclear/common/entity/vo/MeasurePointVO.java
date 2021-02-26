@@ -5,6 +5,8 @@ import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Objects;
+
 
 /**
  * @Package: com.aimsphm.nuclear.data.entity.dto
@@ -36,6 +38,10 @@ public class MeasurePointVO extends CommonMeasurePointDO {
 
     public String getDesc() {
         return PointCategoryEnum.getDesc(this.getCategory());
+    }
+
+    public String getStatusDesc() {
+        return Objects.isNull(status) ? "正常" : "异常";
     }
 
 }

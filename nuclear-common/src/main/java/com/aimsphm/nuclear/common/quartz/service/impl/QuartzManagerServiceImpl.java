@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
  * @Version: 1.0
  */
 @Service
-@ConditionalOnProperty(prefix = "mybatis-plus", name = "quarzt-enable", havingValue = "1")
+@ConditionalOnProperty(prefix = "mybatis-plus", name = "quartz-enable", havingValue = "1")
 public class QuartzManagerServiceImpl implements QuartzManagerService {
     @Autowired
     private QuartzManager manager;

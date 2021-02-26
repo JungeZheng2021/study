@@ -27,7 +27,7 @@ public class StateMonitorResponseDTO {
     private Integer healthStatus;
 
     @ApiModelProperty(value = "运行状态", notes = "")
-    private Integer operationCondition;
+    private String operationCondition;
 
     @ApiModelProperty(value = "预测结果", notes = "")
     private List<EstimateResponseDataBO> modelEstimateResult;

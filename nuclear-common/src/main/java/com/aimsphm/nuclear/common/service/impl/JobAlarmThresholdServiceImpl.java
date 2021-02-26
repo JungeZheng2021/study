@@ -138,6 +138,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
             alarmThreshold.setAlarmType(1);
             alarmThreshold.setGmtStartAlarm(new Date());
             alarmThreshold.setPointId(item.getPointId());
+            alarmThreshold.setName(item.getPointName());
             this.save(alarmThreshold);
         });
     }
@@ -164,6 +165,13 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<JobAlarmThresholdDO> listCurrentThresholdAlarm(Long deviceId) {
+        LambdaQueryWrapper<JobAlarmThresholdDO> wrapper = Wrappers.lambdaQuery(JobAlarmThresholdDO.class);
+        wrapper.eq(JobAlarmThresholdDO::getAlarmStatus, 0);
+        return this.list(wrapper);
     }
 
 

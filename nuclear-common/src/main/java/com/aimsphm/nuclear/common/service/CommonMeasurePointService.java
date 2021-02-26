@@ -49,6 +49,22 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
     CommonMeasurePointDO getPointByPointId(String pointId);
 
     /**
+     * 判断测点是否需要降采样
+     *
+     * @param pointId 测点Id
+     * @return true:降采样 false:不降采样
+     */
+    Boolean isNeedDownSample(String pointId);
+
+    /**
+     * 判断测点是否需要降采样
+     *
+     * @param point 测点
+     * @return
+     */
+    Boolean isNeedDownSample(CommonMeasurePointDO point);
+
+    /**
      * 根据测点id获取测点列表(考虑一个测点可能会被多个设备/系统共用)
      *
      * @param itemId 测点id
@@ -104,8 +120,8 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
     /**
      * 获取所有测点的位置信息
      *
-     * @return
      * @param subSystemId
+     * @return
      */
     List<LabelVO> listLocationInfo(Long subSystemId);
 
@@ -116,4 +132,12 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @return
      */
     List<String> listSensorCodeByPointList(List<String> pointIdList);
+
+    /**
+     * 查询所有的油质测点
+     *
+     * @param deviceId 设备id
+     * @return
+     */
+    List<CommonMeasurePointDO> listOilPoint(Long deviceId);
 }

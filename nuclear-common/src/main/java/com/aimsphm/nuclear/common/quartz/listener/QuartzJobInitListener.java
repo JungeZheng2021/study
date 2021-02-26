@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +25,7 @@ import java.util.Set;
 @Order(value = 1)
 public class QuartzJobInitListener implements CommandLineRunner {
 
-    @Autowired
+    @Resource
     Map<String, QuartzJobService> scheduleJobServiceMap;
 
     @Override

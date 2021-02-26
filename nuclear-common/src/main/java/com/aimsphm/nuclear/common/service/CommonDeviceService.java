@@ -34,4 +34,12 @@ public interface CommonDeviceService extends IService<CommonDeviceDO> {
      */
     List<CommonDeviceDO> listCommonDeviceWithParams(QueryBO<CommonDeviceDO> queryBO);
 
+    /**
+     * 根据子系统id获取设备列表
+     *
+     * @param subSystemId 子系统id
+     * @return
+     */
+    List<CommonDeviceDO> listCommonDeviceBySubSystemId(Long subSystemId);
+
 }

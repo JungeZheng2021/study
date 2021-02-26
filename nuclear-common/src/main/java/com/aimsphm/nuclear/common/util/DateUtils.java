@@ -39,6 +39,8 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static final String YEAR = "yyyy";
     public static final String YEAR_ZH = "yyyy年";
     public static final String YEAR_MONTH_DAY_ZH = "yyyy年MM月dd日";
+
+    public static final String YEAR_MONTH_DAY_HH_MM_SS_ZH = "yyyy年MM月dd日  HH:mm:ss";
     public static final String MONTH_ZH = "M月";
     public static final String YEAR_MONTH_DAY_HH_MM_SS_I = "yyyy/MM/dd HH:mm:ss";
     public static final String YEAR_MONTH_DAY_HH_MM_SS_M = "yyyy-MM-dd HH:mm:ss";
@@ -425,5 +427,17 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         //本月的最后一天
         LocalDate lastDay = today.with(TemporalAdjusters.lastDayOfMonth());
         return format(pattern, lastDay);
+    }
+
+    /**
+     * 将时间间隔格式化程天数，周数，月数，年数等
+     *
+     * @param durationTimes 时间间隔
+     * @param unit          要格式化成的单位
+     * @return
+     */
+    public static Double format(Long durationTimes, TemporalUnit unit) {
+        Duration duration = unit.getDuration();
+        return BigDecimalUtils.divide(durationTimes, duration.getSeconds() * 1000, 2);
     }
 }

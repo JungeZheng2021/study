@@ -48,12 +48,11 @@ public interface AlgorithmHandlerService<P, R> {
         try {
             Assert.notNull(client, "algorithm client is null");
             Object o = execute(client, params, type);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            String s = mapper.writeValueAsString(o);
-            return mapper.readValue(s, clazz);
+            String s1 = JSON.toJSONString(o);
+            return JSON.parseObject(s1, clazz);
         } catch (Exception e) {
-            throw new CustomMessageException("algorithm Invoke failed");
+            log.error("data analysis failed...{}", e);
+            throw new CustomMessageException("data analysis failed...", e);
         }
     }
 
@@ -67,15 +66,20 @@ public interface AlgorithmHandlerService<P, R> {
      * @return
      */
     default R execute(AlgorithmServiceFeignClient client, P params, String type) {
-        AlgorithmParamDTO<P> query = new AlgorithmParamDTO();
-        query.setData(params);
-        query.setAlgorithmType(type);
-        checkParams(query);
-        log.debug("algorithm params: {}", JSON.toJSONString(query));
-        ResponseData<R> responseData = client.algorithmInvokeByParams(query);
-        log.info("algorithm server response: {}", JSON.toJSONString(responseData));
-        checkSuccess(responseData);
-        return responseData.getData();
+        try {
+            AlgorithmParamDTO<P> query = new AlgorithmParamDTO();
+            query.setData(params);
+            query.setAlgorithmType(type);
+            checkParams(query);
+            log.debug("algorithm params: {}", JSON.toJSONString(query));
+            ResponseData<R> responseData = client.algorithmInvokeByParams(query);
+            log.info("algorithm server response: {}", JSON.toJSONString(responseData));
+            checkSuccess(responseData);
+            return responseData.getData();
+        } catch (Exception e) {
+            log.error("algorithm server execute failed..{}", e);
+            throw new CustomMessageException("algorithm server execute failed..", e);
+        }
     }
 
 

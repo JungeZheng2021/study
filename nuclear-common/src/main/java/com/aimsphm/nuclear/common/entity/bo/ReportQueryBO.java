@@ -18,21 +18,31 @@ import java.util.Objects;
  */
 @Data
 public class ReportQueryBO {
+
+    @ApiModelProperty(value = "设备id")
+    private Long deviceId;
+
     @ApiModelProperty(value = "子系统编号")
     private Long subSystemId;
+
     @ApiModelProperty(value = "结束时间")
     private Long endTime;
+
     @ApiModelProperty(value = "开始时间")
     private Long startTime;
 
     @ApiModelProperty(value = "报告名称", notes = "手动报告时使用")
     private String reportName;
+
     @ApiModelProperty(value = "测点前缀", notes = "后端使用")
     private String tagPre;
 
     @ApiModelProperty(value = "模板路径", notes = "后端使用")
     private String templatePath;
 
+    public ReportQueryBO(Long subSystemId) {
+        this.subSystemId = subSystemId;
+    }
 
     public ReportQueryBO(Long subSystemId, Long startTime, Long endTime) {
         this.subSystemId = subSystemId;

@@ -6,6 +6,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,7 @@ import java.util.Set;
 @Component
 public class QuartzManager {
 
-    @Autowired
+    @Resource
     private Scheduler scheduler;
 
     /**
@@ -40,7 +41,8 @@ public class QuartzManager {
         JobDetail jobDetail = JobBuilder.newJob(jobClass).withIdentity(job.getJobName(), job.getJobGroup()).build();
         // 定义调度触发规则
         // 使用cornTrigger规则
-        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(job.getJobName(), job.getJobGroup())// 触发器key
+        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(job.getJobName(), job.getJobGroup())
+                // 触发器key
                 .startAt(DateBuilder.futureDate(1, DateBuilder.IntervalUnit.SECOND))
                 .withSchedule(CronScheduleBuilder.cronSchedule(job.getCronExpression())).startNow().build();
         // 把作业和触发器注册到任务调度中
@@ -89,7 +91,7 @@ public class QuartzManager {
      */
     public List<QuartzJobDTO> listRunningJob() throws SchedulerException {
         List<JobExecutionContext> executingJobs = scheduler.getCurrentlyExecutingJobs();
-        List<QuartzJobDTO> jobList = new ArrayList<QuartzJobDTO>(executingJobs.size());
+        List<QuartzJobDTO> jobList = new ArrayList<>(executingJobs.size());
         for (JobExecutionContext executingJob : executingJobs) {
             QuartzJobDTO job = new QuartzJobDTO();
             JobDetail jobDetail = executingJob.getJobDetail();
