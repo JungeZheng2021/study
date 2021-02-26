@@ -9,13 +9,12 @@ import com.aimsphm.nuclear.common.entity.SparkDownSample;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.JobAlarmRealtimeService;
+import com.aimsphm.nuclear.common.service.SparkDownSampleService;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
-import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
-import com.aimsphm.nuclear.common.service.SparkDownSampleService;
 import com.aimsphm.nuclear.history.entity.enums.TableNameEnum;
 import com.aimsphm.nuclear.history.entity.vo.EventDataVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
@@ -32,7 +31,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Get;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -90,15 +88,18 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 || Objects.isNull(single.getEnd()) || Objects.isNull(single.getStart()) || single.getEnd() <= single.getStart()) {
             return null;
         }
-        CommonMeasurePointDO point = getPoint(single.getPointId());
+        CommonMeasurePointDO point = serviceExt.getPointByPointId(single.getPointId());
         if (Objects.isNull(point)) {
             throw new CustomMessageException("要查询的测点不存在");
         }
-        HistoryQueryMultiBO multi = new HistoryQueryMultiBO();
-        multi.setPointIds(Lists.newArrayList(single.getPointId()));
-        BeanUtils.copyProperties(single, multi);
-        Map<String, HistoryDataVO> data = listHistoryDataWithPointIdsFromMysql(multi);
-        if (Objects.nonNull(data)) {
+        Boolean needDownSample = serviceExt.isNeedDownSample(point);
+        String tableName = TableNameParser.getTableName(single.getStart(), single.getEnd());
+        //需要降采样 且时间区间大于3个小时
+        if (needDownSample && StringUtils.isNotBlank(tableName)) {
+            HistoryQueryMultiBO multi = new HistoryQueryMultiBO();
+            multi.setPointIds(Lists.newArrayList(single.getPointId()));
+            BeanUtils.copyProperties(single, multi);
+            Map<String, HistoryDataVO> data = listHistoryDataWithPointIdsFromMysql(multi);
             return data.get(single.getPointId());
         }
         HistoryQuerySingleWithFeatureBO featureBO = new HistoryQuerySingleWithFeatureBO();
@@ -117,39 +118,43 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         return vo;
     }
 
-    private CommonMeasurePointDO getPoint(String pointId) {
-        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonMeasurePointDO::getPointId, pointId);
-        CommonMeasurePointDO point = serviceExt.getOne(wrapper);
-        return point;
-    }
-
     @Override
     public Map<String, HistoryDataVO> listHistoryDataWithPointIdsByScan(HistoryQueryMultiBO multi) {
+        Map<String, HistoryDataVO> data = new HashMap<>(16);
         checkParam(multi);
-        HashMap<String, HistoryDataVO> result = new HashMap<>(16);
-        Map<String, HistoryDataVO> data = listHistoryDataWithPointIdsFromMysql(multi);
-        if (Objects.nonNull(data)) {
-            return data;
-        }
+        //如果表格是空说明是三个小时以内，要查询原始数据
         Long end = multi.getEnd();
         Long start = multi.getStart();
-        for (String pointId : multi.getPointIds()) {
+        String tableName = TableNameParser.getTableName(start, end);
+        List<String> pointIds = multi.getPointIds();
+        //全部非降采样
+        if (StringUtils.isBlank(tableName)) {
+            multiPointHBaseData(data, pointIds, start, end);
+            return data;
+        }
+        List<String> downSamplePoints = pointIds.stream().filter(pointId -> serviceExt.isNeedDownSample(pointId)).collect(Collectors.toList());
+        List<String> noDownSamplePoints = pointIds.stream().filter(pointId -> !serviceExt.isNeedDownSample(pointId)).collect(Collectors.toList());
+        multi.setPointIds(downSamplePoints);
+        Map<String, HistoryDataVO> map = listHistoryDataWithPointIdsFromMysql(multi);
+        multiPointHBaseData(data, noDownSamplePoints, start, end);
+        data.putAll(map);
+        return data;
+    }
+
+    private void multiPointHBaseData(Map<String, HistoryDataVO> data, List<String> pointIds, Long start, Long end) {
+        for (String pointId : pointIds) {
             HistoryQuerySingleBO bo = new HistoryQuerySingleBO();
             bo.setPointId(pointId);
             bo.setEnd(end);
             bo.setStart(start);
-            result.put(pointId, listHistoryDataWithPointByScan(bo));
+            data.put(pointId, listHistoryDataWithPointByScan(bo));
         }
-        return result;
     }
 
+
     private Map<String, HistoryDataVO> listHistoryDataWithPointIdsFromMysql(HistoryQueryMultiBO multi) {
-        List<SparkDownSample> list = listSparkDownSampleByConditions(multi);
-        if (Objects.isNull(list)) {
-            return null;
-        }
         Map<String, HistoryDataVO> result = Maps.newHashMap();
+        List<SparkDownSample> list = listSparkDownSampleByConditions(multi);
         if (CollectionUtils.isEmpty(list)) {
             return result;
         }
@@ -157,7 +162,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         Map<String, List<String>> collect = list.stream().filter(item -> StringUtils.isNotBlank(item.getPoints()) && StringUtils.isNotBlank(item.getPointId()))
                 .collect(Collectors.groupingBy(item -> item.getPointId().trim(), Collectors.mapping(item -> item.getPoints(), Collectors.toList())));
         for (String pointId : multi.getPointIds()) {
-            CommonMeasurePointDO point = getPoint(pointId);
+            CommonMeasurePointDO point = serviceExt.getPointByPointId(pointId);
             if (Objects.isNull(point) || CollectionUtils.isEmpty(collect.get(pointId))) {
                 continue;
             }
@@ -184,7 +189,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         Long end = multi.getEnd();
         Long start = multi.getStart();
         String tableName = TableNameParser.getTableName(start, end);
-        if (StringUtils.isBlank(tableName)) {
+        if (StringUtils.isBlank(tableName) || CollectionUtils.isEmpty(multi.getPointIds())) {
             return null;
         }
         //如果是天表[天表根据年份分表-需要将跨跃2年的部分拼接起来]
@@ -228,7 +233,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         try {
 //            Map<String, List<HBaseTimeSeriesDataDTO>> data = hBase.selectDataList(H_BASE_TABLE_NPC_PHM_DATA, getList);
             multi.getPointIds().stream().forEach(item -> {
-                CommonMeasurePointDO point = getPoint(item);
+                CommonMeasurePointDO point = serviceExt.getPointByPointId(item);
                 HistoryDataVO vo = new HistoryDataWithThresholdVO();
                 BeanUtils.copyProperties(point, vo);
                 List<Object> list = Lists.newArrayList(System.currentTimeMillis(), new Random().nextDouble());
@@ -257,7 +262,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             Map<String, List<PointEstimateDataBO>> collect1 = collect.stream().collect(Collectors.groupingBy(x -> x.getPointId()));
             pointIds.stream().forEach(pointId -> {
                 EventDataVO vo = new EventDataVO();
-                CommonMeasurePointDO point = getPoint(pointId);
+                CommonMeasurePointDO point = serviceExt.getPointByPointId(pointId);
                 if (Objects.isNull(point)) {
                     return;
                 }
