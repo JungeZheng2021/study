@@ -39,9 +39,9 @@ public class FanStartStopStatusJob implements BaseMonitorJob {
 
     /**
      * 设备状态监测算法
-     * 一分钟(每分钟的17秒)执行一次执行一次
+     * 一分钟(每分钟的10秒)执行一次执行一次
      */
-    @Scheduled(cron = "13 0/1 * * * ? ")
+    @Scheduled(cron = "10 0/1 * * * ? ")
     @DistributedLock("FanStartStopStatusJobLock")
     public void monitorStartStopStatus() {
         execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_START_STOP);

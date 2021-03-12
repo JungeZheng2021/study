@@ -50,5 +50,5 @@ public interface JobAlarmThresholdService extends IService<JobAlarmThresholdDO> 
      * @param deviceId 设备id
      * @return
      */
-    List<JobAlarmThresholdDO> listCurrentThresholdAlarm(Long deviceId);
+    List<Object[]> listCurrentThresholdAlarm(Long deviceId);
 }

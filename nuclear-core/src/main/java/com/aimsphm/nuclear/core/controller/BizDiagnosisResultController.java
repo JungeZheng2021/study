@@ -78,7 +78,7 @@ public class BizDiagnosisResultController {
     @PostMapping("event/{eventId}")
     @ApiOperation(value = "根据事件id生成故障推理结果")
     public void saveRulesConclusion(@PathVariable Long eventId) {
-        service.saveRulesConclusion(eventId);
+        service.saveRulesConclusionAsync(eventId);
     }
 
     @GetMapping("event/{eventId}")

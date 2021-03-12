@@ -41,6 +41,14 @@ public class MeasurePointVO extends CommonMeasurePointDO {
     }
 
     public String getStatusDesc() {
+        if (Objects.isNull(this.getThresholdLow()) &&
+                Objects.isNull(this.getThresholdLower()) &&
+                Objects.isNull(this.getThresholdHigh()) &&
+                Objects.isNull(this.getThresholdHigher()) &&
+                Objects.isNull(this.getEarlyWarningLow()) &&
+                Objects.isNull(this.getEarlyWarningHigh())) {
+            return " - ";
+        }
         return Objects.isNull(status) ? "正常" : "异常";
     }
 

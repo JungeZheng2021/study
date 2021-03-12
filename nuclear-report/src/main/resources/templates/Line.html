@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="chart-wrapper">
+    <div id="chart" style="height:800px;width:1850px;"></div>
+</div>
+<script src="/usr/share/local/echarts/echarts-all-4.8.0.js"></script>
+<script type="text/javascript">
+    // todo: start
+    var title = '#title#';
+    var yAxisName = '#yUnit#'
+    var seriesDataName = #seriesDataName#;
+    var seriesData = #seriesData#;
+    var markLinesData = #markLinesData#;  //[低低报，低报，高报，高高报]
+    // todo: end
+
+    var markLines = []
+    var line1 = {
+        yAxis: 0,
+        lineStyle: {color: '', opacity: markLinesData[3] == null ? 0 : 1},
+        label: {formatter: '', show: markLinesData[3] != null}
+    }
+    line1.yAxis = markLinesData[3] || 0
+    line1.lineStyle.color = '#ff0000'
+    line1.label.formatter = '高高报'
+    line1.label.distance = 35
+    var line2 = {
+        yAxis: 0,
+        lineStyle: {color: '', opacity: markLinesData[2] == null ? 0 : 1},
+        label: {formatter: '', show: markLinesData[2] != null}
+    }
+    line2.yAxis = markLinesData[2] || 0
+    line2.lineStyle.color = '#ff7700'
+    line2.label.formatter = '高报'
+    line2.label.distance = 5
+    var line3 = {
+        yAxis: 0,
+        lineStyle: {color: '', opacity: markLinesData[1] == null ? 0 : 1},
+        label: {formatter: '', show: markLinesData[1] != null}
+    }
+    line3.yAxis = markLinesData[1] || 0
+    line3.lineStyle.color = '#ff7700'
+    line3.label.formatter = '低报'
+    line3.label.distance = 5
+    var line4 = {
+        yAxis: 0,
+        lineStyle: {color: '', opacity: markLinesData[0] == null ? 0 : 1},
+        label: {formatter: '', show: markLinesData[0] != null}
+    }
+    line4.yAxis = markLinesData[0] || 0
+    line4.lineStyle.color = '#ff0000'
+    line4.label.formatter = '低低报'
+    line4.label.distance = 35
+    markLines.push(line1)
+    markLines.push(line2)
+    markLines.push(line3)
+    markLines.push(line4)
+    var color = ['#4091ea', '#ff9900', '#9b60f0', '#60b720',
+        '#cc7558', '#69d2db', '#ee3cad', '#b9ce4b',
+        '#b1975e','#d44040','#695c7c','#5065c5']
+    var series = [];
+    var marked = false
+    seriesData.forEach(function (data, index) {
+        var s = {
+            name: seriesDataName[index],
+            type: 'line',
+            connectNulls: true,
+            smooth: false,
+            showSymbol: false,
+            symbolSize: 10,
+            yAxisIndex: 0,
+            markLine: {
+                label: {'show': true, 'position': 'end', 'formatter': '{b}'},
+                silen: true,
+                symbol: 'none',
+                precision: 10,
+                data: (!marked && data.length > 0) ? markLines : []
+            },
+            unit: yAxisName,
+            lineStyle: {'type': 'solid', 'width': 4, 'color': color[index]},
+            data: data,
+        }
+        if (!marked) {
+            marked = data.length > 0
+        }
+        series.push(s)
+    })
+    var chart = echarts.init(document.getElementById('chart'))
+    var option = {
+        animation: false,
+        animationThreshold: 0,
+        color: color,
+        legend: {
+            top: 50,
+            width: '60%',
+            textStyle: {
+                fontSize: 30
+            }
+        },
+        grid: {left: 80, top: 100, right: 100},
+        title: {
+            text: title,
+            subtext: '',
+            top: 7,
+            left: 16,
+            subtextStyle: {'color': '#666', 'fontSize': 14, 'rich': {'result': {'color': '#3d63d8', 'fontSize': 14}}},
+            textStyle: {fontSize: 25, 'fontWeight': 'normal'}
+        },
+        xAxis: {
+            type: 'time',
+            name: '',
+            splitLine: {'show': true, 'lineStyle': {'color': '#f1f1f1'}},
+            axisTick: {'show': false},
+            axisLine: {'onZero': false, 'lineStyle': {'color': '#bbb'}, 'symbol': ['none', 'arrow']},
+            axisLabel: {color: '#666', fontSize: 20}
+        },
+        yAxis: [{
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: {
+                fontSize: 20
+            },
+            boundaryGap: ['10%', '10%'],
+            scale: true,
+            position: 'left',
+            axisTick: {'show': false},
+            axisLine: {'lineStyle': {'color': '#bbb'}, 'symbol': ['none', 'arrow']},
+            splitLine: {'show': true, 'lineStyle': {'color': '#f1f1f1'}},
+            axisLabel: {color: '#666', fontSize: 20}
+        }],
+        series: series
+    }
+    chart.setOption(option)
+</script>
+</body>
+</html>

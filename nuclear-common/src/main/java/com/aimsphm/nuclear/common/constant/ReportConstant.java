@@ -46,6 +46,16 @@ public class ReportConstant {
      * word生成文件后缀
      */
     public static final String DOC_SUFFIX = ".docx";
+
+    /**
+     * 文档目录 - 设备层级
+     */
+    public static final String PATH_DEVICE = "device" + File.separator;
+
+    /**
+     * 文档目录 - 子系统层级
+     */
+    public static final String PATH_SUB_SYSTEM = "subSystem" + File.separator;
     /**
      * echarts生成文件后缀
      */
@@ -57,11 +67,11 @@ public class ReportConstant {
     /**
      * 主泵 word template 名称
      */
-    public static final String PUMP_TEMPLATE_DOC_NAME = "template-pump.docx";
+    public static final String RCV_TEMPLATE_DOC_NAME = "template-rcv.docx";
     /**
      * 汽轮机 word template 名称
      */
-    public static final String TURBINE_TEMPLATE_DOC_NAME = "template-turbine.docx";
+    public static final String DVC_TEMPLATE_DOC_NAME = "template-dvc.docx";
     /**
      * Line.html template 名称
      */
@@ -74,6 +84,28 @@ public class ReportConstant {
      * 柱状图模版名称呢个
      */
     public static final String TEMPLATE_BAR_HTML_NAME = "Bar.html";
+    /**
+     * 柱状图模版名称呢个
+     */
+    public static final String TEMPLATE_PIE_HTML_NAME = "Pie.html";
+    /**
+     * html中占位符
+     * 名称;
+     * 颜色表:['#ff0000', '#ff7700', '#60b720', '#999'];
+     * y轴单位;
+     * x轴数据:[一月，二月，三月];
+     * 图例:['温度','压力'];
+     * 真实数据；
+     * 阈值线:['低低报','低报','高报','高高报']
+     */
+    public static final String HTML_TITLE = "#title#";
+    public static final String HTML_COLOR = "'#color#'";
+    public static final String HTML_Y_UNIT = "#yUnit#";
+    public static final String HTML_X_AXIS_DATA = "'#xAxisData#'";
+    public static final String HTML_SERIES_DATA_NAME = "'#seriesDataName#'";
+    public static final String HTML_SERIES_DATA = "'#seriesData#'";
+    public static final String HTML_MARK_LINES_DATA = "'#markLinesData#'";
+
     /**
      * 驱动在项目中的根路径
      */
@@ -108,6 +140,18 @@ public class ReportConstant {
      * 连接符
      */
     public static final String CONNECTOR = "-";
+    /**
+     * 判定后缀
+     */
+    public static final String FIX_DECIDE = "decide";
+    /**
+     * 异常文字后缀
+     */
+    public static final String FIX_EXCEPTION = "异常";
+    /**
+     * mark前缀符号
+     */
+    public static final String PRE_MARK = "◎";
     /**
      * 离散点的大小
      */

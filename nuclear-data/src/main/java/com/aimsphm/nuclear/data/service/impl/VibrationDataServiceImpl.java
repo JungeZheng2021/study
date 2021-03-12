@@ -236,12 +236,6 @@ public class VibrationDataServiceImpl implements CommonDataService {
         for (Iterator<Map.Entry<String, Double>> it = features.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, Double> next = it.next();
             String feature = next.getKey();
-            if ("raw-stressWaveStrength".equals(feature) && packet.getSensorCode().equals("6M2RCV245MS-N")) {
-                System.out.println("-----|||");
-            }
-            if ("raw-stressWaveStrength".equals(feature) && packet.getSensorCode().equals("6M2RCV242MS-N")) {
-                System.out.println("-----||242|");
-            }
             //需要保证要添加的特征family是存在的
             if (CollectionUtils.isEmpty(featureList) || !featureList.contains(feature)) {
                 continue;

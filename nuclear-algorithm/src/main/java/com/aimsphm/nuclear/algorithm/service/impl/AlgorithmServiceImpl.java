@@ -8,10 +8,7 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmAsyncService;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.entity.*;
-import com.aimsphm.nuclear.common.enums.AlarmEvaluationEnum;
-import com.aimsphm.nuclear.common.enums.AlgorithmLevelEnum;
-import com.aimsphm.nuclear.common.enums.DeviceHealthEnum;
-import com.aimsphm.nuclear.common.enums.EventStatusEnum;
+import com.aimsphm.nuclear.common.enums.*;
 import com.aimsphm.nuclear.common.service.*;
 import com.aimsphm.nuclear.common.util.BigDecimalUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
@@ -324,6 +321,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
                 param.setOnlyCondition(0);
                 param.setModelEstimateResult(listEstimateData(value, pointMap));
             }
+            //原始值
             param.setSensorData(listPointData(pointMap.get(deviceId)));
             //两个参数都是空的话不调用算法
             if (CollectionUtils.isEmpty(param.getSensorData()) && CollectionUtils.isEmpty(param.getModelEstimateResult())) {
@@ -390,7 +388,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             data.setThresholdLow(Lists.newArrayList(item.getThresholdLower(), item.getThresholdLow(), item.getEarlyWarningLow()));
             //高高报值，高报值，高预警值
             data.setThresholdHigh(Lists.newArrayList(item.getThresholdHigher(), item.getThresholdHigh(), item.getEarlyWarningHigh()));
-            String family = item.getPointType() == 1 ? H_BASE_FAMILY_NPC_PI_REAL_TIME : item.getFeatureType() + DASH + item.getFeature();
+//            asyncService.listPointDataFromHBase(item, data, countDownLatch);
+            String family = PointTypeEnum.PI.getValue().equals(item.getPointType()) ? H_BASE_FAMILY_NPC_PI_REAL_TIME : item.getFeatureType() + DASH + item.getFeature();
             asyncService.listPointDataFromHBase(family, item.getId(), item.getSensorCode(), data, countDownLatch);
             collect.add(data);
         }

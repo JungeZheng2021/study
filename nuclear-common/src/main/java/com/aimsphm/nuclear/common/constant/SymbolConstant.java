@@ -53,6 +53,10 @@ public final class SymbolConstant {
      * 冒号
      */
     public static final String COLON = "0";
+    /**
+     * 井号
+     */
+    public static final String HASH = "#";
 
     private SymbolConstant() {
     }
@@ -72,7 +76,6 @@ public final class SymbolConstant {
     String EQUALS = "=";
     String FALSE = "false";
     String SLASH = "/";
-    String HASH = "#";
     String HAT = "^";
     String LEFT_BRACE = "{";
     String LEFT_BRACKET = "(";

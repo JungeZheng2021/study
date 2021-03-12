@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pie Chart</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 10px;
+            text-align: center;
+        }
+
+        body {
+            min-width: 1620px;
+        }
+
+        .chart-wrapper {
+            height: 400px;
+            width: 600px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body id="chart">
+<div></div>
+<script src="/usr/share/local/echarts/echarts-all-4.8.0.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/echarts@4.4.0/dist/echarts.min.js"></script>-->
+
+<script type="text/javascript">
+    // fixme: start
+    // var chartData = [
+    //     {
+    //         unit: '次',
+    //         title: '运行时长',
+    //         data: [
+    //             {name: '报警', value: '2'},
+    //             {name: '预警', value: '1'},
+    //             {name: '健康', value: '2'},
+    //             {name: '停机', value: '5'}
+    //         ]
+    //     },
+    //     {
+    //         unit: '次',
+    //         title: '报警级别',
+    //         data: [
+    //             {name: '1级报警', value: '64'},
+    //             {name: '2级报警', value: '110'},
+    //             {name: '3级报警', value: '30'},
+    //             {name: '4级报警', value: '7'},
+    //             {name: '5级报警', value: '24'}
+    //         ]
+    //     },
+    // ];
+    var chartData = '#seriesData#';//[0.13, 0, 1.5, 5.37];
+    // fixme: end
+    var color = '#color#';//['#ff9900', '#ff6c00', '#69d2db', '#7192f2', '#9b60f0', '#b9ce4b'];
+
+    var chartOption = {
+        color: (color || []).length == 0 ? ['#ff9900'] : color,
+        title: {
+            text: '',
+            left: '27%',
+            top: 'center',
+            textStyle: {
+                fontSize: '26'
+            }
+        },
+        legend: {
+            type: 'scroll',
+            orient: 'vertical',
+            right: '20%',
+            top: '1.5%',
+            textStyle: {
+                fontSize: '20'
+            }
+        },
+        grid: {
+            bottom: '10%'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{b}: {c}次'
+        },
+        series: [{
+            type: 'pie',
+            radius: ['30%', '50%'],
+            center: ['35%', '50%'],
+            selectedOffset: 5,
+            avoidLabelOverlap: true,
+            minAngle: 5,
+            itemStyle: {
+                borderWidth: 2,
+                borderColor: '#fff'
+            },
+            label: {
+                position: 'outer',
+                alignTo: 'none',
+                bleedMargin: 5,
+                formatter: '{d}%',
+                textStyle: {
+                    fontSize: '20'
+                }
+            },
+            data: []
+        }]
+    };
+
+    (chartData || []).forEach(function (data) {
+        var chartWrap = document.createElement('div');
+        chartWrap.className = 'chart-wrapper';
+        document.body.appendChild(chartWrap);
+        var chart = echarts.init(chartWrap);
+        var option = JSON.parse(JSON.stringify(chartOption));
+        data.data = data.data.map(function (d) {
+            d.name = d.name + ":" + d.value + data.unit;
+            return d;
+        });
+        option.title.text = data.title;
+        option.series[0].data = data.data;
+        chart.setOption(option);
+    });
+</script>
+</body>
+</html>

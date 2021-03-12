@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
+import com.aimsphm.nuclear.algorithm.entity.dto.FaultReportResponseDTO;
 import com.aimsphm.nuclear.algorithm.service.BizDiagnosisService;
 import com.aimsphm.nuclear.common.entity.AlgorithmRulesConclusionDO;
 import com.aimsphm.nuclear.common.entity.BizDiagnosisResultDO;
@@ -26,6 +27,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -93,10 +95,15 @@ public class BizDiagnosisResultServiceImpl extends ServiceImpl<BizDiagnosisResul
 
     @Async
     @Override
-    public void saveRulesConclusion(Long eventId) {
+    public void saveRulesConclusionAsync(Long eventId) {
+        this.saveRulesConclusion(eventId, 0);
+    }
+
+    @Override
+    public Map<String, List<FaultReportResponseDTO>> saveRulesConclusion(Long eventId, Integer isReportType) {
         JobAlarmEventDO byId = eventService.getById(eventId);
         if (Objects.isNull(byId) || StringUtils.isEmpty(byId.getPointIds())) {
-            return;
+            return null;
         }
         List<String> collect = Arrays.stream(byId.getPointIds().split(COMMA)).collect(Collectors.toList());
         BizDiagnosisResultDO resultDO = new BizDiagnosisResultDO();
@@ -109,9 +116,9 @@ public class BizDiagnosisResultServiceImpl extends ServiceImpl<BizDiagnosisResul
         resultDO.setStatus(DataStatusEnum.RUNNING.getValue());
         this.save(resultDO);
         //推理
-        diagnosisService.faultDiagnosis(collect, resultDO, 0);
+        Map<String, List<FaultReportResponseDTO>> data = diagnosisService.faultDiagnosis(collect, resultDO, Objects.isNull(isReportType) ? 0 : isReportType);
         this.updateById(resultDO);
-
+        return data;
     }
 
     @Override

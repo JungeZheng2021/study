@@ -46,4 +46,13 @@ public interface JobAlarmEventService extends IService<JobAlarmEventDO> {
      * @param response 响应对象
      */
     void listJobAlarmEventWithParams(QueryBO queryBO, HttpServletResponse response);
+
+
+    /**
+     * 获取最新的报警事件id
+     *
+     * @param deviceId 设备id
+     * @return
+     */
+    Long getNewestEventIdByDeviceId(Long deviceId);
 }

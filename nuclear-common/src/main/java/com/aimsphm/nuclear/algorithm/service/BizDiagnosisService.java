@@ -1,8 +1,10 @@
 package com.aimsphm.nuclear.algorithm.service;
 
+import com.aimsphm.nuclear.algorithm.entity.dto.FaultReportResponseDTO;
 import com.aimsphm.nuclear.common.entity.BizDiagnosisResultDO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Package: com.aimsphm.nuclear.common.service
@@ -18,10 +20,10 @@ public interface BizDiagnosisService {
 
     /**
      * 根据测点id进行故障推理
-     *
-     * @param pointIdList  测点列表
+     *  @param pointIdList  测点列表
      * @param result       推理实体[要保存推理结果的其他基本信息(deviceId、modelId...)]
      * @param isReportType 是否是自动报告的类型 1:报告类型 0:不是报告类型
+     * @return
      */
-    void faultDiagnosis(List<String> pointIdList, BizDiagnosisResultDO result, Integer isReportType);
+    Map<String, List<FaultReportResponseDTO>> faultDiagnosis(List<String> pointIdList, BizDiagnosisResultDO result, Integer isReportType);
 }

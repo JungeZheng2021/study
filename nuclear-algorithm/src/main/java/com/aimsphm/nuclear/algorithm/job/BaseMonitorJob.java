@@ -63,6 +63,7 @@ public interface BaseMonitorJob {
             log.error("device monitor failed: {}", e);
         } finally {
             log.info("device {} finished..................", algorithmType.getDesc());
+            log.info("");
         }
     }
 }

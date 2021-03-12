@@ -23,5 +23,5 @@ public class FaultDiagnosisResponseDTO {
     private List<Integer> activation;
 
     @ApiModelProperty(value = "自动报告需要的数据", notes = "")
-    private Map<String, Object> reportFigure;
+    private Map<String, List<FaultReportResponseDTO>> reportFigure;
 }

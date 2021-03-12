@@ -9,6 +9,7 @@ import com.aimsphm.nuclear.common.entity.SparkDownSample;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
+import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.JobAlarmRealtimeService;
@@ -103,10 +104,10 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             return data.get(single.getPointId());
         }
         HistoryQuerySingleWithFeatureBO featureBO = new HistoryQuerySingleWithFeatureBO();
-        if (point.getPointType() != 1 && StringUtils.isNotBlank(point.getFeature())) {
-            featureBO.setFeature(point.getFeatureType().concat(DASH).concat(point.getFeature()));
-        }
-        featureBO.setSensorCode(point.getSensorCode());
+        //是否为PI测点 pi测点设置PointId
+        boolean notPIPoint = !PointTypeEnum.PI.getValue().equals(point.getPointType()) && StringUtils.isNotBlank(point.getFeature());
+        featureBO.setFeature(notPIPoint ? point.getFeatureType().concat(DASH).concat(point.getFeature()) : null);
+        featureBO.setSensorCode(notPIPoint ? point.getSensorCode() : point.getPointId());
         BeanUtils.copyProperties(single, featureBO);
         List<List<Object>> dataDTOS = listHistoryDataWithPointByScan(featureBO);
         HistoryDataVO vo = new HistoryDataWithThresholdVO();

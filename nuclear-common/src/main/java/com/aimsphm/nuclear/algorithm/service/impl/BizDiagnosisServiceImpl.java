@@ -1,8 +1,6 @@
 package com.aimsphm.nuclear.algorithm.service.impl;
 
-import com.aimsphm.nuclear.algorithm.entity.dto.FaultDiagnosisParamDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.FaultDiagnosisResponseDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.RuleParamDTO;
+import com.aimsphm.nuclear.algorithm.entity.dto.*;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.BizDiagnosisService;
 import com.aimsphm.nuclear.common.entity.AlgorithmRulesDO;
@@ -68,27 +66,35 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
     private StringRedisTemplate redis;
 
     @Override
-    public void faultDiagnosis(List<String> pointIdList, BizDiagnosisResultDO result, Integer isReportType) {
+    public Map<String, List<FaultReportResponseDTO>> faultDiagnosis(List<String> pointIdList, BizDiagnosisResultDO result, Integer isReportType) {
         try {
             List<String> sensorCodeList = pointService.listSensorCodeByPointList(pointIdList);
             if (CollectionUtils.isEmpty(sensorCodeList)) {
-                return;
+                result.setStatus(DataStatusEnum.FAILED.getValue());
+                result.setRemark("配置信息不完整");
+                return null;
             }
             List<AlgorithmRulesDO> ruleList = rulesService.listRulesBySensorCodeList(sensorCodeList);
             if (CollectionUtils.isEmpty(ruleList)) {
-                return;
+                result.setStatus(DataStatusEnum.FAILED.getValue());
+                result.setRemark("配置信息不完整");
+                return null;
             }
             Map<Long, AlgorithmRulesDO> collect = ruleList.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
             List<AlgorithmRulesParameterDO> paramList = parameterService.listParamByRuleList(new ArrayList<>(collect.keySet()));
             if (CollectionUtils.isEmpty(paramList)) {
-                return;
+                result.setStatus(DataStatusEnum.FAILED.getValue());
+                result.setRemark("配置信息不完整");
+                return null;
             }
             //含有波形数据
             Map<String, String> codeAndType = paramList.stream().filter(x -> Objects.nonNull(x.getParameterType()) && x.getParameterType() == 1)
                     .collect(Collectors.toMap(x -> x.getSensorCode(), x -> x.getSensorSignalType(), (a, b) -> a));
             if (MapUtils.isEmpty(codeAndType)) {
                 log.warn("sensorCode or signalType is null in config files ...");
-                return;
+                result.setStatus(DataStatusEnum.FAILED.getValue());
+                result.setRemark("配置信息不完整");
+                return null;
             }
             //发送信息要求设置参数信息 - 如果没有获取到会阻塞
             sendMsgAndCheckParamsIsExist(codeAndType);
@@ -108,7 +114,9 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
                 return dto;
             }).filter(Objects::nonNull).collect(Collectors.toList());
             if (CollectionUtils.isEmpty(ruleParamList)) {
-                return;
+                result.setStatus(DataStatusEnum.FAILED.getValue());
+                result.setRemark("配置信息不完整");
+                return null;
             }
             FaultDiagnosisParamDTO paramDTO = new FaultDiagnosisParamDTO();
             paramDTO.setRules(ruleParamList);
@@ -116,10 +124,13 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
             FaultDiagnosisResponseDTO response = (FaultDiagnosisResponseDTO) handlerService.getInvokeCustomerData(paramDTO);
             resetRedisFlag(codeAndType);
             setFaultDiagnosisResponse(response, result);
+            return response.getReportFigure();
         } catch (Exception e) {
             log.error("fault diagnosis failed......{}", e);
             result.setStatus(DataStatusEnum.FAILED.getValue());
+            result.setRemark("调用算法报错");
         }
+        return null;
     }
 
     private void resetRedisFlag(Map<String, String> codeAndType) {
@@ -137,6 +148,8 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
     public void setFaultDiagnosisResponse(FaultDiagnosisResponseDTO response, BizDiagnosisResultDO result) {
         if (CollectionUtils.isEmpty(response.getActivation())) {
             log.warn("the response is null....");
+            result.setStatus(DataStatusEnum.FAILED.getValue());
+            result.setRemark("输出结果是空");
             return;
         }
         result.setGmtDiagnosis(new Date());

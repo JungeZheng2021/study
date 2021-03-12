@@ -39,9 +39,11 @@ public class FanMonitorJob implements BaseMonitorJob {
 
     /**
      * 设备状态监测算法
-     * 每小时的13分的时候执行一次
+     * 测试： 每11分的时候执行一次
+     * 线上： 每小时的37分的时候执行一次
      */
     @Scheduled(cron = "0 0/11 * * * ?")
+//    @Scheduled(cron = "0 37 * * * ? ")
     @DistributedLock("FanMonitorJobLock")
     public void monitor() {
         execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);

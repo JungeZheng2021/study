@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.common.service;
 
 import com.aimsphm.nuclear.common.entity.CommonSensorDO;
+import com.aimsphm.nuclear.common.entity.CommonSensorSettingsDO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.SensorVO;
 import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsDTO;
@@ -53,6 +54,8 @@ public interface CommonSensorService extends IService<CommonSensorDO> {
      * @param result
      */
     void updateConfigStatus(String edgeCode, ConfigSettingsDTO result);
+
+    CommonSensorSettingsDO getSensorConfigBySensorCode(String sensorCode, Integer category);
 
     /**
      * 根据sensorCode列表获取传感器信息

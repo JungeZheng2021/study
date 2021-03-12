@@ -136,7 +136,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             HBaseTimeSeriesDataDTO data = new HBaseTimeSeriesDataDTO();
             data.setValue(point.getValue());
             data.setTimestamp(timestamp);
-            if (size.intValue() == CACHE_QUEUE_DATA_SIZE) {
+            if (size.intValue() >= CACHE_QUEUE_DATA_SIZE) {
                 redis.opsForList().rightPush(key, data);
                 redis.opsForList().leftPop(key);
                 continue;
@@ -163,7 +163,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
 
     @Override
     public Boolean isNeedDownSample(CommonMeasurePointDO point) {
-        return Objects.isNull(point.getVisible()) || point.getVisible() % PointVisibleEnum.DOWN_SAMPLE.getValue() == 0;
+        return Objects.isNull(point.getVisible()) || point.getVisible() % PointVisibleEnum.DOWN_SAMPLE.getCategory() == 0;
     }
 
     @Override

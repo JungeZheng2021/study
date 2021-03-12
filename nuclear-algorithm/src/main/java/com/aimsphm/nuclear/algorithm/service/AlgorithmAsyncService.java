@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.algorithm.service;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.PointDataBO;
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -35,4 +36,13 @@ public interface AlgorithmAsyncService {
      * @param pointIdList 测点列表
      */
     void faultDiagnosis(List<String> pointIdList);
+
+    /**
+     * 异步查询HBase数据
+     *
+     * @param item
+     * @param data
+     * @param countDownLatch
+     */
+    void listPointDataFromHBase(CommonMeasurePointDO item, PointDataBO data, CountDownLatch countDownLatch);
 }

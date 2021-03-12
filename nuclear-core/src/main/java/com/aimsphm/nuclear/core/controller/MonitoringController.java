@@ -1,10 +1,10 @@
 package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
+import com.aimsphm.nuclear.common.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.common.entity.vo.LabelVO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
-import com.aimsphm.nuclear.core.entity.vo.DeviceStatusVO;
-import com.aimsphm.nuclear.core.service.MonitoringService;
+import com.aimsphm.nuclear.ext.service.MonitoringService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;

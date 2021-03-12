@@ -5,6 +5,7 @@ import com.aimsphm.nuclear.common.entity.bo.AlarmQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.JobAlarmThresholdBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
+import com.aimsphm.nuclear.common.enums.AlarmMessageEnum;
 import com.aimsphm.nuclear.common.enums.ThresholdAlarmStatusEnum;
 import com.aimsphm.nuclear.common.enums.ThresholdDurationEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
@@ -27,6 +28,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -35,6 +37,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static com.aimsphm.nuclear.common.constant.ReportConstant.*;
+import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_M;
 
 /**
  * @Package: com.aimsphm.nuclear.common.service.impl
@@ -168,10 +173,21 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
     }
 
     @Override
-    public List<JobAlarmThresholdDO> listCurrentThresholdAlarm(Long deviceId) {
+    public List<Object[]> listCurrentThresholdAlarm(Long deviceId) {
         LambdaQueryWrapper<JobAlarmThresholdDO> wrapper = Wrappers.lambdaQuery(JobAlarmThresholdDO.class);
-        wrapper.eq(JobAlarmThresholdDO::getAlarmStatus, 0);
-        return this.list(wrapper);
+        wrapper.eq(JobAlarmThresholdDO::getAlarmStatus, ThresholdAlarmStatusEnum.IN_ACTIVITY.getValue());
+        List<JobAlarmThresholdDO> list = this.list(wrapper);
+        if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        return list.stream().map(vo -> {
+            String pointId = vo.getPointId();
+            String alarmReason = vo.getAlarmReason();
+            Integer alarmLevel = vo.getAlarmLevel();
+            String name = StringUtils.isEmpty(vo.getName()) ? WORD_BLANK : vo.getName();
+            Date gmtStartAlarm = vo.getGmtStartAlarm();
+            return new Object[]{name, pointId, alarmReason, AlarmMessageEnum.getDescByLevel(alarmLevel), DateUtils.format(YEAR_MONTH_DAY_HH_MM_M, gmtStartAlarm)};
+        }).collect(Collectors.toList());
     }
 
 

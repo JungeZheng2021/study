@@ -40,7 +40,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static final String YEAR_ZH = "yyyy年";
     public static final String YEAR_MONTH_DAY_ZH = "yyyy年MM月dd日";
 
-    public static final String YEAR_MONTH_DAY_HH_MM_SS_ZH = "yyyy年MM月dd日  HH:mm:ss";
+    public static final String YEAR_MONTH_DAY_HH_MM_SS_ZH = "yyyy年MM月dd日 HH:mm:ss";
     public static final String MONTH_ZH = "M月";
     public static final String YEAR_MONTH_DAY_HH_MM_SS_I = "yyyy/MM/dd HH:mm:ss";
     public static final String YEAR_MONTH_DAY_HH_MM_SS_M = "yyyy-MM-dd HH:mm:ss";
@@ -155,8 +155,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return 时间字符串输出
      */
     public static String formatCurrentDateTime(String pattern) {
-        LocalDate now = LocalDate.now();
-        return format(pattern, now);
+        return format(pattern, new Date());
     }
 
     /**

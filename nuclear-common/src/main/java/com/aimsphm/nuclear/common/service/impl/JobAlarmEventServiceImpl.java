@@ -7,6 +7,7 @@ import com.aimsphm.nuclear.common.entity.bo.AlarmQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.JobAlarmEventBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.enums.EventStatusEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.JobAlarmEventMapper;
 import com.aimsphm.nuclear.common.service.AlgorithmModelPointService;
@@ -81,6 +82,17 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Long getNewestEventIdByDeviceId(Long deviceId) {
+        LambdaQueryWrapper<JobAlarmEventDO> wrapper = Wrappers.lambdaQuery(JobAlarmEventDO.class);
+        wrapper.eq(JobAlarmEventDO::getDeviceId, deviceId).eq(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.IN_ACTIVITY.getValue()).orderByDesc(JobAlarmEventDO::getId).last("limit 1");
+        JobAlarmEventDO one = this.getOne(wrapper);
+        if (Objects.nonNull(one)) {
+            return one.getId();
+        }
+        return null;
     }
 
     private Wrapper<JobAlarmEventDO> initialWrapper(QueryBO<JobAlarmEventDO> queryBO) {

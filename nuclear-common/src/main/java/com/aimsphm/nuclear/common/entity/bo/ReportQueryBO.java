@@ -4,8 +4,6 @@ import com.aimsphm.nuclear.common.constant.ReportConstant;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Objects;
-
 /**
  * @Package: com.aimsphm.nuclear.common.entity.bo
  * @Description: <报告声称查询参数类>
@@ -21,6 +19,9 @@ public class ReportQueryBO {
 
     @ApiModelProperty(value = "设备id")
     private Long deviceId;
+
+    @ApiModelProperty(value = "设备名称")
+    private String deviceName;
 
     @ApiModelProperty(value = "子系统编号")
     private Long subSystemId;
@@ -55,15 +56,6 @@ public class ReportQueryBO {
 
     //-------------------------------------业务代码----------------------------------------
 
-    public String getSetName() {
-        if (subSystemId == 1 || subSystemId == 2) {
-            return "一号机";
-        }
-        if (subSystemId == 8) {
-            return "二号机";
-        }
-        return "";
-    }
 
     /**
      * 获取报告生成的类型[1,8-->主泵 2->汽机]
@@ -71,34 +63,18 @@ public class ReportQueryBO {
      * @return
      */
     public String getReportCategory() {
-        if (subSystemId == 1 || subSystemId == 8) {
-            return "pump";
-        }
-        if (subSystemId == 2) {
-            return "turbine";
+        if (subSystemId == 1 || subSystemId == 2) {
+            return "Rcv";
         }
         return "";
     }
 
     public String getTemplatePath() {
-        if (subSystemId == 1 || subSystemId == 8) {
-            return ReportConstant.PROJECT_TEMPLATES_ROOT_DIR + ReportConstant.PUMP_TEMPLATE_DOC_NAME;
+        if (subSystemId == 1) {
+            return ReportConstant.PROJECT_TEMPLATES_ROOT_DIR + ReportConstant.RCV_TEMPLATE_DOC_NAME;
         }
         if (subSystemId == 2) {
-            return ReportConstant.PROJECT_TEMPLATES_ROOT_DIR + ReportConstant.TURBINE_TEMPLATE_DOC_NAME;
-        }
-        return "";
-    }
-
-    public String getTagPre() {
-        if (Objects.nonNull(this.tagPre) && this.tagPre.length() > 0) {
-            return this.tagPre;
-        }
-        if (subSystemId == 1) {
-            return "10";
-        }
-        if (subSystemId == 8) {
-            return "20";
+            return ReportConstant.PROJECT_TEMPLATES_ROOT_DIR + ReportConstant.DVC_TEMPLATE_DOC_NAME;
         }
         return "";
     }

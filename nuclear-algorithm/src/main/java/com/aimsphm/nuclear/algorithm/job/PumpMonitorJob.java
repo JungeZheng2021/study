@@ -39,9 +39,11 @@ public class PumpMonitorJob implements BaseMonitorJob {
 
     /**
      * 设备状态监测算法
-     * 每小时的13分的时候执行一次
+     * 测试：每7分钟执行一次
+     * 线上：每小时的13分的时候执行一次
      */
     @Scheduled(cron = "0 0/7 * * * ? ")
+//    @Scheduled(cron = "0 13 * * * ? ")
     @DistributedLock("FanMonitorJobLock")
     public void monitor() {
         execute(DeviceTypeEnum.PUMP.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);

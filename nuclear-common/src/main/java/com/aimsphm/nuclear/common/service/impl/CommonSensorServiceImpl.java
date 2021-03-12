@@ -110,6 +110,20 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
     }
 
     @Override
+    public CommonSensorSettingsDO getSensorConfigBySensorCode(String sensorCode, Integer category) {
+        LambdaQueryWrapper<CommonSensorDO> query = Wrappers.lambdaQuery(CommonSensorDO.class);
+        query.eq(CommonSensorDO::getSensorCode, sensorCode).eq(CommonSensorDO::getCategory, category).last("limit 1");
+        CommonSensorDO one = this.getOne(query);
+        if (Objects.isNull(one)) {
+            return null;
+        }
+        LambdaQueryWrapper<CommonSensorSettingsDO> wrapper = Wrappers.lambdaQuery(CommonSensorSettingsDO.class);
+        wrapper.eq(CommonSensorSettingsDO::getEdgeId, one.getEdgeId()).eq(CommonSensorSettingsDO::getCategory, category)
+                .eq(CommonSensorSettingsDO::getConfigStatus, ConfigStatusEnum.CONFIG_SUCCESS.getValue()).last("limit 1");
+        return settingsService.getOne(wrapper);
+    }
+
+    @Override
     public List<CommonSensorDO> listCommonSensorBySensorCodeList(ArrayList<String> sensorCodeList) {
         LambdaQueryWrapper<CommonSensorDO> wrapper = Wrappers.lambdaQuery(CommonSensorDO.class);
         wrapper.in(CommonSensorDO::getSensorCode, sensorCodeList);
