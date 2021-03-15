@@ -114,12 +114,17 @@ public class SettingsServiceImpl implements SettingsService {
         dto.setConfigStatus(null);
         //新建
         if (dto.getId() == -1) {
+            LambdaQueryWrapper<CommonSensorSettingsDO> settings = Wrappers.lambdaQuery(CommonSensorSettingsDO.class);
+            settings.eq(CommonSensorSettingsDO::getEdgeId, dto.getEdgeId()).eq(CommonSensorSettingsDO::getCategory, dto.getCategory());
+            int count = settingsService.count(settings);
+            Assert.isTrue(count == 0, "config exist already");
+            boolean flag = Objects.isNull(dto.getWaveformSamplePeriod()) || Objects.isNull(dto.getEigenvalueSamplePeriod());
+            Assert.isTrue(!flag, "config value can not be null");
             dto.setId(null);
             LambdaQueryWrapper<CommonSensorDO> wrapper = Wrappers.lambdaQuery(CommonSensorDO.class);
-            wrapper.eq(CommonSensorDO::getEdgeId, dto.getEdgeId()).last("limit 1");
+            wrapper.eq(CommonSensorDO::getEdgeId, dto.getEdgeId()).eq(CommonSensorDO::getCategory, dto.getCategory()).last("limit 1");
             CommonSensorDO one = sensorService.getOne(wrapper);
             Assert.notNull(one, "edgeId can not be null");
-            dto.setCategory(one.getCategory());
             dto.setEdgeCode(one.getEdgeCode());
             settingsService.save(dto);
             sendMessage2Edge(dto, dto);
@@ -138,13 +143,12 @@ public class SettingsServiceImpl implements SettingsService {
 
     private void sendMessage2Edge(CommonSensorSettingsDO dto, CommonSensorSettingsDO one) {
         //如果两个对象完全一样，说明新增数据(需要下发配置)
-        boolean equals = dto.equals(one);
-        boolean flag = Objects.nonNull(one.getEigenvalueSamplePeriod()) && one.getEigenvalueSamplePeriod().equals(dto.getEigenvalueSamplePeriod())
-                && Objects.nonNull(one.getWaveformSampleDuration()) && one.getWaveformSampleDuration().equals(dto.getWaveformSampleDuration())
-                && Objects.nonNull(one.getWaveformSamplePeriod()) && one.getWaveformSamplePeriod().equals(dto.getWaveformSamplePeriod())
-                && Objects.nonNull(one.getDataReset()) && one.getDataReset().equals(dto.getDataReset());
+        boolean flag = Objects.isNull(dto.getEigenvalueSamplePeriod()) ? true : dto.getEigenvalueSamplePeriod().equals(one.getEigenvalueSamplePeriod())
+                && Objects.isNull(dto.getWaveformSampleDuration()) ? true : dto.getWaveformSampleDuration().equals(one.getWaveformSampleDuration())
+                && Objects.isNull(dto.getWaveformSamplePeriod()) ? true : dto.getWaveformSamplePeriod().equals(one.getWaveformSamplePeriod())
+                && Objects.isNull(dto.getDataReset()) ? true : dto.getDataReset().equals(one.getDataReset());
         //数据和上次一样且上次是配置成功，不下发数据
-        if (!equals && flag && ConfigStatusEnum.CONFIG_SUCCESS.equals(one.getConfigStatus())) {
+        if (flag && ConfigStatusEnum.CONFIG_SUCCESS.equals(one.getConfigStatus())) {
             return;
         }
         try {
