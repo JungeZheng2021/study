@@ -16,11 +16,12 @@ import com.aimsphm.nuclear.common.service.JobAlarmEventService;
 import com.aimsphm.nuclear.core.service.SettingsService;
 import com.aimsphm.nuclear.data.feign.DataServiceFeignClient;
 import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsDTO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.mchange.lang.LongUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -109,12 +110,26 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public boolean modifyCommonSensorSettings(CommonSensorSettingsDO dto) {
+    public boolean saveOrModifyCommonSensorSettings(CommonSensorSettingsDO dto) {
+        dto.setConfigStatus(null);
+        //新建
+        if (dto.getId() == -1) {
+            dto.setId(null);
+            LambdaQueryWrapper<CommonSensorDO> wrapper = Wrappers.lambdaQuery(CommonSensorDO.class);
+            wrapper.eq(CommonSensorDO::getEdgeId, dto.getEdgeId()).last("limit 1");
+            CommonSensorDO one = sensorService.getOne(wrapper);
+            Assert.notNull(one, "edgeId can not be null");
+            dto.setCategory(one.getCategory());
+            dto.setEdgeCode(one.getEdgeCode());
+            settingsService.save(dto);
+            sendMessage2Edge(dto, dto);
+            return true;
+        }
+        //修改
         CommonSensorSettingsDO one = settingsService.getById(dto.getId());
         if (Objects.isNull(one)) {
             return false;
         }
-        dto.setConfigStatus(null);
         settingsService.updateById(dto);
         //灵敏度变化了需要发送数据
         sendMessage2Edge(dto, one);
@@ -122,12 +137,14 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     private void sendMessage2Edge(CommonSensorSettingsDO dto, CommonSensorSettingsDO one) {
+        //如果两个对象完全一样，说明新增数据(需要下发配置)
+        boolean equals = dto.equals(one);
         boolean flag = Objects.nonNull(one.getEigenvalueSamplePeriod()) && one.getEigenvalueSamplePeriod().equals(dto.getEigenvalueSamplePeriod())
                 && Objects.nonNull(one.getWaveformSampleDuration()) && one.getWaveformSampleDuration().equals(dto.getWaveformSampleDuration())
                 && Objects.nonNull(one.getWaveformSamplePeriod()) && one.getWaveformSamplePeriod().equals(dto.getWaveformSamplePeriod())
                 && Objects.nonNull(one.getDataReset()) && one.getDataReset().equals(dto.getDataReset());
         //数据和上次一样且上次是配置成功，不下发数据
-        if (flag && ConfigStatusEnum.CONFIG_SUCCESS.equals(one.getConfigStatus())) {
+        if (!equals && flag && ConfigStatusEnum.CONFIG_SUCCESS.equals(one.getConfigStatus())) {
             return;
         }
         try {

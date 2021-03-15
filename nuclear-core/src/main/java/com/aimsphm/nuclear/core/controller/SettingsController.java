@@ -50,6 +50,6 @@ public class SettingsController {
     @ApiOperation(value = "配置信息修改", notes = "采集配置、数据清零")
     public boolean modifyCommonSensorSettings(@RequestBody CommonSensorSettingsDO dto, @PathVariable Long id) {
         dto.setId(id);
-        return settingsService.modifyCommonSensorSettings(dto);
+        return settingsService.saveOrModifyCommonSensorSettings(dto);
     }
 }

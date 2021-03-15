@@ -46,5 +46,5 @@ public interface SettingsService {
      * @param dto
      * @return
      */
-    boolean modifyCommonSensorSettings(CommonSensorSettingsDO dto);
+    boolean saveOrModifyCommonSensorSettings(CommonSensorSettingsDO dto);
 }
