@@ -24,6 +24,8 @@ import com.aimsphm.nuclear.report.enums.FigureTypeEnum;
 import com.aimsphm.nuclear.report.enums.ReportCategoryEnum;
 import com.aimsphm.nuclear.report.service.ReportDataService;
 import com.aimsphm.nuclear.report.service.ReportFileService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.File;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -113,8 +116,6 @@ public class FanReportDataServiceImpl implements ReportDataService {
         if (CollectionUtils.isNotEmpty(alarmThresholdList)) {
             data.put(TABLE_ALARM_THRESHOLD, alarmThresholdList);
         }
-        //振动图谱分析
-        storeDiagnosisValue(deviceId, data);
         List<BizReportConfigDO> list = configService.listConfigByDeviceId(deviceId);
         if (CollectionUtils.isEmpty(list)) {
             return data;
@@ -149,6 +150,8 @@ public class FanReportDataServiceImpl implements ReportDataService {
             }
             data.put(config.getPlaceholder(), config);
         }
+        //振动图谱分析
+        storeDiagnosisValue(deviceId, data);
         return data;
     }
 
@@ -166,6 +169,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
             return;
         }
         Map<String, List<FaultReportResponseDTO>> reportData = diagnosisResultService.saveRulesConclusion(eventId, 1);
+//        List<FaultReportResponseDTO> list = JSON.parseArray(s, FaultReportResponseDTO.class);
         if (MapUtils.isEmpty(reportData)) {
             return;
         }
@@ -190,7 +194,9 @@ public class FanReportDataServiceImpl implements ReportDataService {
                 String desc = PRE_MARK.concat(String.join(SLASH_ZH, marks));
                 vo.setDesc(desc);
             }
-            File image = getGraphImage(figureType, curve);
+            List<List<List<Double>>> charData = new ArrayList<>();
+            charData.add(curve);
+            File image = getGraphImage(figureType, charData);
             vo.setImage(image);
             graphItems.add(vo);
         }
@@ -208,7 +214,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
      * @param charData
      * @return
      */
-    private File getGraphImage(String figureType, List<List<Double>> charData) {
+    private File getGraphImage(String figureType, List<List<List<Double>>> charData) {
         try {
             BizReportConfigDO config = new BizReportConfigDO();
             config.setCategory(ReportCategoryEnum.LINE_SPECTRUM.getCategory());
@@ -312,4 +318,196 @@ public class FanReportDataServiceImpl implements ReportDataService {
             data.put(key.concat(CONNECTOR + FIX_DECIDE).concat(SymbolConstant.HASH), point.getStatusDesc());
         });
     }
+//    测试数据
+//    String s =
+//                "[\n" +
+//                        "        {\n" +
+//                        "            \"sensorCode\":\"6M2DVC403MV-N\",\n" +
+//                        "            \"figureType\":\"envelopeSpectrum\",\n" +
+//                        "            \"curve\":[\n" +
+//                        "                [\n" +
+//                        "                    0,\n" +
+//                        "                    6.729337952756514e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    0.625,\n" +
+//                        "                    4.520986294844187e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1.25,\n" +
+//                        "                    4.764164238798577e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1.875,\n" +
+//                        "                    4.139547596052102e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    2.5,\n" +
+//                        "                    3.0080554834491434e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    3.125,\n" +
+//                        "                    6.845341933219464e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    3.75,\n" +
+//                        "                    3.831880668577914e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    4.375,\n" +
+//                        "                    6.771969193450171e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1255.625,\n" +
+//                        "                    4.212149517108385e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1256.25,\n" +
+//                        "                    2.2705804234531582e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1256.875,\n" +
+//                        "                    4.356402612254552e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1260.625,\n" +
+//                        "                    1.1396187569950748e-16\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1261.25,\n" +
+//                        "                    7.603454666560213e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1261.875,\n" +
+//                        "                    3.017589574357483e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1262.5,\n" +
+//                        "                    7.338445660264668e-18\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1263.125,\n" +
+//                        "                    1.4501759194018695e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1263.75,\n" +
+//                        "                    2.655476563723834e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1264.375,\n" +
+//                        "                    6.330708592517079e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1265,\n" +
+//                        "                    9.30131944573396e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1265.625,\n" +
+//                        "                    7.953770399274342e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1266.25,\n" +
+//                        "                    2.9448059839322125e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1266.875,\n" +
+//                        "                    4.0775871749976656e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1267.5,\n" +
+//                        "                    3.148973235442091e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1268.125,\n" +
+//                        "                    1.6725814363778495e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1268.75,\n" +
+//                        "                    1.440734773794269e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1269.375,\n" +
+//                        "                    1.1697720971325402e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1270,\n" +
+//                        "                    1.7908964812190707e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1270.625,\n" +
+//                        "                    3.14492540902047e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1271.25,\n" +
+//                        "                    3.048005052410712e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1271.875,\n" +
+//                        "                    2.063043448453698e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1272.5,\n" +
+//                        "                    3.192755129031135e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1273.125,\n" +
+//                        "                    2.3316069015928837e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1273.75,\n" +
+//                        "                    1.520265198492203e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1274.375,\n" +
+//                        "                    1.1340972216514965e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1275,\n" +
+//                        "                    1.3019172525862781e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1275.625,\n" +
+//                        "                    1.5900905185076648e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1276.25,\n" +
+//                        "                    1.9435577863989444e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1276.875,\n" +
+//                        "                    1.553687436422944e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1277.5,\n" +
+//                        "                    1.6788496233895393e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1278.125,\n" +
+//                        "                    2.3612352031627774e-17\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1278.75,\n" +
+//                        "                    7.479967911960386e-18\n" +
+//                        "                ],\n" +
+//                        "                [\n" +
+//                        "                    1279.375,\n" +
+//                        "                    1.4194478517987257e-18\n" +
+//                        "                ]\n" +
+//                        "            ],\n" +
+//                        "            \"mark\":[\n" +
+//                        "                {\n" +
+//                        "                    \"markType\":\"somePoint\",\n" +
+//                        "                    \"coordinate\":[\n" +
+//                        "                        [\n" +
+//                        "                            31.25,\n" +
+//                        "                            1\n" +
+//                        "                        ]\n" +
+//                        "                    ],\n" +
+//                        "                    \"annotation\":[\n" +
+//                        "                        \"故障频率\"\n" +
+//                        "                    ]\n" +
+//                        "                }\n" +
+//                        "            ]\n" +
+//                        "        }\n" +
+//                        "    ]\n";
 }

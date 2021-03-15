@@ -50,6 +50,8 @@ public final class WordUtils {
             Dimension dimension = ImageUtils.getImageDimension(new FileInputStream(file), 7);
             //添加图片到文档中
             run.addPicture(new FileInputStream(file), XWPFDocument.PICTURE_TYPE_PNG, file.getName(), Units.toEMU(dimension.width * IMAGE_RATE), Units.toEMU(dimension.getHeight() * IMAGE_RATE));
+            //换行
+            run.addBreak();
             //将占位符隐藏
             run.setText(title, -1);
         } catch (InvalidFormatException e) {

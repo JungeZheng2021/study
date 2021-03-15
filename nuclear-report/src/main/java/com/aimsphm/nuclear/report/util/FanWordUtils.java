@@ -165,20 +165,28 @@ public class FanWordUtils {
             run.setText("无数据", 0);
             return;
         }
+        run.setText("", 0);
         data.stream().forEach(x -> {
             if (x instanceof GraphDataItemVO) {
                 GraphDataItemVO item = (GraphDataItemVO) x;
                 run.setText(item.getTitle(), -1);
+                run.addBreak();
                 run.setText(item.getDesc(), -1);
+                run.addBreak();
                 WordUtils.addPicture(run, item.getImage(), BLANK);
             }
             if (x instanceof AlgorithmRulesConclusionDO) {
                 AlgorithmRulesConclusionDO item = (AlgorithmRulesConclusionDO) x;
                 run.setText(item.getConclusion(), -1);
+                run.addBreak();
                 run.setText("常见原因：", -1);
+                run.addBreak();
                 run.setText(item.getReason(), -1);
+                run.addBreak();
                 run.setText("维修建议：", -1);
+                run.addBreak();
                 run.setText(item.getSuggest(), -1);
+                run.addBreak();
             }
         });
     }

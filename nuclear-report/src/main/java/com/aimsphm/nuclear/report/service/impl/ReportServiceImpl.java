@@ -4,6 +4,7 @@ import com.aimsphm.nuclear.common.constant.ReportConstant;
 import com.aimsphm.nuclear.common.entity.BizReportDO;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.bo.ReportQueryBO;
+import com.aimsphm.nuclear.common.enums.DataStatusEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.BizReportService;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
@@ -97,7 +98,7 @@ public class ReportServiceImpl implements ReportService {
         try {
             BizReportDO find = findReport(query);
             if (find != null) {
-                throw new CustomMessageException("要生成的报告已存在");
+                throw new CustomMessageException("当前有正在运行的报告");
             }
             reportId = saveReport(query, docName, type);
             if (Objects.isNull(reportId)) {
@@ -132,12 +133,12 @@ public class ReportServiceImpl implements ReportService {
             }
             fos = new FileOutputStream(file);
             doc.write(fos);
-            reportService.updateReportStatus(reportId, 2);
+            reportService.updateReportStatus(reportId, DataStatusEnum.SUCCESS.getValue());
             log.info("报告生成中....成功...");
             return docName;
         } catch (Exception e) {
             log.error("报告生成失败：{}", e);
-            reportService.updateReportStatus(reportId, 3);
+            reportService.updateReportStatus(reportId, DataStatusEnum.FAILED.getValue());
             throw new CustomMessageException("报告生成失败");
         } finally {
             if (fos != null) {
@@ -173,6 +174,7 @@ public class ReportServiceImpl implements ReportService {
         report.setDeviceName(query.getDeviceName());
         report.setReportEndTime(new Date(query.getEndTime()));
         report.setReportStartTime(new Date(query.getStartTime()));
+        report.setStatus(DataStatusEnum.RUNNING.getValue());
         report.setReportName(StringUtils.hasText(query.getReportName()) ? query.getReportName() : range + "天自定义报告");
         reportService.save(report);
         return report.getId();

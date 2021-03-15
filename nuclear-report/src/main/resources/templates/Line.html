@@ -19,9 +19,9 @@
     // todo: start
     var title = '#title#';
     var yAxisName = '#yUnit#'
-    var seriesDataName = #seriesDataName#;
-    var seriesData = #seriesData#;
-    var markLinesData = #markLinesData#;  //[低低报，低报，高报，高高报]
+    var seriesDataName = '#seriesDataName#';
+    var seriesData = '#seriesData#';
+    var markLinesData = '#markLinesData#';  //[低低报，低报，高报，高高报]
     // todo: end
 
     var markLines = []
@@ -67,7 +67,7 @@
     markLines.push(line4)
     var color = ['#4091ea', '#ff9900', '#9b60f0', '#60b720',
         '#cc7558', '#69d2db', '#ee3cad', '#b9ce4b',
-        '#b1975e','#d44040','#695c7c','#5065c5']
+        '#b1975e', '#d44040', '#695c7c', '#5065c5']
     var series = [];
     var marked = false
     seriesData.forEach(function (data, index) {
@@ -119,6 +119,7 @@
         xAxis: {
             type: 'time',
             name: '',
+            scale: true,
             splitLine: {'show': true, 'lineStyle': {'color': '#f1f1f1'}},
             axisTick: {'show': false},
             axisLine: {'onZero': false, 'lineStyle': {'color': '#bbb'}, 'symbol': ['none', 'arrow']},
