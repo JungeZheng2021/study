@@ -101,6 +101,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             StateMonitorResponseDTO response = (StateMonitorResponseDTO) handlerService.getInvokeCustomerData(item);
             saveResult(response);
         });
+        data.clear();
     }
 
     @Override
@@ -118,6 +119,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             }
             updateDeviceStatus(response.getDeviceId(), response.getHealthStatus());
         });
+        data.clear();
     }
 
     @Transactional(rollbackFor = Exception.class)

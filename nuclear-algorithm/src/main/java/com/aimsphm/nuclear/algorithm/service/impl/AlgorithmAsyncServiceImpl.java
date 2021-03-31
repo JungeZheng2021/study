@@ -57,7 +57,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
 
     @Async
     @Override
-    public void listPointDataFromHBase(String family, Long id, String sensorCode, PointDataBO data, CountDownLatch countDownLatch) {
+    public  void listPointDataFromHBase(String family, Long id, String sensorCode, PointDataBO data, CountDownLatch countDownLatch) {
         log.debug("请求数据.family-{}  .sensorCode-{}", family, sensorCode);
         long start = System.currentTimeMillis();
         try {

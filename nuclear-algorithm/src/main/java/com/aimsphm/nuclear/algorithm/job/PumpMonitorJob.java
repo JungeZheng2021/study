@@ -9,6 +9,7 @@ import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -29,6 +30,7 @@ import java.util.List;
  */
 @Component
 @Slf4j
+@ConditionalOnProperty(prefix = "scheduled.config", name = "enable", havingValue = "true")
 public class PumpMonitorJob implements BaseMonitorJob {
 
     @Resource
@@ -42,8 +44,9 @@ public class PumpMonitorJob implements BaseMonitorJob {
      * 测试：每7分钟执行一次
      * 线上：每小时的13分的时候执行一次
      */
-    @Scheduled(cron = "0 0/7 * * * ? ")
+//    @Scheduled(cron = "0 0/7 * * * ? ")
 //    @Scheduled(cron = "0 13 * * * ? ")
+    @Scheduled(cron = "${scheduled.config.PumpMonitorJob:0 13 * * * ?}")
     @DistributedLock("FanMonitorJobLock")
     public void monitor() {
         execute(DeviceTypeEnum.PUMP.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);

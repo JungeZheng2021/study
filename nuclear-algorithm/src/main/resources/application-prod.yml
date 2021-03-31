@@ -1,6 +1,17 @@
 server:
   port: 8083
   max-http-header-size: 10000000
+scheduled:
+  config:
+    enable: true
+    # 每小时的37分钟执行一次
+    FanMonitorJob: 0 37 * * * ?
+    # 每分钟的10秒执行一次
+    FanStartStopStatusJob: 10 * * * * ?
+    # 每小时的13分钟执行一次
+    PumpMonitorJob: 0 13 * * * ?
+    # 每分钟的37秒执行一次
+    PumpStartStopStatusJob: 37 * * * * ?
 spring:
   mybatisPlusConfig:
     enable: true
