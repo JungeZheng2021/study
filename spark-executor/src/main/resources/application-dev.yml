@@ -1,0 +1,74 @@
+server:
+  port: 8077
+  max-http-header-size: 10000000
+spring:
+  config:
+    enableRedis: true
+    enableSwagger2: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: aims2016
+    hikari:
+      pool-name: coreHikariPool
+      maximum-pool-size: 12
+      connection-timeout: 30000
+      minimum-idle: 10
+      idle-timeout: 500000
+      max-lifetime: 540000
+      connection-test-query: SELECT 1
+      auto-commit: true
+  redis:
+    password: aims2016
+    cluster:
+      nodes:
+        - 192.168.16.43:6378
+        - 192.168.16.43:6379
+        - 192.168.16.44:6378
+        - 192.168.16.44:6379
+        - 192.168.16.45:6378
+        - 192.168.16.45:6379
+      max-redirects: 5
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: 1000
+        min-idle: 20
+        max-idle: 50
+  application:
+    name: sparkExecutor
+cf: pRaw
+spark:
+  main:
+    class: com.aimsphm.nuclear.task.DownSampleBatchMode
+  deployMode: cluster
+  default:
+    parallelism: 1
+  driver:
+    memory: 2g
+    name: n151
+  executor:
+    memory: 6g
+    cores: 1
+    instances: 1
+  jar:
+    path: /data/sparkJob/spark-job-down-sample-1.0.0.jar
+  # 本地测试配置
+  home:
+    linuxdir: /usr/local/spark-2.4.5-bin-hadoop2.7
+  master: spark://192.168.16.43:7077,192.168.16.44:7077
+  deploy:
+    mode: standalone
+initialTimeStampGap: 0
+tableName: default:npc_phm_data
+hourly:
+  config: 0 0/13 * * * ?
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
+    fetchRegistry: true
+  instance:
+    prefer-ip-address: true
+
