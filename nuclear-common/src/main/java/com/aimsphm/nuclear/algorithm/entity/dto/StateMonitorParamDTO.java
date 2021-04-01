@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.algorithm.entity.dto;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.EstimateParamDataBO;
 import com.aimsphm.nuclear.algorithm.entity.bo.PointDataBO;
-import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

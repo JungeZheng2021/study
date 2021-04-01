@@ -1,13 +1,11 @@
 package com.aimsphm.nuclear.algorithm.service.impl;
 
-import com.aimsphm.nuclear.algorithm.entity.dto.AlgorithmParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.PredictionParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.PredictionResponseDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
-import com.aimsphm.nuclear.common.response.ResponseData;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;

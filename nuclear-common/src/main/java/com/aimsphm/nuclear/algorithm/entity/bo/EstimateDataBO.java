@@ -3,8 +3,6 @@ package com.aimsphm.nuclear.algorithm.entity.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @Package: com.aimsphm.nuclear.algorithm.entity.bo
  * @Description: <预估计值数据>

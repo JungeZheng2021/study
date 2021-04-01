@@ -2,8 +2,6 @@ package com.aimsphm.nuclear.algorithm.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.FaultDiagnosisParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.FaultDiagnosisResponseDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.StateMonitorParamDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.StateMonitorResponseDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;

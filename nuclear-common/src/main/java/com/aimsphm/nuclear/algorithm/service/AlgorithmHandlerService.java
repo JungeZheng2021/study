@@ -5,8 +5,6 @@ import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.response.ResponseData;
 import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -27,7 +25,7 @@ public interface AlgorithmHandlerService<P, R> {
     Logger log = LoggerFactory.getLogger(AlgorithmHandlerService.class);
 
     /**
-     * 获取调用算法结果-需要的组装类型
+     * 获取调用算法结果-需要的组装类型-需要实现自己组装数据
      *
      * @param params 请求参数
      * @return
@@ -36,7 +34,7 @@ public interface AlgorithmHandlerService<P, R> {
 
 
     /**
-     * 调用算法服务
+     * 调用算法服务-可默认使用
      *
      * @param client 算法客户端
      * @param params 请求参数
@@ -71,10 +69,9 @@ public interface AlgorithmHandlerService<P, R> {
             query.setData(params);
             query.setAlgorithmType(type);
             checkParams(query);
-//            log.info("algorithm params: {}", JSON.toJSONString(query));
             log.info("execute starting .....", JSON.toJSONString(query));
             ResponseData<R> responseData = client.algorithmInvokeByParams(query);
-            log.info("algorithm server response: {}", JSON.toJSONString(responseData));
+            log.info("algorithm server responseCode: {}, status: {}", responseData.getCode(), responseData.getMsg());
             checkSuccess(responseData);
             return responseData.getData();
         } catch (Exception e) {

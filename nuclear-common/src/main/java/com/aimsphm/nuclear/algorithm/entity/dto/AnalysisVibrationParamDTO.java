@@ -3,8 +3,6 @@ package com.aimsphm.nuclear.algorithm.entity.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @Package: com.aimsphm.nuclear.algorithm.entity.dto
  * @Description: <振动分析实体>

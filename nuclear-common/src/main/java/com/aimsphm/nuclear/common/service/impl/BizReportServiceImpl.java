@@ -5,6 +5,7 @@ import com.aimsphm.nuclear.common.entity.BizReportDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ReportQueryBO;
+import com.aimsphm.nuclear.common.enums.DataStatusEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.BizReportMapper;
 import com.aimsphm.nuclear.common.service.BizReportService;
@@ -114,9 +115,7 @@ public class BizReportServiceImpl extends ServiceImpl<BizReportMapper, BizReport
     public BizReportDO getReport(ReportQueryBO query) {
         LambdaQueryWrapper<BizReportDO> wrapper = Wrappers.lambdaQuery(BizReportDO.class);
         wrapper.eq(BizReportDO::getSubSystemId, query.getSubSystemId())
-                .eq(BizReportDO::getReportName, query.getReportName())
-                .eq(BizReportDO::getReportStartTime, new Date(query.getStartTime()))
-                .eq(BizReportDO::getReportEndTime, new Date(query.getEndTime()));
+                .eq(BizReportDO::getStatus, DataStatusEnum.RUNNING.getValue());
         wrapper.last("limit 1");
         return this.getOne(wrapper);
     }

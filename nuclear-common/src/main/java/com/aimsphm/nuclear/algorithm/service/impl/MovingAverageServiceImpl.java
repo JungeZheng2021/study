@@ -1,13 +1,11 @@
 package com.aimsphm.nuclear.algorithm.service.impl;
 
-import com.aimsphm.nuclear.algorithm.entity.dto.AlgorithmParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.MovingAverageParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.MovingAverageResponseDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
-import com.aimsphm.nuclear.common.response.ResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

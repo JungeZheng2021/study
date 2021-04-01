@@ -1,6 +1,9 @@
 package com.aimsphm.nuclear.algorithm.service.impl;
 
-import com.aimsphm.nuclear.algorithm.entity.dto.*;
+import com.aimsphm.nuclear.algorithm.entity.dto.FaultDiagnosisParamDTO;
+import com.aimsphm.nuclear.algorithm.entity.dto.FaultDiagnosisResponseDTO;
+import com.aimsphm.nuclear.algorithm.entity.dto.FaultReportResponseDTO;
+import com.aimsphm.nuclear.algorithm.entity.dto.RuleParamDTO;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.BizDiagnosisService;
 import com.aimsphm.nuclear.common.entity.AlgorithmRulesDO;
@@ -10,7 +13,10 @@ import com.aimsphm.nuclear.common.entity.CommonSensorDO;
 import com.aimsphm.nuclear.common.enums.DataStatusEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.response.ResponseData;
-import com.aimsphm.nuclear.common.service.*;
+import com.aimsphm.nuclear.common.service.AlgorithmRulesParameterService;
+import com.aimsphm.nuclear.common.service.AlgorithmRulesService;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
+import com.aimsphm.nuclear.common.service.CommonSensorService;
 import com.aimsphm.nuclear.data.feign.DataServiceFeignClient;
 import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsDTO;
 import lombok.extern.slf4j.Slf4j;
