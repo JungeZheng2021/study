@@ -16,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * @Package: com.aimsphm.nuclear.report.job
- * @Description: <风机状态监测报告定时任务>
+ * @Description: <泵类状态监测报告定时任务>
  * @Author: MILLA
  * @CreateDate: 2020/5/12 18:58
  * @UpdateUser: MILLA
@@ -25,7 +25,7 @@ import java.util.concurrent.CountDownLatch;
  * @Version: 1.0
  */
 @Slf4j
-public class FanReportJob implements Job {
+public class PumReportJob implements Job {
 
     @Resource
     private ReportService service;
@@ -35,7 +35,7 @@ public class FanReportJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        ReportQueryBO queryBO = new ReportQueryBO(1L);
+        ReportQueryBO queryBO = new ReportQueryBO(2L);
         try {
             List<CommonDeviceDO> deviceList = deviceService.listCommonDeviceBySubSystemId(queryBO.getSubSystemId());
             if (CollectionUtils.isEmpty(deviceList)) {

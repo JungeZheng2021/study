@@ -113,7 +113,23 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (timestamp % 9317 == 0) {
             thresholdService.saveOrUpdateThresholdAlarmList(vos);
         }
+    }
 
+    @Override
+    public Double calculatePointValueFromRedis(String itemId, Double value) {
+        if (StringUtils.isEmpty(itemId) || Objects.isNull(value)) {
+            return 0D;
+        }
+        List<MeasurePointVO> vos = this.getMeasurePointsByPointId(itemId);
+        if (CollectionUtils.isEmpty(vos)) {
+            return 0D;
+        }
+        String storeKey = getStoreKey(vos.get(0));
+        MeasurePointVO vo = (MeasurePointVO) redis.opsForValue().get(storeKey);
+        if (Objects.isNull(vo) || Objects.isNull(vo.getValue())) {
+            return value;
+        }
+        return value - vo.getValue();
     }
 
     /**
@@ -227,6 +243,12 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     @Override
     public List<CommonMeasurePointDO> listPointsByConditions(CommonQueryBO query) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = initWrapper(query);
+        if (Objects.nonNull(query.getCategory())) {
+            wrapper.and(x -> x.eq(CommonMeasurePointDO::getCategory, query.getCategory()));
+        }
+        if (Objects.nonNull(query.getFeatureType())) {
+            wrapper.and(x -> x.eq(CommonMeasurePointDO::getFeatureType, query.getFeatureType()));
+        }
         if (Objects.nonNull(query.getVisible())) {
             wrapper.last("and visible%" + query.getVisible() + "=0");
         }

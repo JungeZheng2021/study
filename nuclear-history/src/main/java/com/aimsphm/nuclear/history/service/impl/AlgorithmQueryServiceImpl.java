@@ -6,7 +6,7 @@ import com.aimsphm.nuclear.algorithm.entity.dto.MovingAverageParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.PredictionParamDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
-import com.aimsphm.nuclear.algorithm.util.WhetherTreadLocal;
+import com.aimsphm.nuclear.algorithm.util.WhetherThreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryMultiBO;
@@ -25,14 +25,12 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_FAMILY_NPC_VIBRATION_RAW;
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
@@ -60,7 +58,7 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
 
     @Override
     public Map<String, HistoryDataVO> listMovingAverageInfo(HistoryQueryMultiBO multi) {
-        WhetherTreadLocal.INSTANCE.setWhether(false);
+        WhetherThreadLocal.INSTANCE.setWhether(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.MOVING_AVERAGE.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
         data.entrySet().stream().forEach(x -> {
@@ -79,7 +77,7 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
     @Override
     public Map<String, HistoryDataVO> listPredictionInfo(HistoryQueryMultiBO multi) {
         //是否需要获取阈值
-        WhetherTreadLocal.INSTANCE.setWhether(false);
+        WhetherThreadLocal.INSTANCE.setWhether(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.TREND_FORECAST.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
         data.entrySet().stream().forEach(x -> {

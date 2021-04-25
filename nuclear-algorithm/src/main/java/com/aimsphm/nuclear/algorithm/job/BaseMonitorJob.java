@@ -45,18 +45,31 @@ public interface BaseMonitorJob {
                 log.info("device not exist deviceId:{}..................", deviceType);
                 return;
             }
+            Runtime runtime = Runtime.getRuntime();
             //状态监测
             if (algorithmType.equals(AlgorithmTypeEnum.STATE_MONITOR)) {
                 list.stream().forEach(deviceDO -> {
                     log.debug("device status running..................deviceId:{}", deviceDO.getDeviceName());
+                    long l = runtime.freeMemory();
+                    log.info("总内存:{}", runtime.totalMemory() / 1024 / 1024);
+                    log.info("执行前剩余内存:{}", l / 1024 / 1024);
                     algorithmService.getDeviceStateMonitorInfo(deviceDO.getId());
+                    long l1 = runtime.freeMemory();
+                    log.info("执行后剩余内存:{}", l1 / 1024 / 1024);
+                    log.info("执行使用内存:{}", (l - l1) / 1024 / 1024);
                 });
             }
             //启停状态
             if (algorithmType.equals(AlgorithmTypeEnum.STATE_START_STOP)) {
                 list.stream().forEach(deviceDO -> {
                     log.debug("device start stop running..................deviceId:{}", deviceDO.getDeviceName());
+                    long l = runtime.freeMemory();
+                    log.info("总内存:{}", runtime.totalMemory() / 1024 / 1024);
+                    log.info("执行前剩余内存:{}", l / 1024 / 1024);
                     algorithmService.getDeviceStartAndStopMonitorInfo(deviceDO.getId());
+                    long l1 = runtime.freeMemory();
+                    log.info("执行后剩余内存:{}", l1 / 1024 / 1024);
+                    log.info("执行使用内存:{}", (l - l1) / 1024 / 1024);
                 });
             }
         } catch (Exception e) {

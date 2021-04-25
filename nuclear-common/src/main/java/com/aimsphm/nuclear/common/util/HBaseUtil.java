@@ -157,6 +157,41 @@ public class HBaseUtil {
         }
     }
 
+    /**
+     * 增量添加
+     *
+     * @param tableName
+     * @param families
+     * @param type
+     * @return
+     * @throws IOException
+     */
+    public ArrayList<String> addFamily2TableIncrementalAdd(String tableName, List<String> families, Compression.Algorithm type)
+            throws IOException {
+        ArrayList<String> list = Lists.newArrayList();
+        TableName table = TableName.valueOf(tableName);
+        try (Admin admin = connection.getAdmin()) {
+            Assert.isTrue(admin.tableExists(table), "This table not exists");
+            for (String cf : families) {
+                try {
+                    ColumnFamilyDescriptorBuilder builder = ColumnFamilyDescriptorBuilder.newBuilder(cf.getBytes());
+                    if (type != null) {
+                        builder.setCompressionType(type);
+                    }
+                    // 指定最大版本1，值会被覆盖
+                    builder.setMaxVersions(1);
+                    admin.addColumnFamily(table, builder.build());
+                } catch (IOException e) {
+                    list.add(cf);
+                    log.error("add family : [{}] failed", cf);
+                }
+            }
+        } catch (IOException e) {
+            throw e;
+        }
+        return list;
+    }
+
     public void modifyColumnFamilyName(String tableName, String family, Compression.Algorithm type) throws IOException {
         TableName table = TableName.valueOf(tableName);
         try (Admin admin = connection.getAdmin()) {

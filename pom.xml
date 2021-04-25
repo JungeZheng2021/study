@@ -21,13 +21,14 @@
 
     <modules>
         <module>nuclear-common</module>
-        <module>nuclear-algorithm</module>
+        <!--        <module>nuclear-algorithm</module>-->
         <!--        <module>nuclear-core</module>-->
-        <!--        <module>spark-task</module>-->
-        <module>nuclear-data</module>
+        <module>spark-task</module>
+        <!--        <module>nuclear-data</module>-->
         <!--        <module>nuclear-opc</module>-->
-        <module>nuclear-history</module>
+        <!--        <module>nuclear-history</module>-->
         <!--        <module>spark-executor</module>-->
+        <!--        <module>nuclear-report</module>-->
     </modules>
 
     <properties>
@@ -47,16 +48,30 @@
         <hamcrest.version>1.3</hamcrest.version>
         <shiro.version>1.3.2</shiro.version>
         <postgresql.version>42.1.1</postgresql.version>
-        <eureka_ip1>http://172.20.11.206:8761/eureka/</eureka_ip1>
-        <!--207上 eureka还没有部署-->
-        <eureka_ip2>http://172.20.11.207:8762/eureka/</eureka_ip2>
-        <sql_url>jdbc:mysql://172.20.11.217:3306/nuclear_phm?useUnicode=true&amp;characterEncoding=utf8&amp;allowMultiQueries=true</sql_url>
-        <sql_username>root</sql_username>
-        <sql_password>aims2016</sql_password>
-        <rabbitmq_host1>172.20.11.221</rabbitmq_host1>
-        <rabbitmq_host1_username>admin</rabbitmq_host1_username>
-        <rabbitmq_host1_password>admin123$</rabbitmq_host1_password>
-        <hbase_zookeeper_quorum>phm2-mid01:2181,phm2-mid02:2181,phm2-mid03:2181</hbase_zookeeper_quorum>
+
+        <!--注册中心-->
+        <eureka_master>http://10.23.16.165:8761/eureka/</eureka_master>
+        <eureka_salver>http://10.23.16.166:8762/eureka/</eureka_salver>
+
+        <!--数据库配置-->
+        <db_url>jdbc:mysql://10.23.16.201:3306/nuclear_tw?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai&amp;allowMultiQueries=true</db_url>
+        <db_username>root</db_username>
+        <db_password>jnpc.123</db_password>
+
+        <!--单节点消息队列-->
+        <rabbitmq_host>10.23.16.188</rabbitmq_host>
+        <mq_username>admin</mq_username>
+        <mq_password>admin123$</mq_password>
+
+        <!--hbase配置项-->
+        <hbase_zk_quorum>
+            tw-phm-hadoop-01:2181,tw-phm-hadoop-02:2181,tw-phm-hadoop-03:2181
+        </hbase_zk_quorum>
+
+        <!--单节点redis配置-->
+        <redis_host>10.23.16.188</redis_host>
+        <redis_password>aims2016</redis_password>
+
         <redis1a>- 172.20.11.211:6378</redis1a>
         <redis1b>- 172.20.11.211:6379</redis1b>
         <redis2a>- 172.20.11.212:6378</redis2a>
@@ -66,11 +81,7 @@
         <redis_url>172.20.11.211</redis_url>
         <!--<rabbitmq_url>10.1.4.40:5672,10.1.4.41:5672,10.1.4.42:5672</rabbitmq_url>-->
         <mybatis-plus-boot-starter.version>3.3.1.tmp</mybatis-plus-boot-starter.version>
-        <!--本地注册地址-->
-        <eureka_local>http://192.168.16.43:8761/eureka/</eureka_local>
-        <!--开发环境-->
-        <eureka_dev1>http://192.168.16.44:8761/eureka/</eureka_dev1>
-        <eureka_dev2>http://192.168.16.45:8762/eureka/</eureka_dev2>
+
         <hbase_config_dev>hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181</hbase_config_dev>
         <!--开发环境-->
     </properties>

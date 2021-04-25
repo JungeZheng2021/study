@@ -90,7 +90,7 @@ public class DownSampleScheduleJob {
     DBTableUtil dbUtil;
 
 
-    @Scheduled(cron = "0 13 * * * ? ")
+    @Scheduled(cron = "${config.cron.hourly:0 13 * * * ? }")
 //    @Scheduled(cron = "0 0/3 * * * ?")
     @DistributedLock("downSampleHourly")
     public Object hourlyDownSample() throws Exception {
@@ -158,7 +158,7 @@ public class DownSampleScheduleJob {
     }
 
     @Async
-    @Scheduled(cron = "0 23 1 * * ? ")
+    @Scheduled(cron = "${config.cron.daily:0 23 1 * * ? }")
 //    @Scheduled(cron = "0 0/23 * * * ?")
     @DistributedLock("downSampleDaily")
     public Object dailyDownSample() throws Exception {
@@ -173,7 +173,7 @@ public class DownSampleScheduleJob {
     }
 
     @Async
-    @Scheduled(cron = "0 37 2 ? * MON")
+    @Scheduled(cron = "${config.cron.weekly:0 37 2 ? * MON}")
 //    @Scheduled(cron = "0 0/37 * * * ?")
     @DistributedLock("downSampleWeekly")
     public Object weeklyDownSample() throws Exception {
@@ -194,7 +194,7 @@ public class DownSampleScheduleJob {
      * @throws Exception
      */
     @Async
-    @Scheduled(cron = "0 47 3 1 * ? ")
+    @Scheduled(cron = "${config.cron.monthly:0 47 3 1 * ? }")
 //    @Scheduled(cron = "0 0/47 * * * ?")
     @DistributedLock("downSampleMonthly")
     public Object monthlyDownSample() throws Exception {

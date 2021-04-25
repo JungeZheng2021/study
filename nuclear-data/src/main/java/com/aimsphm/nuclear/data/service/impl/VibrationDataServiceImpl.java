@@ -9,6 +9,7 @@ import com.aimsphm.nuclear.common.service.CommonSensorService;
 import com.aimsphm.nuclear.common.util.ByteUtil;
 import com.aimsphm.nuclear.data.entity.dto.PacketDTO;
 import com.aimsphm.nuclear.data.entity.dto.SensorDataDTO;
+import com.aimsphm.nuclear.data.enums.CalculateFeatureEnum;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
 import com.alibaba.fastjson.JSON;
@@ -27,9 +28,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
-import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_WAVE_DATA_ACC;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_WAVE_DATA_VEC;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
 import static com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum.SETTINGS_STATUS;
 import static com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum.WAVEFORM_DATA;
@@ -66,6 +69,14 @@ public class VibrationDataServiceImpl implements CommonDataService {
      * 需要存储到redis中的特征列表
      */
     private static final List<String> store2RedisFeatureList = Lists.newArrayList("vec-Rms", "ana-temperature", "ana-humidity", "ana-PPM", "ana-viscosity", "ana-density", "abr-realTime", "raw-stressWaveStrength");
+
+    static {
+        //将所有需要保存的特征值缓存起来
+        CalculateFeatureEnum[] values = CalculateFeatureEnum.values();
+        List<CalculateFeatureEnum> calculateFeatureEnums = Arrays.asList(values);
+        List<String> collect = calculateFeatureEnums.stream().map(m -> m.getValue()).collect(Collectors.toList());
+        store2RedisFeatureList.addAll(collect);
+    }
 
     @Override
     public void operateData(String topic, String message) {
@@ -241,13 +252,32 @@ public class VibrationDataServiceImpl implements CommonDataService {
                 continue;
             }
             Double value = next.getValue();
+
             //是否需要存储到redis
             if (store2RedisFeatureList.contains(feature)) {
-                pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + feature, value, packet.getTimestamp());
+                String itemId = packet.getSensorCode() + DASH + feature;
+                CalculateFeatureEnum calculateFeatureEnum = CalculateFeatureEnum.value(feature);
+                //磨砺分析需要额外计算入库
+                if (Objects.nonNull(calculateFeatureEnum)) {
+                    //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
+                    try {
+                        hBaseService.familyExists(H_BASE_TABLE_NPC_PHM_DATA, feature + DASH + OIL_FEATURE_CALCULATE_FIX, true, Compression.Algorithm.SNAPPY);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //计算后的数据
+                    Double aDouble = pointServiceExt.calculatePointValueFromRedis(itemId, value);
+                    Put put = new Put(Bytes.toBytes(rowKey));
+                    put.setTimestamp(packet.getTimestamp());
+                    put.addColumn(Bytes.toBytes(feature + DASH + OIL_FEATURE_CALCULATE_FIX), Bytes.toBytes(index), Bytes.toBytes(aDouble));
+                    putList.add(put);
+                }
+                //
+                pointServiceExt.updateMeasurePointsInRedis(itemId, value, packet.getTimestamp());
             }
             //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
             try {
-                hBaseService.familyExists(HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA, feature, true, Compression.Algorithm.SNAPPY);
+                hBaseService.familyExists(H_BASE_TABLE_NPC_PHM_DATA, feature, true, Compression.Algorithm.SNAPPY);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -257,7 +287,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
             putList.add(put);
         }
         try {
-            hBaseService.batchSave2HBase(HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA, putList);
+            hBaseService.batchSave2HBase(H_BASE_TABLE_NPC_PHM_DATA, putList);
         } catch (IOException e) {
             log.error("batch save 2 hBase failed:{}", e);
         } finally {

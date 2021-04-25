@@ -41,6 +41,15 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
     void updateMeasurePointsInRedis(String itemId, Double value, Long timestamp);
 
     /**
+     * 和上一次数据进行做差
+     *
+     * @param itemId
+     * @param value
+     * @return
+     */
+    Double calculatePointValueFromRedis(String itemId, Double value);
+
+    /**
      * 根据测点id获取测点信息
      *
      * @param pointId 测点Id

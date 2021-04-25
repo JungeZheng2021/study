@@ -1,29 +1,33 @@
+server:
+  port: 8008
 hbase:
   config:
     properties:
-      hbase.zookeeper.quorum: @hbase_zookeeper_quorum@
+      hbase.zookeeper.quorum: @hbase_zk_quorum@
 eureka:
   client:
     serviceUrl:
-      defaultZone: @eureka_ip1@,@eureka_ip2@
+      defaultZone: @eureka_master@,@eureka_salver@
     fetchRegistry: true
   instance:
     prefer-ip-address: true
 spring:
   application:
     name: nuclear-data
-  mybatisPlusConfig:
-    enable: true
+  config:
+    enableRedis: true
+    enableHBase: true
+    enableMybatisPlus: true
+    enableServiceExtImpl: true
   #数据源
   datasource:
-    url: @sql_url@
-    username: @sql_username@
-    password: @sql_password@
-    type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
+    url: @sql_url@
+    username: @db_username@
+    password: @db_password@
     hikari: #默认连接池配置
       #连接池名称，默认HikariPool-1
-      pool-name: defaultHikariPool
+      pool-name: dataHikariPool
       #最大连接数，小于等于0会被重置为默认值10；大于零小于1会被重置为minimum-idle的值
       maximum-pool-size: 12
       #连接超时时间:毫秒，小于250毫秒，否则被重置为默认值30秒
@@ -41,27 +45,18 @@ spring:
       auto-commit: true
   #MQ配置信息
   rabbitmq:
-    host: @rabbitmq_host1@
+    host: @rabbitmq_host@
     port: 5672
-    username: @rabbitmq_host1_username@
-    password: @rabbitmq_host1_password@
+    username: @mq_username@
+    password: @mq_password@
     #开启手动ack,控制消息在MQ中的删除，重发...处理完毕
     listener:
       simple:
         acknowledge-mode: auto
   redis:
-    cluster:
-      nodes:
-        @redis1a@
-        @redis1b@
-        @redis2a@
-        @redis2b@
-        @redis3a@
-        @redis3b@
-      max-redirects: 5
-    password: aims2016
+    host: @redis_host@
+    password: @redis_password@
     timeout: 6000ms
-    database: 15
     lettuce:
       pool:
         #连接池最大连接数（使用负值表示没有限制）
@@ -72,6 +67,7 @@ spring:
         min-idle: 20
         # 连接池中的最大空闲连接
         max-idle: 50
+
 feign:
   hystrix:
     enabled: true #feign开启hystrix支持

@@ -102,6 +102,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             saveResult(response);
         });
         data.clear();
+        data = null;
     }
 
     @Override
@@ -120,6 +121,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             updateDeviceStatus(response.getDeviceId(), response.getHealthStatus());
         });
         data.clear();
+        data = null;
     }
 
     @Transactional(rollbackFor = Exception.class)

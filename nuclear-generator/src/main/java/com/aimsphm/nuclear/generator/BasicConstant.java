@@ -32,7 +32,8 @@ public final class BasicConstant {
 //            , "common_device"
 //            , "common_device_details"
 //            , "common_component"
-            "common_sensor"
+//            "common_sensor"
+//            "biz_original_data"
 //            "common_sensor_settings"
 //            , "common_measure_point"
 //            "job_device_status"
@@ -46,6 +47,13 @@ public final class BasicConstant {
 //            "job_alarm_threshold"
 //            "analysis_favorite",
 //            "analysis_favorite_remark"
+//            "algorithm_rules",
+//            "algorithm_rules_parameter",
+//            "algorithm_rules_conclusion"
+//            "biz_diagnosis_result"
+            "biz_report",
+            "biz_job_quartz_config",
+            "biz_report_config"
     };
 
     /**

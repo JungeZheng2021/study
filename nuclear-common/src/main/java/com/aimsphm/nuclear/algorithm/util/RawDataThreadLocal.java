@@ -2,7 +2,7 @@ package com.aimsphm.nuclear.algorithm.util;
 
 /**
  * @Package: com.study.auth.config.core
- * @Description: <是否逻辑线程存储>
+ * @Description: <原始数据本地线程存储>
  * @Author: MILLA
  * @CreateDate: 2020/09/04 14:42
  * @UpdateUser: MILLA
@@ -10,7 +10,7 @@ package com.aimsphm.nuclear.algorithm.util;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-public enum WhetherTreadLocal {
+public enum RawDataThreadLocal {
     INSTANCE;
     private ThreadLocal<Boolean> whether = new ThreadLocal<>();
 

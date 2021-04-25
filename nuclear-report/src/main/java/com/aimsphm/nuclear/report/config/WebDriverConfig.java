@@ -38,11 +38,11 @@ public class WebDriverConfig {
         ScreenshotUtils utils = new ScreenshotUtils();
         utils.setDriver(webDriver);
 
-        String htmlPath = "D:/usr/share/local/echarts/84e82ef8300d496198bc0f2befd3a7e7.html";
+        String htmlPath = "D:/Downloads/23ca044fe16d477fa1a25c10804f4baf.html";
 //        String htmlPath = "D:/usr/share/local/echarts/0d4f6c7fc5be477dbcd392eca55dbf3b.html";
 //        String htmlPath = "D:\\Desktop\\新建文件夹\\fdcf5b1afc3e49d0add897efe2195ba0(1).html";
-//        File screenshotAs = utils.getScreenshotAs(htmlPath, OutputType.FILE, 800L);
-        File screenshotAs = utils.screenshotById(htmlPath, "chart", OutputType.FILE, 800L);
+        File screenshotAs = utils.getScreenshotAs(htmlPath, OutputType.FILE, 800L);
+//        File screenshotAs = utils.screenshotById(htmlPath, "chart", OutputType.FILE, 800L);
         FileUtils.copyFile(screenshotAs, new File("D:/usr/share/local/echarts/test.png"));
         System.out.println(screenshotAs.getAbsolutePath());
 

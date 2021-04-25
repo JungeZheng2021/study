@@ -1,7 +1,8 @@
 package com.aimsphm.nuclear.history.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
-import com.aimsphm.nuclear.algorithm.util.WhetherTreadLocal;
+import com.aimsphm.nuclear.algorithm.util.RawDataThreadLocal;
+import com.aimsphm.nuclear.algorithm.util.WhetherThreadLocal;
 import com.aimsphm.nuclear.common.config.DynamicTableTreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
@@ -85,14 +86,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     @Override
     public HistoryDataVO listHistoryDataWithPointByScan(HistoryQuerySingleBO single) {
-        if (Objects.isNull(single) || StringUtils.isBlank(single.getPointId())
-                || Objects.isNull(single.getEnd()) || Objects.isNull(single.getStart()) || single.getEnd() <= single.getStart()) {
-            return null;
-        }
-        CommonMeasurePointDO point = serviceExt.getPointByPointId(single.getPointId());
-        if (Objects.isNull(point)) {
-            throw new CustomMessageException("要查询的测点不存在");
-        }
+        CommonMeasurePointDO point = checkParam(single);
         Boolean needDownSample = serviceExt.isNeedDownSample(point);
         String tableName = TableNameParser.getTableName(single.getStart(), single.getEnd());
         //需要降采样 且时间区间大于3个小时
@@ -103,6 +97,21 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             Map<String, HistoryDataVO> data = listHistoryDataWithPointIdsFromMysql(multi);
             return data.get(single.getPointId());
         }
+        return listHistoryDataFromHBaseByPoint(single, point);
+    }
+
+    public HistoryDataVO listHistoryDataFromHBase(HistoryQuerySingleBO single) {
+        try {
+            CommonMeasurePointDO point = checkParam(single);
+            return listHistoryDataFromHBaseByPoint(single, point);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private HistoryDataVO listHistoryDataFromHBaseByPoint(HistoryQuerySingleBO single, CommonMeasurePointDO point) {
+        HistoryDataVO vo = new HistoryDataWithThresholdVO();
         HistoryQuerySingleWithFeatureBO featureBO = new HistoryQuerySingleWithFeatureBO();
         //是否为PI测点 pi测点设置PointId
         boolean notPIPoint = !PointTypeEnum.PI.getValue().equals(point.getPointType()) && StringUtils.isNotBlank(point.getFeature());
@@ -110,13 +119,24 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         featureBO.setSensorCode(notPIPoint ? point.getSensorCode() : point.getPointId());
         BeanUtils.copyProperties(single, featureBO);
         List<List<Object>> dataDTOS = listHistoryDataWithPointByScan(featureBO);
-        HistoryDataVO vo = new HistoryDataWithThresholdVO();
-        if (Objects.isNull(WhetherTreadLocal.INSTANCE.getWhether()) || WhetherTreadLocal.INSTANCE.getWhether()) {
+        if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
             BeanUtils.copyProperties(point, vo);
-            WhetherTreadLocal.INSTANCE.remove();
+            WhetherThreadLocal.INSTANCE.remove();
         }
         vo.setChartData(dataDTOS);
         return vo;
+    }
+
+    private CommonMeasurePointDO checkParam(HistoryQuerySingleBO single) {
+        if (Objects.isNull(single) || StringUtils.isBlank(single.getPointId())
+                || Objects.isNull(single.getEnd()) || Objects.isNull(single.getStart()) || single.getEnd() <= single.getStart()) {
+            throw new CustomMessageException("参数异常");
+        }
+        CommonMeasurePointDO point = serviceExt.getPointByPointId(single.getPointId());
+        if (Objects.isNull(point)) {
+            throw new CustomMessageException("要查询的测点不存在");
+        }
+        return point;
     }
 
     @Override
@@ -128,9 +148,12 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         Long start = multi.getStart();
         String tableName = TableNameParser.getTableName(start, end);
         List<String> pointIds = multi.getPointIds();
-        //全部非降采样
-        if (StringUtils.isBlank(tableName)) {
+        Boolean whether = RawDataThreadLocal.INSTANCE.getWhether();
+        //全部非降采样 表格为空或者是需要查询所有额原始数据
+        boolean needlessDownSample = StringUtils.isBlank(tableName) || (Objects.nonNull(whether) && whether);
+        if (needlessDownSample) {
             multiPointHBaseData(data, pointIds, start, end);
+            RawDataThreadLocal.INSTANCE.remove();
             return data;
         }
         List<String> downSamplePoints = pointIds.stream().filter(pointId -> serviceExt.isNeedDownSample(pointId)).collect(Collectors.toList());
@@ -148,7 +171,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             bo.setPointId(pointId);
             bo.setEnd(end);
             bo.setStart(start);
-            data.put(pointId, listHistoryDataWithPointByScan(bo));
+            data.put(pointId, listHistoryDataFromHBase(bo));
         }
     }
 
@@ -170,9 +193,9 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             List<String> points = collect.get(pointId);
             String collect1 = points.stream().collect(Collectors.joining(COMMA));
             HistoryDataVO vo = new HistoryDataWithThresholdVO();
-            if (Objects.isNull(WhetherTreadLocal.INSTANCE.getWhether()) || WhetherTreadLocal.INSTANCE.getWhether()) {
+            if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
                 BeanUtils.copyProperties(point, vo);
-                WhetherTreadLocal.INSTANCE.remove();
+                WhetherThreadLocal.INSTANCE.remove();
             }
             try {
                 List<List<Object>> charData = mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class);

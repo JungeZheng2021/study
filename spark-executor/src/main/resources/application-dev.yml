@@ -72,3 +72,32 @@ eureka:
   instance:
     prefer-ip-address: true
 
+config:
+  driver:
+    memory:
+      hourly: 1g
+      daily: 2g
+      weekly: 2g
+      monthly: 3g
+  executor:
+    cores:
+      hourly: 1
+      daily: 2
+      weekly: 2
+      monthly: 2
+    memory:
+      hourly: 1g
+      daily: 2g
+      weekly: 2g
+      monthly: 3g
+  cron:
+    # 每隔13分
+    hourly: 0 0/13 * * * ?
+    # 每小时的13分
+    #    hourly: 0 13 * * * ?
+    # 每天1点23分
+    daily: 0 23 1 * * ?
+    # 每周一的2点37分钟
+    weekly: 0 37 2 ? * MON
+    # 每月1号的3点47分
+    monthly: 0 47 3 1 * ?
