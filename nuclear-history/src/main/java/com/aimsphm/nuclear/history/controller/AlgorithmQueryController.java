@@ -36,37 +36,26 @@ public class AlgorithmQueryController {
     @GetMapping("trend")
     @ApiOperation(value = "去躁数据", notes = "多个参数")
     public Map<String, HistoryDataVO> listMovingAverageInfo(HistoryQueryMultiBO multiBo) {
-        long l = System.currentTimeMillis();
         Map<String, HistoryDataVO> data = service.listMovingAverageInfo(multiBo);
-        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
     }
 
     @GetMapping("prediction")
     @ApiOperation(value = "预测数据", notes = "多个参数")
     public Map<String, HistoryDataVO> listPredictionInfo(HistoryQueryMultiBO multiBo) {
-        long l = System.currentTimeMillis();
         Map<String, HistoryDataVO> data = service.listPredictionInfo(multiBo);
-        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
     }
 
     @GetMapping("analysis/vibration")
     @ApiOperation(value = "振动分析绘图", notes = "")
     public Map<String, List<List<List<Object>>>> listVibrationAnalysisData(DataAnalysisQueryMultiBO query) {
-//        long l = System.currentTimeMillis();
         return service.listVibrationAnalysisData(query);
-//        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
-//        return data;
     }
 
     @GetMapping("analysis/vibration/export")
     @ApiOperation(value = "振动分析绘图数据导出", notes = "")
     public Map<String, HistoryDataVO> listVibrationAnalysisDataExport(HistoryQueryMultiBO queryMultiBO) {
-//        long l = System.currentTimeMillis();
-//        Map<String, HistoryDataVO> data = service.listAnalysisDataWithPointList(queryMultiBO);
-//        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
-//        return data;
         return null;
     }
 }

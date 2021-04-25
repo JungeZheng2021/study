@@ -11,11 +11,13 @@ package com.aimsphm.nuclear.history.controller;
  * @Version: 1.0
  */
 
+import com.aimsphm.nuclear.algorithm.util.RawDataThreadLocal;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.history.entity.vo.EventDataVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
@@ -28,7 +30,7 @@ import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.MapUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.hadoop.hbase.io.compress.Compression;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,11 +39,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
 
 @RestController
 @Api(tags = "History-历史数据查询-相关接口")
@@ -54,12 +57,13 @@ public class HistoryQueryController {
         this.service = service;
     }
 
+    @Resource
+    private CommonMeasurePointService iCommonMeasurePointServiceExt;
+
     @GetMapping("single")
     @ApiOperation(value = "查询一个测点的历史数据", notes = "pointId是完整测点编号")
     public HistoryDataVO listHistoryWithSinglePoint(HistoryQuerySingleBO singleBO) {
-        long stat = System.currentTimeMillis();
         HistoryDataVO data = service.listHistoryDataWithPointByScan(singleBO);
-        System.out.println("共计耗时：" + (System.currentTimeMillis() - stat));
         return data;
     }
 
@@ -72,25 +76,20 @@ public class HistoryQueryController {
     @GetMapping("multiple")
     @ApiOperation(value = "查询多个测点的历史数据", notes = "")
     public Map<String, HistoryDataVO> listHistoryWithPointList(HistoryQueryMultiBO queryMultiBO) {
-        long l = System.currentTimeMillis();
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
-        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
     }
 
     @GetMapping("multiple/realtime")
     @ApiOperation(value = "查询多个测点实测值、估计值、报警测点、残差值", notes = "")
     public Map<String, EventDataVO> listDataWithPointList(HistoryQueryMultiBO queryMultiBO) {
-        long l = System.currentTimeMillis();
         Map<String, EventDataVO> data = service.listDataWithPointList(queryMultiBO);
-        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
     }
 
     @GetMapping("multiple/export")
     @ApiOperation(value = "导出多个测点的历史数据", notes = "")
     public void exportHistoryWithPointList(HistoryQueryMultiBO queryMultiBO, HttpServletResponse response) {
-        long l = System.currentTimeMillis();
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
         if (MapUtils.isEmpty(data)) {
             throw new CustomMessageException("没有可以导出的数据");
@@ -111,15 +110,35 @@ public class HistoryQueryController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
+    }
+
+    @GetMapping("export/raw-data")
+    @ApiOperation(value = "导出原始数据", notes = "接口中不使用")
+    public Map<String, HistoryDataVO> listHistoryPointList(HistoryQueryMultiBO queryMultiBO) {
+        RawDataThreadLocal.INSTANCE.setWhether(true);
+        Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
+        return data;
+    }
+
+    @Resource
+    private HBaseUtil hBase;
+
+    @GetMapping("families/features")
+    @ApiOperation(value = "将所有的特征值添加到列族", notes = "增量增加")
+    public List<String> addFeatures2Families() {
+        Set<String> features = iCommonMeasurePointServiceExt.listFeatures();
+        try {
+            return hBase.addFamily2TableIncrementalAdd(H_BASE_TABLE_NPC_PHM_DATA, Lists.newArrayList(features), Compression.Algorithm.SNAPPY);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @GetMapping("multiple/gets")
     @ApiOperation(value = "查询多个测点的历史数据-备用", notes = "备用")
     public Map<String, HistoryDataVO> listHistoryWithPointListByGetList(HistoryQueryMultiBO queryMultiBO) {
-        long l = System.currentTimeMillis();
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByGetList(queryMultiBO);
-        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
     }
 }
