@@ -23,6 +23,10 @@ public final class HBaseConstant {
      */
     public static final String H_BASE_TABLE_NPC_PHM_DATA = "npc_phm_data";
     /**
+     * 油液计算的后缀
+     */
+    public static final String OIL_FEATURE_CALCULATE_FIX = "add";
+    /**
      * 列族-pi数据-列族名称
      */
     public static final String H_BASE_FAMILY_NPC_PI_REAL_TIME = "pRaw";
