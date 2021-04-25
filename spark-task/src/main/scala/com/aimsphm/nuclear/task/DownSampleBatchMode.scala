@@ -30,8 +30,8 @@ object DownSampleBatchMode {
 
     val properties = new Properties()
     //                 类型     开始时间          结束时间          HBase表格名称     列族                   操作时间                           最大个数
-    //    val args = Array("daily", "1607064602992", "1607129478018", "npc_phm_data", "pRaw", "1", "5", "5", System.currentTimeMillis() + "", "30")
-    val in = DownSampleBatchMode.getClass.getClassLoader().getResourceAsStream("prod.properties");
+    //    val args = Array("daily", "1619160707000", "1607129478018", "npc_phm_data", "pRaw", "1", "5", "5", System.currentTimeMillis() + "", "30")
+    val in = DownSampleBatchMode.getClass.getClassLoader().getResourceAsStream("dev.properties");
     properties.load(in)
     val defaultPartitionNum = "4"
     val freq = args(0)
@@ -90,15 +90,22 @@ object DownSampleBatchMode {
     val mysqlUrl = properties.getProperty("mysqlUrl")
     val mysqlUser = properties.getProperty("mysqlUser")
     val mysqlPassword = properties.getProperty("mysqlPassword")
-    println(mysqlUrl)
-    println(mysqlUser)
-    println(mysqlPassword)
+    //    println(mysqlUrl)
+    //    println(mysqlUser)
+    //    println(mysqlPassword)
     val tagConfig = Utils.listPointIdList(mysqlUrl, mysqlUser, mysqlPassword, freq)
     val rowKeySeparator = Constant.H_BASE_ROW_KEY_CONNECTOR
 
     val threePointsTagConfig = tagConfig.filter(_.getAlgorithmType == AlgoEnum.THREEPOINTS)
 
     val nonThreePointsTagConfig = tagConfig.filter(_.getAlgorithmType != AlgoEnum.THREEPOINTS)
+
+
+    //    val featureGroup = threePointsTagConfig.filter(_.getFeature != null).groupBy(_.getFeature)
+    //    val threePointsTagGroupConfig = threePointsTagConfig.filter(_.getFeature == null).groupBy(_.getSensorCode)
+    //
+    //    val sensorList = threePointsTagGroupConfig.toList.++(featureGroup.toList)
+    //    val threePintsTags = threePointsTagGroupConfig.keys.++(featureGroup.keys)
 
     val threePointsTagGroupConfig = threePointsTagConfig.groupBy(_.getSensorCode)
 

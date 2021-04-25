@@ -56,14 +56,30 @@ object HBaseUtil {
     var results = new ArrayBuffer[Future[RDD[(ImmutableBytesWritable, Result)]]]()
     for (item <- pointList) {
       val point = item._2(0);
-      val pointId = point.getSensorCode;
-      val family = point.getFeature;
-      val startKey = pointId.concat(Constant.H_BASE_ROW_KEY_CONNECTOR).concat(query.getStart)
-      val endKey = pointId.concat(Constant.H_BASE_ROW_KEY_CONNECTOR).concat(query.getEnd)
-      val scanner = new HbaseWideConTableReader(sc, config, query.getTableName, startKey, endKey, if (Objects.isNull(family)) query.getDefaultFamily else family)
-      pool.synchronized {
-        val rdd: Future[RDD[(ImmutableBytesWritable, Result)]] = pool.submit(scanner)
-        results += rdd
+      if (Objects.nonNull(point.getFeature)) {
+        val featureGroup = item._2.groupBy(_.getFeature)
+        for (elements <- featureGroup.toList) {
+          val element = elements._2(0);
+          val pointId = element.getSensorCode;
+          val family = element.getFeature;
+          val startKey = pointId.concat(Constant.H_BASE_ROW_KEY_CONNECTOR).concat(query.getStart)
+          val endKey = pointId.concat(Constant.H_BASE_ROW_KEY_CONNECTOR).concat(query.getEnd)
+          val scanner = new HbaseWideConTableReader(sc, config, query.getTableName, startKey, endKey, if (Objects.isNull(family)) query.getDefaultFamily else family)
+          pool.synchronized {
+            val rdd: Future[RDD[(ImmutableBytesWritable, Result)]] = pool.submit(scanner)
+            results += rdd
+          }
+        }
+      } else {
+        val pointId = point.getSensorCode;
+        val family = point.getFeature;
+        val startKey = pointId.concat(Constant.H_BASE_ROW_KEY_CONNECTOR).concat(query.getStart)
+        val endKey = pointId.concat(Constant.H_BASE_ROW_KEY_CONNECTOR).concat(query.getEnd)
+        val scanner = new HbaseWideConTableReader(sc, config, query.getTableName, startKey, endKey, if (Objects.isNull(family)) query.getDefaultFamily else family)
+        pool.synchronized {
+          val rdd: Future[RDD[(ImmutableBytesWritable, Result)]] = pool.submit(scanner)
+          results += rdd
+        }
       }
     }
     var rdds: RDD[(ImmutableBytesWritable, Result)] = null
