@@ -2,10 +2,13 @@ package com.aimsphm.nuclear.data.service.impl;
 
 import com.aimsphm.nuclear.common.constant.HBaseConstant;
 import com.aimsphm.nuclear.common.entity.BizOriginalDataDO;
+import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
 import com.aimsphm.nuclear.common.service.BizOriginalDataService;
+import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.CommonSensorService;
+import com.aimsphm.nuclear.common.util.BigDecimalUtils;
 import com.aimsphm.nuclear.common.util.ByteUtil;
 import com.aimsphm.nuclear.data.entity.dto.PacketDTO;
 import com.aimsphm.nuclear.data.entity.dto.SensorDataDTO;
@@ -14,6 +17,7 @@ import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.AtomicDouble;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -28,6 +32,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
@@ -62,13 +67,15 @@ public class VibrationDataServiceImpl implements CommonDataService {
 
     @Resource
     private CommonMeasurePointService pointServiceExt;
+    @Resource
+    private CommonDeviceDetailsService detailsService;
 
     @Resource
     private CommonSensorService sensorService;
     /**
      * 需要存储到redis中的特征列表
      */
-    private static final List<String> store2RedisFeatureList = Lists.newArrayList("vec-Rms", "ana-temperature", "ana-humidity", "ana-PPM", "ana-viscosity", "ana-density", "abr-realTime", "raw-stressWaveStrength");
+    private static final List<String> store2RedisFeatureList = Lists.newArrayList("vec-Rms", "ana-temperature", "ana-humidity", "ana-PPM", "ana-dielectricConstant", "ana-density", "abr-realTime", "raw-stressWaveStrength");
 
     static {
         //将所有需要保存的特征值缓存起来
@@ -242,8 +249,11 @@ public class VibrationDataServiceImpl implements CommonDataService {
         if (MapUtils.isEmpty(features)) {
             return false;
         }
-        List<Put> putList = Lists.newArrayList();
         Set<String> featureList = pointServiceExt.listFeatures();
+        Map<String, CommonDeviceDetailsDO> details = detailsService.listDetailByFilename(SETTINGS_OIL_VISCOSITY);
+        List<Put> putList = Lists.newArrayList();
+        AtomicInteger times = new AtomicInteger();
+        AtomicDouble values = new AtomicDouble();
         for (Iterator<Map.Entry<String, Double>> it = features.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, Double> next = it.next();
             String feature = next.getKey();
@@ -259,32 +269,23 @@ public class VibrationDataServiceImpl implements CommonDataService {
                 CalculateFeatureEnum calculateFeatureEnum = CalculateFeatureEnum.value(feature);
                 //磨砺分析需要额外计算入库
                 if (Objects.nonNull(calculateFeatureEnum)) {
-                    //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
-                    try {
-                        hBaseService.familyExists(H_BASE_TABLE_NPC_PHM_DATA, feature + DASH + OIL_FEATURE_CALCULATE_FIX, true, Compression.Algorithm.SNAPPY);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     //计算后的数据
                     Double aDouble = pointServiceExt.calculatePointValueFromRedis(itemId, value);
-                    Put put = new Put(Bytes.toBytes(rowKey));
-                    put.setTimestamp(packet.getTimestamp());
-                    put.addColumn(Bytes.toBytes(feature + DASH + OIL_FEATURE_CALCULATE_FIX), Bytes.toBytes(index), Bytes.toBytes(aDouble));
-                    putList.add(put);
+                    creatNewPut(putList, rowKey, packet.getTimestamp(), feature + DASH + OIL_FEATURE_CALCULATE_FIX, index, aDouble);
+                    //累积十次数据
+                    times.incrementAndGet();
+                    values.addAndGet(value);
                 }
                 //
                 pointServiceExt.updateMeasurePointsInRedis(itemId, value, packet.getTimestamp());
             }
-            //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
-            try {
-                hBaseService.familyExists(H_BASE_TABLE_NPC_PHM_DATA, feature, true, Compression.Algorithm.SNAPPY);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Put put = new Put(Bytes.toBytes(rowKey));
-            put.setTimestamp(packet.getTimestamp());
-            put.addColumn(Bytes.toBytes(feature), Bytes.toBytes(index), Bytes.toBytes(value));
-            putList.add(put);
+            creatNewPut(putList, rowKey, packet.getTimestamp(), feature, index, value);
+            calculateAnaViscosity(details, putList, rowKey, index, feature, packet, value);
+        }
+        //只有是十个特征都相加的时候才要这个数据
+        if (times.get() == OIL_FEATURE_TOTAL_NUMBER) {
+            creatNewPut(putList, rowKey, packet.getTimestamp(), OIL_FEATURE_TOTAL, index, values.get());
+            pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + OIL_FEATURE_TOTAL, values.get(), packet.getTimestamp());
         }
         try {
             hBaseService.batchSave2HBase(H_BASE_TABLE_NPC_PHM_DATA, putList);
@@ -293,5 +294,57 @@ public class VibrationDataServiceImpl implements CommonDataService {
         } finally {
             return true;
         }
+    }
+
+    /**
+     * 计算40度以下油液粘度
+     *
+     * @param details
+     * @param putList
+     * @param rowKey
+     * @param index
+     * @param feature
+     * @param packet
+     * @param value
+     */
+    private void calculateAnaViscosity(Map<String, CommonDeviceDetailsDO> details, List<Put> putList, String rowKey, Integer index, String feature, PacketDTO packet, Double value) {
+        if (!OIL_ANA_VISCOSITY.equals(feature)) {
+            return;
+        }
+        CommonDeviceDetailsDO detailsDO = details.get(packet.getSensorCode());
+        if (Objects.isNull(detailsDO) || StringUtils.isBlank(detailsDO.getFieldValue())) {
+            return;
+        }
+        try {
+            double settings = Double.parseDouble(detailsDO.getFieldValue());
+//            (40度下粘度/配置项-1)*100
+            Double percent = (BigDecimalUtils.divide(value, settings, 2) - 1) * 100;
+            creatNewPut(putList, rowKey, packet.getTimestamp(), OIL_ANA_VISCOSITY_VARY, index, percent);
+        } catch (NumberFormatException e) {
+            log.error("settings convert failed：{}", e);
+        }
+    }
+
+    /**
+     * 创建一个新的put对象
+     *
+     * @param putList
+     * @param rowKey
+     * @param timestamp
+     * @param feature
+     * @param index
+     * @param value
+     */
+    private void creatNewPut(List<Put> putList, String rowKey, Long timestamp, String feature, Integer index, Double value) {
+        //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
+        try {
+            hBaseService.familyExists(H_BASE_TABLE_NPC_PHM_DATA, feature, true, Compression.Algorithm.SNAPPY);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Put put = new Put(Bytes.toBytes(rowKey));
+        put.setTimestamp(timestamp);
+        put.addColumn(Bytes.toBytes(feature), Bytes.toBytes(index), Bytes.toBytes(value));
+        putList.add(put);
     }
 }

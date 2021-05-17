@@ -16,7 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @Version: 1.0
  */
 public interface AlgorithmModelPointService extends IService<AlgorithmModelPointDO> {
-    
+
     /**
      * 根据条件获取分页查询数据
      *

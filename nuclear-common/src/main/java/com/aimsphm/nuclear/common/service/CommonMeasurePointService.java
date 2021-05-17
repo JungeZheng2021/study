@@ -129,10 +129,10 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
     /**
      * 获取所有测点的位置信息
      *
-     * @param subSystemId
+     * @param query
      * @return
      */
-    List<LabelVO> listLocationInfo(Long subSystemId);
+    List<LabelVO> listLocationInfo(CommonQueryBO query);
 
     /**
      * 根据测点id列表获取sensorCode列表
@@ -149,4 +149,12 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @return
      */
     List<CommonMeasurePointDO> listOilPoint(Long deviceId);
+
+    /**
+     * 查询传感器
+     *
+     * @param query
+     * @return
+     */
+    List<CommonMeasurePointDO> listSensorByGroup(CommonQueryBO query);
 }

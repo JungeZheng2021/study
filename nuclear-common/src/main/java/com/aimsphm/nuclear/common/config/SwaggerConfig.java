@@ -45,10 +45,10 @@ public class SwaggerConfig {
     public Docket createRestApi() {
         List<Parameter> parameters = new ArrayList<>();
         parameters.add(new ParameterBuilder()
-                .name("Authorization")
+                .name("token")
                 .description("认证token")
                 .modelRef(new ModelRef("string"))
-                .defaultValue("eyJhbGciOiJIUzUxMiJ9.eyJhdXRob3JpdGllcyI6IlJPTEVfQURNSU4sUk9MRV9VU0VSIiwic3ViIjoiYWRtaW4iLCJsb2NhbGUiOiJDTiIsImV4cCI6MTY0Mzg3Nzc3NH0.sYAxvL1E4-DL81wFMzmvGNZftLmCA4418DDwJx5tg_SSl_DbISa7IAxVw7lNs9_AsG_3PA6uzV_54MTFtngqaQ")
+                .defaultValue("{\"userAccount\":\"admin\",\"sysCode\":\"sysCode\"}")
                 .parameterType("header")
                 .required(false)
                 .build());

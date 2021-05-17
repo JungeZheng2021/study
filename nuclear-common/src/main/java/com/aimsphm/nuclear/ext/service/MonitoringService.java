@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.ext.service;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
 import com.aimsphm.nuclear.common.entity.vo.DeviceStatusVO;
 import com.aimsphm.nuclear.common.entity.vo.LabelVO;
@@ -43,9 +44,10 @@ public interface MonitoringService {
      * 更新所有测点的缓存值
      *
      * @param defaultValue
+     * @param queryBO
      * @return
      */
-    List<MeasurePointVO> updatePointsData(boolean defaultValue);
+    List<MeasurePointVO> updatePointsData(boolean defaultValue, CommonQueryBO queryBO);
 
     /**
      * 测点监测接口

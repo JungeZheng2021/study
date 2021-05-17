@@ -1,30 +1,31 @@
 package com.aimsphm.nuclear.common.service.impl;
 
-import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
-import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
-import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
+import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.CommonDeviceDetailsMapper;
-import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
-import com.aimsphm.nuclear.common.service.CommonDeviceService;
-import com.aimsphm.nuclear.common.service.CommonSubSystemService;
+import com.aimsphm.nuclear.common.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FEATURES;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_OIL_SETTINGS;
 
 
 /**
@@ -46,6 +47,9 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
     private CommonDeviceService deviceServiceExt;
     @Resource
     private CommonSubSystemService subSystemServiceExt;
+    @Resource
+    private CommonMeasurePointService pointService;
+
 
     @Override
     public Page<CommonDeviceDetailsDO> listCommonDeviceDetailsByPageWithParams(QueryBO<CommonDeviceDetailsDO> queryBO) {
@@ -74,6 +78,41 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
         update.eq(CommonDeviceDetailsDO::getDeviceId, deviceId).eq(CommonDeviceDetailsDO::getVisible, false).eq(CommonDeviceDetailsDO::getFieldNameEn, START_TIME)
                 .set(CommonDeviceDetailsDO::getFieldValue, System.currentTimeMillis());
         this.update(update);
+    }
+
+    @Override
+    @Cacheable(value = REDIS_KEY_OIL_SETTINGS, key = "#fieldName")
+    public Map<String, CommonDeviceDetailsDO> listDetailByFilename(String fieldName) {
+        Map<String, CommonDeviceDetailsDO> retVal = new HashMap<>(16);
+        LambdaQueryWrapper<CommonDeviceDetailsDO> wrapper = Wrappers.lambdaQuery(CommonDeviceDetailsDO.class);
+        wrapper.eq(CommonDeviceDetailsDO::getFieldNameEn, fieldName);
+        List<CommonDeviceDetailsDO> list = this.list(wrapper);
+        if (CollectionUtils.isEmpty(list)) {
+            return retVal;
+        }
+        Map<Long, CommonDeviceDetailsDO> collect = list.stream().filter(x -> Objects.nonNull(x.getDeviceId())).collect(Collectors.toMap(x -> x.getDeviceId(), x -> x, (a, b) -> a));
+        if (MapUtils.isEmpty(collect)) {
+            return retVal;
+        }
+        Set<Long> deviceIds = collect.keySet();
+        LambdaQueryWrapper<CommonMeasurePointDO> pointWrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+        pointWrapper.select(CommonMeasurePointDO::getDeviceId, CommonMeasurePointDO::getSensorCode).in(CommonMeasurePointDO::getDeviceId, deviceIds).
+                groupBy(CommonMeasurePointDO::getSensorCode);
+        List<CommonMeasurePointDO> points = pointService.list(pointWrapper);
+        if (CollectionUtils.isEmpty(points)) {
+            return retVal;
+        }
+        Map<Long, List<CommonMeasurePointDO>> map = points.stream().collect(Collectors.groupingBy(x -> x.getDeviceId()));
+        for (Map.Entry<Long, CommonDeviceDetailsDO> x : collect.entrySet()) {
+            Long deviceId = x.getKey();
+            CommonDeviceDetailsDO detailsDO = x.getValue();
+            List<CommonMeasurePointDO> pointDOS = map.get(deviceId);
+            if (CollectionUtils.isEmpty(pointDOS)) {
+                continue;
+            }
+            pointDOS.stream().forEach(m -> retVal.put(m.getSensorCode(), detailsDO));
+        }
+        return retVal;
     }
 
     /**

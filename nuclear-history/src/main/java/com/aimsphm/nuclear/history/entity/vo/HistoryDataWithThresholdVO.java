@@ -33,6 +33,15 @@ public class HistoryDataWithThresholdVO extends HistoryDataVO {
     @ApiModelProperty(value = "低低报警", notes = "")
     private Double thresholdLower;
 
+    @ApiModelProperty(value = "测点名称", notes = "")
+    private String pointName;
+
+    @ApiModelProperty(value = "传感器名称", notes = "")
+    private String sensorName;
+
+    @ApiModelProperty(value = "测点种类", notes = "1：网络采集（PI测点） 2：硬件（边缘端）采集 3：算法生成（特征测点）4：指令与反馈")
+    private Integer pointType;
+
     @ApiModelProperty(value = "单位", notes = "")
     private String unit;
 }

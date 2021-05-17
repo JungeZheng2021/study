@@ -84,6 +84,12 @@ public class CommonMeasurePointController {
         return iCommonMeasurePointServiceExt.listPointsByConditions(query);
     }
 
+    @GetMapping("/points/group")
+    @ApiOperation(value = "获取需要的传感器数据", notes = "历史查询模块使用")
+    public List<CommonMeasurePointDO> listSensorByGroup(CommonQueryBO query) {
+        return iCommonMeasurePointServiceExt.listSensorByGroup(query);
+    }
+
     @GetMapping("/entities")
     @ApiOperation(value = "根据条件获取需要的测点", notes = "不包括使用deviceId和subSystemId查询")
     public List<CommonMeasurePointDO> listPointsByEntity(CommonMeasurePointDO entity) {
@@ -91,9 +97,9 @@ public class CommonMeasurePointController {
     }
 
     @GetMapping("/locations")
-    @ApiOperation(value = "数据分析-获取所有的测点位置", notes = "全量去重数据")
-    public List<LabelVO> listLocationInfo(Long subSystemId) {
-        return iCommonMeasurePointServiceExt.listLocationInfo(subSystemId);
+    @ApiOperation(value = "获取所有的测点位置", notes = "全量去重数据")
+    public List<LabelVO> listLocationInfo(CommonQueryBO query) {
+        return iCommonMeasurePointServiceExt.listLocationInfo(query);
     }
 
     @GetMapping("features")

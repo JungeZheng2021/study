@@ -22,6 +22,7 @@
         <result column="feature_name" property="featureName"/>
         <result column="point_id" property="pointId"/>
         <result column="point_name" property="pointName"/>
+        <result column="alias" property="alias"/>
         <result column="point_type" property="pointType"/>
         <result column="point_desc" property="pointDesc"/>
         <result column="placeholder" property="placeholder"/>
@@ -49,7 +50,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        system_id, sub_system_id, device_id, device_name, sensor_code, sensor_name, feature_type, feature, feature_name, point_id, point_name, point_type, point_desc, placeholder, location, location_code, visible, category, early_warning_high, early_warning_low, threshold_high, threshold_low, threshold_higher, threshold_lower, unit, related_group, importance
+        system_id, sub_system_id, device_id, device_name, sensor_code, sensor_name, feature_type, feature, feature_name, point_id, alias, point_name, point_type, point_desc, placeholder, location, location_code, visible, category, early_warning_high, early_warning_low, threshold_high, threshold_low, threshold_higher, threshold_lower, unit, related_group, importance
     </sql>
 
 </mapper>

@@ -60,12 +60,7 @@ spring:
         min-idle: 20
         max-idle: 50
   application:
-    name: nuclear-core
-  mail:
-    host: 192.168.16.28
-    port: 25
-    username: mail@aimsphm.com
-    password: Qazx1234
+    name: nuclear-algo
 eureka:
   client:
     serviceUrl:

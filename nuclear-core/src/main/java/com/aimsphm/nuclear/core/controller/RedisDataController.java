@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.core.controller;
 
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
 import com.aimsphm.nuclear.common.redis.RedisClient;
 import com.aimsphm.nuclear.ext.service.MonitoringService;
@@ -41,8 +42,8 @@ public class RedisDataController {
 
     @GetMapping("")
     @ApiOperation(value = "更新redis所有测点数据")
-    public List<MeasurePointVO> updatePointsData(boolean defaultValue) {
-        return monitoringService.updatePointsData(defaultValue);
+    public List<MeasurePointVO> updatePointsData(boolean defaultValue, CommonQueryBO queryBO) {
+        return monitoringService.updatePointsData(defaultValue, queryBO);
     }
 
     @GetMapping("clear")

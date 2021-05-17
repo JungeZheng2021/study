@@ -242,32 +242,64 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
 
     @Override
     public List<CommonMeasurePointDO> listPointsByConditions(CommonQueryBO query) {
-        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = initWrapper(query);
-        if (Objects.nonNull(query.getCategory())) {
-            wrapper.and(x -> x.eq(CommonMeasurePointDO::getCategory, query.getCategory()));
-        }
-        if (Objects.nonNull(query.getFeatureType())) {
-            wrapper.and(x -> x.eq(CommonMeasurePointDO::getFeatureType, query.getFeatureType()));
-        }
-        if (Objects.nonNull(query.getVisible())) {
-            wrapper.last("and visible%" + query.getVisible() + "=0");
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = wrapperByConditions(query);
+        if (PointVisibleEnum.THRESHOLD.getCategory().equals(query.getVisible())) {
+            wrapper.orderByAsc(CommonMeasurePointDO::getPointId);
+        } else {
+            wrapper.orderByAsc(CommonMeasurePointDO::getSort);
         }
         return this.list(wrapper);
     }
 
+    private LambdaQueryWrapper<CommonMeasurePointDO> wrapperByConditions(CommonQueryBO query) {
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = initWrapper(query);
+        if (Objects.nonNull(query.getCategory())) {
+            wrapper.and(x -> x.eq(CommonMeasurePointDO::getCategory, query.getCategory()));
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(query.getFeatureType())) {
+            wrapper.and(x -> x.eq(CommonMeasurePointDO::getFeatureType, query.getFeatureType()));
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(query.getFeature())) {
+            wrapper.and(x -> x.eq(CommonMeasurePointDO::getFeature, query.getFeature()));
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(query.getLocationCode())) {
+            wrapper.and(x -> x.eq(CommonMeasurePointDO::getLocationCode, query.getLocationCode()));
+        }
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(query.getSensorCode())) {
+            wrapper.and(x -> x.eq(CommonMeasurePointDO::getSensorCode, query.getSensorCode()));
+        }
+        if (Objects.nonNull(query.getVisible())) {
+            wrapper.apply("visible%" + query.getVisible() + "=0");
+        }
+        return wrapper;
+    }
+
     @Override
-    public List<LabelVO> listLocationInfo(Long subSystemId) {
+    public List<LabelVO> listLocationInfo(CommonQueryBO query) {
         LambdaQueryWrapper<CommonSensorDO> wrapper = Wrappers.lambdaQuery(CommonSensorDO.class);
-        wrapper.select(CommonSensorDO::getLocation, CommonSensorDO::getLocationCode).isNotNull(CommonSensorDO::getLocationCode);
-        if (Objects.nonNull(subSystemId)) {
-            wrapper.eq(CommonSensorDO::getSubSystemId, subSystemId);
+        wrapper.select(CommonSensorDO::getLocation, CommonSensorDO::getLocationCode, CommonSensorDO::getSort).isNotNull(CommonSensorDO::getLocationCode);
+        if (Objects.nonNull(query.getSubSystemId())) {
+            wrapper.eq(CommonSensorDO::getSubSystemId, query.getSubSystemId());
+        }
+        if (Objects.nonNull(query.getDeviceId())) {
+            wrapper.eq(CommonSensorDO::getDeviceId, query.getDeviceId());
+        }
+        if (Objects.nonNull(query.getCategory())) {
+            wrapper.eq(CommonSensorDO::getCategory, query.getCategory());
         }
         List<CommonSensorDO> list = sensorService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        Map<String, CommonSensorDO> collect = list.stream().collect(Collectors.toMap(x -> x.getLocationCode(), x -> x, (a, b) -> a));
-        return collect.entrySet().stream().map(x -> new LabelVO(x.getValue().getLocation(), x.getKey())).collect(Collectors.toList());
+        Map<String, CommonSensorDO> collect = list.stream().collect(Collectors.toMap(x -> x.getLocationCode(), x -> x, (a, b) -> Objects.isNull(a.getSort()) ? b : a));
+        return collect.entrySet().stream().sorted((a, b) -> {
+            CommonSensorDO left = a.getValue();
+            CommonSensorDO right = b.getValue();
+            if (Objects.isNull(left.getSort()) || Objects.isNull(right.getSort())) {
+                return 0;
+            }
+            return left.getSort().compareTo(right.getSort());
+        }).map(x -> new LabelVO(x.getValue().getLocation(), x.getKey())).collect(Collectors.toList());
     }
 
     @Override
@@ -285,6 +317,15 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     public List<CommonMeasurePointDO> listOilPoint(Long deviceId) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
         wrapper.eq(CommonMeasurePointDO::getDeviceId, deviceId).eq(CommonMeasurePointDO::getCategory, PointCategoryEnum.OIL_QUALITY.getValue());
+        return this.list(wrapper);
+    }
+
+    @Override
+    public List<CommonMeasurePointDO> listSensorByGroup(CommonQueryBO query) {
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = wrapperByConditions(query);
+        wrapper.select(CommonMeasurePointDO::getId, CommonMeasurePointDO::getSensorCode, CommonMeasurePointDO::getCategory, CommonMeasurePointDO::getSensorName, CommonMeasurePointDO::getPointType, CommonMeasurePointDO::getPointName);
+        wrapper.groupBy(CommonMeasurePointDO::getSensorCode, CommonMeasurePointDO::getPointType);
+        wrapper.orderByAsc(CommonMeasurePointDO::getPointId);
         return this.list(wrapper);
     }
 

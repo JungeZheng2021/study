@@ -59,6 +59,9 @@ public class CommonMeasurePointDO extends BaseDO {
     @ApiModelProperty(value = "测点名称", notes = "")
     private String pointName;
 
+    @ApiModelProperty(value = "测点别名", notes = "英文")
+    private String alias;
+
     @ApiModelProperty(value = "测点种类", notes = "1：网络采集（PI测点） 2：硬件（边缘端）采集 3：算法生成（特征测点）4：指令与反馈")
     private Integer pointType;
 

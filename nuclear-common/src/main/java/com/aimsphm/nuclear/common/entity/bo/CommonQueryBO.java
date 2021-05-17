@@ -36,8 +36,17 @@ public class CommonQueryBO {
     @ApiModelProperty(value = "特征类型", notes = "abr：磨损分析,acc：加速度分,ana：油品分析,raw：时频分析,vec：速度分析,wei：诊断分析")
     private String featureType;
 
+    @ApiModelProperty(value = "具体特征值")
+    private String feature;
+
     @ApiModelProperty(value = "测点类型", notes = "1-温度、2-压力、3-流量、4-液位、5-振动、6-位移、7-电信号、8-声学、9-油质、10-状态类")
     private Integer category;
+
+    @ApiModelProperty(value = "测点位置")
+    private String locationCode;
+
+    @ApiModelProperty(value = "传感器编号")
+    private String sensorCode;
 
 
 }

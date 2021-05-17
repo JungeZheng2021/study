@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <property name="LOG_NAME" value="core"/>
-    <property name="LOG_PATH" value="./logs/core"/>
+    <property name="LOG_NAME" value="algo"/>
+    <property name="LOG_PATH" value="./logs/algo"/>
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>

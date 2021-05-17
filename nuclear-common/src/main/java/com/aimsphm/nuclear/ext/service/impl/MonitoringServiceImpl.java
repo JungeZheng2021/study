@@ -100,7 +100,12 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (CollectionUtils.isEmpty(points)) {
             return null;
         }
-        return points.stream().collect(Collectors.groupingBy(o -> o.getRelatedGroup(), LinkedHashMap::new, Collectors.toList()));
+        return points.stream().sorted((o1, o2) -> {
+            if (Objects.isNull(o1.getSort()) || Objects.isNull(o2.getSort())) {
+                return 0;
+            }
+            return o1.getSort().compareTo(o2.getSort());
+        }).collect(Collectors.groupingBy(MeasurePointVO::getRelatedGroup, () -> new TreeMap(Comparator.comparing(GroupSortEnum::getSorted)), Collectors.toList()));
     }
 
     @Override
@@ -341,13 +346,12 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     /**
      * @param defaultValue
+     * @param queryBO
      * @return
      */
     @Override
-    public List<MeasurePointVO> updatePointsData(boolean defaultValue) {
-        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.last("and visible%" + PointVisibleEnum.DOWN_SAMPLE.getCategory() + "=0");
-        List<CommonMeasurePointDO> list = pointService.list(wrapper);
+    public List<MeasurePointVO> updatePointsData(boolean defaultValue, CommonQueryBO queryBO) {
+        List<CommonMeasurePointDO> list = pointService.listPointsByConditions(queryBO);
         if (CollectionUtils.isEmpty(list)) {
             pointService.clearAllPointsData();
             return null;

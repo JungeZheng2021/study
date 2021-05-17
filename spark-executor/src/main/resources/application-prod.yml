@@ -13,7 +13,7 @@ spring:
     username: root
     password: aims2016
     hikari:
-      pool-name: coreHikariPool
+      pool-name: executeHikariPool
       maximum-pool-size: 12
       connection-timeout: 30000
       minimum-idle: 10

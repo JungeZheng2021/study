@@ -43,6 +43,12 @@ public final class RedisKeyConstant {
      * 所有的特征
      */
     public static final String REDIS_KEY_FEATURES = CACHE_KEY_PREFIX + "point_feature:";
+
+    public static final String REDIS_KEY_OIL_SETTINGS = CACHE_KEY_PREFIX + "settings_oil:";
+    /**
+     * 资源权限
+     */
+    public static final String REDIS_KEY_PRIVILEGES = CACHE_KEY_PREFIX + "privileges:";
     /**
      * 测点信息集合
      */

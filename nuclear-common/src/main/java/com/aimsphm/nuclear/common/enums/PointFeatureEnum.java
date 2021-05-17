@@ -12,13 +12,13 @@ package com.aimsphm.nuclear.common.enums;
  */
 public enum PointFeatureEnum {
     ABR("abr", "磨损分析"),
-    ACC("acc", "加速度分析"),
+    ACC("acc", "加速度"),
     ANA("ana", "油品分析"),
     //    CMD("cmd", ""),
-    RAW("raw", "时频分析"),
+    RAW("raw", "应力波强度"),
     //    UNU("unu", ""),
-    VEC("vec", "速度分析"),
-    WEI("wei", "诊断分析");
+    VEC("vec", "速度"),
+    WEI("wei", "特征显著性");
     /**
      * 真实英文
      */

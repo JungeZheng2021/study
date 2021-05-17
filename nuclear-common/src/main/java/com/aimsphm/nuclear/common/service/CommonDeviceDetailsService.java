@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service
@@ -41,4 +42,12 @@ public interface CommonDeviceDetailsService extends IService<CommonDeviceDetails
      * @param deviceId
      */
     void updateLastStartTime(Long deviceId);
+
+    /**
+     * 根据sensorCode和字段名称获取配置
+     *
+     * @param fieldName
+     * @return
+     */
+    Map<String, CommonDeviceDetailsDO> listDetailByFilename(String fieldName);
 }

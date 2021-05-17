@@ -28,12 +28,12 @@
   //   [null, null, 0.011, 0.0125]
   // ]
   // todo: end
-  
-  
+
+
   var color = ['#4091ea', '#ff9900', '#9b60f0', '#60b720', '#cc7558', '#69d2db', '#ee3cad', '#b9ce4b']
   var yAxis = []
   var series = []
-  
+
   seriesDataName.forEach(function (data, index) {
     yAxis.push({
       type: 'value',
@@ -49,7 +49,7 @@
       offset: index * 80
     })
   })
-  
+
   seriesData.forEach(function (data, index) {
     var s = {
       name: seriesDataName[index],
@@ -115,7 +115,7 @@
     }
     series.push(s)
   })
-  
+
   var chart = echarts.init(document.getElementById('chart'))
   var option = {
     animation: false,

@@ -95,4 +95,23 @@ ribbon:
   ConnectTimeout: 3000
   # 请求处理的超时时间
   ReadTimeout: 60000
-
+#获取用户权限接口
+privileges-server-url: http://192.168.16.37/autogrant/privileges/queryUserQXPrivileges.so
+#CAS服务地址
+cas:
+  server:
+    host:
+      url: http://192.168.16.37:8888/cas
+      #CAS服务登录地址
+      login_url: ${cas.server.host.url}/login
+      #CAS服务登出地址
+      logout_url: ${cas.server.host.url}/logout?service=${app.server.host.url}
+  #应用访问地址
+app:
+  server:
+    host:
+      url: http://192.168.16.38:${server.port}/service
+  #应用登录地址
+  login_url: /login
+  #应用登出地址
+  logout_url: /logout

@@ -27,6 +27,26 @@ public final class HBaseConstant {
      */
     public static final String OIL_FEATURE_CALCULATE_FIX = "add";
     /**
+     * 油质总的微粒数
+     */
+    public static final String OIL_FEATURE_TOTAL = "abr-total";
+    /**
+     * 油质40度下油液粘度
+     */
+    public static final String OIL_ANA_VISCOSITY = "ana-viscosity-40";
+    /**
+     * 油质40度下油液粘度变化
+     */
+    public static final String OIL_ANA_VISCOSITY_VARY = "ana-viscosity-40-vary";
+    /**
+     * 油液粘度计算配置项
+     */
+    public static final String SETTINGS_OIL_VISCOSITY = "lubricate_oil_init_viscosity";
+    /**
+     * 只有十个数累积的值才计算
+     */
+    public static final Integer OIL_FEATURE_TOTAL_NUMBER = 10;
+    /**
      * 列族-pi数据-列族名称
      */
     public static final String H_BASE_FAMILY_NPC_PI_REAL_TIME = "pRaw";

@@ -18,7 +18,7 @@ import java.util.List;
  * @Version: 1.0
  */
 public interface BizJobQuartzConfigService extends IService<BizJobQuartzConfigDO> {
-    
+
     /**
      * 根据条件获取分页查询数据
      *

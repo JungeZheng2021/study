@@ -58,7 +58,7 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
 
     @Override
     public Map<String, HistoryDataVO> listMovingAverageInfo(HistoryQueryMultiBO multi) {
-        WhetherThreadLocal.INSTANCE.setWhether(false);
+//        WhetherThreadLocal.INSTANCE.setWhether(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.MOVING_AVERAGE.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
         data.entrySet().stream().forEach(x -> {
@@ -77,7 +77,7 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
     @Override
     public Map<String, HistoryDataVO> listPredictionInfo(HistoryQueryMultiBO multi) {
         //是否需要获取阈值
-        WhetherThreadLocal.INSTANCE.setWhether(false);
+//        WhetherThreadLocal.INSTANCE.setWhether(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.TREND_FORECAST.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
         data.entrySet().stream().forEach(x -> {

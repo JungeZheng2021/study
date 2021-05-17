@@ -23,9 +23,10 @@
         <module>nuclear-common</module>
         <!--        <module>nuclear-algorithm</module>-->
         <!--        <module>nuclear-core</module>-->
-        <module>spark-task</module>
-        <!--        <module>nuclear-data</module>-->
-        <!--        <module>nuclear-opc</module>-->
+        <!--        <module>nuclear-auth</module>-->
+        <!--        <module>spark-task</module>-->
+        <module>nuclear-data</module>
+        <module>nuclear-opc</module>
         <!--        <module>nuclear-history</module>-->
         <!--        <module>spark-executor</module>-->
         <!--        <module>nuclear-report</module>-->

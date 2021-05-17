@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.history.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
 import com.aimsphm.nuclear.algorithm.util.RawDataThreadLocal;
-import com.aimsphm.nuclear.algorithm.util.WhetherThreadLocal;
 import com.aimsphm.nuclear.common.config.DynamicTableTreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
@@ -119,10 +118,10 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         featureBO.setSensorCode(notPIPoint ? point.getSensorCode() : point.getPointId());
         BeanUtils.copyProperties(single, featureBO);
         List<List<Object>> dataDTOS = listHistoryDataWithPointByScan(featureBO);
-        if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
-            BeanUtils.copyProperties(point, vo);
-            WhetherThreadLocal.INSTANCE.remove();
-        }
+//        if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
+        BeanUtils.copyProperties(point, vo);
+//            WhetherThreadLocal.INSTANCE.remove();
+//        }
         vo.setChartData(dataDTOS);
         return vo;
     }
@@ -193,10 +192,10 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             List<String> points = collect.get(pointId);
             String collect1 = points.stream().collect(Collectors.joining(COMMA));
             HistoryDataVO vo = new HistoryDataWithThresholdVO();
-            if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
-                BeanUtils.copyProperties(point, vo);
-                WhetherThreadLocal.INSTANCE.remove();
-            }
+//            if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
+            BeanUtils.copyProperties(point, vo);
+//                WhetherThreadLocal.INSTANCE.remove();
+//            }
             try {
                 List<List<Object>> charData = mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class);
                 List<List<Object>> collect2 = charData.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(x -> (Long) x.get(0)))), ArrayList::new));
