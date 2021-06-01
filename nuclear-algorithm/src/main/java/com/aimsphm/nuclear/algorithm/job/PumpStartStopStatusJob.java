@@ -9,7 +9,10 @@ import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -17,6 +20,8 @@ import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.util.List;
+
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.job
@@ -32,6 +37,9 @@ import java.util.List;
 @Slf4j
 @ConditionalOnProperty(prefix = "scheduled.config", name = "enable", havingValue = "true")
 public class PumpStartStopStatusJob implements BaseMonitorJob {
+    @Resource
+    @Qualifier("redisTemplate")
+    private RedisTemplate<String, Object> redis;
 
     @Resource
     private AlgorithmService algorithmService;
@@ -43,10 +51,15 @@ public class PumpStartStopStatusJob implements BaseMonitorJob {
      * 设备状态监测算法
      * 一分钟(每分钟的37秒)执行一次执行一次
      */
-//    @Scheduled(cron = "37 0/1 * * * ? ")
+    @Async
+    //    @Scheduled(cron = "37 0/1 * * * ? ")
     @Scheduled(cron = "${scheduled.config.PumpStartStopStatusJob:37 0/1 * * * ?}")
     @DistributedLock("PumpStartStopStatusJobLock")
     public void monitorStartStopStatus() {
+        Boolean running = redis.hasKey(REDIS_KEY_FAN);
+        if (running) {
+            return;
+        }
         execute(DeviceTypeEnum.PUMP.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_START_STOP);
     }
 }

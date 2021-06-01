@@ -5,11 +5,20 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.annotation.DistributedLock;
 import com.aimsphm.nuclear.common.enums.DeviceTypeEnum;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
+import com.aimsphm.nuclear.common.util.DateUtils;
+import io.lettuce.core.ScriptOutputType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Objects;
+
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN;
+import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_SS_SSS_M;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.job
@@ -27,7 +36,9 @@ public class FanStartStopStatusJob implements BaseMonitorJob {
 
     @Resource
     private AlgorithmService algorithmService;
-
+    @Resource
+    @Qualifier("redisTemplate")
+    private RedisTemplate<String, Object> redis;
     @Resource
     private CommonDeviceService deviceService;
 
@@ -35,10 +46,16 @@ public class FanStartStopStatusJob implements BaseMonitorJob {
      * 设备状态监测算法
      * 一分钟(每分钟的10秒)执行一次执行一次
      */
-//    @Scheduled(cron = "10 0/1 * * * ? ")
-    @Scheduled(cron = "${scheduled.config.FanStartStopStatusJob:10 0/1 * * * ?}")
+    @Async
+//    @Scheduled(cron = "30 0/10 * * * ? ")
+    @Scheduled(cron = "${scheduled.config.FanStartStopStatusJob:30 0/10 * * * ? }")
     @DistributedLock("FanStartStopStatusJobLock")
     public void monitorStartStopStatus() {
+        Boolean running = redis.hasKey(REDIS_KEY_FAN);
+        if (running) {
+            return;
+        }
         execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_START_STOP);
+        log.info("执行----快： {}", DateUtils.formatCurrentDateTime(YEAR_MONTH_DAY_HH_MM_SS_SSS_M));
     }
 }

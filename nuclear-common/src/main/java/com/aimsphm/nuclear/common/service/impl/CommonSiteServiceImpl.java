@@ -53,14 +53,14 @@ public class CommonSiteServiceImpl extends ServiceImpl<CommonSiteMapper, CommonS
     }
 
     @Override
-    public TreeVO<Long, String> listCommonSetTree(Long id) {
-        CommonSiteDO siteDO = this.getById(id);
+    public TreeVO<Long, String> listCommonSetTree(Long siteId) {
+        CommonSiteDO siteDO = this.getById(siteId);
         if (Objects.isNull(siteDO)) {
             return null;
         }
         TreeVO<Long, String> vo = new TreeVO(siteDO.getId(), siteDO.getSiteName());
         LambdaQueryWrapper<CommonSetDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonSetDO::getSiteId, id).orderByAsc(CommonSetDO::getSort);
+        wrapper.eq(CommonSetDO::getSiteId, siteId).orderByAsc(CommonSetDO::getSort);
         List<CommonSetDO> list = setServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return vo;

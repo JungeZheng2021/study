@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Get;
 import org.springframework.beans.BeanUtils;
@@ -279,10 +280,11 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         List<String> pointIds = multi.getPointIds();
         try {
             List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, multi.getStart(), multi.getEnd(), H_BASE_FAMILY_NPC_ESTIMATE, pointIds, multi.getModelId());
-            if (CollectionUtils.isEmpty(collect)) {
-                return null;
+            final Map<String, List<PointEstimateDataBO>> hBaseData = Maps.newHashMap();
+            if (CollectionUtils.isNotEmpty(collect)) {
+                Map<String, List<PointEstimateDataBO>> map = collect.stream().collect(Collectors.groupingBy(x -> x.getPointId()));
+                hBaseData.putAll(map);
             }
-            Map<String, List<PointEstimateDataBO>> collect1 = collect.stream().collect(Collectors.groupingBy(x -> x.getPointId()));
             pointIds.stream().forEach(pointId -> {
                 EventDataVO vo = new EventDataVO();
                 CommonMeasurePointDO point = serviceExt.getPointByPointId(pointId);
@@ -290,13 +292,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                     return;
                 }
                 BeanUtils.copyProperties(point, vo);
-                List<PointEstimateDataBO> v = collect1.get(pointId);
-                List actualData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getActual())).collect(Collectors.toList());
-                List estimatedData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getEstimate())).collect(Collectors.toList());
-                List residualData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getResidual())).collect(Collectors.toList());
-                vo.setActualData(actualData);
-                vo.setEstimatedData(estimatedData);
-                vo.setResidualData(residualData);
+                operationHBaseData(pointId, vo, hBaseData);
                 List<JobAlarmRealtimeDO> realtimeList = realtimeService.listRealTime(pointId, multi.getStart(), multi.getEnd(), multi.getModelId());
                 if (CollectionUtils.isNotEmpty(realtimeList)) {
                     vo.setAlarmData(realtimeList.stream().map(x -> x.getGmtAlarmTime().getTime()).collect(Collectors.toList()));
@@ -307,6 +303,22 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             log.error("select Estimate data failed..{}", e);
         }
         return data;
+    }
+
+    private void operationHBaseData(String pointId, EventDataVO vo, Map<String, List<PointEstimateDataBO>> hBaseData) {
+        if (MapUtils.isEmpty(hBaseData)) {
+            return;
+        }
+        List<PointEstimateDataBO> v = hBaseData.get(pointId);
+        if (CollectionUtils.isEmpty(v)) {
+            return;
+        }
+        List actualData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getActual())).collect(Collectors.toList());
+        List estimatedData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getEstimate())).collect(Collectors.toList());
+        List residualData = v.stream().map(item -> Lists.newArrayList(item.getTimestamp(), item.getResidual())).collect(Collectors.toList());
+        vo.setActualData(actualData);
+        vo.setEstimatedData(estimatedData);
+        vo.setResidualData(residualData);
     }
 
     private void checkParam(HistoryQueryMultiBO multi) {

@@ -54,14 +54,14 @@ public class CommonSetServiceImpl extends ServiceImpl<CommonSetMapper, CommonSet
     }
 
     @Override
-    public TreeVO<Long, String> listCommonSetTree(Long id) {
-        CommonSetDO commonSetDO = this.getById(id);
+    public TreeVO<Long, String> listCommonSetTree(Long setId) {
+        CommonSetDO commonSetDO = this.getById(setId);
         if (Objects.isNull(commonSetDO)) {
             return null;
         }
         TreeVO<Long, String> vo = new TreeVO(commonSetDO.getId(), commonSetDO.getSetName());
         LambdaQueryWrapper<CommonSystemDO> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(CommonSystemDO::getSetId, id).orderByAsc(CommonSystemDO::getSort);
+        wrapper.eq(CommonSystemDO::getSetId, setId).orderByAsc(CommonSystemDO::getSort);
         List<CommonSystemDO> list = systemServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return vo;

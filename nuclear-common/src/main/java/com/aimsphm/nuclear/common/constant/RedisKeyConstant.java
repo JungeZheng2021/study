@@ -43,6 +43,18 @@ public final class RedisKeyConstant {
      * 所有的特征
      */
     public static final String REDIS_KEY_FEATURES = CACHE_KEY_PREFIX + "point_feature:";
+    /**
+     * 定时任务中风机的key
+     */
+    public static final String REDIS_KEY_FAN = CACHE_KEY_PREFIX + "fan";
+    /**
+     * 定时任务中上充泵的key
+     */
+    public static final String REDIS_KEY_PUMP = CACHE_KEY_PREFIX + "pum";
+    /**
+     * 设备工况
+     */
+    public static final String REDIS_KEY_DEVICE_CONDITION = CACHE_KEY_PREFIX + "condition:";
 
     public static final String REDIS_KEY_OIL_SETTINGS = CACHE_KEY_PREFIX + "settings_oil:";
     /**

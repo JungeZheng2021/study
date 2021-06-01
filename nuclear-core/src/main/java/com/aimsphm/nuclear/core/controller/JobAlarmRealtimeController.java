@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.core.controller;
 
+import com.aimsphm.nuclear.common.entity.JobAlarmProcessRecordDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
@@ -31,10 +32,16 @@ public class JobAlarmRealtimeController {
     @Autowired
     private JobAlarmRealtimeService service;
 
-    @GetMapping("list")
+    @GetMapping("pages")
     @ApiOperation(value = "分页查询", notes = "多条件组合查询")
     public Page<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParams(Page<JobAlarmRealtimeDO> page, JobAlarmRealtimeDO entity, ConditionsQueryBO query) {
         return service.listJobAlarmRealtimeByPageWithParams(new QueryBO(page, entity, query));
+    }
+
+    @GetMapping("list")
+    @ApiOperation(value = "列表查询", notes = "多条件组合查询")
+    public List<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParams(JobAlarmRealtimeDO entity, ConditionsQueryBO query) {
+        return service.listJobAlarmRealtimeWithParams(new QueryBO(entity, query));
     }
 
     @GetMapping("{id}")

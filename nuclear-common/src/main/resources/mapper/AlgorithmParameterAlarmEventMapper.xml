@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.entity.AlgorithmParameterAlarmEventDO">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmParameterAlarmEventDO">
+        <result column="id" property="id"/>
+        <result column="system_id" property="systemId"/>
+        <result column="sub_system_id" property="subSystemId"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="event_code" property="eventCode"/>
+        <result column="alarm_type" property="alarmType"/>
+        <result column="alarm_content" property="alarmContent"/>
+        <result column="logic_relation" property="logicRelation"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        system_id, sub_system_id, device_id, event_code, alarm_type, alarm_content, logic_relation
+    </sql>
+
+</mapper>

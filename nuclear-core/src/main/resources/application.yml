@@ -1,8 +1,7 @@
 spring:
   profiles:
     active: local
-  application:
-    name: core
 server:
   servlet:
     context-path: /service
+  port: 8083

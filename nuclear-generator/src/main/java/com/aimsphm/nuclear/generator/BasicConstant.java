@@ -51,7 +51,9 @@ public final class BasicConstant {
 //            "algorithm_rules_parameter",
 //            "algorithm_rules_conclusion"
 //            "biz_diagnosis_result"
-            "auth_privilege"
+//            "auth_privilege"
+//            "job_alarm_process_record"
+            "algorithm_parameter_alarm_event"
 //            "biz_report",
 //            "biz_job_quartz_config",
 //            "biz_report_config"

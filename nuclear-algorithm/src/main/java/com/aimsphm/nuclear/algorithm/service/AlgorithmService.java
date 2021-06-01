@@ -16,15 +16,17 @@ public interface AlgorithmService {
      * 设备状态监测算法
      *
      * @param deviceId
+     * @param algorithmPeriod
      * @return
      */
-    void getDeviceStateMonitorInfo(Long deviceId);
+    void getDeviceStateMonitorInfo(Long deviceId, Integer algorithmPeriod);
 
     /**
      * 设备启停状态判断
      *
      * @param deviceId
+     * @param algorithmPeriod
      * @return
      */
-    void getDeviceStartAndStopMonitorInfo(Long deviceId);
+    void getDeviceStartAndStopMonitorInfo(Long deviceId, Integer algorithmPeriod);
 }

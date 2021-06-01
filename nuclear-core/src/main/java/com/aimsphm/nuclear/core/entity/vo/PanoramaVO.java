@@ -31,6 +31,9 @@ public class PanoramaVO extends JobDeviceStatusDO {
     @ApiModelProperty(value = "系统id", notes = "")
     private Long systemId;
 
+    @ApiModelProperty(value = "机组id", notes = "")
+    private Long setId;
+
     @ApiModelProperty(value = "子系统", notes = "")
     private Long subSystemId;
 

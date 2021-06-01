@@ -53,7 +53,7 @@ public interface BaseMonitorJob {
                     long l = runtime.freeMemory();
                     log.info("总内存:{}", runtime.totalMemory() / 1024 / 1024);
                     log.info("执行前剩余内存:{}", l / 1024 / 1024);
-                    algorithmService.getDeviceStateMonitorInfo(deviceDO.getId());
+                    algorithmService.getDeviceStateMonitorInfo(deviceDO.getId(), 60 * 60 * 1000);
                     long l1 = runtime.freeMemory();
                     log.info("执行后剩余内存:{}", l1 / 1024 / 1024);
                     log.info("执行使用内存:{}", (l - l1) / 1024 / 1024);
@@ -66,7 +66,7 @@ public interface BaseMonitorJob {
                     long l = runtime.freeMemory();
                     log.info("总内存:{}", runtime.totalMemory() / 1024 / 1024);
                     log.info("执行前剩余内存:{}", l / 1024 / 1024);
-                    algorithmService.getDeviceStartAndStopMonitorInfo(deviceDO.getId());
+                    algorithmService.getDeviceStartAndStopMonitorInfo(deviceDO.getId(), 10 * 60 * 1000);
                     long l1 = runtime.freeMemory();
                     log.info("执行后剩余内存:{}", l1 / 1024 / 1024);
                     log.info("执行使用内存:{}", (l - l1) / 1024 / 1024);

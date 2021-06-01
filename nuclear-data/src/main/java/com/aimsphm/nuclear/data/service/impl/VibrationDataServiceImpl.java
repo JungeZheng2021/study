@@ -318,8 +318,9 @@ public class VibrationDataServiceImpl implements CommonDataService {
         try {
             double settings = Double.parseDouble(detailsDO.getFieldValue());
 //            (40度下粘度/配置项-1)*100
-            Double percent = (BigDecimalUtils.divide(value, settings, 2) - 1) * 100;
-            creatNewPut(putList, rowKey, packet.getTimestamp(), OIL_ANA_VISCOSITY_VARY, index, percent);
+            Double percent = (BigDecimalUtils.divide(value, settings, 7) - 1) * 100;
+            Double format = BigDecimalUtils.format(percent, 5);
+            creatNewPut(putList, rowKey, packet.getTimestamp(), OIL_ANA_VISCOSITY_VARY, index, format);
         } catch (NumberFormatException e) {
             log.error("settings convert failed：{}", e);
         }

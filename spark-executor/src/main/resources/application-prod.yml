@@ -9,9 +9,9 @@ spring:
     enableSwagger2: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.23.16.201:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: aims2016
+    url: @db_url@
+    username: @db_username@
+    password: @db_password@
     hikari:
       pool-name: executeHikariPool
       maximum-pool-size: 12
@@ -22,13 +22,13 @@ spring:
       connection-test-query: SELECT 1
       auto-commit: true
   rabbitmq:
-    host: 10.23.16.188
+    host: @rabbitmq_host@
     port: 5672
-    username: admin
-    password: admin123$
+    username: @mq_username@
+    password: @mq_password@
   redis:
-    password: aims2016
-    host: 10.23.16.188
+    host: @redis_host@
+    password: @redis_password@
     lettuce:
       pool:
         max-active: 200
@@ -62,8 +62,35 @@ tableName: default:npc_phm_data
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://10.23.16.167:8761/eureka/,http://10.23.16.187:8762/eureka/
+      defaultZone: @eureka_master@,@eureka_salver@
     fetchRegistry: true
   instance:
     prefer-ip-address: true
+config:
+  driver:
+    memory:
+      hourly: 1g
+      daily: 2g
+      weekly: 2g
+      monthly: 3g
+  executor:
+    cores:
+      hourly: 1
+      daily: 2
+      weekly: 2
+      monthly: 2
+    memory:
+      hourly: 1g
+      daily: 2g
+      weekly: 2g
+      monthly: 3g
+  cron:
+    # 每小时的13分
+    hourly: 0 13 * * * ?
+    # 每天1点23分
+    daily: 0 23 1 * * ?
+    # 每周一的2点37分钟
+    weekly: 0 37 2 ? * MON
+    # 每月1号的3点47分
+    monthly: 0 47 3 1 * ?
 

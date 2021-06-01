@@ -68,10 +68,10 @@ public class CommonSiteController {
         return iCommonSiteServiceExt.removeById(id);
     }
 
-    @GetMapping("/tree/{id}")
+    @GetMapping("/tree/{siteId}")
     @ApiOperation(value = "获取某电厂信息结构树")
-    public TreeVO getCommonSiteTree(@PathVariable Long id) {
-        return iCommonSiteServiceExt.listCommonSetTree(id);
+    public TreeVO getCommonSiteTree(@PathVariable Long siteId) {
+        return iCommonSiteServiceExt.listCommonSetTree(siteId);
     }
 }
 

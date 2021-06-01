@@ -37,4 +37,12 @@ public interface JobAlarmRealtimeService extends IService<JobAlarmRealtimeDO> {
      * @return
      */
     List<JobAlarmRealtimeDO> listRealTime(String pointId, Long start, Long end, Long modelId);
+
+    /**
+     * 不分页查询数据
+     *
+     * @param queryBO
+     * @return
+     */
+    List<JobAlarmRealtimeDO> listJobAlarmRealtimeWithParams(QueryBO queryBO);
 }

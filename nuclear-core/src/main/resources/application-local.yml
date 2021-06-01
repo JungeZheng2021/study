@@ -1,8 +1,9 @@
 server:
   port: 8083
   max-http-header-size: 10000000
-
 spring:
+  application:
+    name: core1
   main:
     allow-bean-definition-overriding: true
   config:
@@ -98,11 +99,11 @@ ribbon:
   # 请求处理的超时时间
   ReadTimeout: 60000
 
-privileges-server-url: http://192.168.16.37/autogrant/privileges/queryUserQXPrivileges.so
 #CAS服务地址
 cas:
   server:
     host:
+      #      url: https://sso.casuat.jnpc.com.cn/cas/
       url: http://192.168.16.37:8888/cas
       #CAS服务登录地址
       login_url: ${cas.server.host.url}/login
@@ -112,8 +113,11 @@ cas:
 app:
   server:
     host:
-      url: http://localhost:8082
+      url: http://192.168.20.178:10086${server.servlet.context-path}
   #应用登录地址
   login_url: /login
   #应用登出地址
   logout_url: /logout
+
+#privileges-server-url: http://autogrant.jnpc.com.cn/autogrant/privileges/queryUserQXPrivileges.so
+privileges-server-url: http://192.168.16.37/autogrant/privileges/queryUserQXPrivileges.so

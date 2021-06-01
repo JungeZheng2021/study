@@ -28,8 +28,8 @@ public interface CommonSetService extends IService<CommonSetDO> {
     /**
      * 获取某机组信息结构树
      *
-     * @param id 机组id
+     * @param setId 机组id
      * @return
      */
-    TreeVO<Long, String> listCommonSetTree(Long id);
+    TreeVO<Long, String> listCommonSetTree(Long setId);
 }

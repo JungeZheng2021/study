@@ -17,11 +17,11 @@ spring:
     enable: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: @sql_url@
-    username: @sql_username@
-    password: @sql_password@
+    url: @db_url@
+    username: @db_username@
+    password: @db_password@
     hikari:
-      pool-name: coreHikariPool
+      pool-name: algoHikariPool
       maximum-pool-size: 12
       connection-timeout: 30000
       minimum-idle: 10
@@ -33,10 +33,10 @@ spring:
     enable: true
   rabbitmq:
     first:
-      host: @rabbitmq_host1@
+      host: @rabbitmq_host@
       port: 5672
-      username: @rabbitmq_host1_username@
-      password: @rabbitmq_host1_password@
+      username: @mq_username@
+      password: @mq_password@
     second:
       host: 192.168.16.45
       port: 5672

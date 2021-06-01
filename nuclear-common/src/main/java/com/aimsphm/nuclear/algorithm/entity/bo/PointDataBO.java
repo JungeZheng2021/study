@@ -20,12 +20,6 @@ import java.util.List;
 public class PointDataBO {
     @ApiModelProperty(value = "测点编号", notes = "")
     private String pointId;
-    @ApiModelProperty(value = "重要程度", notes = "")
-    private Integer importance;
-    @ApiModelProperty(value = "低预警集", notes = "低低报，低报，低预警")
-    private List<Double> thresholdLow;
-    @ApiModelProperty(value = "高预警集", notes = "低低报，低报，低预警")
-    private List<Double> thresholdHigh;
     @ApiModelProperty(value = "原始数据", notes = "")
     private List<HBaseTimeSeriesDataDTO> cells;
 

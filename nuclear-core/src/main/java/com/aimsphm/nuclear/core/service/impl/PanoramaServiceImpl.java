@@ -74,8 +74,6 @@ public class PanoramaServiceImpl implements PanoramaService {
         }
         BeanUtils.copyProperties(device, vo);
         BeanUtils.copyProperties(status, vo);
-        vo.setSystemId(device.getSystemId());
-        vo.setSubSystemId(device.getSubSystemId());
         //阈值报警
         Map<Integer, Long> transfiniteData = monitoringService.countTransfinitePiPoint(deviceId);
         //算法报警

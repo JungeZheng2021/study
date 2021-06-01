@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -46,6 +47,7 @@ public class PumpMonitorJob implements BaseMonitorJob {
      */
 //    @Scheduled(cron = "0 0/7 * * * ? ")
 //    @Scheduled(cron = "0 13 * * * ? ")
+    @Async
     @Scheduled(cron = "${scheduled.config.PumpMonitorJob:0 13 * * * ?}")
     @DistributedLock("FanMonitorJobLock")
     public void monitor() {

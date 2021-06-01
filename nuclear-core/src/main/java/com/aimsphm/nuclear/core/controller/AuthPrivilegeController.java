@@ -47,7 +47,7 @@ public class AuthPrivilegeController {
     @GetMapping("records")
     @ApiOperation(value = "获取某用户下具备的权限列表", notes = "多条件组合查询")
     public List<AuthPrivilegeDO> listAuthPrivilege(HttpServletRequest request) {
-        String userAccount = request.getHeader("userAccount");
+        String userAccount = request.getHeader("token");
         String sysCode = request.getHeader("sysCode");
         String structured = request.getHeader("structured");
         return service.listAuthPrivilege(userAccount, sysCode, structured);

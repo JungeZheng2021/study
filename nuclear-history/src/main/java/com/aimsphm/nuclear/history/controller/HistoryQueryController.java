@@ -12,6 +12,7 @@ package com.aimsphm.nuclear.history.controller;
  */
 
 import com.aimsphm.nuclear.algorithm.util.RawDataThreadLocal;
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
@@ -26,10 +27,14 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.converters.date.DateNumberConverter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.io.compress.Compression;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
 
@@ -94,6 +100,10 @@ public class HistoryQueryController {
         if (MapUtils.isEmpty(data)) {
             throw new CustomMessageException("没有可以导出的数据");
         }
+        writeExcelFile(response, data);
+    }
+
+    private void writeExcelFile(HttpServletResponse response, Map<String, HistoryDataVO> data) {
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-disposition", "attachment;filename=export-" + System.currentTimeMillis() + ".xlsx");
@@ -112,12 +122,37 @@ public class HistoryQueryController {
         }
     }
 
+    @Resource
+    CommonMeasurePointService pointService;
+
     @GetMapping("export/raw-data")
     @ApiOperation(value = "导出原始数据", notes = "接口中不使用")
-    public Map<String, HistoryDataVO> listHistoryPointList(HistoryQueryMultiBO queryMultiBO) {
+    public Map<String, HistoryDataVO> listHistoryPointList(HistoryQueryMultiBO queryMultiBO, String sql) {
+        operationPoints(queryMultiBO, sql);
         RawDataThreadLocal.INSTANCE.setWhether(true);
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
         return data;
+    }
+
+    @GetMapping("export/raw-data/excel")
+    @ApiOperation(value = "导出原始数据excel", notes = "接口中不使用")
+    public void listHistoryPointListExcel(HistoryQueryMultiBO queryMultiBO, HttpServletResponse response, String sql) {
+        operationPoints(queryMultiBO, sql);
+        RawDataThreadLocal.INSTANCE.setWhether(true);
+        Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
+        writeExcelFile(response, data);
+    }
+
+    private void operationPoints(HistoryQueryMultiBO queryMultiBO, String sql) {
+        if (StringUtils.isNotBlank(sql)) {
+            LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+            wrapper.apply(sql);
+            List<CommonMeasurePointDO> list = pointService.list(wrapper);
+            if (CollectionUtils.isNotEmpty(list)) {
+                List<String> collect = list.stream().map(x -> x.getPointId()).collect(Collectors.toList());
+                queryMultiBO.setPointIds(collect);
+            }
+        }
     }
 
     @Resource

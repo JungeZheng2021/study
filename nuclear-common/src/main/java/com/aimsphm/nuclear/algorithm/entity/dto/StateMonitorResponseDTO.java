@@ -20,18 +20,30 @@ import java.util.List;
 @Data
 public class StateMonitorResponseDTO {
 
+    @ApiModelProperty(value = "子系统id", notes = "")
+    private Long subSystemId;
+
     @ApiModelProperty(value = "设备id", notes = "")
     private Long deviceId;
+
+    @ApiModelProperty(value = "设备id", notes = "")
+    private String deviceCode;
+
+    @ApiModelProperty(value = "设备id", notes = "")
+    private String deviceName;
 
     @ApiModelProperty(value = "健康状态", notes = "")
     private Integer healthStatus;
 
     @ApiModelProperty(value = "运行状态", notes = "")
-    private String operationCondition;
+    private Integer operationCondition;
+
+    @ApiModelProperty(value = "运行状态时间", notes = "")
+    private Long timestamp;
 
     @ApiModelProperty(value = "预测结果", notes = "")
     private List<EstimateResponseDataBO> modelEstimateResult;
 
     @ApiModelProperty(value = "报警事件结果", notes = "")
-    private List<JobAlarmRealtimeDO> realtimeAlarm;
+    private List<AlarmEventDTO> txAlarmEvent;
 }

@@ -68,6 +68,11 @@ public final class HBaseConstant {
      */
     public static final String H_BASE_FAMILY_NPC_ESTIMATE = "estimate";
 
+    /**
+     * 设备工况
+     */
+    public static final String H_BASE_FAMILY_NPC_CONDITION = "wc";
+
     private HBaseConstant() {
     }
 }

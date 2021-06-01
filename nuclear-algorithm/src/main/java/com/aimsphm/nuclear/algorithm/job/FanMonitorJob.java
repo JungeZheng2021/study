@@ -5,11 +5,18 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.annotation.DistributedLock;
 import com.aimsphm.nuclear.common.enums.DeviceTypeEnum;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
+import com.aimsphm.nuclear.common.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN;
+import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_SS_SSS_M;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.job
@@ -27,7 +34,9 @@ public class FanMonitorJob implements BaseMonitorJob {
 
     @Resource
     private AlgorithmService algorithmService;
-
+    @Resource
+    @Qualifier("redisTemplate")
+    private RedisTemplate<String, Object> redis;
     @Resource
     private CommonDeviceService deviceService;
 
@@ -36,11 +45,19 @@ public class FanMonitorJob implements BaseMonitorJob {
      * 测试： 每11分的时候执行一次
      * 线上： 每小时的37分的时候执行一次
      */
-//    @Scheduled(cron = "0 0/11 * * * ?")
-    @Scheduled(cron = "${scheduled.config.FanMonitorJob:0 37 * * * ?}")
+    @Async
+//    @Scheduled(cron = "29 0 * * * ?")
+//    @Scheduled(cron = "${scheduled.config.FanMonitorJob:29 0 * * * ?}")
     @DistributedLock("FanMonitorJobLock")
     public void monitor() {
-        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
+        redis.opsForValue().set(REDIS_KEY_FAN, 1);
+        try {
+            execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        redis.delete(REDIS_KEY_FAN);
+
     }
 
 }
