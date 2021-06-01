@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -106,6 +107,12 @@ public class CommonMeasurePointController {
     @ApiOperation(value = "获取所有的特征")
     public Set<String> listFeatures() {
         return iCommonMeasurePointServiceExt.listFeatures();
+    }
+
+    @GetMapping("points/inModel")
+    @ApiOperation(value = "判断测点是否在模型中")
+    public Map<String, Boolean> listPointByDeviceIdInModel(@RequestParam("pointIds") List<String> pointIds) {
+        return iCommonMeasurePointServiceExt.listPointByDeviceIdInModel(pointIds);
     }
 
 }

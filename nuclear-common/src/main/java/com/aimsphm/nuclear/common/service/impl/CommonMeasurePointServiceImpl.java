@@ -329,6 +329,31 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         return this.list(wrapper);
     }
 
+    @Override
+    public Map<String, Boolean> listPointByDeviceIdInModel(List<String> pointIds) {
+        if (CollectionUtils.isEmpty(pointIds)) {
+            return null;
+        }
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+        wrapper.in(CommonMeasurePointDO::getPointId, pointIds);
+        List<CommonMeasurePointDO> list = this.list(wrapper);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        Map<Long, CommonMeasurePointDO> ids = list.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+        Map<String, CommonMeasurePointDO> pointDOMap = list.stream().collect(Collectors.toMap(x -> x.getPointId(), x -> x));
+        LambdaQueryWrapper<AlgorithmModelPointDO> modelWrapper = Wrappers.lambdaQuery(AlgorithmModelPointDO.class);
+        modelWrapper.in(AlgorithmModelPointDO::getPointId, ids.keySet());
+        List<AlgorithmModelPointDO> modelList = algorithmModelPointService.list(modelWrapper);
+        Map<Long, AlgorithmModelPointDO> collect = modelList.stream().collect(Collectors.toMap(AlgorithmModelPointDO::getPointId, x -> x));
+        return pointIds.stream().collect(Collectors.toMap(x -> x, x -> {
+            CommonMeasurePointDO pointDO = pointDOMap.get(x);
+            return Objects.nonNull(pointDO) && Objects.nonNull(collect.get(pointDO.getId()));
+
+        }));
+
+    }
+
     /**
      * 组装查询条件
      * 目前能支持到系统下公共测点

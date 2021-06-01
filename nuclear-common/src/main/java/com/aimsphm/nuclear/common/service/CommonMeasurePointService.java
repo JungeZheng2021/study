@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -157,4 +158,12 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @return
      */
     List<CommonMeasurePointDO> listSensorByGroup(CommonQueryBO query);
+
+    /**
+     * 判断测点id是否在模型中
+     *
+     * @param pointIds 测点列表
+     * @return
+     */
+    Map<String, Boolean> listPointByDeviceIdInModel(List<String> pointIds);
 }

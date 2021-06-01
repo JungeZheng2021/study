@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Package: com.aimsphm.nuclear.common.entity
- * @Description: <实体>
+ * @Description: <报警类型实体>
  * @Author: MILLA
  * @CreateDate: 2021-06-01
  * @UpdateUser: MILLA
@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Data
 @TableName("algorithm_parameter_alarm_event")
-@ApiModel(value = "实体")
+@ApiModel(value = "报警类型实体")
 public class AlgorithmParameterAlarmEventDO extends BaseDO {
     /**
      * 序列化时候使用

@@ -4,6 +4,12 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmParameterAlarmEventDO">
         <result column="id" property="id"/>
+        <result column="sort" property="sort"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
         <result column="system_id" property="systemId"/>
         <result column="sub_system_id" property="subSystemId"/>
         <result column="device_id" property="deviceId"/>
@@ -16,6 +22,12 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,
+        sort,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
         system_id, sub_system_id, device_id, event_code, alarm_type, alarm_content, logic_relation
     </sql>
 
