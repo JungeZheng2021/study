@@ -166,4 +166,12 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @return
      */
     Map<String, Boolean> listPointByDeviceIdInModel(List<String> pointIds);
+
+    /**
+     * 根据测点ID查询测点别名和中文名
+     *
+     * @param pointIDList 测点ID集
+     * @return
+     */
+    List<CommonMeasurePointDO> getPointAliasAndNameByID(List<String> pointIDList);
 }
