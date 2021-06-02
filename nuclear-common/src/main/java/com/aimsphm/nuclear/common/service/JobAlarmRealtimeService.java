@@ -45,4 +45,12 @@ public interface JobAlarmRealtimeService extends IService<JobAlarmRealtimeDO> {
      * @return
      */
     List<JobAlarmRealtimeDO> listJobAlarmRealtimeWithParams(QueryBO queryBO);
+
+    /**
+     * 去重复的
+     *
+     * @param queryBO 查询条件
+     * @return
+     */
+    List<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParamsDistinct(QueryBO queryBO);
 }

@@ -349,9 +349,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         return pointIds.stream().collect(Collectors.toMap(x -> x, x -> {
             CommonMeasurePointDO pointDO = pointDOMap.get(x);
             return Objects.nonNull(pointDO) && Objects.nonNull(collect.get(pointDO.getId()));
-
         }));
-
     }
 
     /**

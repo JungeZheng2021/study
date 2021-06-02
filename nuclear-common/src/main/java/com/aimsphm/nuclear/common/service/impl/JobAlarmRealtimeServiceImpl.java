@@ -46,7 +46,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
         wrapper.eq(JobAlarmRealtimeDO::getPointId, pointId)
 //                .eq(JobAlarmRealtimeDO::getAlarmType, AlarmTypeEnum.ALGORITHM.getValue())
                 .ge(JobAlarmRealtimeDO::getGmtAlarmTime, new Date(start)).le(JobAlarmRealtimeDO::getGmtAlarmTime, new Date(end));
-        if (modelId != -1L) {
+        if (Objects.nonNull(modelId) && modelId != -1L) {
             wrapper.eq(JobAlarmRealtimeDO::getModelId, modelId);
         }
         return this.list(wrapper);
@@ -62,6 +62,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
         LambdaQueryWrapper<JobAlarmRealtimeDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
         if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+            wrapper.between(JobAlarmRealtimeDO::getGmtAlarmTime, new Date(query.getStart()), new Date(query.getEnd()));
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
@@ -71,5 +72,12 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
     @Override
     public List<JobAlarmRealtimeDO> listJobAlarmRealtimeWithParams(QueryBO queryBO) {
         return this.list(customerConditions(queryBO));
+    }
+
+    @Override
+    public List<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParamsDistinct(QueryBO queryBO) {
+        LambdaQueryWrapper<JobAlarmRealtimeDO> wrapper = customerConditions(queryBO);
+        wrapper.groupBy(JobAlarmRealtimeDO::getPointId);
+        return this.list(wrapper);
     }
 }
