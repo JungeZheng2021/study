@@ -115,4 +115,9 @@ public class CommonMeasurePointController {
         return iCommonMeasurePointServiceExt.listPointByDeviceIdInModel(pointIds);
     }
 
+    @GetMapping("points/alias")
+    @ApiOperation(value = "获取测点别名与中文名")
+    List<CommonMeasurePointDO> getPointAliasAndNameByID(@RequestParam("pointIds") List<String> pointIds){
+        return iCommonMeasurePointServiceExt.getPointAliasAndNameByID(pointIds);
+    }
 }

@@ -352,6 +352,22 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         }));
     }
 
+    @Override
+    public List<CommonMeasurePointDO> getPointAliasAndNameByID(List<String> pointIDList) {
+        if (CollectionUtils.isEmpty(pointIDList)) {
+            return null;
+        }
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+        wrapper.in(CommonMeasurePointDO::getPointId, pointIDList);
+        wrapper.select(CommonMeasurePointDO::getPointId, CommonMeasurePointDO::getAlias, CommonMeasurePointDO::getPointName);
+        List<CommonMeasurePointDO> list = this.list(wrapper);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        } else {
+            return list;
+        }
+    }
+
     /**
      * 组装查询条件
      * 目前能支持到系统下公共测点
