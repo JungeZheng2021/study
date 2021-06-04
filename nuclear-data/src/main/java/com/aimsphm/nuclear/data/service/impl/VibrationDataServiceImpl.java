@@ -9,7 +9,7 @@ import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.CommonSensorService;
 import com.aimsphm.nuclear.common.util.BigDecimalUtils;
-import com.aimsphm.nuclear.common.util.ByteUtil;
+import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.data.entity.dto.PacketDTO;
 import com.aimsphm.nuclear.data.entity.dto.SensorDataDTO;
 import com.aimsphm.nuclear.data.enums.CalculateFeatureEnum;
@@ -129,10 +129,14 @@ public class VibrationDataServiceImpl implements CommonDataService {
         Map<String, Object> accValue = new HashMap<>(16);
         accValue.put("signal", accData);
         accValue.put("fs", packet.getAcqFrequency());
+        accValue.put("type", "acc");
+        accValue.put("timestamp", packet.getTimestamp());
 
         Map<String, Object> vecValue = new HashMap<>(16);
         vecValue.put("signal", vecData);
         vecValue.put("fs", packet.getAcqFrequency());
+        vecValue.put("type", "vec");
+        vecValue.put("timestamp", packet.getTimestamp());
         redis.opsForValue().setIfAbsent(String.format(REDIS_WAVE_DATA_VEC, sensorCode), JSON.toJSONString(vecValue));
         redis.opsForValue().setIfAbsent(String.format(REDIS_WAVE_DATA_ACC, sensorCode), JSON.toJSONString(accValue));
     }
@@ -228,7 +232,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
     private void insert2HBase(String rowKey, Integer index, Long timestamp, Object data, String family) {
         Put put = new Put(Bytes.toBytes(rowKey));
         put.setTimestamp(timestamp);
-        put.addColumn(Bytes.toBytes(family), Bytes.toBytes(index), ByteUtil.toBytes(data));
+        put.addColumn(Bytes.toBytes(family), Bytes.toBytes(index), HBaseUtil.getBytes(data));
         try {
             hBaseService.save2HBase(HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA, put);
         } catch (IOException e) {
@@ -287,6 +291,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
             creatNewPut(putList, rowKey, packet.getTimestamp(), OIL_FEATURE_TOTAL, index, values.get());
             pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + OIL_FEATURE_TOTAL, values.get(), packet.getTimestamp());
         }
+        //1分钟累加一次
         try {
             hBaseService.batchSave2HBase(H_BASE_TABLE_NPC_PHM_DATA, putList);
         } catch (IOException e) {
