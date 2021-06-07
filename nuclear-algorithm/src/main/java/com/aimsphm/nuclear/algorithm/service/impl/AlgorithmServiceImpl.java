@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.hadoop.hbase.io.compress.Compression;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -132,6 +133,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             return;
         }
         try {
+            hBase.familyExists(H_BASE_TABLE_NPC_PHM_DATA, H_BASE_FAMILY_NPC_CONDITION, true, Compression.Algorithm.SNAPPY);
             hBase.insertObject(H_BASE_TABLE_NPC_PHM_DATA, response.getDeviceId() + ROW_KEY_SEPARATOR + timestamp, H_BASE_FAMILY_NPC_CONDITION, response.getDeviceId(), value, timestamp);
         } catch (IOException e) {
             log.error("HBase insert failed...{}", e);
