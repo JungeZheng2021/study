@@ -1,11 +1,13 @@
 package com.aimsphm.nuclear.common.service;
 
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Package: com.aimsphm.nuclear.common.service
@@ -52,5 +54,14 @@ public interface JobAlarmRealtimeService extends IService<JobAlarmRealtimeDO> {
      * @param queryBO 查询条件
      * @return
      */
-    List<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParamsDistinct(QueryBO queryBO);
+    List<CommonMeasurePointDO> listJobAlarmRealtimeByPageWithParamsDistinct(QueryBO queryBO);
+
+    /**
+     * 获取测点报警记录
+     *
+     * @param queryBO
+     * @param pointIds
+     * @return
+     */
+    Map<String, List<Long>> listJobAlarmRealtimeWithParams(QueryBO<JobAlarmRealtimeDO> queryBO, List<String> pointIds);
 }

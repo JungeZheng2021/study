@@ -121,7 +121,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         }
         saveDeviceCondition(response);
         saveOrUpdateEvent(response);
-        saveEstimateResult(response.getModelEstimateResult());
+        saveEstimateResult(response.getDeviceId(), response.getModelEstimateResult());
         updateDeviceStatus(response.getDeviceId(), response.getHealthStatus());
     }
 
@@ -141,9 +141,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     /**
      * 存储算法调用结果
      *
+     * @param deviceId
      * @param result
      */
-    private void saveEstimateResult(List<EstimateResponseDataBO> result) {
+    private void saveEstimateResult(Long deviceId, List<EstimateResponseDataBO> result) {
         if (CollectionUtils.isEmpty(result)) {
             return;
         }
@@ -152,11 +153,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             if (CollectionUtils.isEmpty(dataList)) {
                 return;
             }
-            Long modelId = item.getModelId();
             dataList.stream().filter(Objects::nonNull).forEach(x -> {
                 Long timestamp = x.getTimestamp();
                 try {
-                    hBase.insertObject(H_BASE_TABLE_NPC_PHM_DATA, modelId + ROW_KEY_SEPARATOR + timestamp, H_BASE_FAMILY_NPC_ESTIMATE, x.getPointId(), x, timestamp);
+                    hBase.insertObject(H_BASE_TABLE_NPC_PHM_DATA, deviceId + ROW_KEY_SEPARATOR + timestamp, H_BASE_FAMILY_NPC_ESTIMATE, x.getPointId(), x, timestamp);
                 } catch (IOException e) {
                     log.error("HBase insert failed...{}", e);
                 }

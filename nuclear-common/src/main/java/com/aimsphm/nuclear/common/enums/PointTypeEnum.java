@@ -13,8 +13,9 @@ import java.util.Objects;
  * @Version: 1.0
  */
 public enum PointTypeEnum {
-    //测点类型：1-温度、2-压力、3-流量、4-液位、5-振动、6-位移、7-电信号、8-声学、9-油质、10-状态类
+    //    测点种类 1：网络采集（PI测点） 2：硬件（边缘端）采集 3：算法生成（特征测点）4：指令与反馈 5：平台计算
     PI(1, "PI测点"),
+    CALCULATE(5, "平台计算"),
     SOMETHING_ELSE(-1, "其他");
 
 

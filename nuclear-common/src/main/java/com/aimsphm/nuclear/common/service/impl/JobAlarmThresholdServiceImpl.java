@@ -76,20 +76,12 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
                     .or(y -> y.isNull(JobAlarmThresholdDO::getGmtEndAlarm).lt(JobAlarmThresholdDO::getGmtStartAlarm, new Date(end))));
         }
         if (Objects.nonNull(alarmStatus)) {
-            if (CollectionUtils.isEmpty(query.getAlarmStatusList())) {
-                query.setAlarmStatusList(Lists.newArrayList(alarmStatus));
-            } else {
-                query.getAlarmStatusList().add(alarmStatus);
-            }
+            query.getAlarmStatusList().add(alarmStatus);
             entity.setAlarmStatus(null);
         }
         Integer operateStatus = entity.getOperateStatus();
         if (Objects.nonNull(operateStatus)) {
-            if (CollectionUtils.isEmpty(query.getOperateStatusList())) {
-                query.setOperateStatusList(Lists.newArrayList(operateStatus));
-            } else {
-                query.getOperateStatusList().add(operateStatus);
-            }
+            query.getOperateStatusList().add(operateStatus);
             entity.setOperateStatus(null);
         }
         if (!CollectionUtils.isEmpty(query.getOperateStatusList())) {

@@ -46,9 +46,9 @@ public class FanMonitorJob implements BaseMonitorJob {
      * 线上： 每小时的37分的时候执行一次
      */
     @Async
-//    @Scheduled(cron = "29 0 * * * ?")
+    @Scheduled(cron = "0/2 * * * * ?")
 //    @Scheduled(cron = "${scheduled.config.FanMonitorJob:29 0 * * * ?}")
-    @DistributedLock("FanMonitorJobLock")
+    @DistributedLock("FanMonitorJobLock1")
     public void monitor() {
         redis.opsForValue().set(REDIS_KEY_FAN, 1);
         try {

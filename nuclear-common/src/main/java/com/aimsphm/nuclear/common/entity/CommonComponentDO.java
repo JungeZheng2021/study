@@ -11,9 +11,9 @@ import io.swagger.annotations.ApiModelProperty;
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <组件信息实体>
  * @Author: MILLA
- * @CreateDate: 2020-12-09
+ * @CreateDate: 2021-06-03
  * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-09
+ * @UpdateDate: 2021-06-03
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -40,5 +40,11 @@ public class CommonComponentDO extends BaseDO {
 
     @ApiModelProperty(value = "", notes = "")
     private Long parentComponentId;
+
+    @ApiModelProperty(value = "啮合频率，单位", notes = "Hz")
+    private String meshFrequency;
+
+    @ApiModelProperty(value = "转速，单位", notes = "r/min，转频等于转速除以60")
+    private Double rotationSpeed;
 
 }

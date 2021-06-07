@@ -2,11 +2,9 @@ package com.aimsphm.nuclear.common.util;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
-import com.aimsphm.nuclear.common.pojo.EstimateResult;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
@@ -17,7 +15,6 @@ import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.io.encoding.DataBlockEncoding;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -47,8 +44,6 @@ import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATO
 @Component
 public class HBaseUtil {
     private Connection connection;
-    @Autowired
-    Gson gson;
 
     public HBaseUtil(Connection connection) {
         this.connection = connection;
@@ -297,6 +292,22 @@ public class HBaseUtil {
     }
 
     /**
+     * 批量存入数据
+     *
+     * @param tableName
+     * @param putList
+     * @throws IOException
+     */
+    public void batchSave2HBase(String tableName, List<Put> putList) throws IOException {
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            table.put(putList);
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
      * 插入记录（单行单列族-多列多值）
      *
      * @param tableName 表名
@@ -495,6 +506,50 @@ public class HBaseUtil {
                     dto.setTimestamp(timestamp);
                     dto.setValue(value);
                     items.add(dto);
+                }
+            }
+            return items;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * 根据小时获取数据(时间戳秒级数据分3600列存储)
+     *
+     * @param tableName 表格名称
+     * @param tag       唯一标识
+     * @param startTime 开始行
+     * @param endTime   结束行
+     * @param family    列族
+     * @return
+     * @throws IOException
+     */
+    public List<Double> listDoubleDataWith3600Columns(String tableName, String tag, Long startTime, Long endTime, String family) throws IOException {
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            Scan scan = new Scan();
+            scan.addFamily(Bytes.toBytes(family));
+            Long startRow = startTime / (1000 * 3600) * (1000 * 3600);
+            Long endRow = endTime / (1000 * 3600) * (1000 * 3600) + 1;
+            scan.withStartRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + startRow));
+            scan.withStopRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + endRow));
+            ResultScanner scanner = table.getScanner(scan);
+
+            List<Double> items = new ArrayList();
+            for (Result rs : scanner) {
+                for (Cell cell : rs.listCells()) {
+                    double value = Bytes.toDouble(CellUtil.cloneValue(cell));
+                    Long timestamp = cell.getTimestamp();
+                    //如果列的时间戳大于终点查询时间跳出
+                    if (timestamp > endTime) {
+                        break;
+                    }
+                    //如果列的时间戳小于开始时间直接丢弃
+                    if (timestamp < startTime) {
+                        continue;
+                    }
+                    items.add(value);
                 }
             }
             return items;
@@ -728,35 +783,53 @@ public class HBaseUtil {
         }
     }
 
+    /**
+     * 判断指定的列族是否存在
+     *
+     * @param tableName
+     * @param family
+     * @param isCreate
+     * @param type
+     * @return
+     * @throws IOException
+     */
+    public boolean familyExists(String tableName, String family, boolean isCreate, Compression.Algorithm type) throws IOException {
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            TableDescriptor descriptor = table.getDescriptor();
+            ColumnFamilyDescriptor descriptorCf = descriptor.getColumnFamily(Bytes.toBytes(family));
+            if (Objects.nonNull(descriptorCf)) {
+                return true;
+            }
+            if (isCreate) {
+                ColumnFamilyDescriptorBuilder builder = ColumnFamilyDescriptorBuilder.newBuilder(Bytes.toBytes(family));
+                if (type != null) {
+                    builder.setCompressionType(type);
+                }
+                connection.getAdmin().addColumnFamily(name, builder.build());
+                return true;
+            }
+        } catch (IOException e) {
+            throw e;
+        }
+        return false;
+    }
 
     /**
-     * @param familyMap     列族集合
-     * @param withQualifier 列数据集合(以集合方式返回)
-     * @param rs            结果集
+     * 创建一个新的put对象
+     *
+     * @param rowKey
+     * @param timestamp
+     * @param family
+     * @param column
+     * @param value
+     * @return
      */
-    private void assembleModelTagCellDataWithList
-    (Map<String, Set<String>> familyMap, Map<String, List<Object>> withQualifier, Result rs) {
-        if (rs.size() == 0) {
-            return;
-        }
-        for (Cell cell : rs.listCells()) {
-            String family = Bytes.toString(CellUtil.cloneFamily(cell));
-            String qualifier = Bytes.toString(CellUtil.cloneQualifier(cell));
-            String value = Bytes.toString(CellUtil.cloneValue(cell));
-            EstimateResult es = gson.fromJson(value, EstimateResult.class);
-            long timestamp = cell.getTimestamp();
-
-            if (!withQualifier.containsKey(qualifier)) {
-                withQualifier.put(qualifier, Lists.newArrayList());
-            }
-            if (!familyMap.containsKey(family)) {
-                familyMap.put(family, Sets.newHashSet());
-            }
-            familyMap.get(family).add(qualifier);
-            withQualifier.get(qualifier).add(es);
-
-//            withQualifier.get(qualifier).add(Lists.newArrayList(timestamp, es));
-        }
+    public Put creatNewPut(String rowKey, Long timestamp, String family, Integer column, Double value) {
+        Put put = new Put(Bytes.toBytes(rowKey));
+        put.setTimestamp(timestamp);
+        put.addColumn(Bytes.toBytes(family), Bytes.toBytes(column), Bytes.toBytes(value));
+        return put;
     }
 
     /**
@@ -980,7 +1053,7 @@ public class HBaseUtil {
      * @param object
      * @return
      */
-    private static byte[] getBytes(Object object) {
+    public static byte[] getBytes(Object object) {
         Class className = object.getClass();
         if (className.equals(Boolean.class)) {
             return Bytes.toBytes((Boolean) object);
@@ -1044,7 +1117,7 @@ public class HBaseUtil {
      * @param bytes
      * @return
      */
-    private static Object getObject(byte[] bytes, Class className) {
+    public static Object getObject(byte[] bytes, Class className) {
         if (className.equals(Boolean.class)) {
             return Bytes.toBoolean(bytes);
         }

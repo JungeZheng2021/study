@@ -1,22 +1,28 @@
 package com.aimsphm.nuclear.common.service.impl;
 
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.JobAlarmRealtimeMapper;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.JobAlarmRealtimeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @Package: com.aimsphm.nuclear.common.service.impl
@@ -31,6 +37,9 @@ import java.util.Objects;
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMapper, JobAlarmRealtimeDO> implements JobAlarmRealtimeService {
+
+    @Resource
+    private CommonMeasurePointService pointService;
 
     @Override
     public Page<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParams(QueryBO<JobAlarmRealtimeDO> queryBO) {
@@ -75,9 +84,29 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
     }
 
     @Override
-    public List<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParamsDistinct(QueryBO queryBO) {
+    public List<CommonMeasurePointDO> listJobAlarmRealtimeByPageWithParamsDistinct(QueryBO queryBO) {
         LambdaQueryWrapper<JobAlarmRealtimeDO> wrapper = customerConditions(queryBO);
         wrapper.groupBy(JobAlarmRealtimeDO::getPointId);
-        return this.list(wrapper);
+        List<JobAlarmRealtimeDO> list = this.list(wrapper);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        return pointService.listPointAliasAndNameByID(list.stream().map(x -> x.getPointId()).collect(Collectors.toList()));
+    }
+
+    @Override
+    public Map<String, List<Long>> listJobAlarmRealtimeWithParams(QueryBO<JobAlarmRealtimeDO> queryBO, List<String> pointIds) {
+        JobAlarmRealtimeDO entity = queryBO.getEntity();
+        if (Objects.nonNull(entity.getPointId())) {
+            pointIds.add(entity.getPointId());
+        }
+        LambdaQueryWrapper<JobAlarmRealtimeDO> wrapper = customerConditions(queryBO);
+        wrapper.isNotNull(JobAlarmRealtimeDO::getGmtAlarmTime);
+        wrapper.in(JobAlarmRealtimeDO::getPointId, pointIds);
+        List<JobAlarmRealtimeDO> list = this.list(wrapper);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        return list.stream().collect(Collectors.groupingBy(JobAlarmRealtimeDO::getPointId, Collectors.mapping(m -> m.getGmtAlarmTime().getTime(), Collectors.toList())));
     }
 }

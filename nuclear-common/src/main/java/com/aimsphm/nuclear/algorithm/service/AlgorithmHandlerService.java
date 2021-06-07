@@ -5,10 +5,12 @@ import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.response.ResponseData;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -49,7 +51,28 @@ public interface AlgorithmHandlerService<P, R> {
             String s1 = JSON.toJSONString(o);
             return JSON.parseObject(s1, clazz);
         } catch (Exception e) {
-            log.error("data analysis failed...{}", e);
+            log.error("data analysis failed...", e);
+            throw new CustomMessageException("data analysis failed...", e);
+        }
+    }
+
+    /**
+     * 调用算法服务-可默认使用
+     *
+     * @param client       算法客户端
+     * @param params       请求参数
+     * @param type         算法类型
+     * @param clazzInArray 返回值类型
+     * @return
+     */
+    default List<R> invokeServerArray(AlgorithmServiceFeignClient client, P params, String type, Class<R> clazzInArray) {
+        try {
+            Assert.notNull(client, "algorithm client is null");
+            Object o = execute(client, params, type);
+            String s1 = JSON.toJSONString(o);
+            return JSON.parseArray(s1, clazzInArray);
+        } catch (Exception e) {
+            log.error("data analysis failed...", e);
             throw new CustomMessageException("data analysis failed...", e);
         }
     }
@@ -69,13 +92,13 @@ public interface AlgorithmHandlerService<P, R> {
             query.setData(params);
             query.setAlgorithmType(type);
             checkParams(query);
-            log.info("execute starting .....{}", JSON.toJSONString(query));
+            log.info("execute starting .....{}", JSON.toJSONString(query, SerializerFeature.WriteMapNullValue));
             ResponseData<R> responseData = client.algorithmInvokeByParams(query);
             log.info("algorithm server responseCode: {}, status: {}", responseData.getCode(), responseData.getMsg());
             checkSuccess(responseData);
             return responseData.getData();
         } catch (Exception e) {
-            log.error("algorithm server execute failed..{}", e);
+            log.error("algorithm server execute failed..");
             throw new CustomMessageException("algorithm server execute failed..", e);
         }
     }

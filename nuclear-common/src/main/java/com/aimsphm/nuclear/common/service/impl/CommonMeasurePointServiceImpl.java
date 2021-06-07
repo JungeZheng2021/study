@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
+import com.aimsphm.nuclear.algorithm.entity.dto.FeatureExtractionParamDTO;
 import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
@@ -109,10 +110,6 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         vos.stream().forEach(item -> store2Redis(item, value));
         //缓存指定长度的队列
         cacheQueueData(vos, timestamp);
-        //        TODO :// 上线要将下列代码恢复
-        if (timestamp % 9317 == 0) {
-            thresholdService.saveOrUpdateThresholdAlarmList(vos);
-        }
     }
 
     @Override
@@ -346,26 +343,26 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         modelWrapper.in(AlgorithmModelPointDO::getPointId, ids.keySet());
         List<AlgorithmModelPointDO> modelList = algorithmModelPointService.list(modelWrapper);
         Map<Long, AlgorithmModelPointDO> collect = modelList.stream().collect(Collectors.toMap(AlgorithmModelPointDO::getPointId, x -> x));
-        return pointIds.stream().collect(Collectors.toMap(x -> x, x -> {
+        return pointIds.stream().distinct().collect(Collectors.toMap(x -> x, x -> {
             CommonMeasurePointDO pointDO = pointDOMap.get(x);
             return Objects.nonNull(pointDO) && Objects.nonNull(collect.get(pointDO.getId()));
         }));
     }
 
     @Override
-    public List<CommonMeasurePointDO> getPointAliasAndNameByID(List<String> pointIDList) {
+    public List<CommonMeasurePointDO> listPointAliasAndNameByID(List<String> pointIDList) {
         if (CollectionUtils.isEmpty(pointIDList)) {
             return null;
         }
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
         wrapper.in(CommonMeasurePointDO::getPointId, pointIDList);
         wrapper.select(CommonMeasurePointDO::getPointId, CommonMeasurePointDO::getAlias, CommonMeasurePointDO::getPointName);
-        List<CommonMeasurePointDO> list = this.list(wrapper);
-        if (CollectionUtils.isEmpty(list)) {
-            return null;
-        } else {
-            return list;
-        }
+        return this.list(wrapper);
+    }
+
+    @Override
+    public List<FeatureExtractionParamDTO> listFeatureExtraction(Integer value) {
+        return this.getBaseMapper().listFeatureExtraction(value);
     }
 
     /**

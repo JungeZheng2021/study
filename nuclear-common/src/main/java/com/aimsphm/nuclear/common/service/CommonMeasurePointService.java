@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.service;
 
+import com.aimsphm.nuclear.algorithm.entity.dto.FeatureExtractionParamDTO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
@@ -173,5 +174,13 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @param pointIDList 测点ID集
      * @return
      */
-    List<CommonMeasurePointDO> getPointAliasAndNameByID(List<String> pointIDList);
+    List<CommonMeasurePointDO> listPointAliasAndNameByID(List<String> pointIDList);
+
+    /**
+     * 查询需要计算特征的点
+     *
+     * @param value
+     * @return
+     */
+    List<FeatureExtractionParamDTO> listFeatureExtraction(Integer value);
 }

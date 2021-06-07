@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.common.entity.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,4 +30,14 @@ public class AlarmQueryBO extends ConditionsQueryBO {
 
     @ApiModelProperty(value = "持续时间", notes = "")
     private Integer duration;
+
+    public AlarmQueryBO() {
+        init();
+    }
+
+    private void init() {
+        alarmStatusList = new ArrayList<>();
+        alarmLevelList = new ArrayList<>();
+        operateStatusList = new ArrayList<>();
+    }
 }

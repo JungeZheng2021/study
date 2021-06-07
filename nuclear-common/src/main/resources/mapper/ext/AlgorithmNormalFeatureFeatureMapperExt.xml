@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.mapper.AlgorithmNormalFeatureFeatureMapper">
+    <!-- 扩展查询映射结果 -->
+    <resultMap id="BaseResultMapExt" type="com.aimsphm.nuclear.common.entity.AlgorithmNormalFeatureFeatureDO"
+               extends="com.aimsphm.nuclear.common.entity.AlgorithmNormalFeatureFeatureDO.BaseResultMap">
+    </resultMap>
+    <select id="listSymptomCorrelationVO" parameterType="com.aimsphm.nuclear.common.entity.CommonDeviceDO"
+            resultType="com.aimsphm.nuclear.common.entity.vo.SymptomCorrelationVO">
+    SELECT
+        ff.feature_id1 sym1,
+        ff.feature_id2 sym2,
+        ff.correlation corr
+    FROM
+        `algorithm_normal_rule` r,
+        `algorithm_normal_rule_feature` rf,
+        `algorithm_normal_feature_feature` ff
+    WHERE
+        r.id = rf.rule_id
+        AND ( rf.feature_id = ff.feature_id1 OR rf.feature_id = ff.feature_id2 )
+        AND r.device_type = #{device.deviceType}
+    </select>
+
+</mapper>

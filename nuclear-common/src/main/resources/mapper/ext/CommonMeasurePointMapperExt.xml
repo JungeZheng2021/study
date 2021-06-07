@@ -6,4 +6,20 @@
     <resultMap id="BaseResultMapExt" type="com.aimsphm.nuclear.common.entity.CommonMeasurePointDO"
                extends="com.aimsphm.nuclear.common.entity.CommonMeasurePointDO.BaseResultMap">
     </resultMap>
+    <select id="listFeatureExtraction"
+            resultType="com.aimsphm.nuclear.algorithm.entity.dto.FeatureExtractionParamDTO">
+	SELECT
+		p.sensor_code AS 'sensorCode',
+		p.feature AS 'featName',
+		p.feature_type AS 'type',
+		f.feature_hi AS 'threshold',
+		c.mesh_frequency as 'meshFrequency',
+		c.rotation_speed as 'rotationSpeed'
+	FROM
+		`algorithm_normal_fault_feature` f
+		INNER JOIN common_measure_point p ON f.sensor_desc = p.point_id
+		INNER JOIN common_component c ON f.component_id = c.id
+	WHERE
+		point_type = #{pointType}
+    </select>
 </mapper>

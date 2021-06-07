@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aimsphm.nuclear.common.entity.CommonComponentDO">
-
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.CommonComponentDO">
         <result column="id" property="id"/>
@@ -16,6 +15,8 @@
         <result column="component_desc" property="componentDesc"/>
         <result column="component_number" property="componentNumber"/>
         <result column="parent_component_id" property="parentComponentId"/>
+        <result column="mesh_frequency" property="meshFrequency"/>
+        <result column="rotation_speed" property="rotationSpeed"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -27,7 +28,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        device_type, component_name, component_desc, component_number, parent_component_id
+        device_type, component_name, component_desc, component_number, parent_component_id, mesh_frequency, rotation_speed
     </sql>
 
 </mapper>

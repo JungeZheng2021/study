@@ -31,6 +31,10 @@ public final class HBaseConstant {
      */
     public static final String OIL_FEATURE_TOTAL = "abr-total";
     /**
+     * 油质总的微粒数-一分钟计算一次
+     */
+    public static final String OIL_FEATURE_TOTAL_ONE_MINUTE = "abr-total-1m";
+    /**
      * 油质40度下油液粘度
      */
     public static final String OIL_ANA_VISCOSITY = "ana-viscosity-40";
