@@ -17,9 +17,10 @@
             </fileNamePattern>
             <TimeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>10MB</MaxFileSize>
+                <MaxFileSize>16MB</MaxFileSize>
             </TimeBasedFileNamingAndTriggeringPolicy>
             <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
@@ -35,9 +36,13 @@
             <fileNamePattern>
                 ${LOG_PATH}${file.separator}${LOG_NAME}.error.log.%d{yyyy-MM-dd}-%i
             </fileNamePattern>
+            <!-- 日志最大保存时间 -->
+            <maxHistory>30</maxHistory>
+            <!-- 日志总保存量为1GB -->
+            <totalSizeCap>1GB</totalSizeCap>
             <TimeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>10MB</MaxFileSize>
+                <MaxFileSize>16MB</MaxFileSize>
             </TimeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
