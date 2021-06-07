@@ -146,7 +146,7 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
         LambdaQueryWrapper<CommonMeasurePointDO> query = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
         query.in(CommonMeasurePointDO::getPointId, pointIds);
         List<CommonMeasurePointDO> points = pointService.list(query);
-        if (CollectionUtils.isEmpty(pointIds)) {
+        if (CollectionUtils.isEmpty(points)) {
             return null;
         }
         LambdaQueryWrapper<CommonSensorComponentDO> sensorQuery = Wrappers.lambdaQuery(CommonSensorComponentDO.class);
