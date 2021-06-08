@@ -51,17 +51,17 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
     private FeatureExtractionOperationService featureExtractionService;
 
     @Override
-    public void faultReasoning(List<String> pointIds, Long deviceId) {
+    public FaultReasoningResponseDTO faultReasoning(List<String> pointIds, Long deviceId) {
         CommonDeviceDO device = deviceService.getById(deviceId);
         if (Objects.isNull(device)) {
-            return;
+            return null;
         }
         FaultReasoningParamDTO params = new FaultReasoningParamDTO();
         params.setDeviceType(device.getDeviceType());
         //征兆集合
         SymptomResponseDTO symptomResponseDTO = featureExtractionService.symptomJudgment(pointIds);
         if (Objects.isNull(symptomResponseDTO) && CollectionUtils.isEmpty(symptomResponseDTO.getSymptomList())) {
-            return;
+            return null;
         }
         List<FaultReasoningParamVO.SymptomVO> symSet = symptomResponseDTO.getSymptomList().stream().map(x -> new FaultReasoningParamVO.SymptomVO(new Long(x))).collect(Collectors.toList());
         params.setSymSet(symSet);
@@ -94,7 +94,7 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
         params.setSymInfoSet(symInfoSet);
 
         FaultReasoningResponseDTO data = (FaultReasoningResponseDTO) symptomService.getInvokeCustomerData(params);
-        System.out.println(data);
+        return data;
     }
 
     private void setComponentListByComponentId(FaultReasoningParamDTO.RefRuleSetElem item, Long componentId) {

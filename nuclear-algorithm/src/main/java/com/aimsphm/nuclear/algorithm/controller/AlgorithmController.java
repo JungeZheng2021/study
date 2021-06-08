@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.algorithm.controller;
 
+import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningResponseDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
@@ -67,7 +68,7 @@ public class AlgorithmController {
 
     @GetMapping("test/faultReasoning")
     @ApiOperation(value = "故障推理")
-    public void faultReasoning(@RequestParam("pointIds") List<String> pointIds, Long deviceId) {
-        faultReasoningService.faultReasoning(pointIds, deviceId);
+    public FaultReasoningResponseDTO faultReasoning(@RequestParam("pointIds") List<String> pointIds, Long deviceId) {
+        return faultReasoningService.faultReasoning(pointIds, deviceId);
     }
 }

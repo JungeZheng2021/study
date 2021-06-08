@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.algorithm.service;
 
+import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningResponseDTO;
+
 import java.util.List;
 
 /**
@@ -15,9 +17,9 @@ import java.util.List;
 public interface FaultReasoningService {
     /**
      * 故障推理
-     *
-     * @param pointIds
+     *  @param pointIds
      * @param deviceId
+     * @return
      */
-    void faultReasoning(List<String> pointIds, Long deviceId);
+    FaultReasoningResponseDTO faultReasoning(List<String> pointIds, Long deviceId);
 }

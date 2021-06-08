@@ -21,12 +21,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableEurekaClient
 @EnableFeignClients
-//@EnableScheduling
+@EnableScheduling
 @SpringBootApplication(scanBasePackages = {"com.aimsphm.nuclear"})
 public class AlgorithmApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(AlgorithmApplication.class, args);
     }
-
 }
