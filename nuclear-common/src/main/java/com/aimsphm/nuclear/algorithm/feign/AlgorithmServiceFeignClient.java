@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Version: 1.0
  */
 @Component
-@FeignClient(name = "algorithm-server-cargod", fallback = AlgorithmServiceFeignFallback.class)
-//@FeignClient(name = "algorithm-server")//, fallback = AlgorithmServiceFeignFallback.class)
+//@FeignClient(name = "algorithm-server-cargod", fallback = AlgorithmServiceFeignFallback.class)
+@FeignClient(name = "algorithm-server")//, fallback = AlgorithmServiceFeignFallback.class)
 @ConditionalOnProperty(prefix = "spring.config", name = "enableAlgorithm", havingValue = "true")
 public interface AlgorithmServiceFeignClient {
     /**
