@@ -163,7 +163,10 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
         List<List<Double>> collect = list.stream().map(x -> {
             String pointId = x.getSensorDesc();
             String sensorCode = x.getSensorCode();
-            String family = pointId.replace(sensorCode, BLANK).substring(1);
+            String family = H_BASE_FAMILY_NPC_PI_REAL_TIME;
+            if (!StringUtils.equals(pointId, sensorCode)) {
+                family = pointId.replace(sensorCode, BLANK).substring(1);
+            }
             String timeRange = x.getTimeRange();
             if (StringUtils.isBlank(timeRange)) {
                 return null;
