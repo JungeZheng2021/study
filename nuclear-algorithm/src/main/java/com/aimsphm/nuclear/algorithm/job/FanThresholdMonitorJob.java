@@ -5,8 +5,6 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.annotation.DistributedLock;
 import com.aimsphm.nuclear.common.enums.DeviceTypeEnum;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
-import com.aimsphm.nuclear.common.util.DateUtils;
-import io.lettuce.core.ScriptOutputType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,14 +13,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Objects;
 
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN;
-import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_SS_SSS_M;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.job
- * @Description: <风机启停监测>
+ * @Description: <风机状态监测>
  * @Author: MILLA
  * @CreateDate: 2020/6/28 10:54
  * @UpdateUser: MILLA
@@ -32,7 +28,7 @@ import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_SS_
  */
 @Component
 @Slf4j
-public class FanStartStopStatusJob implements BaseMonitorJob {
+public class FanThresholdMonitorJob implements BaseMonitorJob {
 
     @Resource
     private AlgorithmService algorithmService;
@@ -44,18 +40,20 @@ public class FanStartStopStatusJob implements BaseMonitorJob {
 
     /**
      * 设备状态监测算法
-     * 一分钟(每分钟的10秒)执行一次执行一次
+     * 测试： 每11分的时候执行一次
+     * 线上： 每小时的37分的时候执行一次
      */
     @Async
-//    @Scheduled(cron = "30 0/10 * * * ? ")
-    @Scheduled(cron = "${scheduled.config.FanStartStopStatusJob:30 0/10 * * * ? }")
-    @DistributedLock("FanStartStopStatusJobLock")
-    public void monitorStartStopStatus() {
-        Boolean running = redis.hasKey(REDIS_KEY_FAN);
-        if (running) {
-            return;
+//    @Scheduled(cron = "0/2 * * * * ?")
+    @Scheduled(cron = "${scheduled.config.FanThresholdMonitorJob:29 0 * * * ?}")
+    @DistributedLock("FanThresholdMonitorJob")
+    public void monitor() {
+        redis.opsForValue().set(REDIS_KEY_FAN, 1);
+        try {
+            execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_START_STOP);
-        log.info("执行----快： {}", DateUtils.formatCurrentDateTime(YEAR_MONTH_DAY_HH_MM_SS_SSS_M));
+        redis.delete(REDIS_KEY_FAN);
     }
 }

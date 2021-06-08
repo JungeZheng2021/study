@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.algorithm.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.SymptomParamDTO;
+import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service("SYMPTOM")
 @ConditionalOnProperty(prefix = "spring.config", name = "enableAlgorithm", havingValue = "true")
-public class SymptomJudgmentServiceImpl implements AlgorithmHandlerService<SymptomParamDTO, Integer> {
+public class SymptomJudgmentServiceImpl implements AlgorithmHandlerService<SymptomParamDTO, SymptomResponseDTO> {
 
     private AlgorithmServiceFeignClient client;
 
@@ -31,6 +32,6 @@ public class SymptomJudgmentServiceImpl implements AlgorithmHandlerService<Sympt
 
     @Override
     public Object getInvokeCustomerData(SymptomParamDTO params) {
-        return invokeServerArray(client, params, AlgorithmTypeEnum.FEATURE_EXTRACTOR.getType(), Integer.class);
+        return invokeServer(client, params, AlgorithmTypeEnum.FAULT_SYMPTOM.getType(), SymptomResponseDTO.class);
     }
 }

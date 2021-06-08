@@ -32,6 +32,6 @@ public class StateMonitorServiceImpl implements AlgorithmHandlerService<StateMon
 
     @Override
     public Object getInvokeCustomerData(StateMonitorParamDTO params) {
-        return invokeServer(client, params, AlgorithmTypeEnum.STATE_MONITOR.getType(), StateMonitorResponseDTO.class);
+        return invokeServer(client, params, params.getTypeEnum().getType(), StateMonitorResponseDTO.class);
     }
 }

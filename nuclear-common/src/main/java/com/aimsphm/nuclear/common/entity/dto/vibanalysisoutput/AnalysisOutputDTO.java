@@ -1,7 +1,5 @@
 package com.aimsphm.nuclear.common.entity.dto.vibanalysisoutput;
 
-import com.aimsphm.nuclear.common.entity.dto.Cell;
-
 import lombok.Data;
 
 import java.io.Serializable;

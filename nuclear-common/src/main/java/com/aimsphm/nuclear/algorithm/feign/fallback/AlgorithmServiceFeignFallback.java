@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
  * @Version: 1.0
  */
 @Slf4j
-//@Component
+@Component
 @ConditionalOnProperty(prefix = "spring.config", name = "enableAlgorithm", havingValue = "true")
-public class AlgorithmServiceFeignFallback {//implements AlgorithmServiceFeignClient {
+public class AlgorithmServiceFeignFallback implements AlgorithmServiceFeignClient {
 
-    //    @Override
+    @Override
     public ResponseData algorithmInvokeByParams(AlgorithmParamDTO param) {
-        System.out.println("--------------------------" + System.currentTimeMillis());
+        log.error("Invoke server failed........ params:{}", param);
         return null;
     }
 }

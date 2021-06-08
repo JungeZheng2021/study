@@ -32,7 +32,7 @@ import java.util.List;
 @Component
 @Slf4j
 @ConditionalOnProperty(prefix = "scheduled.config", name = "enable", havingValue = "true")
-public class PumpMonitorJob implements BaseMonitorJob {
+public class PumpThresholdMonitorJob implements BaseMonitorJob {
 
     @Resource
     private AlgorithmService algorithmService;
@@ -48,9 +48,9 @@ public class PumpMonitorJob implements BaseMonitorJob {
 //    @Scheduled(cron = "0 0/7 * * * ? ")
 //    @Scheduled(cron = "0 13 * * * ? ")
     @Async
-    @Scheduled(cron = "${scheduled.config.PumpMonitorJob:0 13 * * * ?}")
+    @Scheduled(cron = "${scheduled.config.PumpThresholdMonitorJob:0 13 * * * ?}")
     @DistributedLock("FanMonitorJobLock")
     public void monitor() {
-        execute(DeviceTypeEnum.PUMP.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
+        execute(DeviceTypeEnum.PUMP.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
     }
 }

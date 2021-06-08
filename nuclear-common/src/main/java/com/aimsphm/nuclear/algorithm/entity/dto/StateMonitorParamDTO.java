@@ -2,8 +2,10 @@ package com.aimsphm.nuclear.algorithm.entity.dto;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.EstimateParamDataBO;
 import com.aimsphm.nuclear.algorithm.entity.bo.PointDataBO;
+import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
+import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesObjectDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -26,6 +28,9 @@ public class StateMonitorParamDTO {
 
     private Integer algorithmPeriod;
 
+    @ApiModelProperty(value = "算法类型", notes = "算法忽略该参数")
+    private AlgorithmTypeEnum typeEnum;
+
     @ApiModelProperty(value = "只输出设备运行状态", notes = "1")
     private Integer onlyCondition;
 
@@ -37,11 +42,11 @@ public class StateMonitorParamDTO {
     private Long deviceId;
 
     private String deviceName;
-    
+
     private String deviceCode;
 
     @ApiModelProperty(value = "最新一次工况信息")
-    private HBaseTimeSeriesDataDTO lastCondition;
+    private HBaseTimeSeriesObjectDTO lastCondition;
 
     @ApiModelProperty(value = "历史数据")
     private List<PointDataBO> sensorData;

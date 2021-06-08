@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StopWatch;
 
 import java.util.List;
 
@@ -53,20 +52,20 @@ public interface BaseMonitorJob {
                     long l = runtime.freeMemory();
                     log.info("总内存:{}", runtime.totalMemory() / 1024 / 1024);
                     log.info("执行前剩余内存:{}", l / 1024 / 1024);
-                    algorithmService.getDeviceStateMonitorInfo(deviceDO.getId(), 60 * 60 * 1000);
+                    algorithmService.deviceStateMonitorInfo(algorithmType, deviceDO.getId(), 10 * 60);
                     long l1 = runtime.freeMemory();
                     log.info("执行后剩余内存:{}", l1 / 1024 / 1024);
                     log.info("执行使用内存:{}", (l - l1) / 1024 / 1024);
                 });
             }
-            //启停状态
-            if (algorithmType.equals(AlgorithmTypeEnum.STATE_START_STOP)) {
+            //阈值判断
+            if (algorithmType.equals(AlgorithmTypeEnum.THRESHOLD_MONITOR)) {
                 list.stream().forEach(deviceDO -> {
                     log.debug("device start stop running..................deviceId:{}", deviceDO.getDeviceName());
                     long l = runtime.freeMemory();
                     log.info("总内存:{}", runtime.totalMemory() / 1024 / 1024);
                     log.info("执行前剩余内存:{}", l / 1024 / 1024);
-                    algorithmService.getDeviceStartAndStopMonitorInfo(deviceDO.getId(), 10 * 60 * 1000);
+                    algorithmService.deviceThresholdMonitorInfo(algorithmType, deviceDO.getId(), 1 * 60);
                     long l1 = runtime.freeMemory();
                     log.info("执行后剩余内存:{}", l1 / 1024 / 1024);
                     log.info("执行使用内存:{}", (l - l1) / 1024 / 1024);

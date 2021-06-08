@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.enums;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
@@ -14,6 +15,7 @@ import java.util.Objects;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 public enum TimeUnitEnum {
     OTHER("other", -1L),
     DAY("d", 24 * 3600 * 1000L),
@@ -36,15 +38,23 @@ public enum TimeUnitEnum {
     }
 
     public static Long getGapValue(String gapTime) {
-        String name = null;
+
         if (StringUtils.isBlank(gapTime)) {
-            name = gapTime.substring(gapTime.length() - 1);
+            return null;
+        }
+        String name = gapTime.substring(gapTime.length() - 1);
+        Long gap = null;
+        try {
+            gap = Long.parseLong(gapTime.substring(0, gapTime.length() - 1));
+        } catch (NumberFormatException e) {
+            log.error("转换异常");
+            return null;
         }
         TimeUnitEnum typeEnum = getByName(name);
         if (Objects.isNull(typeEnum)) {
             return null;
         }
-        return typeEnum.getValue();
+        return typeEnum.getValue() * gap;
     }
 
     public static TimeUnitEnum getByName(String name) {

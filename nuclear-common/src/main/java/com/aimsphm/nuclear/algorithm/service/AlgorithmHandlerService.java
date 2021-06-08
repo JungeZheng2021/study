@@ -73,8 +73,8 @@ public interface AlgorithmHandlerService<P, R> {
             return JSON.parseArray(s1, clazzInArray);
         } catch (Exception e) {
             log.error("data analysis failed...", e);
-            throw new CustomMessageException("data analysis failed...", e);
         }
+        return null;
     }
 
 
@@ -92,15 +92,15 @@ public interface AlgorithmHandlerService<P, R> {
             query.setData(params);
             query.setAlgorithmType(type);
             checkParams(query);
-            log.info("execute starting .....{}", JSON.toJSONString(query, SerializerFeature.WriteMapNullValue));
+            log.debug("execute starting .....{}", JSON.toJSONString(query, SerializerFeature.WriteMapNullValue));
             ResponseData<R> responseData = client.algorithmInvokeByParams(query);
-            log.info("algorithm server responseCode: {}, status: {}", responseData.getCode(), responseData.getMsg());
+            log.debug("<》：algorithm server success responseCode: {}, status: {}", responseData.getCode(), responseData.getMsg());
             checkSuccess(responseData);
             return responseData.getData();
         } catch (Exception e) {
             log.error("algorithm server execute failed..");
-            throw new CustomMessageException("algorithm server execute failed..", e);
         }
+        return null;
     }
 
 

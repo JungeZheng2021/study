@@ -10,6 +10,7 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
+import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesObjectDTO;
 import com.aimsphm.nuclear.common.enums.DeviceHealthEnum;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import com.aimsphm.nuclear.common.service.*;
@@ -89,8 +90,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     private Integer days15 = 15 * 86400 * 1000;
 
     @Override
-    public void getDeviceStateMonitorInfo(Long deviceId, Integer algorithmPeriod) {
-        StateMonitorParamDTO data = operateParams(deviceId, AlgorithmTypeEnum.STATE_MONITOR.getType(), 1);
+    public void deviceStateMonitorInfo(AlgorithmTypeEnum algorithmType, Long deviceId, Integer algorithmPeriod) {
+        StateMonitorParamDTO data = operateParams(deviceId, algorithmType, 1);
         if (Objects.isNull(data)) {
             return;
         }
@@ -101,8 +102,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Override
-    public void getDeviceStartAndStopMonitorInfo(Long deviceId, Integer algorithmPeriod) {
-        StateMonitorParamDTO data = operateParams(deviceId, AlgorithmTypeEnum.STATE_START_STOP.getType(), 0);
+    public void deviceThresholdMonitorInfo(AlgorithmTypeEnum algorithmType, Long deviceId, Integer algorithmPeriod) {
+        StateMonitorParamDTO data = operateParams(deviceId, algorithmType, 0);
         if (Objects.isNull(data)) {
             return;
         }
@@ -132,6 +133,10 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         if (Objects.isNull(timestamp) || Objects.isNull(value)) {
             return;
         }
+        HBaseTimeSeriesObjectDTO lastCondition = new HBaseTimeSeriesObjectDTO();
+        lastCondition.setValue(value);
+        lastCondition.setTimestamp(timestamp);
+        redis.opsForValue().set(REDIS_KEY_DEVICE_CONDITION + response.getDeviceId(), lastCondition);
         try {
             hBase.familyExists(H_BASE_TABLE_NPC_PHM_DATA, H_BASE_FAMILY_NPC_CONDITION, true, Compression.Algorithm.SNAPPY);
             hBase.insertObject(H_BASE_TABLE_NPC_PHM_DATA, response.getDeviceId() + ROW_KEY_SEPARATOR + timestamp, H_BASE_FAMILY_NPC_CONDITION, response.getDeviceId(), value, timestamp);
@@ -262,9 +267,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
      *
      * @return
      */
-    private StateMonitorParamDTO operateParams(Long deviceId, String type, Integer modelType) {
+    private StateMonitorParamDTO operateParams(Long deviceId, AlgorithmTypeEnum type, Integer modelType) {
         LambdaQueryWrapper<AlgorithmConfigDO> wrapper = Wrappers.lambdaQuery(AlgorithmConfigDO.class);
-        wrapper.eq(AlgorithmConfigDO::getAlgorithmType, type);
+        wrapper.eq(AlgorithmConfigDO::getAlgorithmType, type.getType());
         AlgorithmConfigDO algorithmConfig = configService.getOne(wrapper);
         if (Objects.isNull(algorithmConfig)) {
             return null;
@@ -290,8 +295,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             return null;
         }
         StateMonitorParamDTO param = new StateMonitorParamDTO();
-        param.setDeviceName(device.getDeviceName());
+        param.setTypeEnum(type);
         param.setDeviceId(deviceId);
+        param.setDeviceName(device.getDeviceName());
         param.setDeviceCode(device.getDeviceCode());
         param.setSubSystemId(device.getSubSystemId());
         param.setModelIds(modelList.stream().map(v -> v.getId()).distinct().collect(Collectors.toList()));
@@ -318,7 +324,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
      * @param param
      */
     private void setLastCondition(StateMonitorParamDTO param) {
-        HBaseTimeSeriesDataDTO lastCondition = (HBaseTimeSeriesDataDTO) redis.opsForValue().get(REDIS_KEY_DEVICE_CONDITION + param.getDeviceId());
+        HBaseTimeSeriesObjectDTO lastCondition = (HBaseTimeSeriesObjectDTO) redis.opsForValue().get(REDIS_KEY_DEVICE_CONDITION + param.getDeviceId());
         if (Objects.nonNull(lastCondition)) {
             param.setLastCondition(lastCondition);
         }

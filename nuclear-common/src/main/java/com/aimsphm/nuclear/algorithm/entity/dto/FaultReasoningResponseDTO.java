@@ -1,8 +1,5 @@
 package com.aimsphm.nuclear.algorithm.entity.dto;
 
-import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.AlgorithmNormalRuleDO;
-import com.aimsphm.nuclear.common.entity.vo.SymptomCorrelationVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -27,7 +24,7 @@ public class FaultReasoningResponseDTO {
 
     @Data
     public static class ReasonResult {
-        @ApiModelProperty(value = "")
+        @ApiModelProperty(value = "推荐比率")
         private Double recommend;
 
         @ApiModelProperty(value = "故障对象")
@@ -39,10 +36,10 @@ public class FaultReasoningResponseDTO {
         @ApiModelProperty(value = "故障主键")
         private Long faultId;
 
-        @ApiModelProperty(value = "征兆集合")
+        @ApiModelProperty(value = "机理模型")
         private Integer mechanismCode;
 
         @ApiModelProperty(value = "征兆集合")
-        private List<FaultReasoningParamVO.Symptom> symSet;
+        private List<FaultReasoningParamVO.SymptomVO> symSet;
     }
 }

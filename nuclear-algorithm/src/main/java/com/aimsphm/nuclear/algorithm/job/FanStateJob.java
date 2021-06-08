@@ -3,29 +3,24 @@ package com.aimsphm.nuclear.algorithm.job;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.annotation.DistributedLock;
-import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.enums.DeviceTypeEnum;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.aimsphm.nuclear.common.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN;
+import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_SS_SSS_M;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.job
- * @Description: <上充泵启动状态>
+ * @Description: <风机状态监测>
  * @Author: MILLA
  * @CreateDate: 2020/6/28 10:54
  * @UpdateUser: MILLA
@@ -35,31 +30,30 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN
  */
 @Component
 @Slf4j
-@ConditionalOnProperty(prefix = "scheduled.config", name = "enable", havingValue = "true")
-public class PumpStartStopStatusJob implements BaseMonitorJob {
-    @Resource
-    @Qualifier("redisTemplate")
-    private RedisTemplate<String, Object> redis;
+public class FanStateJob implements BaseMonitorJob {
 
     @Resource
     private AlgorithmService algorithmService;
-
+    @Resource
+    @Qualifier("redisTemplate")
+    private RedisTemplate<String, Object> redis;
     @Resource
     private CommonDeviceService deviceService;
 
     /**
      * 设备状态监测算法
-     * 一分钟(每分钟的37秒)执行一次执行一次
+     * 一分钟(每分钟的10秒)执行一次执行一次
      */
     @Async
-    //    @Scheduled(cron = "37 0/1 * * * ? ")
-    @Scheduled(cron = "${scheduled.config.PumpStartStopStatusJob:37 0/1 * * * ?}")
-    @DistributedLock("PumpStartStopStatusJobLock")
+//    @Scheduled(cron = "30 0/10 * * * ? ")
+    @Scheduled(cron = "${scheduled.config.FanStateJob:30 0/10 * * * ? }")
+    @DistributedLock("FanStartStopStatusJobLock")
     public void monitorStartStopStatus() {
         Boolean running = redis.hasKey(REDIS_KEY_FAN);
         if (running) {
             return;
         }
-        execute(DeviceTypeEnum.PUMP.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_START_STOP);
+        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
+        log.info("执行----慢： {}", DateUtils.formatCurrentDateTime(YEAR_MONTH_DAY_HH_MM_SS_SSS_M));
     }
 }

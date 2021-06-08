@@ -3,22 +3,20 @@ package com.aimsphm.nuclear.algorithm.service.impl;
 import com.aimsphm.nuclear.algorithm.entity.dto.FeatureExtractionParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.FeatureExtractionResponseDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.SymptomParamDTO;
+import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.algorithm.enums.FeatureNameEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.CommonSensorComponentDO;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import com.aimsphm.nuclear.common.enums.TimeUnitEnum;
-import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.AlgorithmNormalFaultFeatureService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.CommonSensorComponentService;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
@@ -34,7 +32,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -142,7 +139,7 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
     }
 
     @Override
-    public List<Integer> symptomJudgment(List<String> pointIds) {
+    public SymptomResponseDTO symptomJudgment(List<String> pointIds) {
         LambdaQueryWrapper<CommonMeasurePointDO> query = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
         query.in(CommonMeasurePointDO::getPointId, pointIds);
         List<CommonMeasurePointDO> points = pointService.list(query);
@@ -184,8 +181,7 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
             return null;
         }).collect(Collectors.toList());
         params.setFeatureValue(collect);
-        List<Integer> data = (List<Integer>) symptomService.getInvokeCustomerData(params);
-        return data;
+        return (SymptomResponseDTO) symptomService.getInvokeCustomerData(params);
     }
 
     private boolean filterParams(FeatureExtractionParamDTO x) {

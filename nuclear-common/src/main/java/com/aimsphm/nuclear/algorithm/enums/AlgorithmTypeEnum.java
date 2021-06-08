@@ -20,7 +20,7 @@ public enum AlgorithmTypeEnum {
 
     STATE_MONITOR("HCM", "状态监测算法"),
 
-    STATE_START_STOP("START-STOP", "启停状态算法"),
+    THRESHOLD_MONITOR("THRESHOLD", "阈值判断算法"),
 
     DATA_ANALYSIS("ANALYSIS", "数据分析"),
     DATA_ANALYSIS_TIME_DOMAIN("TIME-DOMAIN", "时域波形"),

@@ -20,20 +20,20 @@ import java.util.List;
 @Data
 public class FaultReasoningParamVO {
     @ApiModelProperty(value = "征兆集合")
-    private List<Symptom> symSet;
+    private List<SymptomVO> symSet;
 
     @ApiModelProperty(value = "关联规则集合")
     private List<AlgorithmNormalRuleDO> refRuleSet;
 
     @Data
-    public static class Symptom {
+    public static class SymptomVO {
         @ApiModelProperty(value = "征兆主键", notes = "1表示发生，0表示未知，-1已知未发生")
         private Long symId;
 
         @ApiModelProperty(value = "")
         private Integer symCorr;
 
-        public Symptom(Long symId) {
+        public SymptomVO(Long symId) {
             this.symId = symId;
             init();
         }

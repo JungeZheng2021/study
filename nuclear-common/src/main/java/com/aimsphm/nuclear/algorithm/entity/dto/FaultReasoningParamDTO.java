@@ -1,11 +1,11 @@
 package com.aimsphm.nuclear.algorithm.entity.dto;
 
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.AlgorithmNormalRuleDO;
 import com.aimsphm.nuclear.common.entity.vo.SymptomCorrelationVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,9 +24,9 @@ public class FaultReasoningParamDTO {
 
     private Integer deviceType;
 
-    private List<FaultReasoningParamVO.Symptom> symSet;
+    private List<FaultReasoningParamVO.SymptomVO> symSet;
 
-    private List<AlgorithmNormalRuleDO> refRuleSet;
+    private List<RefRuleSetElem> refRuleSet;
 
     private List<SymptomCorrelationVO> symCorr;
 
@@ -44,5 +44,25 @@ public class FaultReasoningParamDTO {
     private void init() {
         this.examRec = false;
         this.reasonCase = false;
+    }
+
+    @Data
+    public static class RefRuleSetElem {
+        private Long faultId;
+        private Long mechanismCode;
+        private Integer ruleType;
+        private List<Long> componentList;
+        private List<SymSetElem> symSet;
+
+        @Data
+        public static class SymSetElem {
+            private Long symId;
+            private Float symCorr;
+            private Integer symCorrLevel;
+        }
+
+        public RefRuleSetElem() {
+            componentList = new ArrayList<>();
+        }
     }
 }

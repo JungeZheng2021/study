@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.algorithm.service;
 
+import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
+
 /**
  * @Package: com.aimsphm.nuclear.algorithm.service
  * @Description: <>
@@ -15,18 +17,22 @@ public interface AlgorithmService {
     /**
      * 设备状态监测算法
      *
+     *
+     * @param algorithmType
      * @param deviceId
      * @param algorithmPeriod
      * @return
      */
-    void getDeviceStateMonitorInfo(Long deviceId, Integer algorithmPeriod);
+    void deviceStateMonitorInfo(AlgorithmTypeEnum algorithmType, Long deviceId, Integer algorithmPeriod);
 
     /**
      * 设备启停状态判断
      *
+     *
+     * @param algorithmType
      * @param deviceId
      * @param algorithmPeriod
      * @return
      */
-    void getDeviceStartAndStopMonitorInfo(Long deviceId, Integer algorithmPeriod);
+    void deviceThresholdMonitorInfo(AlgorithmTypeEnum algorithmType, Long deviceId, Integer algorithmPeriod);
 }

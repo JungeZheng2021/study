@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.algorithm.feign;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.AlgorithmParamDTO;
+import com.aimsphm.nuclear.algorithm.feign.fallback.AlgorithmServiceFeignFallback;
 import com.aimsphm.nuclear.common.response.ResponseData;
 import com.baomidou.mybatisplus.extension.api.R;
 import org.apache.poi.ss.formula.functions.T;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Version: 1.0
  */
 @Component
-@FeignClient(name = "algorithm-server-cargod")//, fallback = AlgorithmServiceFeignFallback.class)
+@FeignClient(name = "algorithm-server-cargod", fallback = AlgorithmServiceFeignFallback.class)
 //@FeignClient(name = "algorithm-server")//, fallback = AlgorithmServiceFeignFallback.class)
 @ConditionalOnProperty(prefix = "spring.config", name = "enableAlgorithm", havingValue = "true")
 public interface AlgorithmServiceFeignClient {

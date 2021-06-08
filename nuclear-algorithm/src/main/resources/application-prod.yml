@@ -4,14 +4,18 @@ server:
 scheduled:
   config:
     enable: true
-    # 每小时的37分钟执行一次
-    FanMonitorJob: 0 37 * * * ?
-    # 每分钟的10秒执行一次
-    FanStartStopStatusJob: 10 * * * * ?
-    # 每小时的13分钟执行一次
-    PumpMonitorJob: 0 13 * * * ?
+    # 每小时的0分29秒执行一次
+    #    FanMonitorJob: 29 0 * * * ?
+    # 每10分29秒执行一次
+    FanStateJob: 29 0/10 * * * ?
+    # 每10分钟的30秒执行一次
+    #    FanStartStopStatusJob: 30 0/10 * * * ?
+    #每1分钟30秒的时候执行一次
+    FanThresholdMonitorJob: 30 0/1 * * * ?
+    # 每10分0秒执行一次
+    PumpStateJob: 1 0/10 * * * ?
     # 每分钟的37秒执行一次
-    PumpStartStopStatusJob: 37 * * * * ?
+    PumpThresholdMonitorJob: 1 0/1 * * * ?
 spring:
   mybatisPlusConfig:
     enable: true

@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.algorithm.controller;
 
+import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
+import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.algorithm.service.FaultReasoningService;
 import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.controller
@@ -34,10 +37,20 @@ public class AlgorithmController {
     @Resource
     private FaultReasoningService faultReasoningService;
 
-    @GetMapping("test/{deviceId}/{p}")
-    @ApiOperation(value = "获取某一实体")
-    public void getDeviceStateMonitorInfo(@PathVariable Long deviceId, @PathVariable Integer p) throws IOException {
-        algorithmService.getDeviceStateMonitorInfo(deviceId, p);
+    @GetMapping("test/{deviceId}/{type}")
+    @ApiOperation(value = "状态监测算法")
+    public String getDeviceStateMonitorInfo(@PathVariable Long deviceId, @PathVariable String type) throws IOException {
+        AlgorithmTypeEnum byValue = AlgorithmTypeEnum.getByValue(type);
+        if (Objects.isNull(byValue)) {
+            return null;
+        }
+        if (byValue.equals(AlgorithmTypeEnum.THRESHOLD_MONITOR)) {
+            algorithmService.deviceThresholdMonitorInfo(byValue, deviceId, 1 * 60);
+        }
+        if (byValue.equals(AlgorithmTypeEnum.STATE_MONITOR)) {
+            algorithmService.deviceStateMonitorInfo(byValue, deviceId, 10 * 60);
+        }
+        return String.format("%s 算法运行成功", byValue.getDesc());
     }
 
     @GetMapping("test")
@@ -48,8 +61,8 @@ public class AlgorithmController {
 
     @GetMapping("test/symptom")
     @ApiOperation(value = "征兆判断")
-    public void symptomJudgmentData(@RequestParam("pointIds") List<String> pointIds) {
-        List<Integer> indexes = featureExtractionService.symptomJudgment(pointIds);
+    public SymptomResponseDTO symptomJudgmentData(@RequestParam("pointIds") List<String> pointIds) {
+        return featureExtractionService.symptomJudgment(pointIds);
     }
 
     @GetMapping("test/faultReasoning")

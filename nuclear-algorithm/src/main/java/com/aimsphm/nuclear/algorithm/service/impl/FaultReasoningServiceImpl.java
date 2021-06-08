@@ -3,12 +3,11 @@ package com.aimsphm.nuclear.algorithm.service.impl;
 import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningParamVO;
 import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningResponseDTO;
+import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.FaultReasoningService;
 import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
-import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.AlgorithmNormalRuleDO;
-import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
+import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.entity.vo.SymptomCorrelationVO;
 import com.aimsphm.nuclear.common.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -38,9 +37,11 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
     @Resource
     private CommonDeviceService deviceService;
     @Resource
-    private CommonMeasurePointService pointService;
+    private CommonComponentService componentService;
     @Resource
     private AlgorithmNormalRuleService ruleService;
+    @Resource
+    private AlgorithmNormalRuleFeatureService ruleFeatureService;
 
     @Resource
     private AlgorithmNormalFaultFeatureService featureService;
@@ -58,17 +59,30 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
         FaultReasoningParamDTO params = new FaultReasoningParamDTO();
         params.setDeviceType(device.getDeviceType());
         //征兆集合
-        List<Integer> integers = featureExtractionService.symptomJudgment(pointIds);
-        if (CollectionUtils.isEmpty(integers)) {
+        SymptomResponseDTO symptomResponseDTO = featureExtractionService.symptomJudgment(pointIds);
+        if (Objects.isNull(symptomResponseDTO) && CollectionUtils.isEmpty(symptomResponseDTO.getSymptomList())) {
             return;
         }
-        List<FaultReasoningParamVO.Symptom> symSet = integers.stream().map(x -> new FaultReasoningParamVO.Symptom(new Long(x))).collect(Collectors.toList());
+        List<FaultReasoningParamVO.SymptomVO> symSet = symptomResponseDTO.getSymptomList().stream().map(x -> new FaultReasoningParamVO.SymptomVO(new Long(x))).collect(Collectors.toList());
         params.setSymSet(symSet);
         //所有的关联规则
         LambdaQueryWrapper<AlgorithmNormalRuleDO> wrapper = Wrappers.lambdaQuery(AlgorithmNormalRuleDO.class);
         wrapper.eq(AlgorithmNormalRuleDO::getDeviceType, device.getDeviceType());
-        List<AlgorithmNormalRuleDO> refRuleSet = ruleService.list(wrapper);
-        params.setRefRuleSet(refRuleSet);
+        List<AlgorithmNormalRuleDO> ruleList = ruleService.list(wrapper);
+        if (CollectionUtils.isNotEmpty(ruleList)) {
+            List<FaultReasoningParamDTO.RefRuleSetElem> refRuleSet = ruleList.stream().map(x -> {
+                FaultReasoningParamDTO.RefRuleSetElem item = new FaultReasoningParamDTO.RefRuleSetElem();
+                item.setFaultId(x.getId());
+                item.setMechanismCode(x.getConclusionId());
+                item.setRuleType(x.getRuleType());
+                //setSymSet
+                setSymSetByRuleId(item, x.getId());
+                //设置部件
+                setComponentListByComponentId(item, x.getComponentId());
+                return item;
+            }).collect(Collectors.toList());
+            params.setRefRuleSet(refRuleSet);
+        }
         //征兆之间的相似关系
         List<SymptomCorrelationVO> symCorr = featureFeatureService.listSymptomCorrelationVO(device);
         params.setSymCorr(symCorr);
@@ -81,5 +95,32 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
 
         FaultReasoningResponseDTO data = (FaultReasoningResponseDTO) symptomService.getInvokeCustomerData(params);
         System.out.println(data);
+    }
+
+    private void setComponentListByComponentId(FaultReasoningParamDTO.RefRuleSetElem item, Long componentId) {
+        CommonComponentDO component = componentService.getById(componentId);
+        if (Objects.isNull(component)) {
+            return;
+        }
+        item.getComponentList().add(component.getId());
+        if (Objects.nonNull(component.getParentComponentId())) {
+            setComponentListByComponentId(item, component.getParentComponentId());
+        }
+    }
+
+    private void setSymSetByRuleId(FaultReasoningParamDTO.RefRuleSetElem item, Long ruleId) {
+        LambdaQueryWrapper<AlgorithmNormalRuleFeatureDO> featureWrapper = Wrappers.lambdaQuery();
+        featureWrapper.eq(AlgorithmNormalRuleFeatureDO::getRuleId, ruleId);
+        List<AlgorithmNormalRuleFeatureDO> list = ruleFeatureService.list(featureWrapper);
+        if (CollectionUtils.isNotEmpty(list)) {
+            List<FaultReasoningParamDTO.RefRuleSetElem.SymSetElem> symList = list.stream().map(m -> {
+                FaultReasoningParamDTO.RefRuleSetElem.SymSetElem symSetElem = new FaultReasoningParamDTO.RefRuleSetElem.SymSetElem();
+                symSetElem.setSymId(m.getFeatureId());
+                symSetElem.setSymCorr(m.getCorrelation());
+                symSetElem.setSymCorrLevel(m.getCorrelationLevel());
+                return symSetElem;
+            }).collect(Collectors.toList());
+            item.setSymSet(symList);
+        }
     }
 }
