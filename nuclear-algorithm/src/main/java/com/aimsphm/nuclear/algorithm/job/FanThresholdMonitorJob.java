@@ -52,7 +52,6 @@ public class FanThresholdMonitorJob implements BaseMonitorJob {
         if (running) {
             return;
         }
-        log.info("快");
-                execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
+        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
     }
 }

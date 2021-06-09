@@ -51,7 +51,7 @@ public class FanStateJob implements BaseMonitorJob {
     public void monitorStartStopStatus() {
         redis.opsForValue().set(REDIS_KEY_FAN, 1);
         try {
-//            execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
+            execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
             log.info("执行----慢： {}", DateUtils.formatCurrentDateTime(YEAR_MONTH_DAY_HH_MM_SS_SSS_M));
         } catch (Exception e) {
             e.printStackTrace();

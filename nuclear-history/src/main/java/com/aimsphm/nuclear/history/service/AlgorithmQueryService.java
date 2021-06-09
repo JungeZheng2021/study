@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.history.service;
 
 import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
+import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 
 import java.util.List;
@@ -42,4 +43,5 @@ public interface AlgorithmQueryService {
      * @return
      */
     Map<String, List<List<List<Object>>>> listVibrationAnalysisData(DataAnalysisQueryMultiBO query);
+
 }

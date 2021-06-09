@@ -13,13 +13,16 @@ package com.aimsphm.nuclear.history.controller;
 
 import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
+import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.service.AlgorithmQueryService;
+import com.aimsphm.nuclear.history.service.FaultReasoningService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -32,12 +35,20 @@ import java.util.Map;
 public class AlgorithmQueryController {
     @Resource
     private AlgorithmQueryService service;
+    @Resource
+    private FaultReasoningService faultReasoningService;
 
     @GetMapping("trend")
     @ApiOperation(value = "去躁数据", notes = "多个参数")
     public Map<String, HistoryDataVO> listMovingAverageInfo(HistoryQueryMultiBO multiBo) {
         Map<String, HistoryDataVO> data = service.listMovingAverageInfo(multiBo);
         return data;
+    }
+
+    @GetMapping("fault/reasoning")
+    @ApiOperation(value = "故障推理")
+    public List<FaultReasoningVO> faultReasoning(@RequestParam("pointIds") List<String> pointIds, Long deviceId) {
+        return faultReasoningService.faultReasoningVO(pointIds, deviceId);
     }
 
     @GetMapping("prediction")

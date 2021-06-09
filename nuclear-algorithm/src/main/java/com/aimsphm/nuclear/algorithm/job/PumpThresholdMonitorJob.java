@@ -59,10 +59,10 @@ public class PumpThresholdMonitorJob implements BaseMonitorJob {
     @Scheduled(cron = "${scheduled.config.PumpThresholdMonitorJob:0 13 * * * ?}")
     @DistributedLock("FanMonitorJobLock")
     public void monitor() {
-//        Boolean running = redis.hasKey(REDIS_KEY_PUMP);
-//        if (running) {
-//            return;
-//        }
-//        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
+        Boolean running = redis.hasKey(REDIS_KEY_PUMP);
+        if (running) {
+            return;
+        }
+        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
     }
 }

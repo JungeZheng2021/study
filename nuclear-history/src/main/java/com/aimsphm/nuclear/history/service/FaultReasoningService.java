@@ -1,6 +1,7 @@
-package com.aimsphm.nuclear.algorithm.service;
+package com.aimsphm.nuclear.history.service;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningResponseDTO;
+import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
 
 import java.util.List;
@@ -33,4 +34,13 @@ public interface FaultReasoningService {
      * @return
      */
     List<FaultReasoningVO> faultReasoningVO(List<String> pointIds, Long deviceId);
+
+    /**
+     * 征兆判断
+     *
+     * @param pointIds
+     * @return
+     */
+    SymptomResponseDTO symptomJudgment(List<String> pointIds);
+
 }

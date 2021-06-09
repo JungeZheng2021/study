@@ -1,9 +1,6 @@
 package com.aimsphm.nuclear.algorithm.service;
 
-import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
-
-import java.util.List;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.service
@@ -22,12 +19,4 @@ public interface FeatureExtractionOperationService {
      * @param calculate
      */
     void operationFeatureExtractionData(PointTypeEnum calculate);
-
-    /**
-     * 征兆判断
-     *
-     * @return
-     * @param pointIds
-     */
-    SymptomResponseDTO symptomJudgment(List<String> pointIds);
 }

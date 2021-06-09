@@ -4,7 +4,6 @@ import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
 import com.aimsphm.nuclear.algorithm.util.RawDataThreadLocal;
 import com.aimsphm.nuclear.common.config.DynamicTableTreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
-import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
 import com.aimsphm.nuclear.common.entity.SparkDownSample;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
@@ -275,11 +274,20 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     @Override
     public Map<String, EventDataVO> listDataWithPointList(HistoryQueryMultiBO multi) {
+        Map<String, Boolean> needsQueryIds = serviceExt.listPointByDeviceIdInModel(multi.getPointIds());
+        if (MapUtils.isEmpty(needsQueryIds)) {
+            return null;
+        }
+        List<String> queryPointIds = needsQueryIds.entrySet().stream().filter(x -> x.getValue()).map(x -> x.getKey()).collect(Collectors.toList());
+        multi.setPointIds(queryPointIds);
+        if (CollectionUtils.isEmpty(queryPointIds)) {
+            return null;
+        }
         checkParam(multi);
         HashMap<String, EventDataVO> data = Maps.newHashMap();
         List<String> pointIds = multi.getPointIds();
         try {
-            List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, multi.getStart(), multi.getEnd(), H_BASE_FAMILY_NPC_ESTIMATE, pointIds, multi.getModelId());
+            List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, multi.getStart(), multi.getEnd(), H_BASE_FAMILY_NPC_ESTIMATE, pointIds, multi.getDeviceId());
             final Map<String, List<PointEstimateDataBO>> hBaseData = Maps.newHashMap();
             if (CollectionUtils.isNotEmpty(collect)) {
                 Map<String, List<PointEstimateDataBO>> map = collect.stream().collect(Collectors.groupingBy(x -> x.getPointId()));
@@ -293,10 +301,6 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 }
                 BeanUtils.copyProperties(point, vo);
                 operationHBaseData(pointId, vo, hBaseData);
-                List<JobAlarmRealtimeDO> realtimeList = realtimeService.listRealTime(pointId, multi.getStart(), multi.getEnd(), multi.getModelId());
-                if (CollectionUtils.isNotEmpty(realtimeList)) {
-                    vo.setAlarmData(realtimeList.stream().map(x -> x.getGmtAlarmTime().getTime()).collect(Collectors.toList()));
-                }
                 data.put(pointId, vo);
             });
         } catch (IOException e) {

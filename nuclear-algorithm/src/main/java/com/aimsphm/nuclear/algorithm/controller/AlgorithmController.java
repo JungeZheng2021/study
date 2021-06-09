@@ -1,20 +1,18 @@
 package com.aimsphm.nuclear.algorithm.controller;
 
-import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningResponseDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
-import com.aimsphm.nuclear.algorithm.service.FaultReasoningService;
 import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
-import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -36,9 +34,6 @@ public class AlgorithmController {
     @Resource
     private FeatureExtractionOperationService featureExtractionService;
 
-    @Resource
-    private FaultReasoningService faultReasoningService;
-
     @GetMapping("test/{deviceId}/{type}")
     @ApiOperation(value = "状态监测算法")
     public String getDeviceStateMonitorInfo(@PathVariable Long deviceId, @PathVariable String type) throws IOException {
@@ -59,23 +54,5 @@ public class AlgorithmController {
     @ApiOperation(value = "计算特征数据")
     public void operationFeatureExtractionData() {
         featureExtractionService.operationFeatureExtractionData(PointTypeEnum.CALCULATE);
-    }
-
-    @GetMapping("test/symptom")
-    @ApiOperation(value = "征兆判断")
-    public SymptomResponseDTO symptomJudgmentData(@RequestParam("pointIds") List<String> pointIds) {
-        return featureExtractionService.symptomJudgment(pointIds);
-    }
-
-    @GetMapping("test/faultReasoning")
-    @ApiOperation(value = "故障推理")
-    public FaultReasoningResponseDTO faultReasoning(@RequestParam("pointIds") List<String> pointIds, Long deviceId) {
-        return faultReasoningService.faultReasoning(pointIds, deviceId);
-    }
-
-    @GetMapping("test/faultReasoning")
-    @ApiOperation(value = "故障推理-test")
-    public List<FaultReasoningVO> faultReasoningVO(@RequestParam("pointIds") List<String> pointIds, Long deviceId) {
-        return faultReasoningService.faultReasoningVO(pointIds, deviceId);
     }
 }

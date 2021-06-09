@@ -139,59 +139,9 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
         }
     }
 
-    @Override
-    public SymptomResponseDTO symptomJudgment(List<String> pointIds) {
-        LambdaQueryWrapper<CommonMeasurePointDO> query = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
-        query.in(CommonMeasurePointDO::getPointId, pointIds);
-        List<CommonMeasurePointDO> points = pointService.list(query);
-        if (CollectionUtils.isEmpty(points)) {
-            return null;
-        }
-        LambdaQueryWrapper<CommonSensorComponentDO> sensorQuery = Wrappers.lambdaQuery(CommonSensorComponentDO.class);
-        sensorQuery.in(CommonSensorComponentDO::getSensorCode, points.stream().map(x -> x.getSensorCode()).collect(Collectors.toSet()));
-        List<CommonSensorComponentDO> sensorComponentList = sensorComponentService.list(sensorQuery);
-        if (CollectionUtils.isEmpty(sensorComponentList)) {
-            return null;
-        }
-        LambdaQueryWrapper<AlgorithmNormalFaultFeatureDO> wrapper = Wrappers.lambdaQuery(AlgorithmNormalFaultFeatureDO.class);
-        wrapper.in(AlgorithmNormalFaultFeatureDO::getComponentId, sensorComponentList.stream().map(x -> x.getComponentId()).collect(Collectors.toSet()));
-        List<AlgorithmNormalFaultFeatureDO> list = featureService.list(wrapper);
-        if (CollectionUtils.isEmpty(list)) {
-            return null;
-        }
-        SymptomParamDTO params = new SymptomParamDTO();
-        params.setFeatureInfo(list);
-        List<List<HBaseTimeSeriesDataDTO>> collect = list.stream().map(x -> {
-            String pointId = x.getSensorDesc();
-            String sensorCode = x.getSensorCode();
-            String family = H_BASE_FAMILY_NPC_PI_REAL_TIME;
-            if (!StringUtils.equals(pointId, sensorCode)) {
-                family = pointId.replace(sensorCode, BLANK).substring(1);
-            }
-            String timeRange = x.getTimeRange();
-            if (StringUtils.isBlank(timeRange)) {
-                return null;
-            }
-            long end = System.currentTimeMillis();
-            Long gapValue = TimeUnitEnum.getGapValue(timeRange);
-            if (Objects.isNull(gapValue)) {
-                return null;
-            }
-            try {
-                return hBase.listObjectDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, end - gapValue, end, family);
-            } catch (IOException e) {
-                log.error("query history data failed.....");
-            }
-            return null;
-        }).collect(Collectors.toList());
-        params.setFeatureValue(collect);
-        return (SymptomResponseDTO) symptomService.getInvokeCustomerData(params);
-    }
-
     private boolean filterParams(FeatureExtractionParamDTO x) {
         return (Objects.nonNull(x.getSignalKey()) && redis.hasKey(x.getSignalKey())) || (FeatureNameEnum.PT.getType().equals(x.getFeatName()));
     }
-
 
     private void queryPointHistory(FeatureExtractionParamDTO param) {
         try {
@@ -202,6 +152,5 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
         } catch (IOException e) {
             log.error("query history data failed.....");
         }
-
     }
 }
