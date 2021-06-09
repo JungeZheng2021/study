@@ -129,7 +129,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
             entity.setPointIds(null);
             wrapper.apply("FIND_IN_SET('" + pointIds + "',point_ids) > 0");
         }
-        wrapper.orderByDesc(JobAlarmEventDO::getId);
+        wrapper.orderByDesc(JobAlarmEventDO::getGmtLastAlarm);
         return wrapper;
     }
 

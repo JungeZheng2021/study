@@ -75,6 +75,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
+        wrapper.orderByDesc(JobAlarmRealtimeDO::getGmtAlarmTime);
         return wrapper;
     }
 

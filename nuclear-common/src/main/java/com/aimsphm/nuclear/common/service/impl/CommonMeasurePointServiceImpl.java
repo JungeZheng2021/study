@@ -338,11 +338,12 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             return null;
         }
         Map<Long, CommonMeasurePointDO> ids = list.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
-        Map<String, CommonMeasurePointDO> pointDOMap = list.stream().collect(Collectors.toMap(x -> x.getPointId(), x -> x));
+        Map<String, CommonMeasurePointDO> pointDOMap = list.stream().collect(Collectors.toMap(x -> x.getPointId(), x -> x, (a, b) -> a));
         LambdaQueryWrapper<AlgorithmModelPointDO> modelWrapper = Wrappers.lambdaQuery(AlgorithmModelPointDO.class);
         modelWrapper.in(AlgorithmModelPointDO::getPointId, ids.keySet());
+        modelWrapper.last("and exists  (select model_id from algorithm_model where id=model_id and model_type=1)");
         List<AlgorithmModelPointDO> modelList = algorithmModelPointService.list(modelWrapper);
-        Map<Long, AlgorithmModelPointDO> collect = modelList.stream().collect(Collectors.toMap(AlgorithmModelPointDO::getPointId, x -> x));
+        Map<Long, AlgorithmModelPointDO> collect = modelList.stream().collect(Collectors.toMap(AlgorithmModelPointDO::getPointId, x -> x, (a, b) -> a));
         return pointIds.stream().distinct().collect(Collectors.toMap(x -> x, x -> {
             CommonMeasurePointDO pointDO = pointDOMap.get(x);
             return Objects.nonNull(pointDO) && Objects.nonNull(collect.get(pointDO.getId()));
