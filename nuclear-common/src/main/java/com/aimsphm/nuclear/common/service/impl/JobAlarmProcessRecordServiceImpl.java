@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,6 +49,7 @@ public class JobAlarmProcessRecordServiceImpl extends ServiceImpl<JobAlarmProces
         LambdaQueryWrapper<JobAlarmProcessRecordDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
         if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+            wrapper.between(JobAlarmProcessRecordDO::getGmtEventTime, new Date(query.getStart()), new Date(query.getEnd()));
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
