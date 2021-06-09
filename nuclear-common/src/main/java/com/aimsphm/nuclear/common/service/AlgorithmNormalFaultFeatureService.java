@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.common.service;
 
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.entity.vo.AlgorithmNormalFaultFeatureVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,7 +19,7 @@ import java.util.List;
  * @Version: 1.0
  */
 public interface AlgorithmNormalFaultFeatureService extends IService<AlgorithmNormalFaultFeatureDO> {
-    
+
     /**
      * 根据条件获取分页查询数据
      *
@@ -34,4 +35,12 @@ public interface AlgorithmNormalFaultFeatureService extends IService<AlgorithmNo
      * @return
      */
     List<AlgorithmNormalFaultFeatureDO> listAlgorithmNormalFaultFeatureWithParams(QueryBO<AlgorithmNormalFaultFeatureDO> queryBO);
+
+    /**
+     * 根据组件id查询组件信息
+     *
+     * @param symId
+     * @return
+     */
+    AlgorithmNormalFaultFeatureVO getAlgorithmNormalFaultFeatureByComponentId(Long componentId);
 }

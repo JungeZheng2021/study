@@ -1,7 +1,9 @@
 package com.aimsphm.nuclear.common.mapper;
 
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
+import com.aimsphm.nuclear.common.entity.vo.AlgorithmNormalFaultFeatureVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @Package: com.aimsphm.nuclear.common.mapper
@@ -15,4 +17,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface AlgorithmNormalFaultFeatureMapper extends BaseMapper<AlgorithmNormalFaultFeatureDO> {
 
+    AlgorithmNormalFaultFeatureVO getAlgorithmNormalFaultFeatureByComponentId(@Param("compmontId") Long compmontId);
 }

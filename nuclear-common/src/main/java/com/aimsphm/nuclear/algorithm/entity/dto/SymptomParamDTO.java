@@ -20,7 +20,13 @@ import java.util.List;
 @Data
 public class SymptomParamDTO {
 
+    private Long invokingTime;
+
     private List<AlgorithmNormalFaultFeatureDO> featureInfo;
 
-    private List<List<HBaseTimeSeriesDataDTO>> featureValue;
+    private List<List<List<Object>>> featureValue;
+
+    public SymptomParamDTO() {
+        invokingTime = System.currentTimeMillis();
+    }
 }

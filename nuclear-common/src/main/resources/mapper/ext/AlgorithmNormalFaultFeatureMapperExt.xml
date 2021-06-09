@@ -2,8 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aimsphm.nuclear.common.mapper.AlgorithmNormalFaultFeatureMapper">
     <!-- 扩展查询映射结果 -->
-    <resultMap id="BaseResultMapExt" type="com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO"
+    <resultMap id="BaseResultMapExt" type="com.aimsphm.nuclear.common.entity.vo.AlgorithmNormalFaultFeatureVO"
                extends="com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO.BaseResultMap">
+        <result column="component_name" property="componentName"/>
+        <result column="component_desc" property="componentDesc"/>
     </resultMap>
+    <select id="getAlgorithmNormalFaultFeatureByComponentId" resultMap="BaseResultMapExt">
+        SELECT
+            c.component_name  ,
+            c.component_desc  ,
+            f.*
+        FROM
+            `algorithm_normal_fault_feature` f
+            INNER JOIN common_component c ON f.component_id = c.id
+        WHERE
+            f.id =#{compmontId}
+    </select>
 
 </mapper>

@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.common.service.impl;
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.entity.vo.AlgorithmNormalFaultFeatureVO;
 import com.aimsphm.nuclear.common.mapper.AlgorithmNormalFaultFeatureMapper;
 import com.aimsphm.nuclear.common.service.AlgorithmNormalFaultFeatureService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -57,5 +58,10 @@ public class AlgorithmNormalFaultFeatureServiceImpl extends ServiceImpl<Algorith
     @Override
     public List<AlgorithmNormalFaultFeatureDO> listAlgorithmNormalFaultFeatureWithParams(QueryBO<AlgorithmNormalFaultFeatureDO> queryBO) {
         return this.list(customerConditions(queryBO));
+    }
+
+    @Override
+    public AlgorithmNormalFaultFeatureVO getAlgorithmNormalFaultFeatureByComponentId(Long componentId) {
+        return this.baseMapper.getAlgorithmNormalFaultFeatureByComponentId(componentId);
     }
 }

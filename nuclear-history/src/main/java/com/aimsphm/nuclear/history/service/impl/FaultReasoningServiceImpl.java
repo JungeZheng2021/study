@@ -3,7 +3,7 @@ package com.aimsphm.nuclear.history.service.impl;
 import com.aimsphm.nuclear.algorithm.entity.dto.*;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.common.entity.*;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
+import com.aimsphm.nuclear.common.entity.vo.AlgorithmNormalFaultFeatureVO;
 import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
 import com.aimsphm.nuclear.common.entity.vo.SymptomCorrelationVO;
 import com.aimsphm.nuclear.common.enums.TimeUnitEnum;
@@ -41,6 +41,8 @@ import static com.aimsphm.nuclear.common.constant.ReportConstant.BLANK;
 @Service
 public class FaultReasoningServiceImpl implements FaultReasoningService {
     @Resource(name = "DIAGNOSIS-RE")
+    private AlgorithmHandlerService faultReasoningHandler;
+    @Resource(name = "SYMPTOM")
     private AlgorithmHandlerService symptomService;
     @Resource
     private CommonMeasurePointService pointService;
@@ -105,23 +107,40 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
         List<AlgorithmNormalFaultFeatureDO> symInfoSet = featureService.list(query);
         params.setSymInfoSet(symInfoSet);
 
-        FaultReasoningResponseDTO data = (FaultReasoningResponseDTO) symptomService.getInvokeCustomerData(params);
+        FaultReasoningResponseDTO data = (FaultReasoningResponseDTO) faultReasoningHandler.getInvokeCustomerData(params);
         return data;
     }
 
     @Override
     public List<FaultReasoningVO> faultReasoningVO(List<String> pointIds, Long deviceId) {
         FaultReasoningResponseDTO responseDTO = this.faultReasoning(pointIds, deviceId);
+        if (Objects.isNull(responseDTO)) {
+            return null;
+        }
         List<FaultReasoningResponseDTO.ReasonResult> reasonResultList = responseDTO.getReasonResultList();
         return reasonResultList.stream().map(x -> {
             FaultReasoningVO reasoningVO = new FaultReasoningVO();
+            //推荐程度
+            reasoningVO.setRecommend(x.getRecommend());
+            //基本详情
             FaultReasoningResponseDTO.FaultInfo faultInfo = x.getFaultInfo();
             Long faultId = faultInfo.getFaultId();
             AlgorithmNormalRuleDO ruleDO = ruleService.getById(faultId);
             reasoningVO.setFaultInfo(ruleDO);
+            if (Objects.nonNull(ruleDO)) {
+                reasoningVO.setRuleDesc(ruleDO.getRuleDesc());
+            }
+            //故障特征
+            List<FaultReasoningParamVO.SymptomVO> symSet = faultInfo.getSymSet();
+            if (CollectionUtils.isNotEmpty(symSet)) {
+                List<AlgorithmNormalFaultFeatureVO> collect = symSet.stream().map(y -> {
+                    AlgorithmNormalFaultFeatureVO featureVO = featureService.getAlgorithmNormalFaultFeatureByComponentId(y.getSymId());
+                    return featureVO;
+                }).collect(Collectors.toList());
+                reasoningVO.setFeatures(collect);
+            }
             return reasoningVO;
         }).collect(Collectors.toList());
-
     }
 
     private void setComponentListByComponentId(FaultReasoningParamDTO.RefRuleSetElem item, Long componentId) {
@@ -173,7 +192,7 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
         }
         SymptomParamDTO params = new SymptomParamDTO();
         params.setFeatureInfo(list);
-        List<List<HBaseTimeSeriesDataDTO>> collect = list.stream().map(x -> {
+        List<List<List<Object>>> collect = list.stream().map(x -> {
             String pointId = x.getSensorDesc();
             String sensorCode = x.getSensorCode();
             String family = H_BASE_FAMILY_NPC_PI_REAL_TIME;
@@ -190,7 +209,7 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
                 return null;
             }
             try {
-                return hBase.listObjectDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, end - gapValue, end, family);
+                return hBase.listDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, end - gapValue, end, family);
             } catch (IOException e) {
                 log.error("query history data failed.....");
             }

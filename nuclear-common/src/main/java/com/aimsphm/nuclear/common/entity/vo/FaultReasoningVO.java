@@ -1,9 +1,7 @@
 package com.aimsphm.nuclear.common.entity.vo;
 
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultConclusionDO;
-import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalRuleDO;
-import com.sun.org.apache.xml.internal.security.algorithms.Algorithm;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -24,12 +22,15 @@ public class FaultReasoningVO {
     @ApiModelProperty(value = "推荐度")
     private Double recommend;
 
+    @ApiModelProperty(value = "故障描述")
+    private String ruleDesc;
+
     @ApiModelProperty(value = "详细信息")
     private AlgorithmNormalRuleDO faultInfo;
 
     @ApiModelProperty(value = "故障特征")
-    private List<AlgorithmNormalFaultFeatureDO> features;
+    private List<AlgorithmNormalFaultFeatureVO> features;
 
-    @ApiModelProperty(value = "故障特征")
+    @ApiModelProperty(value = "故障结论")
     private AlgorithmNormalFaultConclusionDO conclusion;
 }
