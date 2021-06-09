@@ -1,6 +1,6 @@
 package com.aimsphm.nuclear.core.controller;
 
-import com.aimsphm.nuclear.common.entity.JobAlarmProcessRecordDO;
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Package: com.aimsphm.nuclear.core.controller
@@ -42,6 +43,18 @@ public class JobAlarmRealtimeController {
     @ApiOperation(value = "列表查询", notes = "多条件组合查询")
     public List<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParams(JobAlarmRealtimeDO entity, ConditionsQueryBO query) {
         return service.listJobAlarmRealtimeWithParams(new QueryBO(entity, query));
+    }
+
+    @GetMapping("repetition/none")
+    @ApiOperation(value = "时时报警测点不重复", notes = "报警测点测点下拉框")
+    public List<CommonMeasurePointDO> listJobAlarmRealtimeByPageWithParamsDistinct(JobAlarmRealtimeDO entity, ConditionsQueryBO query) {
+        return service.listJobAlarmRealtimeByPageWithParamsDistinct(new QueryBO(entity, query));
+    }
+
+    @GetMapping("list/none")
+    @ApiOperation(value = "报警测点列表-只有时间戳", notes = "报警时间详情中测点报警")
+    public Map<String, List<Long>> listRealtimeBy(JobAlarmRealtimeDO entity, ConditionsQueryBO query, @RequestParam("pointIds") List<String> pointIds) {
+        return service.listJobAlarmRealtimeWithParams(new QueryBO(entity, query), pointIds);
     }
 
     @GetMapping("{id}")
