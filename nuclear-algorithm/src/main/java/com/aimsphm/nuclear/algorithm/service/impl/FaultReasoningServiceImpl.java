@@ -8,6 +8,7 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.FaultReasoningService;
 import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
 import com.aimsphm.nuclear.common.entity.*;
+import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
 import com.aimsphm.nuclear.common.entity.vo.SymptomCorrelationVO;
 import com.aimsphm.nuclear.common.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -60,7 +61,7 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
         params.setDeviceType(device.getDeviceType());
         //征兆集合
         SymptomResponseDTO symptomResponseDTO = featureExtractionService.symptomJudgment(pointIds);
-        if (Objects.isNull(symptomResponseDTO) && CollectionUtils.isEmpty(symptomResponseDTO.getSymptomList())) {
+        if (Objects.isNull(symptomResponseDTO) || CollectionUtils.isEmpty(symptomResponseDTO.getSymptomList())) {
             return null;
         }
         List<FaultReasoningParamVO.SymptomVO> symSet = symptomResponseDTO.getSymptomList().stream().map(x -> new FaultReasoningParamVO.SymptomVO(new Long(x))).collect(Collectors.toList());
@@ -95,6 +96,21 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
 
         FaultReasoningResponseDTO data = (FaultReasoningResponseDTO) symptomService.getInvokeCustomerData(params);
         return data;
+    }
+
+    @Override
+    public List<FaultReasoningVO> faultReasoningVO(List<String> pointIds, Long deviceId) {
+        FaultReasoningResponseDTO responseDTO = this.faultReasoning(pointIds, deviceId);
+        List<FaultReasoningResponseDTO.ReasonResult> reasonResultList = responseDTO.getReasonResultList();
+        return reasonResultList.stream().map(x -> {
+            FaultReasoningVO reasoningVO = new FaultReasoningVO();
+            FaultReasoningResponseDTO.FaultInfo faultInfo = x.getFaultInfo();
+            Long faultId = faultInfo.getFaultId();
+            AlgorithmNormalRuleDO ruleDO = ruleService.getById(faultId);
+            reasoningVO.setFaultInfo(ruleDO);
+            return reasoningVO;
+        }).collect(Collectors.toList());
+
     }
 
     private void setComponentListByComponentId(FaultReasoningParamDTO.RefRuleSetElem item, Long componentId) {

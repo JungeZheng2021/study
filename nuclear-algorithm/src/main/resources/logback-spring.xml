@@ -53,7 +53,7 @@
         </filter>
     </appender>
     <logger name="com.aimsphm" level="info"/>
-    <logger name="com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService" level="debug"/>
+    <!--    <logger name="com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService" level="debug"/>-->
     <root level="info">
         <appender-ref ref="stdout"/>
         <appender-ref ref="logFile"/>

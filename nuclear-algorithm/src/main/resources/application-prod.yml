@@ -13,7 +13,7 @@ scheduled:
     #每1分钟30秒的时候执行一次
     FanThresholdMonitorJob: 30 0/1 * * * ?
     # 每10分0秒执行一次
-    PumpStateJob: 1 0/10 * * * ?
+    PumpStateJob: 0 0/10 * * * ?
     # 每分钟的37秒执行一次
     PumpThresholdMonitorJob: 1 0/1 * * * ?
 spring:

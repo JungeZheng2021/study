@@ -9,7 +9,9 @@ import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,9 @@ import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.util.List;
+
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_PUMP;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.job
@@ -39,6 +44,9 @@ public class PumpThresholdMonitorJob implements BaseMonitorJob {
 
     @Resource
     private CommonDeviceService deviceService;
+    @Resource
+    @Qualifier("redisTemplate")
+    private RedisTemplate<String, Object> redis;
 
     /**
      * 设备状态监测算法
@@ -51,6 +59,10 @@ public class PumpThresholdMonitorJob implements BaseMonitorJob {
     @Scheduled(cron = "${scheduled.config.PumpThresholdMonitorJob:0 13 * * * ?}")
     @DistributedLock("FanMonitorJobLock")
     public void monitor() {
-        execute(DeviceTypeEnum.PUMP.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
+//        Boolean running = redis.hasKey(REDIS_KEY_PUMP);
+//        if (running) {
+//            return;
+//        }
+//        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
     }
 }

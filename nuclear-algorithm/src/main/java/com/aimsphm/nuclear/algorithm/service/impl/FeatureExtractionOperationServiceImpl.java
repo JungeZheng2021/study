@@ -10,6 +10,7 @@ import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.CommonSensorComponentDO;
+import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import com.aimsphm.nuclear.common.enums.TimeUnitEnum;
@@ -160,7 +161,7 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
         }
         SymptomParamDTO params = new SymptomParamDTO();
         params.setFeatureInfo(list);
-        List<List<Double>> collect = list.stream().map(x -> {
+        List<List<HBaseTimeSeriesDataDTO>> collect = list.stream().map(x -> {
             String pointId = x.getSensorDesc();
             String sensorCode = x.getSensorCode();
             String family = H_BASE_FAMILY_NPC_PI_REAL_TIME;
@@ -177,7 +178,7 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
                 return null;
             }
             try {
-                return hBase.listDoubleDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, end - gapValue, end, family);
+                return hBase.listObjectDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, end - gapValue, end, family);
             } catch (IOException e) {
                 log.error("query history data failed.....");
             }

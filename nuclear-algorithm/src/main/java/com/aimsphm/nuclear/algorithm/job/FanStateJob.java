@@ -49,11 +49,13 @@ public class FanStateJob implements BaseMonitorJob {
     @Scheduled(cron = "${scheduled.config.FanStateJob:30 0/10 * * * ? }")
     @DistributedLock("FanStartStopStatusJobLock")
     public void monitorStartStopStatus() {
-        Boolean running = redis.hasKey(REDIS_KEY_FAN);
-        if (running) {
-            return;
+        redis.opsForValue().set(REDIS_KEY_FAN, 1);
+        try {
+//            execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
+            log.info("执行----慢： {}", DateUtils.formatCurrentDateTime(YEAR_MONTH_DAY_HH_MM_SS_SSS_M));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
-        log.info("执行----慢： {}", DateUtils.formatCurrentDateTime(YEAR_MONTH_DAY_HH_MM_SS_SSS_M));
+        redis.delete(REDIS_KEY_FAN);
     }
 }

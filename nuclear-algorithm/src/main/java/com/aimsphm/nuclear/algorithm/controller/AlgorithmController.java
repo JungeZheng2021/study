@@ -6,6 +6,7 @@ import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.algorithm.service.FaultReasoningService;
 import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
+import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
@@ -70,5 +71,11 @@ public class AlgorithmController {
     @ApiOperation(value = "故障推理")
     public FaultReasoningResponseDTO faultReasoning(@RequestParam("pointIds") List<String> pointIds, Long deviceId) {
         return faultReasoningService.faultReasoning(pointIds, deviceId);
+    }
+
+    @GetMapping("test/faultReasoning")
+    @ApiOperation(value = "故障推理-test")
+    public List<FaultReasoningVO> faultReasoningVO(@RequestParam("pointIds") List<String> pointIds, Long deviceId) {
+        return faultReasoningService.faultReasoningVO(pointIds, deviceId);
     }
 }

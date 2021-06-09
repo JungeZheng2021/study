@@ -355,12 +355,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             pointsWrapper.select(CommonMeasurePointDO::getPointId);
             pointsWrapper.in(CommonMeasurePointDO::getId, pointDOS.stream().map(item -> item.getPointId()).collect(Collectors.toList()));
             List<CommonMeasurePointDO> list = pointsService.list(pointsWrapper);
-            bo.setEstimateTotal(listPointEstimateResultsData(m.getId(), list));
+            bo.setEstimateTotal(listPointEstimateResultsData(m.getDeviceId(), list));
             return bo;
         }).collect(Collectors.toList());
     }
 
-    private List<PointEstimateResultsDataBO> listPointEstimateResultsData(Long modelId, List<CommonMeasurePointDO> list) {
+    private List<PointEstimateResultsDataBO> listPointEstimateResultsData(Long deviceId, List<CommonMeasurePointDO> list) {
         if (CollectionUtils.isEmpty(list)) {
             return Lists.newArrayList();
         }
@@ -369,7 +369,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         List<String> ids = Lists.newArrayList(list.stream().filter(Objects::nonNull).map(x -> x.getPointId()).collect(Collectors.toSet()));
         try {
             List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, System.currentTimeMillis() - days15
-                    , System.currentTimeMillis(), H_BASE_FAMILY_NPC_ESTIMATE, ids, modelId);
+                    , System.currentTimeMillis(), H_BASE_FAMILY_NPC_ESTIMATE, ids, deviceId);
             bo.setEstimateResults(collect);
         } catch (IOException e) {
             log.error("select estimate data failed..{}", e);

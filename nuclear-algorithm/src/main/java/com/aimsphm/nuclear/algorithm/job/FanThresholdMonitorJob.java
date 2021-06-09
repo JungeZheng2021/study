@@ -48,12 +48,11 @@ public class FanThresholdMonitorJob implements BaseMonitorJob {
     @Scheduled(cron = "${scheduled.config.FanThresholdMonitorJob:29 0 * * * ?}")
     @DistributedLock("FanThresholdMonitorJob")
     public void monitor() {
-        redis.opsForValue().set(REDIS_KEY_FAN, 1);
-        try {
-            execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
-        } catch (Exception e) {
-            e.printStackTrace();
+        Boolean running = redis.hasKey(REDIS_KEY_FAN);
+        if (running) {
+            return;
         }
-        redis.delete(REDIS_KEY_FAN);
+        log.info("快");
+                execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
     }
 }
