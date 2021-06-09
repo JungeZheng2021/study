@@ -94,11 +94,11 @@ public interface AlgorithmHandlerService<P, R> {
             checkParams(query);
             log.debug("execute starting .....{}", JSON.toJSONString(query, SerializerFeature.WriteMapNullValue));
             ResponseData<R> responseData = client.algorithmInvokeByParams(query);
-            log.debug("<》：algorithm server success responseCode: {}, status: {}", responseData.getCode(), responseData.getMsg());
             checkSuccess(responseData);
+            log.debug("<》：algorithm server success responseCode: {}, status: {}", responseData.getCode(), responseData.getMsg());
             return responseData.getData();
         } catch (Exception e) {
-            log.error("algorithm server execute failed..");
+            log.error("algorithm server execute failed..{}", e);
         }
         return null;
     }

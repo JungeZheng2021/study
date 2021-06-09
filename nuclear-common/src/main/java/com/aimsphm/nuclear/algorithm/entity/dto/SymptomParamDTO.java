@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.algorithm.entity.dto;
 
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
-import io.swagger.annotations.ApiModelProperty;
+import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -22,5 +22,5 @@ public class SymptomParamDTO {
 
     private List<AlgorithmNormalFaultFeatureDO> featureInfo;
 
-    private List<List<Double>> featureValue;
+    private List<List<HBaseTimeSeriesDataDTO>> featureValue;
 }
