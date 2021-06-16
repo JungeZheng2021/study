@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.algorithm.feign.fallback;
 import com.aimsphm.nuclear.algorithm.entity.dto.AlgorithmParamDTO;
 import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.common.response.ResponseData;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class AlgorithmServiceFeignFallback implements AlgorithmServiceFeignClien
 
     @Override
     public ResponseData algorithmInvokeByParams(AlgorithmParamDTO param) {
-        log.error("Invoke server failed........ params:{}", param);
+        log.error("Invoke server failed........ params:{}", JSON.toJSONString(param));
         return null;
     }
 }

@@ -111,13 +111,13 @@ public class CommonMeasurePointController {
 
     @GetMapping("points/inModel")
     @ApiOperation(value = "判断测点是否在模型中")
-    public Map<String, Boolean> listPointByDeviceIdInModel(@RequestParam("pointIds") List<String> pointIds) {
+    public Map<String, Long> listPointByDeviceIdInModel(@RequestParam("pointIds") List<String> pointIds) {
         return iCommonMeasurePointServiceExt.listPointByDeviceIdInModel(pointIds);
     }
 
     @GetMapping("points/alias")
     @ApiOperation(value = "获取测点别名与中文名")
-    List<CommonMeasurePointDO> getPointAliasAndNameByID(@RequestParam("pointIds") List<String> pointIds){
-        return iCommonMeasurePointServiceExt.listPointAliasAndNameByID(pointIds);
+    List<CommonMeasurePointDO> listPointAliasAndName(@RequestParam("pointIds") List<String> pointIds, CommonQueryBO queryBO) {
+        return iCommonMeasurePointServiceExt.listPointAliasAndName(pointIds, queryBO);
     }
 }

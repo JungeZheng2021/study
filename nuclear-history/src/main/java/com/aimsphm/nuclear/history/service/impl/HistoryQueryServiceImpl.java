@@ -274,39 +274,52 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     @Override
     public Map<String, EventDataVO> listDataWithPointList(HistoryQueryMultiBO multi) {
-        Map<String, Boolean> needsQueryIds = serviceExt.listPointByDeviceIdInModel(multi.getPointIds());
-        if (MapUtils.isEmpty(needsQueryIds)) {
-            return null;
-        }
-        List<String> queryPointIds = needsQueryIds.entrySet().stream().filter(x -> x.getValue()).map(x -> x.getKey()).collect(Collectors.toList());
-        multi.setPointIds(queryPointIds);
-        if (CollectionUtils.isEmpty(queryPointIds)) {
-            return null;
-        }
         checkParam(multi);
         HashMap<String, EventDataVO> data = Maps.newHashMap();
         List<String> pointIds = multi.getPointIds();
-        try {
-            List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, multi.getStart(), multi.getEnd(), H_BASE_FAMILY_NPC_ESTIMATE, pointIds, multi.getDeviceId());
-            final Map<String, List<PointEstimateDataBO>> hBaseData = Maps.newHashMap();
-            if (CollectionUtils.isNotEmpty(collect)) {
-                Map<String, List<PointEstimateDataBO>> map = collect.stream().collect(Collectors.groupingBy(x -> x.getPointId()));
-                hBaseData.putAll(map);
-            }
-            pointIds.stream().forEach(pointId -> {
-                EventDataVO vo = new EventDataVO();
-                CommonMeasurePointDO point = serviceExt.getPointByPointId(pointId);
-                if (Objects.isNull(point)) {
-                    return;
-                }
-                BeanUtils.copyProperties(point, vo);
-                operationHBaseData(pointId, vo, hBaseData);
-                data.put(pointId, vo);
-            });
-        } catch (IOException e) {
-            log.error("select Estimate data failed..{}", e);
+        Map<String, List<PointEstimateDataBO>> hBaseData = selectModelDataList(multi);
+        if (MapUtils.isEmpty(hBaseData)) {
+            return null;
         }
+        pointIds.stream().forEach(pointId -> {
+            EventDataVO vo = new EventDataVO();
+            CommonMeasurePointDO point = serviceExt.getPointByPointId(pointId);
+            if (Objects.isNull(point)) {
+                return;
+            }
+            BeanUtils.copyProperties(point, vo);
+            operationHBaseData(pointId, vo, hBaseData);
+            data.put(pointId, vo);
+        });
         return data;
+    }
+
+    private Map<String, List<PointEstimateDataBO>> selectModelDataList(HistoryQueryMultiBO multi) {
+        Map<String, Long> needsQueryIds = serviceExt.listPointByDeviceIdInModel(multi.getPointIds());
+        if (MapUtils.isEmpty(needsQueryIds)) {
+            return null;
+        }
+        List<String> queryPointIds = needsQueryIds.entrySet().stream().filter(x -> x.getValue() > 0).map(x -> x.getKey()).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(queryPointIds)) {
+            return null;
+        }
+        multi.setPointIds(queryPointIds);
+        Map<Long, List<String>> queryMap = needsQueryIds.entrySet().stream().filter(x -> x.getValue() > 0).collect(Collectors.groupingBy(x -> x.getValue(), Collectors.mapping(x -> x.getKey(), Collectors.toList())));
+        final Map<String, List<PointEstimateDataBO>> hBaseData = Maps.newHashMap();
+        queryMap.entrySet().stream().forEach(x -> {
+            Long modelId = x.getKey();
+            List<String> pointIds = x.getValue();
+            try {
+                List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, multi.getStart(), multi.getEnd(), H_BASE_FAMILY_NPC_ESTIMATE, pointIds, modelId);
+                if (CollectionUtils.isNotEmpty(collect)) {
+                    Map<String, List<PointEstimateDataBO>> map = collect.stream().collect(Collectors.groupingBy(point -> point.getPointId()));
+                    hBaseData.putAll(map);
+                }
+            } catch (IOException e) {
+                log.error("select estimate data failed....");
+            }
+        });
+        return hBaseData;
     }
 
     private void operationHBaseData(String pointId, EventDataVO vo, Map<String, List<PointEstimateDataBO>> hBaseData) {

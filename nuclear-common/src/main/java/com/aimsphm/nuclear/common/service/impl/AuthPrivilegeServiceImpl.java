@@ -90,13 +90,17 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
 
     @Override
     public List<AuthPrivilegeDO> listAuthPrivilege(String userAccount, String sysCode, String structured) {
+        //TODO 权限以后做
+        userAccount = "20104580";
         if (StringUtils.isEmpty(userAccount)) {
-            throw new CustomMessageException("User not logged in");
+//            throw new CustomMessageException("User not logged in");
+            userAccount = "20104580";
         }
         if (StringUtils.isEmpty(sysCode)) {
-            sysCode = "";
+            sysCode = "70";
         }
-        Set<String> privileges = getUserPrivilegeRest(userAccount, sysCode);
+//        Set<String> privileges = getUserPrivilegeRest(userAccount, sysCode);
+        Set<String> privileges = getUserPrivilege(userAccount, sysCode);
         if (CollectionUtils.isEmpty(privileges)) {
             return null;
         }
@@ -151,10 +155,12 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
         HttpHeaders headers = new HttpHeaders();
         //定义请求参数类型，这里用json所以是MediaType.APPLICATION_JSON
         headers.setContentType(MediaType.APPLICATION_JSON);
-        data.put("userAccount", userAccount);
-        data.put("sysCode", sysCode);
+//        data.put("userAccount", userAccount);
+//        data.put("sysCode", sysCode);
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(data, headers);
-        ResponseEntity<String> entity = new RestTemplate().postForEntity(targetURL, request, String.class);
+        String json = "?userAccount=%s&sysCode=%s";
+        String format = String.format(json, userAccount, sysCode);
+        ResponseEntity<String> entity = new RestTemplate().getForEntity(targetURL + format, String.class);
 
         int statusCodeValue = entity.getStatusCodeValue();
         if (statusCodeValue != 200) {
@@ -191,8 +197,8 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
             conn.setDoInput(true);
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
 
-            String json = "{\"userAccount\":\"%s\",\"sysCode\":\"%s\"}";
-//            String json = "userAccount=%s&sysCode=%s";
+//            String json = "{\"userAccount\":\"%s\",\"sysCode\":\"%s\"}";
+            String json = "userAccount=%s&sysCode=%s";
             String format = String.format(json, userAccount, sysCode);
             out.write(format.getBytes("UTF-8"));
             //缓冲数据

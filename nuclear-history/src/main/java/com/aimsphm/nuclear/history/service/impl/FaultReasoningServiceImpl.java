@@ -56,6 +56,8 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
     private HBaseUtil hBase;
     @Resource
     private AlgorithmNormalRuleFeatureService ruleFeatureService;
+    @Resource
+    private AlgorithmNormalFaultConclusionService conclusionService;
 
     @Resource
     private AlgorithmNormalFaultFeatureService featureService;
@@ -113,6 +115,9 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
 
     @Override
     public List<FaultReasoningVO> faultReasoningVO(List<String> pointIds, Long deviceId) {
+        if (CollectionUtils.isEmpty(pointIds) || Objects.isNull(deviceId)) {
+            return null;
+        }
         FaultReasoningResponseDTO responseDTO = this.faultReasoning(pointIds, deviceId);
         if (Objects.isNull(responseDTO)) {
             return null;
@@ -124,6 +129,9 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
             reasoningVO.setRecommend(x.getRecommend());
             //基本详情
             FaultReasoningResponseDTO.FaultInfo faultInfo = x.getFaultInfo();
+            if (Objects.isNull(faultInfo)) {
+                return null;
+            }
             Long faultId = faultInfo.getFaultId();
             AlgorithmNormalRuleDO ruleDO = ruleService.getById(faultId);
             reasoningVO.setFaultInfo(ruleDO);
@@ -139,6 +147,9 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
                 }).collect(Collectors.toList());
                 reasoningVO.setFeatures(collect);
             }
+            Integer mechanismCode = x.getFaultInfo().getMechanismCode();
+            AlgorithmNormalFaultConclusionDO conclusionDO = conclusionService.getById(mechanismCode);
+            reasoningVO.setConclusion(conclusionDO);
             return reasoningVO;
         }).collect(Collectors.toList());
     }
@@ -188,6 +199,7 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
         wrapper.in(AlgorithmNormalFaultFeatureDO::getComponentId, sensorComponentList.stream().map(x -> x.getComponentId()).collect(Collectors.toSet()));
         List<AlgorithmNormalFaultFeatureDO> list = featureService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
+            log.error("没有对应的规则");
             return null;
         }
         SymptomParamDTO params = new SymptomParamDTO();
@@ -195,6 +207,9 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
         List<List<List<Object>>> collect = list.stream().map(x -> {
             String pointId = x.getSensorDesc();
             String sensorCode = x.getSensorCode();
+            if (StringUtils.isBlank(sensorCode)) {
+                return null;
+            }
             String family = H_BASE_FAMILY_NPC_PI_REAL_TIME;
             if (!StringUtils.equals(pointId, sensorCode)) {
                 family = pointId.replace(sensorCode, BLANK).substring(1);

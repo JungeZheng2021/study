@@ -32,7 +32,7 @@ public class FeatureExtractionJob {
      * 线上： 每小时的37分的时候执行一次
      */
 //    @Scheduled(cron = "0/2 * * * * ?")
-    @Scheduled(cron = "${scheduled.config.FanMonitorJob:29 0 * * * ?}")
+    @Scheduled(cron = "${scheduled.config.FeatureExtractionJob:29 0 * * * ?}")
     @DistributedLock("FeatureExtractionJob")
     public void monitor() {
         featureExtractionService.operationFeatureExtractionData(PointTypeEnum.CALCULATE);

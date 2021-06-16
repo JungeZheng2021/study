@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmRealtimeDO;
+import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.JobAlarmRealtimeMapper;
@@ -92,7 +93,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        return pointService.listPointAliasAndNameByID(list.stream().map(x -> x.getPointId()).collect(Collectors.toList()));
+        return pointService.listPointAliasAndName(list.stream().map(x -> x.getPointId()).collect(Collectors.toList()), new CommonQueryBO());
     }
 
     @Override

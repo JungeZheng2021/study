@@ -20,6 +20,8 @@ scheduled:
     PumpStateJob: 0 0/10 * * * ?
     # 每分钟的37秒执行一次
     PumpThresholdMonitorJob: 1 0/1 * * * ?
+    # 特征提取 每8,18,28的43秒执行一次
+    FeatureExtractionJob: 43 8/10 * * * ?
 spring:
   main:
     allow-bean-definition-overriding: true

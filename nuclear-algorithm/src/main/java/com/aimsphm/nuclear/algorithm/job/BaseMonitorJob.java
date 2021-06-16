@@ -48,7 +48,7 @@ public interface BaseMonitorJob {
             //状态监测
             if (algorithmType.equals(AlgorithmTypeEnum.STATE_MONITOR)) {
                 list.stream().forEach(deviceDO -> {
-                    log.debug("device status running..................deviceId:{}", deviceDO.getDeviceName());
+                    log.info("device status running..................deviceId:{}", deviceDO.getDeviceName());
                     long l = runtime.freeMemory();
                     log.info("总内存:{}", runtime.totalMemory() / 1024 / 1024);
                     log.info("执行前剩余内存:{}", l / 1024 / 1024);
@@ -61,7 +61,7 @@ public interface BaseMonitorJob {
             //阈值判断
             if (algorithmType.equals(AlgorithmTypeEnum.THRESHOLD_MONITOR)) {
                 list.stream().forEach(deviceDO -> {
-                    log.debug("device start stop running..................deviceId:{}", deviceDO.getDeviceName());
+                    log.info("device start stop running..................deviceId:{}", deviceDO.getDeviceName());
                     long l = runtime.freeMemory();
                     log.info("总内存:{}", runtime.totalMemory() / 1024 / 1024);
                     log.info("执行前剩余内存:{}", l / 1024 / 1024);

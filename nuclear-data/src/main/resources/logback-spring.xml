@@ -17,9 +17,12 @@
             </fileNamePattern>
             <TimeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>10MB</MaxFileSize>
+                <MaxFileSize>16MB</MaxFileSize>
             </TimeBasedFileNamingAndTriggeringPolicy>
+            <!-- 日志最大保存时间 -->
             <maxHistory>30</maxHistory>
+            <!-- 日志总保存量为1GB -->
+            <totalSizeCap>1GB</totalSizeCap>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
@@ -39,6 +42,10 @@
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <MaxFileSize>10MB</MaxFileSize>
             </TimeBasedFileNamingAndTriggeringPolicy>
+            <!-- 日志最大保存时间 -->
+            <maxHistory>30</maxHistory>
+            <!-- 日志总保存量为1GB -->
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>

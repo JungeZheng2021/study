@@ -123,8 +123,9 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         }
         String storeKey = getStoreKey(vos.get(0));
         MeasurePointVO vo = (MeasurePointVO) redis.opsForValue().get(storeKey);
+        //如果没有数据增量值是0
         if (Objects.isNull(vo) || Objects.isNull(vo.getValue())) {
-            return value;
+            return 0D;
         }
         return value - vo.getValue();
     }
@@ -327,7 +328,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     }
 
     @Override
-    public Map<String, Boolean> listPointByDeviceIdInModel(List<String> pointIds) {
+    public Map<String, Long> listPointByDeviceIdInModel(List<String> pointIds) {
         if (CollectionUtils.isEmpty(pointIds)) {
             return null;
         }
@@ -343,19 +344,27 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         modelWrapper.in(AlgorithmModelPointDO::getPointId, ids.keySet());
         modelWrapper.last("and exists  (select model_id from algorithm_model where id=model_id and model_type=1)");
         List<AlgorithmModelPointDO> modelList = algorithmModelPointService.list(modelWrapper);
+        //一个测点在多个模型中，取第一个模型的id
         Map<Long, AlgorithmModelPointDO> collect = modelList.stream().collect(Collectors.toMap(AlgorithmModelPointDO::getPointId, x -> x, (a, b) -> a));
         return pointIds.stream().distinct().collect(Collectors.toMap(x -> x, x -> {
             CommonMeasurePointDO pointDO = pointDOMap.get(x);
-            return Objects.nonNull(pointDO) && Objects.nonNull(collect.get(pointDO.getId()));
+            if (Objects.isNull(pointDO)) {
+                return -1L;
+            }
+            AlgorithmModelPointDO modelPointDO = collect.get(pointDO.getId());
+            if (Objects.isNull(modelPointDO)) {
+                return -1L;
+            }
+            return modelPointDO.getModelId();
         }));
     }
 
     @Override
-    public List<CommonMeasurePointDO> listPointAliasAndNameByID(List<String> pointIDList) {
+    public List<CommonMeasurePointDO> listPointAliasAndName(List<String> pointIDList, CommonQueryBO queryBO) {
         if (CollectionUtils.isEmpty(pointIDList)) {
             return null;
         }
-        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
+        LambdaQueryWrapper<CommonMeasurePointDO> wrapper = initWrapper(queryBO);
         wrapper.in(CommonMeasurePointDO::getPointId, pointIDList);
         wrapper.select(CommonMeasurePointDO::getPointId, CommonMeasurePointDO::getAlias, CommonMeasurePointDO::getPointName);
         return this.list(wrapper);
@@ -376,7 +385,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     private LambdaQueryWrapper<CommonMeasurePointDO> initWrapper(CommonQueryBO query) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
         if (Objects.isNull(query.getSystemId()) && Objects.isNull(query.getSubSystemId()) && Objects.isNull(query.getDeviceId()) && Objects.isNull(query.getVisible())) {
-            throw new CustomMessageException("参数不全");
+            return wrapper;
         }
         if (Objects.nonNull(query.getSystemId())) {
             wrapper.eq(CommonMeasurePointDO::getSystemId, query.getSystemId());

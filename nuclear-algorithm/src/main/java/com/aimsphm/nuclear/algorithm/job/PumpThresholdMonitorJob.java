@@ -63,6 +63,6 @@ public class PumpThresholdMonitorJob implements BaseMonitorJob {
         if (running) {
             return;
         }
-        execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
+        execute(DeviceTypeEnum.PUMP.getType(), algorithmService, deviceService, AlgorithmTypeEnum.THRESHOLD_MONITOR);
     }
 }

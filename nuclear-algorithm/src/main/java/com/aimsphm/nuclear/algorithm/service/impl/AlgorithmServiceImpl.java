@@ -87,7 +87,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     /**
      * 15天毫秒值 残差是15天内的
      */
-    private Integer days15 = 15 * 86400 * 1000;
+    private Integer days15 = 10 * 3600 * 1000;
 
     @Override
     public void deviceStateMonitorInfo(AlgorithmTypeEnum algorithmType, Long deviceId, Integer algorithmPeriod) {
@@ -123,7 +123,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         }
         saveDeviceCondition(response);
         saveOrUpdateEvent(response);
-        saveEstimateResult(response.getDeviceId(), response.getModelEstimateResult());
+        saveEstimateResult(response.getModelEstimateResult());
         updateDeviceStatus(response.getDeviceId(), response.getHealthStatus());
     }
 
@@ -148,10 +148,9 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     /**
      * 存储算法调用结果
      *
-     * @param deviceId
      * @param result
      */
-    private void saveEstimateResult(Long deviceId, List<EstimateResponseDataBO> result) {
+    private void saveEstimateResult(List<EstimateResponseDataBO> result) {
         if (CollectionUtils.isEmpty(result)) {
             return;
         }
@@ -160,10 +159,11 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             if (CollectionUtils.isEmpty(dataList)) {
                 return;
             }
+            Long modelId = item.getModelId();
             dataList.stream().filter(Objects::nonNull).forEach(x -> {
                 Long timestamp = x.getTimestamp();
                 try {
-                    hBase.insertObject(H_BASE_TABLE_NPC_PHM_DATA, deviceId + ROW_KEY_SEPARATOR + timestamp, H_BASE_FAMILY_NPC_ESTIMATE, x.getPointId(), x, timestamp);
+                    hBase.insertObject(H_BASE_TABLE_NPC_PHM_DATA, modelId + ROW_KEY_SEPARATOR + timestamp, H_BASE_FAMILY_NPC_ESTIMATE, x.getPointId(), x, timestamp);
                 } catch (IOException e) {
                     log.error("HBase insert failed...{}", e);
                 }
@@ -286,7 +286,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         if (CollectionUtils.isEmpty(pointDOS)) {
             return null;
         }
-        Map<Long, List<AlgorithmModelPointDO>> pointMap = pointDOS.stream().collect(Collectors.groupingBy(x -> x.getDeviceId()));
+        Map<Long, List<AlgorithmModelPointDO>> pointMap = pointDOS.stream().collect(Collectors.groupingBy(x -> x.getModelId()));
 
         CommonDeviceDO device = deviceService.getById(deviceId);
         //设备不存在或者是 设备未开启报警且modelType不是启停模型 1：开启 0:未开启
@@ -308,7 +308,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             param.setModelEstimateResult(listEstimateData(modelList, pointMap));
         }
         //原始值
-        param.setSensorData(listPointData(pointMap.get(deviceId)));
+        param.setSensorData(listPointData(pointDOS));
         //两个参数都是空的话不调用算法
         if (CollectionUtils.isEmpty(param.getSensorData()) && CollectionUtils.isEmpty(param.getModelEstimateResult())) {
             return null;
@@ -344,10 +344,14 @@ public class AlgorithmServiceImpl implements AlgorithmService {
 
     private List<EstimateParamDataBO> listEstimateData(List<AlgorithmModelDO> modelList, Map<Long, List<AlgorithmModelPointDO>> pointMap) {
         return modelList.stream().map(m -> {
+            Integer modelType = m.getModelType();
+            if (modelType != 1) {
+                return null;
+            }
             EstimateParamDataBO bo = new EstimateParamDataBO();
             bo.setModelId(m.getId());
             bo.setModelName(m.getModelName());
-            List<AlgorithmModelPointDO> pointDOS = pointMap.get(m.getDeviceId());
+            List<AlgorithmModelPointDO> pointDOS = pointMap.get(m.getId());
             if (CollectionUtils.isEmpty(pointDOS)) {
                 return bo;
             }
@@ -355,12 +359,12 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             pointsWrapper.select(CommonMeasurePointDO::getPointId);
             pointsWrapper.in(CommonMeasurePointDO::getId, pointDOS.stream().map(item -> item.getPointId()).collect(Collectors.toList()));
             List<CommonMeasurePointDO> list = pointsService.list(pointsWrapper);
-            bo.setEstimateTotal(listPointEstimateResultsData(m.getDeviceId(), list));
+            bo.setEstimateTotal(listPointEstimateResultsData(m.getId(), list));
             return bo;
-        }).collect(Collectors.toList());
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    private List<PointEstimateResultsDataBO> listPointEstimateResultsData(Long deviceId, List<CommonMeasurePointDO> list) {
+    private List<PointEstimateResultsDataBO> listPointEstimateResultsData(Long modelId, List<CommonMeasurePointDO> list) {
         if (CollectionUtils.isEmpty(list)) {
             return Lists.newArrayList();
         }
@@ -369,7 +373,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         List<String> ids = Lists.newArrayList(list.stream().filter(Objects::nonNull).map(x -> x.getPointId()).collect(Collectors.toSet()));
         try {
             List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, System.currentTimeMillis() - days15
-                    , System.currentTimeMillis(), H_BASE_FAMILY_NPC_ESTIMATE, ids, deviceId);
+                    , System.currentTimeMillis(), H_BASE_FAMILY_NPC_ESTIMATE, ids, modelId);
             bo.setEstimateResults(collect);
         } catch (IOException e) {
             log.error("select estimate data failed..{}", e);

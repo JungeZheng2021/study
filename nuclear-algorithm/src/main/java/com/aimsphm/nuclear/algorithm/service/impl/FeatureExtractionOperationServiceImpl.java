@@ -104,7 +104,7 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
             return;
         }
         List<FeatureExtractionResponseDTO> values = (List<FeatureExtractionResponseDTO>) handlerService.getInvokeCustomerData(collect);
-        if (collect.size() != values.size()) {
+        if (CollectionUtils.isEmpty(values)|| collect.size() != values.size()) {
             log.error("algorithm server's response Data is wrong...");
             return;
         }

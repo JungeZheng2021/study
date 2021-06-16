@@ -21,8 +21,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_FAMILY_NPC_PI_REAL_TIME;
-import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATOR;
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
 
 /**
  * @Package: com.aimsphm.nuclear.history
@@ -54,24 +53,48 @@ public class HBaseTests {
         }
     }
 
+    public static void delete(String tableName, String tag, Long startTime, Long endTime, String family) throws IOException {
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            Scan scan = new Scan();
+            scan.addFamily(Bytes.toBytes(family));
+            Long startRow = startTime / (1000 * 3600) * (1000 * 3600);
+            Long endRow = endTime / (1000 * 3600) * (1000 * 3600) + 1;
+            scan.withStartRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + startRow));
+            scan.withStopRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + endRow));
+            ResultScanner scanner = table.getScanner(scan);
+            for (Result rs : scanner) {
+                Delete delete = new Delete(rs.getRow());
+                table.delete(delete);
+                System.out.println("成功");
+            }
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException {
+        Table table = connection.getTable(TableName.valueOf(H_BASE_TABLE_NPC_PHM_DATA));
+
         HBaseUtil hbaseUtil = new HBaseUtil(connection);
 
         Long start = 1600006002123L;
         Long end = System.currentTimeMillis();
-        String tag = "6M2DVC003MI";
-        long l = System.currentTimeMillis();
-        List<HBaseTimeSeriesDataDTO> dataDTOS = listByGetList(hbaseUtil, start, end, tag);
-        long l1 = System.currentTimeMillis();
-        log.info("listByGetList: 共计耗时：{} 毫秒，数据量为：{}", (l1 - l), dataDTOS.size());
+        String tag = "4";
+//        long l = System.currentTimeMillis();
+//        List<HBaseTimeSeriesDataDTO> dataDTOS = listByGetList(hbaseUtil, start, end, tag);
+//        long l1 = System.currentTimeMillis();
+//        log.info("listByGetList: 共计耗时：{} 毫秒，数据量为：{}", (l1 - l), dataDTOS.size());
         List<HBaseTimeSeriesDataDTO> dtos = listByScan(hbaseUtil, start, end, tag);
+        System.out.println(dtos.size());
         long l2 = System.currentTimeMillis();
-        log.info("listByScan...: 共计耗时：{} 毫秒，数据量为：{}", (l2 - l1), dtos.size());
+//        log.info("listByScan...: 共计耗时：{} 毫秒，数据量为：{}", (l2 - l1), dtos.size());
+        delete(H_BASE_TABLE_NPC_PHM_DATA, tag, start, end, H_BASE_FAMILY_NPC_ESTIMATE);
     }
 
     private static List<HBaseTimeSeriesDataDTO> listByScan(HBaseUtil hbaseUtil, Long start, Long end, String tag) throws IOException {
         String tableName = "npc_phm_data";
-        return hbaseUtil.listObjectDataWith3600Columns(tableName, tag, start, end, H_BASE_FAMILY_NPC_PI_REAL_TIME);
+        return hbaseUtil.listObjectDataWith3600Columns(tableName, tag, start, end, H_BASE_FAMILY_NPC_ESTIMATE);
 
     }
 
