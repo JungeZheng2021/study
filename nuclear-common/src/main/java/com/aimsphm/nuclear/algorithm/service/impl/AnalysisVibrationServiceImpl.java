@@ -13,12 +13,12 @@ import javax.annotation.Resource;
 /**
  * @Package: com.aimsphm.nuclear.algorithm.service.impl
  * @Description: <>
- * @Author: milla
+ * @author: milla
  * @CreateDate: 2021/01/14 13:35
  * @UpdateUser: milla
  * @UpdateDate: 2021/01/14 13:35
  * @UpdateRemark: <>
- * @Version: 1.0
+ * @version: 1.0
  */
 @Slf4j
 @Service("ANALYSIS")

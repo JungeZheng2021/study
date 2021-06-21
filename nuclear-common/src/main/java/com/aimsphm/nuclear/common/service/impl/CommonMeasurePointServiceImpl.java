@@ -18,6 +18,7 @@ import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.CommonMeasurePointMapper;
 import com.aimsphm.nuclear.common.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -141,10 +142,12 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             Long id = point.getId();
             LambdaQueryWrapper<AlgorithmModelPointDO> query = Wrappers.lambdaQuery(AlgorithmModelPointDO.class);
             query.eq(AlgorithmModelPointDO::getPointId, point.getId());
+            //没有被配置到模型中的数据不做缓存
             int count = algorithmModelPointService.count(query);
             if (count == 0) {
                 continue;
             }
+            System.out.println(point.getPointId());
             String key = REDIS_QUEUE_REAL_TIME_PRE + id;
             Long size = redis.opsForList().size(key);
             HBaseTimeSeriesDataDTO data = new HBaseTimeSeriesDataDTO();
@@ -373,6 +376,20 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     @Override
     public List<FeatureExtractionParamDTO> listFeatureExtraction(Integer value) {
         return this.getBaseMapper().listFeatureExtraction(value);
+    }
+
+    @Override
+    public boolean modifyCommonMeasurePoint(CommonMeasurePointDO dto) {
+        LambdaUpdateWrapper<CommonMeasurePointDO> update = Wrappers.lambdaUpdate(CommonMeasurePointDO.class);
+        update.eq(CommonMeasurePointDO::getId, dto.getId());
+        update.set(CommonMeasurePointDO::getThresholdLow, dto.getThresholdLow());
+        update.set(CommonMeasurePointDO::getThresholdHigh, dto.getThresholdHigh());
+        update.set(CommonMeasurePointDO::getThresholdLower, dto.getThresholdLower());
+        update.set(CommonMeasurePointDO::getThresholdHigher, dto.getThresholdHigher());
+        update.set(CommonMeasurePointDO::getEarlyWarningLow, dto.getEarlyWarningLow());
+        update.set(CommonMeasurePointDO::getEarlyWarningHigh, dto.getEarlyWarningHigh());
+        return this.getBaseMapper().update(dto, update) > 0;
+
     }
 
     /**

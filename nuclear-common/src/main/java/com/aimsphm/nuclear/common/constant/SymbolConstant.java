@@ -42,13 +42,13 @@ public final class SymbolConstant {
      */
     public static final String RIGHT_SQ_BRACKET = "]";
     /**
-     * 逗号
-     */
-    public static final String COMMA = ",";
-    /**
      * 字符串0
      */
     public static final String ZERO = "0";
+    /**
+     * 逗号
+     */
+    public static final String COMMA = ",";
     /**
      * 冒号
      */

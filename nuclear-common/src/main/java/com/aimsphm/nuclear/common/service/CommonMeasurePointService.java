@@ -184,4 +184,12 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @return
      */
     List<FeatureExtractionParamDTO> listFeatureExtraction(Integer value);
+
+    /**
+     * 更新测点信息
+     *
+     * @param dto 测点实体
+     * @return 修改是否成功
+     */
+    boolean modifyCommonMeasurePoint(CommonMeasurePointDO dto);
 }

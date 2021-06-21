@@ -66,6 +66,11 @@ public final class HBaseConstant {
      * 列族-传感器Rms值[秒级]
      */
     public static final String H_BASE_FAMILY_NPC_SENSOR_RMS = "vec-Rms";
+    /**
+     * 列族-传感器Rms值[秒级]
+     */
+    public static final String H_BASE_FAMILY_NPC_SENSOR_ANA = "ana";
+    public static final String H_BASE_FAMILY_NPC_SENSOR_ABR = "abr";
 
     /**
      * 列族-估计值-实测值-残差
