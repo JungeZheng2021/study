@@ -275,21 +275,18 @@ public class VibrationDataServiceImpl implements CommonDataService {
                 if (Objects.nonNull(calculateFeatureEnum)) {
                     //计算后的数据
                     Double aDouble = pointServiceExt.calculatePointValueFromRedis(itemId, value);
-                    creatNewPut(putList, rowKey, packet.getTimestamp(), feature + DASH + OIL_FEATURE_CALCULATE_FIX, index, aDouble);
+                    creatNewPut(putList, rowKey, packet.getTimestamp(), packet.getSensorCode(), feature + DASH + OIL_FEATURE_CALCULATE_FIX, index, aDouble);
                     //累积十次数据
                     times.incrementAndGet();
                     values.addAndGet(value);
                 }
-                //
-                pointServiceExt.updateMeasurePointsInRedis(itemId, value, packet.getTimestamp());
             }
-            creatNewPut(putList, rowKey, packet.getTimestamp(), feature, index, value);
+            creatNewPut(putList, rowKey, packet.getTimestamp(), packet.getSensorCode(), feature, index, value);
             calculateAnaViscosity(details, putList, rowKey, index, feature, packet, value);
         }
         //只有是十个特征都相加的时候才要这个数据
         if (times.get() == OIL_FEATURE_TOTAL_NUMBER) {
-            creatNewPut(putList, rowKey, packet.getTimestamp(), OIL_FEATURE_TOTAL, index, values.get());
-            pointServiceExt.updateMeasurePointsInRedis(packet.getSensorCode() + DASH + OIL_FEATURE_TOTAL, values.get(), packet.getTimestamp());
+            creatNewPut(putList, rowKey, packet.getTimestamp(), packet.getSensorCode(), OIL_FEATURE_TOTAL, index, values.get());
         }
         //1分钟累加一次
         try {
@@ -325,7 +322,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
 //            (40度下粘度/配置项-1)*100
             Double percent = (BigDecimalUtils.divide(value, settings, 7) - 1) * 100;
             Double format = BigDecimalUtils.format(percent, 5);
-            creatNewPut(putList, rowKey, packet.getTimestamp(), OIL_ANA_VISCOSITY_VARY, index, format);
+            creatNewPut(putList, rowKey, packet.getTimestamp(), packet.getSensorCode(), OIL_ANA_VISCOSITY_VARY, index, format);
         } catch (NumberFormatException e) {
             log.error("settings convert failed：{}", e);
         }
@@ -337,11 +334,12 @@ public class VibrationDataServiceImpl implements CommonDataService {
      * @param putList
      * @param rowKey
      * @param timestamp
+     * @param sensorCode
      * @param feature
      * @param index
      * @param value
      */
-    private void creatNewPut(List<Put> putList, String rowKey, Long timestamp, String feature, Integer index, Double value) {
+    private void creatNewPut(List<Put> putList, String rowKey, Long timestamp, String sensorCode, String feature, Integer index, Double value) {
         //判断列族是否存在，如不存在创建该列族--上线后需要拿掉
         try {
             hBaseService.familyExists(H_BASE_TABLE_NPC_PHM_DATA, feature, true, Compression.Algorithm.SNAPPY);
@@ -352,5 +350,6 @@ public class VibrationDataServiceImpl implements CommonDataService {
         put.setTimestamp(timestamp);
         put.addColumn(Bytes.toBytes(feature), Bytes.toBytes(index), Bytes.toBytes(value));
         putList.add(put);
+        pointServiceExt.updateMeasurePointsInRedis(sensorCode + DASH + feature, value, timestamp);
     }
 }

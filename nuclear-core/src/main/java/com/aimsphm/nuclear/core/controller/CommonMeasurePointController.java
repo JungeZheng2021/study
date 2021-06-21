@@ -58,7 +58,7 @@ public class CommonMeasurePointController {
     @ApiOperation(value = "测点信息修改数据")
     public boolean modifyCommonMeasurePointService(@RequestBody CommonMeasurePointDO dto, @PathVariable Long id) {
         dto.setId(id);
-        return iCommonMeasurePointServiceExt.updateById(dto);
+        return iCommonMeasurePointServiceExt.modifyCommonMeasurePoint(dto);
     }
 
     @DeleteMapping("batch")
