@@ -396,7 +396,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             PointDataBO data = new PointDataBO();
             data.setPointId(item.getPointId());
             String family = PointTypeEnum.PI.getValue().equals(item.getPointType()) ? H_BASE_FAMILY_NPC_PI_REAL_TIME : item.getFeatureType() + DASH + item.getFeature();
-            asyncService.listPointDataFromHBase(family, item.getId(), item.getSensorCode(), data, countDownLatch);
+//            asyncService.listPointDataFromHBase(family, item.getId(), item.getSensorCode(), data, countDownLatch);
+            asyncService.listPointDataFromHBase(item, data, countDownLatch);
             collect.add(data);
         }
         try {

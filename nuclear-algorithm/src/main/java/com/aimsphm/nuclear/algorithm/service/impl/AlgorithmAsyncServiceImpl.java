@@ -102,6 +102,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
                 data.setCells(range);
                 return;
             }
+            log.info("请求数据返回值-.请求数据：{}", rangeQuery);
             List<HBaseTimeSeriesDataDTO> cells = hBase.listObjectDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, rangeQuery.getStart(), rangeQuery.getEnd(), family);
             log.info("请求数据返回值-.family-{}  .sensorCode-{} 返回值数据量 {}  耗时-- {} 毫秒", family, sensorCode, cells.size(), (System.currentTimeMillis() - start));
             data.setCells(cells);
@@ -118,6 +119,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
 
     private TimeRangeQueryBO getRangeDate(CommonMeasurePointDO item, String sensorCode) {
         CommonSensorSettingsDO config = sensorService.getSensorConfigBySensorCode(sensorCode, PointCategoryEnum.VIBRATION.getValue());
+//        CommonSensorSettingsDO config = sensorService.getSensorConfigBySensorCode(sensorCode, PointCategoryEnum.OIL_QUALITY.getValue());
         //秒级
         Long period = Objects.isNull(config) || Objects.isNull(config.getEigenvalueSamplePeriod()) ? 10 * 60 * 1000 : config.getEigenvalueSamplePeriod() * 1000;
         TimeRangeQueryBO bo = new TimeRangeQueryBO();
@@ -126,10 +128,12 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
         //PI点
         if (PointTypeEnum.PI.getValue().equals(item.getPointType())) {
             bo.setStart(end - POINT_NUMBER * 1000);
-        }
-        //vec-Rms值
-        else if (H_BASE_FAMILY_NPC_SENSOR_RMS.equals(item.getFeatureType().concat(DASH).concat(item.getFeature()))) {
-            bo.setStart(end - POINT_NUMBER * 6000);
+        } else if (H_BASE_FAMILY_NPC_SENSOR_RMS.equals(item.getFeatureType().concat(DASH).concat(item.getFeature()))) {
+            //vec-Rms值
+            bo.setStart(end - POINT_NUMBER * 6 * 1000);
+        } else if (H_BASE_FAMILY_NPC_SENSOR_ANA.equals(item.getFeatureType()) || H_BASE_FAMILY_NPC_SENSOR_ABR.equals(item.getFeatureType())) {
+            //油液
+            bo.setStart(end - POINT_NUMBER * 6 * 1000);
         } else {
             bo.setStart(end - POINT_NUMBER * period);
         }
