@@ -8,10 +8,10 @@ import com.aimsphm.nuclear.common.entity.SparkDownSample;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
+import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
-import com.aimsphm.nuclear.common.service.JobAlarmRealtimeService;
 import com.aimsphm.nuclear.common.service.SparkDownSampleService;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
@@ -21,6 +21,7 @@ import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.entity.vo.HistoryDataWithThresholdVO;
 import com.aimsphm.nuclear.history.service.HistoryQueryService;
 import com.aimsphm.nuclear.history.util.TableNameParser;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,8 +59,6 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     @Resource
     private CommonMeasurePointService serviceExt;
-    @Resource
-    private JobAlarmRealtimeService realtimeService;
     @Resource
     private SparkDownSampleService downSampleServiceExt;
 
@@ -231,10 +230,63 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     }
 
     private List<SparkDownSample> listSparkDownSampleByPointIdsAndRangeTime(List<String> pointIds, Long start, Long end) {
+        if (Objects.isNull(start) || Objects.isNull(end)) {
+            return Lists.newArrayList();
+        }
+        //开始时间计算成当前时间的小时值
+        TimeRangeQueryBO rangeTime = TableNameParser.getRangeTime(start, end);
         LambdaQueryWrapper<SparkDownSample> wrapper = Wrappers.lambdaQuery(SparkDownSample.class);
-        wrapper.in(SparkDownSample::getPointId, pointIds).ge(SparkDownSample::getStartTimestamp, start)
-                .le(SparkDownSample::getStartTimestamp, end).orderByAsc(SparkDownSample::getStartTimestamp);
-        return downSampleServiceExt.list(wrapper);
+        wrapper.in(SparkDownSample::getPointId, pointIds).ge(SparkDownSample::getStartTimestamp, rangeTime.getStart())
+                .le(SparkDownSample::getStartTimestamp, rangeTime.getEnd()).orderByAsc(SparkDownSample::getStartTimestamp);
+        List<SparkDownSample> list = downSampleServiceExt.list(wrapper);
+        if (CollectionUtils.isEmpty(list)) {
+            return Lists.newArrayList();
+        }
+        SparkDownSample first = list.get(0);
+        //截取开头数据
+        subPointsByStartAndEnd(start, end, first);
+        if (list.size() > 1) {
+            SparkDownSample last = list.get(list.size() - 1);
+            //截取结束数据
+            subPointsByStartAndEnd(start, end, last);
+        }
+        return list;
+    }
+
+    /**
+     * 根据时间截取开头和结尾数据
+     *
+     * @param start  开始时间
+     * @param end    结束时间
+     * @param sample 将采样对象
+     */
+    private void subPointsByStartAndEnd(Long start, Long end, SparkDownSample sample) {
+        try {
+            String points = sample.getPoints();
+            if (StringUtils.isEmpty(points)) {
+                sample.setPoints(LEFT_SQ_BRACKET + RIGHT_SQ_BRACKET);
+                return;
+            }
+            List<List> lists = JSON.parseArray(LEFT_SQ_BRACKET + points + RIGHT_SQ_BRACKET, List.class);
+            String collect = lists.stream().filter(x -> peakItem(x, start, end)).map(d -> Arrays.toString(d.toArray())).collect(Collectors.joining(COMMA));
+            sample.setPoints(collect);
+        } catch (Exception e) {
+            log.error("down sample query error,{}", e);
+            sample.setPoints(LEFT_SQ_BRACKET + RIGHT_SQ_BRACKET);
+        }
+    }
+
+    private boolean peakItem(List x, Long start, Long end) {
+        if (Objects.nonNull(start) && Objects.nonNull(end)) {
+            return (Long) x.get(0) >= start && (Long) x.get(0) <= end;
+        }
+        if (Objects.nonNull(start)) {
+            return (Long) x.get(0) >= start;
+        }
+        if (Objects.nonNull(end)) {
+            return (Long) x.get(0) <= end;
+        }
+        return false;
     }
 
     private void resetTableName(String tableName, Integer year) {

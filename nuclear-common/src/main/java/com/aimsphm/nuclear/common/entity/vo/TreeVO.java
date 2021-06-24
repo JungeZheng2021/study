@@ -44,4 +44,21 @@ public class TreeVO<V, L> {
         this.value = value;
         this.label = label;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TreeVO<?, ?> treeVO = (TreeVO<?, ?>) o;
+        return Objects.equals(value, treeVO.value) && Objects.equals(label, treeVO.label);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, label);
+    }
 }

@@ -54,7 +54,7 @@ public class MillisecondValueConstant {
     /**
      * 两年的毫秒值
      */
-    public static final long MILLISECOND_VALUE_OF_A_double_year = 2 * MILLISECOND_VALUE_OF_A_YEAR;
+    public static final long MILLISECOND_VALUE_OF_A_DOUBLE_YEAR = 2 * MILLISECOND_VALUE_OF_A_YEAR;
     /**
      * 三年的毫秒值
      */

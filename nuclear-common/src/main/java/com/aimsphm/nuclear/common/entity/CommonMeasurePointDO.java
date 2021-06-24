@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @Version: 1.0
  */
 @Data
-@TableName("common_measure_point_copy2")
+@TableName("common_measure_point")
 @ApiModel(value = "测点信息实体")
 public class CommonMeasurePointDO extends BaseDO {
     /**

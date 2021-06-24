@@ -230,6 +230,31 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     /**
+     * 获取某时间的开始[从凌晨开始]
+     *
+     * @param timestamps 指定时间戳
+     * @return 日期的字符串格式输出
+     */
+    public static Long getStartOfDay(Long timestamps) {
+        Date date = new Date(timestamps);
+        LocalDate transition = transition(date);
+        return transition(transition).getTime();
+    }
+
+    /**
+     * 获取前一个月第一天[从凌晨开始]
+     *
+     * @param timestamps 指定时间戳
+     * @return 日期的字符串格式输出
+     */
+    public static Long getEndOfDay(Long timestamps) {
+        Date date = new Date(timestamps);
+        LocalDate transition = transition(date);
+        LocalDate localDate = transition.plusDays(1);
+        return transition(localDate).getTime() - 1;
+    }
+
+    /**
      * 获取前一个月第一天[从凌晨开始]
      *
      * @param timestamps 指定时间戳

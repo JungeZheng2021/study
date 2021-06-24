@@ -73,10 +73,10 @@ public class CommonMeasurePointController {
         return iCommonMeasurePointServiceExt.removeById(id);
     }
 
-    @GetMapping("features/{sensorCode}")
-    @ApiOperation(value = "某个测点编号下的所有特征")
-    public PointFeatureVO listFeaturesBySensorCode(@PathVariable String sensorCode) {
-        return iCommonMeasurePointServiceExt.listFeatures(sensorCode);
+    @GetMapping("feature/list")
+    @ApiOperation(value = "根据条件获取特征值")
+    public PointFeatureVO listFeaturesBySensorCode(CommonQueryBO query) {
+        return iCommonMeasurePointServiceExt.listFeaturesByConditions(query);
     }
 
     @GetMapping("/points")

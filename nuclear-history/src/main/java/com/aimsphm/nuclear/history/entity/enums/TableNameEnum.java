@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.history.entity.enums;
 
+import static com.aimsphm.nuclear.history.constant.MillisecondValueConstant.*;
+
 /**
  * @Package: com.aimsphm.nuclear.history.entity.enums
  * @Description: <降采样表名枚举类>
@@ -11,18 +13,50 @@ package com.aimsphm.nuclear.history.entity.enums;
  * @Version: 1.0
  */
 public enum TableNameEnum {
-    DAILY("spark_down_sample_daily"),
-    WEEKLY("spark_down_sample_weekly"),
-    HALF_MONTHLY("spark_down_sample_half_monthly"),
-    MONTHLY("spark_down_sample_monthly"),
-    QUARTERLY("spark_down_sample_quarterly"),
-    HALF_ANNUALLY("spark_down_sample_half_annually"),
-    ANNUALLY("spark_down_sample_annually"),
-    DOUBLE_ANNUALLY("spark_down_sample_double_annually"),
-    TRIPLE_ANNUALLY("spark_down_sample_triple_annually");
+    /**
+     * 天表-单位是小时
+     */
+    DAILY("spark_down_sample_daily", MILLISECOND_VALUE_OF_AN_HOUR),
+    /**
+     * 周表-单位是天
+     */
+    WEEKLY("spark_down_sample_weekly", MILLISECOND_VALUE_OF_A_DAY),
+    /**
+     * 半月表-单位是天
+     */
+    HALF_MONTHLY("spark_down_sample_half_monthly", MILLISECOND_VALUE_OF_A_DAY),
+    /**
+     * 月表-单位是天
+     */
+    MONTHLY("spark_down_sample_monthly", MILLISECOND_VALUE_OF_A_DAY),
+    /**
+     * 季度表-单位是周
+     */
+    QUARTERLY("spark_down_sample_quarterly", MILLISECOND_VALUE_OF_A_WEEK),
+    /**
+     * 半年表-单位是15天
+     */
+    HALF_ANNUALLY("spark_down_sample_half_annually", MILLISECOND_VALUE_OF_A_HALF_MONTH),
+    /**
+     * 年表-单位是15天
+     */
+    ANNUALLY("spark_down_sample_annually", MILLISECOND_VALUE_OF_A_HALF_MONTH),
+    /**
+     * 2年表-单位是30天
+     */
+    DOUBLE_ANNUALLY("spark_down_sample_double_annually", MILLISECOND_VALUE_OF_A_MONTH),
+    /**
+     * 3年表-单位是30天
+     */
+    TRIPLE_ANNUALLY("spark_down_sample_triple_annually", MILLISECOND_VALUE_OF_A_MONTH);
 
     TableNameEnum(String value) {
         this.value = value;
+    }
+
+    TableNameEnum(String value, Long timeUnit) {
+        this.value = value;
+        this.timeUnit = timeUnit;
     }
 
     public static TableNameEnum getByValue(String value) {
@@ -44,5 +78,11 @@ public enum TableNameEnum {
         return value;
     }
 
+    public Long getTimeUnit() {
+        return timeUnit;
+    }
+
     private String value;
+
+    private Long timeUnit;
 }

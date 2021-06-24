@@ -107,14 +107,6 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
     String getStoreKey(CommonMeasurePointDO vo);
 
     /**
-     * 根据测点编号获取测点下面所有的特征信息
-     *
-     * @param sensorCode 测点编号
-     * @return
-     */
-    PointFeatureVO listFeatures(String sensorCode);
-
-    /**
      * 清除所有的时时点信息
      */
     void clearAllPointsData();
@@ -192,4 +184,12 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
      * @return 修改是否成功
      */
     boolean modifyCommonMeasurePoint(CommonMeasurePointDO dto);
+
+    /**
+     * 根据条件获取特征
+     *
+     * @param query 查询条件
+     * @return 结果集
+     */
+    PointFeatureVO listFeaturesByConditions(CommonQueryBO query);
 }
