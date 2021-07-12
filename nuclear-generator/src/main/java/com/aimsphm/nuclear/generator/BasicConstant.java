@@ -31,7 +31,8 @@ public final class BasicConstant {
 //            , "common_sub_system"
 //            , "common_device"
 //            , "common_device_details"
-//            , "common_component"
+//            "common_component",
+//            "common_sensor_component"
 //            "common_sensor"
 //            "biz_original_data"
 //            "common_sensor_settings"
@@ -53,7 +54,12 @@ public final class BasicConstant {
 //            "biz_diagnosis_result"
 //            "auth_privilege"
 //            "job_alarm_process_record"
-            "algorithm_parameter_alarm_event"
+//            "algorithm_parameter_alarm_event"
+//            "algorithm_normal_rule_feature",
+//            "algorithm_normal_feature_feature"
+            "algorithm_normal_fault_conclusion"
+//            "algorithm_normal_rule"
+//            "algorithm_normal_fault_feature"
 //            "biz_report",
 //            "biz_job_quartz_config",
 //            "biz_report_config"

@@ -30,22 +30,30 @@ public class OpcApplication {
     void execute() {
         List<String> tagList = pushJob.pointList();
         String topic = "pi.many";
-        String rootPath = "/data/tianwan/pushData/";
-//        String rootPath = "D:\\Desktop\\data\\data\\";
+//        String rootPath = "/data/tianwan/pushData/";
+        String rootPath = "C:\\Users\\Administrator\\Downloads\\";
         //每次执行完当前任务之后等待100秒之后再次执行
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "mtsdata.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "otherdata1.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "pumpdata.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeFromDatabase("pi.data", tagList), 1000, 1000, TimeUnit.MILLISECONDS);
+        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "mtsdata.csv", topic, 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "otherdata1.csv", topic, 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "pumpdata.csv", topic, 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "simulation1.csv", topic, 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "simulation2.csv", topic, 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+
+        //        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeFromDatabase("pi.data", tagList), 1000, 1000, TimeUnit.MILLISECONDS);
 //        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeFromDatabase1("JSNPC.Download", tagList), 1000, 5 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
-        //变压器
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "ZAS_2020_11_06_2021_01_06_1s_part2.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "ZAS_sensordata_2020_11_6_2021_1_6_1s.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "20ZAS-ET01-X01-MWHO.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
-        //油液
-        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "tw_oil_data.csv", "JSNPC.Upload"), 1000, 1000, TimeUnit.MILLISECONDS);
-//        pushJob.execute1("D:\\Desktop\\work\\核电\\样本数据\\ZAS_2020_11_06_2021_01_06_1s_part2.csv", topic, 1604592000000L);
-//        pushJob.execute1("D:\\Desktop\\work\\核电\\样本数据\\ZAS_sensordata_2020_11_6_2021_1_6_1s.csv", topic, 1604592000000L);
+//        //变压器
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "ZAS_2020_11_06_2021_01_06_1s_part2.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "ZAS_sensordata_2020_11_6_2021_1_6_1s.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "20ZAS-ET01-X01-MWHO.csv", topic), 1000, 1000, TimeUnit.MILLISECONDS);
+//        //油液
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "tw_oil_data.csv", "JSNPC.Upload", 60 * 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+//        //声学
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "pac_data.csv", "JSNPC.Upload", 10 * 60 * 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "1s_data.csv", "pi.data", 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "10s_data.csv", "JSNPC.Upload", 10 * 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+//        scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "10min_data.csv", "JSNPC.Upload", 10 * 60 * 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
         System.out.println("做完了");
     }
 

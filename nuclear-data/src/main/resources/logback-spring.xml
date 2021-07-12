@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <property name="LOG_PATH" value="/data/logs/data"/>
+    <property name="LOG_PATH" value="/data/logs/dataTestLog"/>
     <property name="LOG_NAME" value="data"/>
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -17,12 +17,12 @@
             </fileNamePattern>
             <TimeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>16MB</MaxFileSize>
+                <MaxFileSize>10KB</MaxFileSize>
             </TimeBasedFileNamingAndTriggeringPolicy>
             <!-- 日志最大保存时间 -->
             <maxHistory>30</maxHistory>
             <!-- 日志总保存量为1GB -->
-            <totalSizeCap>1GB</totalSizeCap>
+            <totalSizeCap>10MB</totalSizeCap>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
         <encoder>
@@ -40,12 +40,12 @@
             </fileNamePattern>
             <TimeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <MaxFileSize>10MB</MaxFileSize>
+                <MaxFileSize>10KB</MaxFileSize>
             </TimeBasedFileNamingAndTriggeringPolicy>
             <!-- 日志最大保存时间 -->
             <maxHistory>30</maxHistory>
             <!-- 日志总保存量为1GB -->
-            <totalSizeCap>1GB</totalSizeCap>
+            <totalSizeCap>10MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>

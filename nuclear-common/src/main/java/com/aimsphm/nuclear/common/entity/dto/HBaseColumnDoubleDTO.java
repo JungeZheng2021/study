@@ -2,9 +2,6 @@ package com.aimsphm.nuclear.common.entity.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.ToString;
-
-import java.io.Serializable;
 
 /**
  * @Package: com.aimsphm.nuclear.hbase.entity.dto

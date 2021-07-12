@@ -86,7 +86,7 @@ eureka:
     serviceUrl:
       defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
     fetchRegistry: true
-    register-with-eureka: false
+    register-with-eureka: true
   instance:
     prefer-ip-address: true
 mybatis-plus:

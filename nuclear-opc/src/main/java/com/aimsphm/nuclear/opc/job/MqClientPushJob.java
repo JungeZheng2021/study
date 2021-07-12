@@ -12,6 +12,7 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,33 +42,34 @@ public class MqClientPushJob {
     /**
      * 定时器 每10秒执行一次
      */
-    public void execute(String path, String topic) {
+    public void execute(String path, String topic, Long sleepTime) {
         try {
             File file = new File(path);
             if (!file.exists()) {
                 log.error("文件目录不存在:{}", path);
                 return;
             }
-            readDataFromFile(file, topic);
+            readDataFromFile(file, topic, sleepTime);
         } catch (Exception e) {
             log.error("执行异常-文件数据:{}", e);
         }
     }
 
-    public void executeOli(String path, String topic) {
+    public void executeOli(String path, String topic, Long sleepTime) {
         try {
             File file = new File(path);
             if (!file.exists()) {
                 log.error("文件目录不存在:{}", path);
                 return;
             }
-            readDataFromFileOil(file, topic);
+            readDataFromFileOil(file, topic, sleepTime);
         } catch (Exception e) {
             log.error("执行异常-文件数据:{}", e);
         }
     }
 
-    private void readDataFromFileOil(File file, String topic) throws IOException, InterruptedException {
+
+    private void readDataFromFileOil(File file, String topic, Long sleepTime) throws IOException, InterruptedException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
         String header = reader.readLine();
@@ -76,6 +78,7 @@ public class MqClientPushJob {
         Map<String, Map<String, Double>> pointValues = Maps.newHashMap();
         while ((line = reader.readLine()) != null) {
             pointValues.clear();
+            long time = System.currentTimeMillis();
             String[] values = line.split(SEPARATOR);
             for (int i = 0; i < values.length; i++) {
                 double value = Double.parseDouble(values[i]);
@@ -99,10 +102,10 @@ public class MqClientPushJob {
                 dto.setTagStatus("0");
                 dto.setSensorCode(sensorCode);
                 dto.setFeaturesResult(value);
-                dto.setTimestamp(System.currentTimeMillis());
+                dto.setTimestamp(time);
                 client.send2Mq(JSON.toJSONString(data), topic);
             });
-            Thread.sleep(6000L);
+            Thread.sleep(sleepTime);
             log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
         }
     }
@@ -182,7 +185,7 @@ public class MqClientPushJob {
 
     final static String SEPARATOR = ",";
 
-    private void readDataFromFile(File file, String topic) throws Exception {
+    private void readDataFromFile(File file, String topic, Long sleepTime) throws Exception {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
         String header = reader.readLine();
@@ -193,9 +196,13 @@ public class MqClientPushJob {
             dataItems.clear();
             String[] values = line.split(SEPARATOR);
             for (int i = 0; i < values.length; i++) {
+                String point = headers.get(i);
                 double value = Double.parseDouble(values[i]);
+                if (StringUtils.equalsAny(point, "20ZAS-ET-1A-71H", "20ZAS-ET-1A-71L", "20ZAS-EP-ET101B-DCFA")) {
+                    value = 1.0D;
+                }
                 DataItem item = new DataItem();
-                item.setItemId(headers.get(i));
+                item.setItemId(point);
                 item.setValue(value);
                 item.setTimestamp(System.currentTimeMillis());
                 dataItems.add(item);
@@ -209,7 +216,7 @@ public class MqClientPushJob {
 //                log.info("新增测点{}", item);
             }
             client.send2Mq(dataItems, topic);
-            Thread.sleep(1000L);
+            Thread.sleep(sleepTime);
             log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
         }
     }
