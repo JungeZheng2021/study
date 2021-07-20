@@ -9,7 +9,6 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmAsyncService;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.entity.*;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesObjectDTO;
 import com.aimsphm.nuclear.common.enums.DeviceHealthEnum;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
@@ -225,10 +224,14 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     /**
      * 更新设备状态启停状态
      *
-     * @param deviceId  设备id
-     * @param stopStart 健康状态
+     * @param deviceId     设备id
+     * @param healthStatus 健康状态
      */
-    private void updateDeviceStatus(Long deviceId, Integer stopStart) {
+    private void updateDeviceStatus(Long deviceId, Integer healthStatus) {
+        //如果是算法给个null不做任何处理
+        if (Objects.isNull(healthStatus)) {
+            return;
+        }
         CommonDeviceDO device = deviceService.getById(deviceId);
         if (Objects.isNull(device)) {
             return;
@@ -236,7 +239,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         JobDeviceStatusDO status = statusService.getDeviceRunningStatus(deviceId);
         //之前没有状态，且现在是停机需要保存
         if (Objects.isNull(status)) {
-            Integer newStatus = statusService.getDeviceCurrentStatus(deviceId, DeviceHealthEnum.STOP.getValue().equals(stopStart));
+            Integer newStatus = statusService.getDeviceCurrentStatus(device, healthStatus);
             JobDeviceStatusDO newOne = new JobDeviceStatusDO();
             newOne.setStatus(newStatus);
             newOne.setDeviceId(deviceId);
@@ -245,21 +248,21 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             return;
         }
         // 停机状态1.本次和上次都是停机状态
-        if (status.getStatus().equals(stopStart) && DeviceHealthEnum.STOP.getValue().equals(stopStart)) {
+        if (status.getStatus().equals(healthStatus) && DeviceHealthEnum.STOP.getValue().equals(healthStatus)) {
             return;
         }
         // 停机状态2.直接修改上次状态持续时间，记录本次停机开始时间
-        if (DeviceHealthEnum.STOP.getValue().equals(stopStart)) {
-            statusService.saveOrUpdateDeviceStatus(status, stopStart);
+        if (DeviceHealthEnum.STOP.getValue().equals(healthStatus)) {
+            statusService.saveOrUpdateDeviceStatus(status, healthStatus);
             return;
         }
         //以下是非停机状态
         //上一次是停机，本次是启动需要改动 最近启动配置
-        if (DeviceHealthEnum.STOP.getValue().equals(status.getStatus()) && !DeviceHealthEnum.STOP.getValue().equals(stopStart)) {
+        if (DeviceHealthEnum.STOP.getValue().equals(status.getStatus()) && !DeviceHealthEnum.STOP.getValue().equals(healthStatus)) {
             detailsService.updateLastStartTime(deviceId);
         }
         //启动报警状态且启停状态是启动状态，需要计算设备状态
-        statusService.updateDeviceStatusWithCalculate(status, device.getEnableMonitor());
+        statusService.updateDeviceStatusWithCalculate(status, device, healthStatus);
     }
 
     /**

@@ -14,11 +14,12 @@ import java.util.Objects;
  */
 public enum EventStatusEnum {
 
-    IN_ACTIVITY(1, "活动中"),
-    ACKNOWLEDGED(2, "已确认"),
+    FINISHED(0, "已结束"),
+    IN_ACTIVITY(1, "待分析"),
+    ACKNOWLEDGED(2, "分析中"),
+    
     IGNORED(3, "已忽略"),
     PAUSED(4, "已暂停"),
-    FINISHED(5, "已结束"),
     OTHERS(-1, "其他");
 
 

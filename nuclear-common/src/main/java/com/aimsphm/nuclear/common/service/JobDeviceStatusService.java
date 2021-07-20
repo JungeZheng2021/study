@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.service;
 
+import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
@@ -37,11 +38,11 @@ public interface JobDeviceStatusService extends IService<JobDeviceStatusDO> {
 
     /**
      * 计算设备的状态
-     *
-     * @param status
+     *  @param status
      * @param enableMonitor
+     * @param healthStatus
      */
-    void updateDeviceStatusWithCalculate(JobDeviceStatusDO status, Boolean enableMonitor);
+    void updateDeviceStatusWithCalculate(JobDeviceStatusDO status, CommonDeviceDO enableMonitor, Integer healthStatus);
 
     /**
      * 更新或者是保存设备状态
@@ -54,11 +55,11 @@ public interface JobDeviceStatusService extends IService<JobDeviceStatusDO> {
     /**
      * 获取设备当前的健康状态
      *
-     * @param deviceId 设备id
-     * @param isStop   是否停机
+     * @param deviceId     设备id
+     * @param healthStatus 设备状态
      * @return
      */
-    Integer getDeviceCurrentStatus(Long deviceId, boolean isStop);
+    Integer getDeviceCurrentStatus(CommonDeviceDO deviceId, Integer healthStatus);
 
 
     /**
