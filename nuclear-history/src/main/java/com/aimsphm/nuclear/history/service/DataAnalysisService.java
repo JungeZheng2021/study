@@ -1,7 +1,7 @@
 package com.aimsphm.nuclear.history.service;
 
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
-import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
+import com.aimsphm.nuclear.common.entity.vo.HistoryDataVO;
 
 import java.util.Map;
 

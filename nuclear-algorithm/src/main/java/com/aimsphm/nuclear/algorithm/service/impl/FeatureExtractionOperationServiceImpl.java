@@ -101,10 +101,11 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
         });
         List<FeatureExtractionParamDTO> collect = params.stream().filter(x -> filterParams(x)).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(collect)) {
+            log.debug("has no data, invoke algorithm not active.....");
             return;
         }
         List<FeatureExtractionResponseDTO> values = (List<FeatureExtractionResponseDTO>) handlerService.getInvokeCustomerData(collect);
-        if (CollectionUtils.isEmpty(values)|| collect.size() != values.size()) {
+        if (CollectionUtils.isEmpty(values) || collect.size() != values.size()) {
             log.error("algorithm server's response Data is wrong...");
             return;
         }
@@ -116,7 +117,7 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
                 continue;
             }
             Long timestamp = response.getTimestamp();
-            Integer index = hBase.rowKeyOf3600(timestamp).intValue();
+            Integer index = hBase.indexOf3600(timestamp);
             String rowKey = param.getSensorCode() + ROW_KEY_SEPARATOR + hBase.rowKeyOf3600(timestamp);
             String familyName = param.getType() + DASH + param.getFeatName();
             try {
@@ -126,8 +127,8 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
             }
             Put put = hBase.creatNewPut(rowKey, timestamp, familyName, index, response.getFeatValue());
             list.add(put);
-            //删除redis中的波形数据
-//            redis.delete(param.getSignalKey());
+//            删除redis中的波形数据
+            redis.delete(param.getSignalKey());
         }
         if (CollectionUtils.isEmpty(list)) {
             return;

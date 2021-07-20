@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.entity.JobForecastResultDO">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.JobForecastResultDO">
+        <result column="id" property="id"/>
+        <result column="sort" property="sort"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="component_id" property="componentId"/>
+        <result column="symptom_ids" property="symptomIds"/>
+        <result column="gmt_forecast" property="gmtForecast"/>
+        <result column="forecast_range" property="forecastRange"/>
+        <result column="point_id" property="pointId"/>
+        <result column="history_data" property="historyData"/>
+        <result column="trend_data" property="trendData"/>
+        <result column="forecast_data" property="forecastData"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        sort,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        device_id, component_id, symptom_ids, gmt_forecast, forecast_range, point_id, history_data, trend_data, forecast_data, remark
+    </sql>
+
+</mapper>

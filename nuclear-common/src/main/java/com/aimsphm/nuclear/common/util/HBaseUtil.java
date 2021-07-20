@@ -438,6 +438,41 @@ public class HBaseUtil {
     }
 
     /**
+     * @param tableName 表格名称
+     * @param gets      批量get
+     * @return
+     * @throws IOException
+     */
+    public Map<String, List<List<Object>>> selectByGets(String tableName, List<Get> gets) throws IOException {
+        try (Table table = connection.getTable(TableName.valueOf(tableName))) {
+            Result[] results = table.get(gets);
+            Map<String, List<List<Object>>> data = new HashMap<>(128);
+            String sensorCode = null;
+            for (Result rs : results) {
+                String rowKey = Bytes.toString(rs.getRow());
+                if (StringUtils.isEmpty(rowKey)) {
+                    continue;
+                }
+                if (rowKey.contains(ROW_KEY_SEPARATOR)) {
+                    sensorCode = rowKey.split(ROW_KEY_SEPARATOR)[0];
+                    data.putIfAbsent(sensorCode, Lists.newArrayList());
+                }
+                for (Cell cell : rs.listCells()) {
+                    double value = Bytes.toDouble(CellUtil.cloneValue(cell));
+                    Long timestamp = cell.getTimestamp();
+                    List<Object> item = new ArrayList<>();
+                    item.add(timestamp);
+                    item.add(value);
+                    data.get(sensorCode).add(item);
+                }
+            }
+            return data;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
      * @param tableName   表格名称
      * @param rowKeyStart 时间区间内的开始时间
      * @param rowKeyEnd   时间区间内的结束时间
@@ -772,8 +807,8 @@ public class HBaseUtil {
             scan.withStartRow(Bytes.toBytes(rowKeyStart));
             scan.withStopRow(Bytes.toBytes(rowKeyEnd));
             ResultScanner scanner = table.getScanner(scan);
-            Map<String, Set<String>> familyMap = Maps.newHashMap();
-            Map<String, List<List<Object>>> dataWithQualifier = Maps.newHashMap();
+            Map<String, Set<String>> familyMap = Maps.newLinkedHashMap();
+            Map<String, List<List<Object>>> dataWithQualifier = Maps.newLinkedHashMap();
             for (Result rs : scanner) {
                 assembleCellDataWithList(familyMap, dataWithQualifier, rs);
             }
@@ -837,14 +872,18 @@ public class HBaseUtil {
      * @param withQualifier 列数据集合(以集合方式返回)
      * @param rs            结果集
      */
-    private void assembleCellDataWithList
-    (Map<String, Set<String>> familyMap, Map<String, List<List<Object>>> withQualifier, Result rs) {
+    private void assembleCellDataWithList(Map<String, Set<String>> familyMap, Map<String, List<List<Object>>> withQualifier, Result rs) {
         if (rs.size() == 0) {
             return;
         }
         for (Cell cell : rs.listCells()) {
             String family = Bytes.toString(CellUtil.cloneFamily(cell));
-            String qualifier = Bytes.toString(CellUtil.cloneQualifier(cell));
+            String qualifier;
+            try {
+                qualifier = Bytes.toInt(CellUtil.cloneQualifier(cell)) + "";
+            } catch (Exception e) {
+                qualifier = Bytes.toString(CellUtil.cloneQualifier(cell));
+            }
             double value = Bytes.toDouble(CellUtil.cloneValue(cell));
             long timestamp = cell.getTimestamp();
 

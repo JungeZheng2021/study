@@ -74,8 +74,6 @@ public class PanoramaServiceImpl implements PanoramaService {
         }
         BeanUtils.copyProperties(device, vo);
         BeanUtils.copyProperties(status, vo);
-        //阈值报警
-        Map<Integer, Long> transfiniteData = monitoringService.countTransfinitePiPoint(deviceId);
         //算法报警
         List<LabelVO> labelVOS = eventMapper.selectWarmingStatusPoints(deviceId);
         Map<Integer, Long> anomalyData = labelVOS.stream().collect(Collectors.toMap(x -> (Integer) x.getName(), x -> (Long) x.getValue()));
@@ -84,14 +82,8 @@ public class PanoramaServiceImpl implements PanoramaService {
         for (PointCategoryEnum category : values) {
             Integer value = category.getValue();
             Long anomalyCounts = anomalyData.get(value);
-            Long transfiniteCounts = transfiniteData.get(value);
             if (Objects.nonNull(anomalyCounts)) {
                 items.put(category.getValue(), MessageFormat.format(PANORAMA_ANOMALY, anomalyCounts));
-            }
-            if (Objects.nonNull(transfiniteCounts)) {
-                String old = items.get(category.getValue());
-                items.put(category.getValue(), StringUtils.isBlank(old) ? MessageFormat.format(PANORAMA_TRANSFINITE, transfiniteCounts)
-                        : old.concat(SLASH_ZH).concat(MessageFormat.format(PANORAMA_TRANSFINITE, transfiniteCounts)));
             }
         }
         vo.setItems(items);

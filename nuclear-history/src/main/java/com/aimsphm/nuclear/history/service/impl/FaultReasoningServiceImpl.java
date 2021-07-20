@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.history.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.*;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
+import com.aimsphm.nuclear.algorithm.service.BizDiagnosisService;
 import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.entity.vo.AlgorithmNormalFaultFeatureVO;
 import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
@@ -40,146 +41,33 @@ import static com.aimsphm.nuclear.common.constant.ReportConstant.BLANK;
 @Slf4j
 @Service
 public class FaultReasoningServiceImpl implements FaultReasoningService {
-    @Resource(name = "DIAGNOSIS-RE")
-    private AlgorithmHandlerService faultReasoningHandler;
     @Resource(name = "SYMPTOM")
     private AlgorithmHandlerService symptomService;
     @Resource
     private CommonMeasurePointService pointService;
     @Resource
-    private CommonDeviceService deviceService;
-    @Resource
-    private CommonComponentService componentService;
-    @Resource
-    private AlgorithmNormalRuleService ruleService;
-    @Resource
     private HBaseUtil hBase;
-    @Resource
-    private AlgorithmNormalRuleFeatureService ruleFeatureService;
-    @Resource
-    private AlgorithmNormalFaultConclusionService conclusionService;
-
     @Resource
     private AlgorithmNormalFaultFeatureService featureService;
     @Resource
-    private AlgorithmNormalFeatureFeatureService featureFeatureService;
-    @Resource
     private CommonSensorComponentService sensorComponentService;
+    @Resource
+    private BizDiagnosisService diagnosisService;
 
-    @Override
-    public FaultReasoningResponseDTO faultReasoning(List<String> pointIds, Long deviceId) {
-        CommonDeviceDO device = deviceService.getById(deviceId);
-        if (Objects.isNull(device)) {
-            return null;
-        }
-        FaultReasoningParamDTO params = new FaultReasoningParamDTO();
-        params.setDeviceType(device.getDeviceType());
-        //征兆集合
-        SymptomResponseDTO symptomResponseDTO = this.symptomJudgment(pointIds);
-        if (Objects.isNull(symptomResponseDTO) || CollectionUtils.isEmpty(symptomResponseDTO.getSymptomList())) {
-            return null;
-        }
-        List<FaultReasoningParamVO.SymptomVO> symSet = symptomResponseDTO.getSymptomList().stream().map(x -> new FaultReasoningParamVO.SymptomVO(new Long(x))).collect(Collectors.toList());
-        params.setSymSet(symSet);
-        //所有的关联规则
-        LambdaQueryWrapper<AlgorithmNormalRuleDO> wrapper = Wrappers.lambdaQuery(AlgorithmNormalRuleDO.class);
-        wrapper.eq(AlgorithmNormalRuleDO::getDeviceType, device.getDeviceType());
-        List<AlgorithmNormalRuleDO> ruleList = ruleService.list(wrapper);
-        if (CollectionUtils.isNotEmpty(ruleList)) {
-            List<FaultReasoningParamDTO.RefRuleSetElem> refRuleSet = ruleList.stream().map(x -> {
-                FaultReasoningParamDTO.RefRuleSetElem item = new FaultReasoningParamDTO.RefRuleSetElem();
-                item.setFaultId(x.getId());
-                item.setMechanismCode(x.getConclusionId());
-                item.setRuleType(x.getRuleType());
-                //setSymSet
-                setSymSetByRuleId(item, x.getId());
-                //设置部件
-                setComponentListByComponentId(item, x.getComponentId());
-                return item;
-            }).collect(Collectors.toList());
-            params.setRefRuleSet(refRuleSet);
-        }
-        //征兆之间的相似关系
-        List<SymptomCorrelationVO> symCorr = featureFeatureService.listSymptomCorrelationVO(device);
-        params.setSymCorr(symCorr);
-
-        //征兆相关信息
-        LambdaQueryWrapper<AlgorithmNormalFaultFeatureDO> query = Wrappers.lambdaQuery(AlgorithmNormalFaultFeatureDO.class);
-        query.eq(AlgorithmNormalFaultFeatureDO::getDeviceType, device.getDeviceType());
-        List<AlgorithmNormalFaultFeatureDO> symInfoSet = featureService.list(query);
-        params.setSymInfoSet(symInfoSet);
-
-        FaultReasoningResponseDTO data = (FaultReasoningResponseDTO) faultReasoningHandler.getInvokeCustomerData(params);
-        return data;
-    }
 
     @Override
     public List<FaultReasoningVO> faultReasoningVO(List<String> pointIds, Long deviceId) {
         if (CollectionUtils.isEmpty(pointIds) || Objects.isNull(deviceId)) {
             return null;
         }
-        FaultReasoningResponseDTO responseDTO = this.faultReasoning(pointIds, deviceId);
-        if (Objects.isNull(responseDTO)) {
+        //征兆集合
+        SymptomResponseDTO symptomResponseDTO = this.symptomJudgment(pointIds);
+        if (Objects.isNull(symptomResponseDTO) || CollectionUtils.isEmpty(symptomResponseDTO.getSymptomList())) {
             return null;
         }
-        List<FaultReasoningResponseDTO.ReasonResult> reasonResultList = responseDTO.getReasonResultList();
-        return reasonResultList.stream().map(x -> {
-            FaultReasoningVO reasoningVO = new FaultReasoningVO();
-            //推荐程度
-            reasoningVO.setRecommend(x.getRecommend());
-            //基本详情
-            FaultReasoningResponseDTO.FaultInfo faultInfo = x.getFaultInfo();
-            if (Objects.isNull(faultInfo)) {
-                return null;
-            }
-            Long faultId = faultInfo.getFaultId();
-            AlgorithmNormalRuleDO ruleDO = ruleService.getById(faultId);
-            reasoningVO.setFaultInfo(ruleDO);
-            if (Objects.nonNull(ruleDO)) {
-                reasoningVO.setRuleDesc(ruleDO.getRuleDesc());
-            }
-            //故障特征
-            List<FaultReasoningParamVO.SymptomVO> symSet = faultInfo.getSymSet();
-            if (CollectionUtils.isNotEmpty(symSet)) {
-                List<AlgorithmNormalFaultFeatureVO> collect = symSet.stream().map(y -> {
-                    AlgorithmNormalFaultFeatureVO featureVO = featureService.getAlgorithmNormalFaultFeatureByComponentId(y.getSymId());
-                    return featureVO;
-                }).collect(Collectors.toList());
-                reasoningVO.setFeatures(collect);
-            }
-            Integer mechanismCode = x.getFaultInfo().getMechanismCode();
-            AlgorithmNormalFaultConclusionDO conclusionDO = conclusionService.getById(mechanismCode);
-            reasoningVO.setConclusion(conclusionDO);
-            return reasoningVO;
-        }).collect(Collectors.toList());
+        return diagnosisService.faultReasoning(symptomResponseDTO, deviceId);
     }
 
-    private void setComponentListByComponentId(FaultReasoningParamDTO.RefRuleSetElem item, Long componentId) {
-        CommonComponentDO component = componentService.getById(componentId);
-        if (Objects.isNull(component)) {
-            return;
-        }
-        item.getComponentList().add(component.getId());
-        if (Objects.nonNull(component.getParentComponentId())) {
-            setComponentListByComponentId(item, component.getParentComponentId());
-        }
-    }
-
-    private void setSymSetByRuleId(FaultReasoningParamDTO.RefRuleSetElem item, Long ruleId) {
-        LambdaQueryWrapper<AlgorithmNormalRuleFeatureDO> featureWrapper = Wrappers.lambdaQuery();
-        featureWrapper.eq(AlgorithmNormalRuleFeatureDO::getRuleId, ruleId);
-        List<AlgorithmNormalRuleFeatureDO> list = ruleFeatureService.list(featureWrapper);
-        if (CollectionUtils.isNotEmpty(list)) {
-            List<FaultReasoningParamDTO.RefRuleSetElem.SymSetElem> symList = list.stream().map(m -> {
-                FaultReasoningParamDTO.RefRuleSetElem.SymSetElem symSetElem = new FaultReasoningParamDTO.RefRuleSetElem.SymSetElem();
-                symSetElem.setSymId(m.getFeatureId());
-                symSetElem.setSymCorr(m.getCorrelation());
-                symSetElem.setSymCorrLevel(m.getCorrelationLevel());
-                return symSetElem;
-            }).collect(Collectors.toList());
-            item.setSymSet(symList);
-        }
-    }
 
     @Override
     public SymptomResponseDTO symptomJudgment(List<String> pointIds) {

@@ -13,8 +13,8 @@ package com.aimsphm.nuclear.history.controller;
 
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
+import com.aimsphm.nuclear.common.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
-import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.service.DataAnalysisService;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;

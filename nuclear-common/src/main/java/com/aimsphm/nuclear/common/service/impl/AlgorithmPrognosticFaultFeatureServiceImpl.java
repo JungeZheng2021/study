@@ -1,0 +1,61 @@
+package com.aimsphm.nuclear.common.service.impl;
+
+import com.aimsphm.nuclear.common.entity.AlgorithmPrognosticFaultFeatureDO;
+import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
+import com.aimsphm.nuclear.common.entity.bo.QueryBO;
+import com.aimsphm.nuclear.common.mapper.AlgorithmPrognosticFaultFeatureMapper;
+import com.aimsphm.nuclear.common.service.AlgorithmPrognosticFaultFeatureService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.base.CaseFormat;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * @Package: com.aimsphm.nuclear.common.service.impl
+ * @Description: <用于特征预测的数据	该表中的id和algorithm_normal_fault_feature中的id对应，但是该表中的数据可能比algorithm_normal_fault_feature中的数据少服务实现类>
+ * @Author: MILLA
+ * @CreateDate: 2021-07-15
+ * @UpdateUser: MILLA
+ * @UpdateDate: 2021-07-15
+ * @UpdateRemark: <>
+ * @Version: 1.0
+ */
+@Service
+@ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
+public class AlgorithmPrognosticFaultFeatureServiceImpl extends ServiceImpl<AlgorithmPrognosticFaultFeatureMapper, AlgorithmPrognosticFaultFeatureDO> implements AlgorithmPrognosticFaultFeatureService {
+
+    @Override
+    public Page<AlgorithmPrognosticFaultFeatureDO> listAlgorithmPrognosticFaultFeatureByPageWithParams(QueryBO<AlgorithmPrognosticFaultFeatureDO> queryBO) {
+        if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
+            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+        }
+        return this.page(queryBO.getPage(), customerConditions(queryBO));
+    }
+
+    /**
+     * 拼装查询条件
+     *
+     * @param queryBO
+     * @return
+     */
+    private LambdaQueryWrapper<AlgorithmPrognosticFaultFeatureDO> customerConditions(QueryBO<AlgorithmPrognosticFaultFeatureDO> queryBO) {
+        LambdaQueryWrapper<AlgorithmPrognosticFaultFeatureDO> wrapper = queryBO.lambdaQuery();
+        ConditionsQueryBO query = queryBO.getQuery();
+        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        }
+        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
+        }
+        return wrapper;
+    }
+
+    @Override
+    public List<AlgorithmPrognosticFaultFeatureDO> listAlgorithmPrognosticFaultFeatureWithParams(QueryBO<AlgorithmPrognosticFaultFeatureDO> queryBO) {
+        return this.list(customerConditions(queryBO));
+    }
+}

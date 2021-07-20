@@ -3,8 +3,8 @@ package com.aimsphm.nuclear.history.service;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
-import com.aimsphm.nuclear.history.entity.vo.EventDataVO;
-import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
+import com.aimsphm.nuclear.common.entity.vo.EventDataVO;
+import com.aimsphm.nuclear.common.entity.vo.HistoryDataVO;
 
 import java.util.List;
 import java.util.Map;

@@ -97,21 +97,21 @@ public class JobDeviceStatusServiceImpl extends ServiceImpl<JobDeviceStatusMappe
         }
         //以下判断为非停机状态
         //阈值报警
-        LambdaQueryWrapper<JobAlarmThresholdDO> wrapper = Wrappers.lambdaQuery(JobAlarmThresholdDO.class);
-        wrapper.eq(JobAlarmThresholdDO::getDeviceId, deviceId).eq(JobAlarmThresholdDO::getAlarmStatus, ThresholdAlarmStatusEnum.IN_ACTIVITY.getValue());
-        int count = thresholdService.count(wrapper);
-        //存在阈值超限 设备状态为：报警
-        if (count > 0) {
-            return DeviceHealthEnum.ALARM.getValue();
-        }
+//        LambdaQueryWrapper<JobAlarmThresholdDO> wrapper = Wrappers.lambdaQuery(JobAlarmThresholdDO.class);
+//        wrapper.eq(JobAlarmThresholdDO::getDeviceId, deviceId).eq(JobAlarmThresholdDO::getAlarmStatus, ThresholdAlarmStatusEnum.IN_ACTIVITY.getValue());
+//        int count = thresholdService.count(wrapper);
+//        //存在阈值超限 设备状态为：报警
+//        if (count > 0) {
+//            return DeviceHealthEnum.ALARM.getValue();
+//        }
         //报警事件
-        LambdaQueryWrapper<JobAlarmEventDO> eventWrapper = Wrappers.lambdaQuery(JobAlarmEventDO.class);
-        eventWrapper.eq(JobAlarmEventDO::getDeviceId, deviceId).in(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.IN_ACTIVITY.getValue(), EventStatusEnum.ACKNOWLEDGED.getValue());
-        int eventCount = eventService.count(eventWrapper);
-        //存在算法异常 设备状态为：预警
-        if (eventCount > 0) {
-            return DeviceHealthEnum.ALARM.getValue();
-        }
+//        LambdaQueryWrapper<JobAlarmEventDO> eventWrapper = Wrappers.lambdaQuery(JobAlarmEventDO.class);
+//        eventWrapper.eq(JobAlarmEventDO::getDeviceId, deviceId).in(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.IN_ACTIVITY.getValue(), EventStatusEnum.ACKNOWLEDGED.getValue());
+//        int eventCount = eventService.count(eventWrapper);
+//        //存在算法异常 设备状态为：预警
+//        if (eventCount > 0) {
+//            return DeviceHealthEnum.ALARM.getValue();
+//        }
         //什么都不存在是健康状态
         return DeviceHealthEnum.HEALTH.getValue();
     }

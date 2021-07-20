@@ -93,14 +93,12 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
         //TODO 权限以后做
         userAccount = "20104580";
         if (StringUtils.isEmpty(userAccount)) {
-//            throw new CustomMessageException("User not logged in");
-            userAccount = "20104580";
+            throw new CustomMessageException("User not logged in");
         }
         if (StringUtils.isEmpty(sysCode)) {
             sysCode = "70";
         }
         Set<String> privileges = getUserPrivilegeRest(userAccount, sysCode);
-//        Set<String> privileges = getUserPrivilege(userAccount, sysCode);
         if (CollectionUtils.isEmpty(privileges)) {
             return null;
         }
@@ -140,7 +138,7 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
         return collect1;
     }
 
-    @Value("${privileges-server-url:http://localhost/autogrant/privileges/queryUserQXPrivileges.so}")
+    @Value("${privileges-server-url:http://autogrant.jnpc.com.cn/autogrant/privileges/queryUserQXPrivileges.so}")
     private String targetURL;
 
     /**
@@ -151,17 +149,11 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
      * @return
      */
     private Set<String> getUserPrivilegeRest(String userAccount, String sysCode) {
-        Map<String, Object> data = new HashMap<>(16);
-        HttpHeaders headers = new HttpHeaders();
-        //定义请求参数类型，这里用json所以是MediaType.APPLICATION_JSON
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        data.put("userAccount", userAccount);
-        data.put("sysCode", sysCode);
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(data, headers);
-//        String json = "?userAccount=%s&sysCode=%s";
-//        String format = String.format(json, userAccount, sysCode);
-        ResponseEntity<String> entity = new RestTemplate().postForEntity(targetURL, request, String.class);
-
+        RestTemplate template = new RestTemplate();
+        String json = "?userAccount=%s&sysCode=%s";
+        String format = String.format(json, userAccount, sysCode);
+        ResponseEntity<String> entity = template.getForEntity(targetURL + format, String.class);
+        log.debug("get用户权限结果为：{}", entity);
         int statusCodeValue = entity.getStatusCodeValue();
         if (statusCodeValue != 200) {
             return null;

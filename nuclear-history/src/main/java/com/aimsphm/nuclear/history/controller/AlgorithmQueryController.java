@@ -14,7 +14,7 @@ package com.aimsphm.nuclear.history.controller;
 import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
-import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
+import com.aimsphm.nuclear.common.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.history.service.AlgorithmQueryService;
 import com.aimsphm.nuclear.history.service.FaultReasoningService;
 import io.swagger.annotations.Api;

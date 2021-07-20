@@ -1,4 +1,4 @@
-package com.aimsphm.nuclear.history.entity.vo;
+package com.aimsphm.nuclear.common.entity.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

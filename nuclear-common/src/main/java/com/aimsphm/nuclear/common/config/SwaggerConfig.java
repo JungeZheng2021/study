@@ -48,7 +48,8 @@ public class SwaggerConfig {
                 .name("token")
                 .description("认证token")
                 .modelRef(new ModelRef("string"))
-                .defaultValue("{\"userAccount\":\"admin\",\"sysCode\":\"sysCode\"}")
+                //房何帐号
+                .defaultValue("20104580")
                 .parameterType("header")
                 .required(false)
                 .build());

@@ -15,6 +15,7 @@ spring:
   config:
     enableRedis: true
     enableHBase: true
+    enableAlgorithm: true
     enableMybatisPlus: true
     enableServiceExtImpl: true
   #数据源

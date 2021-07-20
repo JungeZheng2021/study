@@ -1,8 +1,10 @@
 package com.aimsphm.nuclear.algorithm.controller;
 
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
+import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
+import com.aimsphm.nuclear.algorithm.service.PrognosticForecastService;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
@@ -30,9 +32,10 @@ import java.util.Objects;
 public class AlgorithmController {
     @Resource
     private AlgorithmService algorithmService;
-
     @Resource
     private FeatureExtractionOperationService featureExtractionService;
+    @Resource
+    private PrognosticForecastService prognosticForecastService;
 
     @GetMapping("test/{deviceId}/{type}")
     @ApiOperation(value = "状态监测算法")
@@ -54,5 +57,11 @@ public class AlgorithmController {
     @ApiOperation(value = "计算特征数据")
     public void operationFeatureExtractionData() {
         featureExtractionService.operationFeatureExtractionData(PointTypeEnum.CALCULATE);
+    }
+
+    @GetMapping("test/{componentId}")
+    @ApiOperation(value = "征兆预测")
+    public void prognosticForecastByComponentId(@PathVariable Long componentId) {
+        prognosticForecastService.prognosticForecastByComponentId(componentId);
     }
 }

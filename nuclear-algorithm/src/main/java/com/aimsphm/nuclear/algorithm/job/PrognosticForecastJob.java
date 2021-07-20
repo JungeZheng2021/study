@@ -1,6 +1,6 @@
 package com.aimsphm.nuclear.algorithm.job;
 
-import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
+import com.aimsphm.nuclear.algorithm.service.PrognosticForecastService;
 import com.aimsphm.nuclear.common.annotation.DistributedLock;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.job
- * @Description: <特征提取任务>
+ * @Description: <征兆预测任务>
  * @Author: MILLA
  * @CreateDate: 2020/6/28 10:54
  * @UpdateUser: MILLA
@@ -19,21 +19,21 @@ import javax.annotation.Resource;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-@Component
 @Slf4j
-public class FeatureExtractionJob {
+@Component
+public class PrognosticForecastJob {
 
     @Resource
-    private FeatureExtractionOperationService featureExtractionService;
+    private PrognosticForecastService prognosticForecastService;
 
     /**
      * 设备状态监测算法
      * 测试： 每11分的时候执行一次
      * 线上： 每小时的37分的时候执行一次
      */
-    @Scheduled(cron = "${scheduled.config.FeatureExtractionJob:29 0 * * * ?}")
-    @DistributedLock("FeatureExtractionJob")
+//    @Scheduled(cron = "${scheduled.config.PrognosticForecastJob:29 0 * * * ?}")
+//    @DistributedLock("PrognosticForecastJob")
     public void monitor() {
-        featureExtractionService.operationFeatureExtractionData(PointTypeEnum.CALCULATE);
+        prognosticForecastService.prognosticForecast();
     }
 }

@@ -38,6 +38,8 @@ public enum AlgorithmTypeEnum {
 
     FAULT_SYMPTOM("SYMPTOM", "征兆判断"),
 
+    FAULT_PROGNOSTIC("PROGNOSTIC", "征兆预测"),
+
     OTHERS("-1", "其他");
 
 

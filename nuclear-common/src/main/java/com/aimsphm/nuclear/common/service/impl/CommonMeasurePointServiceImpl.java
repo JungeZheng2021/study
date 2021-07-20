@@ -145,7 +145,6 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             if (count == 0) {
                 continue;
             }
-            System.out.println(point.getPointId());
             String key = REDIS_QUEUE_REAL_TIME_PRE + id;
             Long size = redis.opsForList().size(key);
             HBaseTimeSeriesDataDTO data = new HBaseTimeSeriesDataDTO();

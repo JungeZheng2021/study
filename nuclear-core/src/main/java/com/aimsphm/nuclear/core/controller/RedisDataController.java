@@ -15,13 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.CACHE_KEY_PREFIX;
-import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_POINT_REAL_TIME_PRE;
+import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
 
 /**
  * @Package: com.aimsphm.nuclear.pump.controller
@@ -119,4 +115,22 @@ public class RedisDataController {
     public Object get(@PathVariable String itemId) {
         return redisTemplate.opsForValue().get(REDIS_POINT_REAL_TIME_PRE + itemId);
     }
+
+    @GetMapping("queue/{pointId}")
+    @ApiOperation(value = "查询波形队列数据", notes = "后期删除")
+    public List queue(@PathVariable Long pointId) {
+        List range = redisTemplate.opsForList().range(REDIS_QUEUE_REAL_TIME_PRE + pointId, 0, -1);
+        return range;
+    }
+
+    @GetMapping("queue/remove")
+    @ApiOperation(value = "删除波形队列数据", notes = "传pointId是指定删除，不传的话是删除所有波形数据")
+    public Long queueRemove(Long id) {
+        if (Objects.nonNull(id)) {
+            return redisTemplate.delete(REDIS_QUEUE_REAL_TIME_PRE + id) ? 1L : 0L;
+        }
+        Set<String> keys = redisTemplate.keys(REDIS_QUEUE_REAL_TIME_PRE + "*");
+        return redisTemplate.delete(keys);
+    }
+
 }

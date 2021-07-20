@@ -137,8 +137,9 @@ public class VibrationDataServiceImpl implements CommonDataService {
         vecValue.put("fs", packet.getAcqFrequency());
         vecValue.put("type", "vec");
         vecValue.put("timestamp", packet.getTimestamp());
-        redis.opsForValue().setIfAbsent(String.format(REDIS_WAVE_DATA_VEC, sensorCode), JSON.toJSONString(vecValue));
-        redis.opsForValue().setIfAbsent(String.format(REDIS_WAVE_DATA_ACC, sensorCode), JSON.toJSONString(accValue));
+        //时时更新波形值
+        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_VEC, sensorCode), JSON.toJSONString(vecValue));
+        redis.opsForValue().set(String.format(REDIS_WAVE_DATA_ACC, sensorCode), JSON.toJSONString(accValue));
     }
 
     private void settingSensorConfigStatus(PacketDTO packet) {

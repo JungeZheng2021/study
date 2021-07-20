@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aimsphm.nuclear.common.entity.AlgorithmPrognosticFaultFeatureDO">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.aimsphm.nuclear.common.entity.AlgorithmPrognosticFaultFeatureDO">
+        <result column="id" property="id"/>
+        <result column="sort" property="sort"/>
+        <result column="creator" property="creator"/>
+        <result column="modifier" property="modifier"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="deleted" property="deleted"/>
+        <result column="component_id" property="componentId"/>
+        <result column="sensor_code" property="sensorCode"/>
+        <result column="sensor_desc" property="sensorDesc"/>
+        <result column="feature_name" property="featureName"/>
+        <result column="device_type" property="deviceType"/>
+        <result column="additional_type" property="additionalType"/>
+        <result column="feature_hi" property="featureHi"/>
+        <result column="feature_lo" property="featureLo"/>
+        <result column="feature_type" property="featureType"/>
+        <result column="plus_value" property="plusValue"/>
+        <result column="priority" property="priority"/>
+        <result column="offset_early" property="offsetEarly"/>
+        <result column="frequency" property="frequency"/>
+        <result column="feature_value" property="featureValue"/>
+        <result column="feature_code" property="featureCode"/>
+        <result column="exam_code" property="examCode"/>
+        <result column="time_range" property="timeRange"/>
+        <result column="time_gap" property="timeGap"/>
+        <result column="sample_method" property="sampleMethod"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        sort,
+        creator,
+        modifier,
+        gmt_create,
+        gmt_modified,
+        deleted,
+        component_id, sensor_code, sensor_desc, feature_name, device_type, additional_type, feature_hi, feature_lo, feature_type, plus_value, priority, offset_early, frequency, feature_value, feature_code, exam_code, time_range, time_gap, sample_method
+    </sql>
+
+</mapper>

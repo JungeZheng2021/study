@@ -9,6 +9,9 @@ import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
+import com.aimsphm.nuclear.common.entity.vo.EventDataVO;
+import com.aimsphm.nuclear.common.entity.vo.HistoryDataVO;
+import com.aimsphm.nuclear.common.entity.vo.HistoryDataWithThresholdVO;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
@@ -16,9 +19,6 @@ import com.aimsphm.nuclear.common.service.SparkDownSampleService;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.history.entity.enums.TableNameEnum;
-import com.aimsphm.nuclear.history.entity.vo.EventDataVO;
-import com.aimsphm.nuclear.history.entity.vo.HistoryDataVO;
-import com.aimsphm.nuclear.history.entity.vo.HistoryDataWithThresholdVO;
 import com.aimsphm.nuclear.history.service.HistoryQueryService;
 import com.aimsphm.nuclear.history.util.TableNameParser;
 import com.alibaba.fastjson.JSON;
@@ -33,6 +33,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Get;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -67,6 +68,12 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     public HistoryQueryServiceImpl(HBaseUtil hBase) {
         this.hBase = hBase;
     }
+
+    /**
+     * 默认超过2分钟需要补点
+     */
+    @Value("${time.interval:120}")
+    private Long timeInterval;
 
     @Override
     public List<List<Object>> listHistoryDataWithPointByScan(HistoryQuerySingleWithFeatureBO single) {
@@ -197,7 +204,8 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 //            }
             try {
                 List<List<Object>> charData = mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class);
-                List<List<Object>> collect2 = charData.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(x -> (Long) x.get(0)))), ArrayList::new));
+                List<List<Object>> collect2 = charData.stream().filter(x -> Objects.nonNull(x.get(0))).collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(x -> (Long) x.get(0)))), ArrayList::new));
+                fillPoint(collect2, point);
                 vo.setChartData(collect2);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -205,6 +213,33 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             result.put(pointId, vo);
         }
         return result;
+    }
+
+    /**
+     * 判断是否需要补点
+     *
+     * @param points
+     * @param point
+     */
+    private void fillPoint(List<List<Object>> points, CommonMeasurePointDO point) {
+        if (CollectionUtils.isEmpty(points)) {
+            return;
+        }
+        List<Object> pointValue = points.get(points.size() - 1);
+        Long start = (Long) pointValue.get(0);
+        long end = System.currentTimeMillis();
+        if (end - start <= timeInterval * 1000) {
+            return;
+        }
+        HistoryQuerySingleWithFeatureBO single = new HistoryQuerySingleWithFeatureBO();
+        single.setEnd(end);
+        single.setStart(start + 1);
+        single.setSensorCode(point.getSensorCode());
+        if (StringUtils.isNotBlank(point.getFeature()) && StringUtils.isNotBlank(point.getFeatureType())) {
+            single.setFeature(point.getFeatureType().concat(DASH).concat(point.getFeature()));
+        }
+        List<List<Object>> lists = listHistoryDataWithPointByScan(single);
+        points.addAll(lists);
     }
 
     private List<SparkDownSample> listSparkDownSampleByConditions(HistoryQueryMultiBO multi) {

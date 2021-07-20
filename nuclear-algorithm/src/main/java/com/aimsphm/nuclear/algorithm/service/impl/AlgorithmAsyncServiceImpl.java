@@ -93,7 +93,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
         Long id = item.getId();
         String sensorCode = item.getSensorCode();
         TimeRangeQueryBO rangeQuery = getRangeDate(item, sensorCode);
-        log.info("请求数据.family-{}  .sensorCode-{}", family, sensorCode);
+        log.debug("请求数据.family-{}  .sensorCode-{}", family, sensorCode);
         long start = System.currentTimeMillis();
         try {
             String key = REDIS_QUEUE_REAL_TIME_PRE + id;
@@ -102,9 +102,9 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
                 data.setCells(range);
                 return;
             }
-            log.info("请求数据返回值-.请求数据：{}", rangeQuery);
+            log.debug("请求数据返回值-.请求数据：{}", rangeQuery);
             List<HBaseTimeSeriesDataDTO> cells = hBase.listObjectDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, rangeQuery.getStart(), rangeQuery.getEnd(), family);
-            log.info("请求数据返回值-.family-{}  .sensorCode-{} 返回值数据量 {}  耗时-- {} 毫秒", family, sensorCode, cells.size(), (System.currentTimeMillis() - start));
+            log.debug("请求数据返回值-.family-{}  .sensorCode-{} 返回值数据量 {}  耗时-- {} 毫秒", family, sensorCode, cells.size(), (System.currentTimeMillis() - start));
             data.setCells(cells);
             cells.stream().forEach(x -> {
                 redis.opsForList().rightPush(key, x);
