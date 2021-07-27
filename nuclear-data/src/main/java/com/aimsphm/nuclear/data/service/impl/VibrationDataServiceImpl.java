@@ -4,6 +4,7 @@ import com.aimsphm.nuclear.common.constant.HBaseConstant;
 import com.aimsphm.nuclear.common.entity.BizOriginalDataDO;
 import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
+import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
 import com.aimsphm.nuclear.common.service.BizOriginalDataService;
 import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
@@ -72,10 +73,12 @@ public class VibrationDataServiceImpl implements CommonDataService {
 
     @Resource
     private CommonSensorService sensorService;
+
     /**
      * 需要存储到redis中的特征列表
      */
     private static final List<String> store2RedisFeatureList = Lists.newArrayList("vec-Rms", "ana-temperature", "ana-humidity", "ana-PPM", "ana-dielectricConstant", "ana-density", "abr-realTime", "raw-stressWaveStrength");
+    static Map<Double, Double> config = new HashMap<>(16);
 
     static {
         //将所有需要保存的特征值缓存起来
@@ -83,6 +86,13 @@ public class VibrationDataServiceImpl implements CommonDataService {
         List<CalculateFeatureEnum> calculateFeatureEnums = Arrays.asList(values);
         List<String> collect = calculateFeatureEnums.stream().map(m -> m.getValue()).collect(Collectors.toList());
         store2RedisFeatureList.addAll(collect);
+
+        //默认值
+        config.put(0.4001, 0.0401);
+        config.put(0.5001, 0.0501);
+        config.put(0.8501, 0.0851);
+        config.put(0.9501, 0.0951);
+
     }
 
     @Override
@@ -266,8 +276,8 @@ public class VibrationDataServiceImpl implements CommonDataService {
             if (CollectionUtils.isEmpty(featureList) || !featureList.contains(feature)) {
                 continue;
             }
-            Double value = next.getValue();
-
+            //更正对应的声学数据值 - 如果不是声学的按照原来的值
+            Double value = fixSoundValue(feature, next.getValue());
             //是否需要存储到redis
             if (store2RedisFeatureList.contains(feature)) {
                 String itemId = packet.getSensorCode() + DASH + feature;
@@ -297,6 +307,22 @@ public class VibrationDataServiceImpl implements CommonDataService {
         } finally {
             return true;
         }
+    }
+
+    /**
+     * 更新声学的数据值
+     * [为了解决声学数据不准额外添加的逻辑]
+     *
+     * @param feature 特征值
+     * @param value   对应的值
+     * @return
+     */
+    private Double fixSoundValue(String feature, Double value) {
+        if (!feature.startsWith(PointFeatureEnum.WEI.getValue() + DASH)) {
+            return value;
+        }
+        Double format = BigDecimalUtils.format(value, 4);
+        return Objects.isNull(config.get(format)) ? value : config.get(format);
     }
 
     /**

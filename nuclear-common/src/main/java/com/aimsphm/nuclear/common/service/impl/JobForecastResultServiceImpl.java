@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.algorithm.service.BizDiagnosisService;
+import com.aimsphm.nuclear.common.entity.CommonComponentDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobForecastResultDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
@@ -126,5 +127,10 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
         List<FaultReasoningVO> faultReasoningVOS = diagnosisService.faultReasoning(dto, deviceId);
         vo.setForecastList(faultReasoningVOS);
         return vo;
+    }
+
+    @Override
+    public List<CommonComponentDO> listCommonComponentByDeviceId(Long deviceId) {
+        return this.getBaseMapper().listCommonComponentByDeviceId(deviceId);
     }
 }

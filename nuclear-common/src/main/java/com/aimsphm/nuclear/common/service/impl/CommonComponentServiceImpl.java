@@ -51,6 +51,8 @@ public class CommonComponentServiceImpl extends ServiceImpl<CommonComponentMappe
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
+        //最大的设备部件不需要显示
+        wrapper.ne(CommonComponentDO::getParentComponentId, 0);
         return wrapper;
     }
 

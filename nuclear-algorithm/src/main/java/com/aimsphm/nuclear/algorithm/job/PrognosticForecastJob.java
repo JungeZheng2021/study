@@ -31,8 +31,8 @@ public class PrognosticForecastJob {
      * 测试： 每11分的时候执行一次
      * 线上： 每小时的37分的时候执行一次
      */
-//    @Scheduled(cron = "${scheduled.config.PrognosticForecastJob:29 0 * * * ?}")
-//    @DistributedLock("PrognosticForecastJob")
+    @Scheduled(cron = "${scheduled.config.PrognosticForecastJob:29 0 * * * ?}")
+    @DistributedLock("PrognosticForecastJob")
     public void monitor() {
         prognosticForecastService.prognosticForecast();
     }

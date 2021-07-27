@@ -17,21 +17,23 @@ import com.aimsphm.nuclear.common.enums.PointVisibleEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.CommonMeasurePointMapper;
 import com.aimsphm.nuclear.common.service.*;
+import com.aimsphm.nuclear.common.util.DateUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -213,6 +215,8 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(CommonMeasurePointDO::getFeatureType, CommonMeasurePointDO::getFeature, CommonMeasurePointDO::getFeatureName);
         wrapper.in(CommonMeasurePointDO::getSensorCode, sensorCodeList).isNotNull(CommonMeasurePointDO::getFeatureType).isNotNull(CommonMeasurePointDO::getFeature);
+        //因为替别人解决一些问题，需要剔除以下这个几个特征.
+        wrapper.notIn(CommonMeasurePointDO::getFeature, Lists.newArrayList("BGER3", "MPFF3", "MPE", "GMSBF"));
         List<CommonMeasurePointDO> pointDOList = this.list(wrapper);
         if (CollectionUtils.isEmpty(pointDOList)) {
             return vo;

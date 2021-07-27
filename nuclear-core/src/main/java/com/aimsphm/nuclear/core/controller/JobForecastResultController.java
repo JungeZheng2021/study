@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.core.controller;
 
+import com.aimsphm.nuclear.common.entity.CommonComponentDO;
 import com.aimsphm.nuclear.common.entity.JobForecastResultDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
@@ -80,4 +81,12 @@ public class JobForecastResultController {
     public boolean removeJobForecastResult(@PathVariable Long id) {
         return service.removeById(id);
     }
+
+    @GetMapping("{deviceId}/components")
+    @ApiOperation(value = "根据设备deviceId查询部件信息")
+    public List<CommonComponentDO> listCommonComponentByDeviceId(@PathVariable Long deviceId) {
+        return service.listCommonComponentByDeviceId(deviceId);
+    }
+
+
 }

@@ -6,4 +6,15 @@
                extends="com.aimsphm.nuclear.common.entity.JobForecastResultDO.BaseResultMap">
     </resultMap>
 
+    <select id="listCommonComponentByDeviceId" resultType="com.aimsphm.nuclear.common.entity.CommonComponentDO">
+        SELECT
+        c.*
+        FROM
+        `common_component` c
+        WHERE
+        device_id = #{deviceId}
+        AND EXISTS ( SELECT component_id FROM algorithm_prognostic_fault_feature WHERE component_id = c.id AND deleted =
+        0 )
+        AND deleted = 0 order by c.id
+    </select>
 </mapper>

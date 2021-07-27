@@ -205,7 +205,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             try {
                 List<List<Object>> charData = mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class);
                 List<List<Object>> collect2 = charData.stream().filter(x -> Objects.nonNull(x.get(0))).collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(x -> (Long) x.get(0)))), ArrayList::new));
-                fillPoint(collect2, point);
+                fillPoint(collect2, point, multi);
                 vo.setChartData(collect2);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -220,26 +220,31 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
      *
      * @param points
      * @param point
+     * @param multi
      */
-    private void fillPoint(List<List<Object>> points, CommonMeasurePointDO point) {
-        if (CollectionUtils.isEmpty(points)) {
-            return;
+    private void fillPoint(List<List<Object>> points, CommonMeasurePointDO point, HistoryQueryMultiBO multi) {
+        try {
+            if (CollectionUtils.isEmpty(points)) {
+                return;
+            }
+            List<Object> pointValue = points.get(points.size() - 1);
+            long end = multi.getEnd();
+            Long start = (Long) pointValue.get(0);
+            if (end - start <= timeInterval * 1000) {
+                return;
+            }
+            HistoryQuerySingleWithFeatureBO single = new HistoryQuerySingleWithFeatureBO();
+            single.setEnd(end);
+            single.setStart(start + 1);
+            single.setSensorCode(point.getSensorCode());
+            if (StringUtils.isNotBlank(point.getFeature()) && StringUtils.isNotBlank(point.getFeatureType())) {
+                single.setFeature(point.getFeatureType().concat(DASH).concat(point.getFeature()));
+            }
+            List<List<Object>> lists = listHistoryDataWithPointByScan(single);
+            points.addAll(lists);
+        } catch (Exception e) {
+            log.error("filled point failed: {}", e.getCause());
         }
-        List<Object> pointValue = points.get(points.size() - 1);
-        Long start = (Long) pointValue.get(0);
-        long end = System.currentTimeMillis();
-        if (end - start <= timeInterval * 1000) {
-            return;
-        }
-        HistoryQuerySingleWithFeatureBO single = new HistoryQuerySingleWithFeatureBO();
-        single.setEnd(end);
-        single.setStart(start + 1);
-        single.setSensorCode(point.getSensorCode());
-        if (StringUtils.isNotBlank(point.getFeature()) && StringUtils.isNotBlank(point.getFeatureType())) {
-            single.setFeature(point.getFeatureType().concat(DASH).concat(point.getFeature()));
-        }
-        List<List<Object>> lists = listHistoryDataWithPointByScan(single);
-        points.addAll(lists);
     }
 
     private List<SparkDownSample> listSparkDownSampleByConditions(HistoryQueryMultiBO multi) {

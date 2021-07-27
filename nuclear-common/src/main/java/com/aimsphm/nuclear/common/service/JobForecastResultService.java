@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.service;
 
+import com.aimsphm.nuclear.common.entity.CommonComponentDO;
 import com.aimsphm.nuclear.common.entity.JobForecastResultDO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.JobForecastResultVO;
@@ -44,4 +45,12 @@ public interface JobForecastResultService extends IService<JobForecastResultDO> 
      * @return
      */
     JobForecastResultVO listJobForecastResultByIds(Long deviceId, Long componentId);
+
+    /**
+     * 根据设备id查询部件信息
+     *
+     * @param deviceId 设备id
+     * @return
+     */
+    List<CommonComponentDO> listCommonComponentByDeviceId(Long deviceId);
 }

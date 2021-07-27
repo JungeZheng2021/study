@@ -23,7 +23,7 @@ scheduled:
     # 特征提取 每8,18,28的43秒执行一次
     FeatureExtractionJob: 43 8/10 * * * ?
     # 征兆预测每12小时运行一次
-    PrognosticForecastJob: 13 11/12 * * * ?
+    PrognosticForecastJob: 13 11/53 * * * ?
 spring:
   main:
     allow-bean-definition-overriding: true

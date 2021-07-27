@@ -91,15 +91,20 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
             return;
         }
         List<Get> gets = new ArrayList<>();
+        Set<String> distinctPointId = new HashSet<>();
         List<AlgorithmNormalFaultFeatureDO> collect = value.stream().map(x -> {
+            //去除重复的测点
+            if (distinctPointId.contains(x.getSensorDesc())) {
+                return null;
+            }
+            distinctPointId.add(x.getSensorDesc());
             AlgorithmNormalFaultFeatureDO featureDO = new AlgorithmNormalFaultFeatureDO();
             BeanUtils.copyProperties(x, featureDO);
             calculateGets(x, gets, endTime);
             return featureDO;
-        }).collect(Collectors.toList());
+        }).filter(Objects::nonNull).collect(Collectors.toList());
         try {
             Map<String, List<List<Object>>> map = hBase.selectByGets(H_BASE_TABLE_NPC_PHM_DATA, gets);
-            System.out.println(JSON.toJSONString(map));
             List<List<List<Object>>> featureValue = new ArrayList<>();
             collect.forEach(x -> featureValue.add(map.get(x.getSensorDesc())));
             SymptomParamDTO dto = new SymptomParamDTO();
@@ -167,12 +172,16 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
         if (Objects.isNull(timeGapValue)) {
             return;
         }
+        String pointId = x.getSensorDesc();
         Long startTime = endTime - gapValue;
+        StringBuilder sb = null;
+        if (log.isDebugEnabled()) {
+            sb = new StringBuilder("[");
+        }
         while (startTime <= endTime) {
             Integer index = hBase.indexOf3600(startTime);
             Long key = hBase.rowKeyOf3600(startTime);
             Get get = new Get((x.getSensorCode() + ROW_KEY_SEPARATOR + key).getBytes(StandardCharsets.UTF_8));
-            String pointId = x.getSensorDesc();
             String sensorCode = x.getSensorCode();
             if (StringUtils.isBlank(sensorCode)) {
                 continue;
@@ -181,9 +190,14 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
             if (!StringUtils.equals(pointId, sensorCode)) {
                 family = pointId.replace(sensorCode, BLANK).substring(1);
             }
-            get.addColumn(family.getBytes(StandardCharsets.UTF_8), Bytes.toBytes(index));
+//            get.addColumn(family.getBytes(StandardCharsets.UTF_8), Bytes.toBytes(index));
+            get.addFamily(family.getBytes(StandardCharsets.UTF_8));
             gets.add(get);
             startTime = startTime + timeGapValue;
+            if (log.isDebugEnabled() && Objects.nonNull(sb)) {
+                sb.append("\"" + x.getSensorCode() + ROW_KEY_SEPARATOR + key + ":" + family + ":" + index + "\",");
+            }
         }
+        log.debug("item get ：{}", Objects.isNull(sb) ? null : sb.substring(0, sb.length() - 1) + "]");
     }
 }

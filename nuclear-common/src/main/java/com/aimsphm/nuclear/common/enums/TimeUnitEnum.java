@@ -18,6 +18,7 @@ import java.util.Objects;
 @Slf4j
 public enum TimeUnitEnum {
     OTHER("other", -1L),
+    WEEK("w", 7 * 86400 * 1000L),
     DAY("d", 24 * 3600 * 1000L),
     HOUR("h", 3600 * 1000L),
     MINUTE("m", 60 * 1000L),

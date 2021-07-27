@@ -53,36 +53,42 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     private static final String WEB_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static void main(String[] args) {
-        System.out.println(previousMonthFirstDay(System.currentTimeMillis()));
-        System.out.println(previousMonthLastDay(System.currentTimeMillis()));
-
-        Date date = previousMonthFirstDay(1592972481000L);
-        String format = format(YEAR_MONTH_DAY_HH_MM_SS_M, date);
+        Long aLong = plusHoursMaxValue(-2L);
+        String format = format(YEAR_MONTH_DAY_HH_MM_SS_I, aLong);
         System.out.println(format);
-        Date date1 = previousMonthLastDay(1592972481000L);
-        String format1 = format(YEAR_MONTH_DAY_HH_MM_SS_M, date1);
+        Long aLong1 = plusHoursMinValue(-2L);
+        String format1 = format(YEAR_MONTH_DAY_HH_MM_SS_I, aLong1);
         System.out.println(format1);
-
-        String s = formatPreviousMonth(1606796481000L, null);
-        System.out.println(s);
-        System.out.println(formatMonth(1606796481000L, null));
-
-        String s1 = formatCurrentDateTime(YEAR_ZH);
-        System.out.println(s1);
-        String s2 = formatPreviousYear(YEAR_ZH);
-        System.out.println(s2);
-
-
-        int dayOfYear = LocalDate.now().getDayOfYear();
-
-        System.out.println(dayOfYear);
-
-        boolean sameYear = isSameYear(new Date(), new Date(0));
-        System.out.println(sameYear);
-        int year = transition(new Date()).getYear();
-        System.out.println(year);
-        int year1 = transition(new Date(0)).getYear();
-        System.out.println(year1);
+//        System.out.println(previousMonthFirstDay(System.currentTimeMillis()));
+//        System.out.println(previousMonthLastDay(System.currentTimeMillis()));
+//
+//        Date date = previousMonthFirstDay(1592972481000L);
+//        String format = format(YEAR_MONTH_DAY_HH_MM_SS_M, date);
+//        System.out.println(format);
+//        Date date1 = previousMonthLastDay(1592972481000L);
+//        String format1 = format(YEAR_MONTH_DAY_HH_MM_SS_M, date1);
+//        System.out.println(format1);
+//
+//        String s = formatPreviousMonth(1606796481000L, null);
+//        System.out.println(s);
+//        System.out.println(formatMonth(1606796481000L, null));
+//
+//        String s1 = formatCurrentDateTime(YEAR_ZH);
+//        System.out.println(s1);
+//        String s2 = formatPreviousYear(YEAR_ZH);
+//        System.out.println(s2);
+//
+//
+//        int dayOfYear = LocalDate.now().getDayOfYear();
+//
+//        System.out.println(dayOfYear);
+//
+//        boolean sameYear = isSameYear(new Date(), new Date(0));
+//        System.out.println(sameYear);
+//        int year = transition(new Date()).getYear();
+//        System.out.println(year);
+//        int year1 = transition(new Date(0)).getYear();
+//        System.out.println(year1);
 
         //        System.out.println(previousMonthFirstDay());
 //        System.out.println(previousMonthLastDay());
@@ -458,10 +464,104 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      *
      * @param durationTimes 时间间隔
      * @param unit          要格式化成的单位
-     * @return
+     * @return 格式化结果
      */
     public static Double format(Long durationTimes, TemporalUnit unit) {
         Duration duration = unit.getDuration();
         return BigDecimalUtils.divide(durationTimes, duration.getSeconds() * 1000, 2);
+    }
+
+    /**
+     * 当前时间加上几个小时的最大值
+     *
+     * @return 时间戳
+     */
+    public static Long plusHoursMaxValue(Long previousHours) {
+        return plusHoursMaxValue(previousHours, new Date());
+    }
+
+    /**
+     * 当前时间加上几个小时的最小值
+     *
+     * @return 时间戳
+     */
+    public static Long plusHoursMinValue(Long previousHours) {
+        return plusHoursMinValue(previousHours, new Date());
+    }
+
+    /**
+     * 指定时间加上几个小时的最大值
+     *
+     * @return 时间戳
+     */
+    public static Long plusHoursMaxValue(Long previousHours, Date date) {
+        LocalDateTime localDateTime = Objects.isNull(date) ? LocalDateTime.now() : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return getLongMax(previousHours, localDateTime);
+    }
+
+    /**
+     * 指定时间加上几个小时的最大值
+     *
+     * @return 时间戳
+     */
+    public static Long plusHoursMinValue(Long previousHours, LocalDateTime localDateTime) {
+        if (Objects.isNull(previousHours)) {
+            return System.currentTimeMillis() / 3600 / 1000 * 3600 * 1000;
+        }
+        LocalDateTime newLocalDateTime = (Objects.isNull(localDateTime) ? LocalDateTime.now() : localDateTime).plusHours(previousHours);
+        Instant instant = newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        Date from = Date.from(instant);
+        return from.getTime() / 3600 / 1000 * 3600 * 1000;
+    }
+
+    /**
+     * 指定时间加上几个小时的最大值
+     *
+     * @return 时间戳
+     */
+    public static Long plusHoursMaxValue(Long previousHours, LocalDateTime localDateTime) {
+        localDateTime = (Objects.isNull(localDateTime) ? LocalDateTime.now() : localDateTime);
+        return getLongMax(previousHours, localDateTime);
+    }
+
+    private static Long getLongMax(Long previousHours, LocalDateTime localDateTime) {
+        LocalDateTime newLocalDateTime = localDateTime.plusHours(Objects.isNull(previousHours) ? 1 : previousHours + 1);
+        Instant instant = newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        Date from = Date.from(instant);
+        return from.getTime() / 3600 / 1000 * 3600 * 1000 - 1;
+    }
+
+    /**
+     * 指定时间加上几个小时的最大值
+     *
+     * @return 时间戳
+     */
+    public static Long plusHoursMinValue(Long previousHours, Date date) {
+        if (Objects.isNull(previousHours)) {
+            return System.currentTimeMillis() / 3600 / 1000 * 3600 * 1000;
+        }
+        LocalDateTime localDateTime = Objects.isNull(date) ? LocalDateTime.now() : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime newLocalDateTime = localDateTime.plusHours(previousHours);
+        Instant instant = newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        Date from = Date.from(instant);
+        return from.getTime() / 3600 / 1000 * 3600 * 1000;
+    }
+
+    /**
+     * 获取当前时间的前一个小时最大值
+     *
+     * @return 时间戳
+     */
+    public static Long previousHourMaxValue() {
+        return plusHoursMaxValue(-1L);
+    }
+
+    /**
+     * 获取当前时间的前一个小时最小值
+     *
+     * @return 时间戳
+     */
+    public static Long previousHourMinValue() {
+        return plusHoursMinValue(-1L);
     }
 }
