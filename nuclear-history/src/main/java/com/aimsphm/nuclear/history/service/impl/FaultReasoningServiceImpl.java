@@ -11,6 +11,7 @@ import com.aimsphm.nuclear.common.enums.TimeUnitEnum;
 import com.aimsphm.nuclear.common.service.*;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.aimsphm.nuclear.history.service.FaultReasoningService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,13 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_FAMILY_NPC_PI_REAL_TIME;
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
 import static com.aimsphm.nuclear.common.constant.ReportConstant.BLANK;
+import static com.aimsphm.nuclear.common.constant.SymbolConstant.UNDERLINE;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.service.impl
@@ -92,11 +93,15 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
         }
         SymptomParamDTO params = new SymptomParamDTO();
         params.setFeatureInfo(list);
-        List<List<List<Object>>> collect = list.stream().map(x -> {
+        Map<String, List<List>> data = new HashMap<>(16);
+        list.forEach(x -> {
             String pointId = x.getSensorDesc();
+            Long componentId = x.getComponentId();
+            String key = componentId + UNDERLINE + pointId;
+            data.put(key, null);
             String sensorCode = x.getSensorCode();
             if (StringUtils.isBlank(sensorCode)) {
-                return null;
+                return;
             }
             String family = H_BASE_FAMILY_NPC_PI_REAL_TIME;
             if (!StringUtils.equals(pointId, sensorCode)) {
@@ -104,21 +109,21 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
             }
             String timeRange = x.getTimeRange();
             if (StringUtils.isBlank(timeRange)) {
-                return null;
+                return;
             }
             long end = System.currentTimeMillis();
             Long gapValue = TimeUnitEnum.getGapValue(timeRange);
             if (Objects.isNull(gapValue)) {
-                return null;
+                return;
             }
             try {
-                return hBase.listDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, end - gapValue, end, family);
+                List<List<Object>> lists = hBase.listDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, end - gapValue, end, family);
+                data.put(key, Collections.singletonList(lists));
             } catch (IOException e) {
                 log.error("query history data failed.....");
             }
-            return null;
-        }).collect(Collectors.toList());
-        params.setFeatureValue(collect);
+        });
+        params.setFeatureValue(data);
         return (SymptomResponseDTO) symptomService.getInvokeCustomerData(params);
     }
 }

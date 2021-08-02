@@ -74,6 +74,7 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
+        wrapper.orderByDesc(JobForecastResultDO::getPointId);
         return wrapper;
     }
 

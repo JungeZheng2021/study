@@ -10,7 +10,7 @@
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
         <result column="deleted" property="deleted"/>
-        <result column="timestamp" property="timestamp"/>
+        <result column="component_id" property="componentId"/>
         <result column="point_id" property="pointId"/>
         <result column="data" property="data"/>
         <result column="remark" property="remark"/>
@@ -25,7 +25,7 @@
         gmt_create,
         gmt_modified,
         deleted,
-        timestamp, point_id, data, remark
+        component_id, point_id, data, remark
     </sql>
 
 </mapper>
