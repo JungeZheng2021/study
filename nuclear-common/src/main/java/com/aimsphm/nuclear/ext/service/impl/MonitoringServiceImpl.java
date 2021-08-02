@@ -51,6 +51,8 @@ public class MonitoringServiceImpl implements MonitoringService {
     @Resource
     private JobAlarmEventService eventService;
     @Resource
+    private JobAlarmProcessRecordService processRecordService;
+    @Resource
     private JobAlarmEventMapper eventMapper;
     @Resource
     private CommonDeviceService deviceService;
@@ -313,18 +315,18 @@ public class MonitoringServiceImpl implements MonitoringService {
     }
 
     private List<List<LabelVO>> listWarmingPointByAlarmTypeAndLevel(Long deviceId, TimeRangeQueryBO range) {
-        LambdaQueryWrapper<JobAlarmEventDO> wrapper = Wrappers.lambdaQuery(JobAlarmEventDO.class);
-        wrapper.eq(JobAlarmEventDO::getDeviceId, deviceId).ge(JobAlarmEventDO::getGmtLastAlarm, new Date(range.getStart())).le(JobAlarmEventDO::getGmtLastAlarm, new Date(range.getEnd()));
-        List<JobAlarmEventDO> list = eventService.list(wrapper);
+        LambdaQueryWrapper<JobAlarmProcessRecordDO> wrapper = Wrappers.lambdaQuery(JobAlarmProcessRecordDO.class);
+        wrapper.eq(JobAlarmProcessRecordDO::getDeviceId, deviceId).ge(JobAlarmProcessRecordDO::getGmtEventTime, new Date(range.getStart())).le(JobAlarmProcessRecordDO::getGmtEventTime, new Date(range.getEnd()));
+        List<JobAlarmProcessRecordDO> list = processRecordService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return Lists.newArrayList(Lists.newArrayList(), Lists.newArrayList());
         }
-        Map<Integer, Long> type = list.stream().collect(Collectors.groupingBy(item -> item.getAlarmType(), TreeMap::new, Collectors.counting()));
+//        Map<Integer, Long> type = list.stream().collect(Collectors.groupingBy(item -> item.getAlarmType(), TreeMap::new, Collectors.counting()));
         Map<Integer, Long> level = list.stream().collect(Collectors.groupingBy(item -> item.getAlarmLevel(), TreeMap::new, Collectors.counting()));
-        List<LabelVO> typeList = type.entrySet().stream().map(item -> new LabelVO(AlarmTypeEnum.getDesc(item.getKey()), item.getValue())).collect(Collectors.toList());
+//        List<LabelVO> typeList = type.entrySet().stream().map(item -> new LabelVO(AlarmTypeEnum.getDesc(item.getKey()), item.getValue())).collect(Collectors.toList());
         List<LabelVO> levelList = level.entrySet().stream().map(item -> new LabelVO(AlgorithmLevelEnum.getDesc(item.getKey()), item.getValue())).collect(Collectors.toList());
 
-        return Lists.newArrayList(typeList, levelList);
+        return Lists.newArrayList(new ArrayList<>(), levelList);
     }
 
     @Override
