@@ -5,37 +5,30 @@ import com.aimsphm.nuclear.algorithm.entity.dto.PrognosticForecastResponseDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.SymptomParamDTO;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.PrognosticForecastService;
-import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.AlgorithmPrognosticFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.CommonComponentDO;
-import com.aimsphm.nuclear.common.entity.JobForecastResultDO;
-import com.aimsphm.nuclear.common.enums.TimeUnitEnum;
+import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.service.AlgorithmPrognosticFaultFeatureService;
+import com.aimsphm.nuclear.common.service.BizDownSampleService;
 import com.aimsphm.nuclear.common.service.CommonComponentService;
 import com.aimsphm.nuclear.common.service.JobForecastResultService;
-import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
-import static com.aimsphm.nuclear.common.constant.ReportConstant.BLANK;
-import static com.aimsphm.nuclear.common.constant.SymbolConstant.COMMA;
+import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
 
 /**
  * <p>
@@ -50,8 +43,6 @@ import static com.aimsphm.nuclear.common.constant.SymbolConstant.COMMA;
 @Service
 public class PrognosticForecastServiceImpl implements PrognosticForecastService {
     @Resource
-    private HBaseUtil hBase;
-    @Resource
     private AlgorithmPrognosticFaultFeatureService prognosticFaultFeatureService;
     @Resource
     private JobForecastResultService forecastResultService;
@@ -60,6 +51,9 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
 
     @Resource(name = "Forecast")
     private AlgorithmHandlerService handlerService;
+
+    @Resource
+    private BizDownSampleService downSampleService;
 
     @Override
     public void prognosticForecast() {
@@ -90,36 +84,32 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
         if (CollectionUtils.isEmpty(value)) {
             return;
         }
-        List<Get> gets = new ArrayList<>();
-        Set<String> distinctPointId = new HashSet<>();
         List<AlgorithmNormalFaultFeatureDO> collect = value.stream().map(x -> {
-            //去除重复的测点
-            if (distinctPointId.contains(x.getSensorDesc())) {
-                return null;
-            }
-            distinctPointId.add(x.getSensorDesc());
             AlgorithmNormalFaultFeatureDO featureDO = new AlgorithmNormalFaultFeatureDO();
             BeanUtils.copyProperties(x, featureDO);
-            calculateGets(x, gets, endTime);
             return featureDO;
         }).filter(Objects::nonNull).collect(Collectors.toList());
         try {
-            Map<String, List<List<Object>>> map = hBase.selectByGets(H_BASE_TABLE_NPC_PHM_DATA, gets);
-            List<List<List<Object>>> featureValue = new ArrayList<>();
-            collect.forEach(x -> featureValue.add(map.get(x.getSensorDesc())));
+            LambdaQueryWrapper<BizDownSampleDO> query = Wrappers.lambdaQuery(BizDownSampleDO.class);
+            List<BizDownSampleDO> list = downSampleService.list(query);
+            if (CollectionUtils.isEmpty(list)) {
+                log.warn("this no data to invoker algorithm server");
+                return;
+            }
+            Map<String, List<List>> featureValue = list.stream().collect(Collectors.toMap(x -> x.getComponentId() + UNDERLINE + x.getPointId(), x -> JSON.parseArray(x.getData(), List.class)));
             SymptomParamDTO dto = new SymptomParamDTO();
             dto.setFeatureInfo(collect);
             dto.setInvokingTime(endTime);
             dto.setFeatureValue(featureValue);
             PrognosticForecastResponseDTO response = (PrognosticForecastResponseDTO) handlerService.getInvokeCustomerData(dto);
-            operateResponse(componentId, response, map);
-        } catch (IOException e) {
-            e.printStackTrace();
+            operateResponse(componentId, response, featureValue);
+        } catch (Exception e) {
+            log.error("operate data get a failed....{}", e);
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void operateResponse(Long componentId, PrognosticForecastResponseDTO response, Map<String, List<List<Object>>> map) {
+    public void operateResponse(Long componentId, PrognosticForecastResponseDTO response, Map<String, List<List>> map) {
         if (Objects.isNull(response)) {
             return;
         }
@@ -136,68 +126,31 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
             if (StringUtils.isBlank(pointId)) {
                 return;
             }
-            List<List<Object>> history = map.get(pointId);
+            List<List> history = map.get(componentId + UNDERLINE + pointId);
             JobForecastResultDO forecast = new JobForecastResultDO();
             forecast.setPointId(pointId);
             forecast.setComponentId(componentId);
             forecast.setDeviceId(componentDO.getDeviceId());
+            LambdaUpdateWrapper<JobForecastResultDO> update = Wrappers.lambdaUpdate(JobForecastResultDO.class);
+            update.eq(JobForecastResultDO::getComponentId, componentId);
+            update.eq(JobForecastResultDO::getPointId, pointId);
+            //只有预测值和趋势值都不为空的时候才会存储
+            if (CollectionUtils.isEmpty(x.getPred()) || CollectionUtils.isEmpty(x.getHistory())) {
+                forecast.setGmtModified(new Date());
+                forecastResultService.saveOrUpdate(forecast, update);
+                return;
+            }
+            String symptomIds = null;
+            if (!CollectionUtils.isEmpty(response.getSymptomList())) {
+                symptomIds = response.getSymptomList().stream().map(String::valueOf).collect(Collectors.joining(COMMA));
+            }
             forecast.setForecastRange(response.getPredRange());
             forecast.setGmtForecast(new Date(response.getPredTime()));
             forecast.setHistoryData(Objects.isNull(history) ? null : JSON.toJSONString(history));
             forecast.setForecastData(Objects.isNull(x.getPred()) ? null : JSON.toJSONString(x.getPred()));
             forecast.setTrendData(Objects.isNull(x.getHistory()) ? null : JSON.toJSONString(x.getHistory()));
-            LambdaUpdateWrapper<JobForecastResultDO> update = Wrappers.lambdaUpdate(JobForecastResultDO.class);
-            update.eq(JobForecastResultDO::getComponentId, componentId);
-            update.eq(JobForecastResultDO::getPointId, pointId);
-            String symptomIds = null;
-            if (!CollectionUtils.isEmpty(x.getSymptomList())) {
-                symptomIds = x.getSymptomList().stream().map(String::valueOf).collect(Collectors.joining(COMMA));
-            }
             update.set(JobForecastResultDO::getSymptomIds, symptomIds);
             forecastResultService.saveOrUpdate(forecast, update);
         });
-    }
-
-    private void calculateGets(AlgorithmPrognosticFaultFeatureDO x, List<Get> gets, Long endTime) {
-        if (Objects.isNull(x) || Objects.isNull(x.getTimeRange()) || Objects.isNull(x.getTimeGap())) {
-            return;
-        }
-        String timeRange = x.getTimeRange();
-        Long gapValue = TimeUnitEnum.getGapValue(timeRange);
-        if (Objects.isNull(gapValue)) {
-            return;
-        }
-        String timeGap = x.getTimeGap();
-        Long timeGapValue = TimeUnitEnum.getGapValue(timeGap);
-        if (Objects.isNull(timeGapValue)) {
-            return;
-        }
-        String pointId = x.getSensorDesc();
-        Long startTime = endTime - gapValue;
-        StringBuilder sb = null;
-        if (log.isDebugEnabled()) {
-            sb = new StringBuilder("[");
-        }
-        while (startTime <= endTime) {
-            Integer index = hBase.indexOf3600(startTime);
-            Long key = hBase.rowKeyOf3600(startTime);
-            Get get = new Get((x.getSensorCode() + ROW_KEY_SEPARATOR + key).getBytes(StandardCharsets.UTF_8));
-            String sensorCode = x.getSensorCode();
-            if (StringUtils.isBlank(sensorCode)) {
-                continue;
-            }
-            String family = H_BASE_FAMILY_NPC_PI_REAL_TIME;
-            if (!StringUtils.equals(pointId, sensorCode)) {
-                family = pointId.replace(sensorCode, BLANK).substring(1);
-            }
-//            get.addColumn(family.getBytes(StandardCharsets.UTF_8), Bytes.toBytes(index));
-            get.addFamily(family.getBytes(StandardCharsets.UTF_8));
-            gets.add(get);
-            startTime = startTime + timeGapValue;
-            if (log.isDebugEnabled() && Objects.nonNull(sb)) {
-                sb.append("\"" + x.getSensorCode() + ROW_KEY_SEPARATOR + key + ":" + family + ":" + index + "\",");
-            }
-        }
-        log.debug("item get ：{}", Objects.isNull(sb) ? null : sb.substring(0, sb.length() - 1) + "]");
     }
 }

@@ -1,10 +1,10 @@
 package com.aimsphm.nuclear.algorithm.entity.dto;
 
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Package: com.aimsphm.nuclear.algorithm.entity.dto
@@ -24,7 +24,7 @@ public class SymptomParamDTO {
 
     private List<AlgorithmNormalFaultFeatureDO> featureInfo;
 
-    private List<List<List<Object>>> featureValue;
+    private Map<String, List<List>> featureValue;
 
     public SymptomParamDTO() {
         invokingTime = System.currentTimeMillis();

@@ -22,8 +22,10 @@ scheduled:
     PumpThresholdMonitorJob: 1 0/1 * * * ?
     # 特征提取 每8,18,28的43秒执行一次
     FeatureExtractionJob: 43 8/10 * * * ?
+    # 等间隔降采样 每小时执行一次
+    DownSampleJobLock: 57 0/30 * * * ?
     # 征兆预测每12小时运行一次
-    PrognosticForecastJob: 13 11/53 * * * ?
+    PrognosticForecastJob: 13 3 0/1 * * ?
 spring:
   main:
     allow-bean-definition-overriding: true

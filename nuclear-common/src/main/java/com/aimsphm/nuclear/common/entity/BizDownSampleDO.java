@@ -1,19 +1,17 @@
 package com.aimsphm.nuclear.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.aimsphm.nuclear.common.entity.BaseDO;
-import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @Package: com.aimsphm.nuclear.common.entity
  * @Description: <等间隔降采样数据实体>
  * @Author: MILLA
- * @CreateDate: 2021-07-27
+ * @CreateDate: 2021-07-28
  * @UpdateUser: MILLA
- * @UpdateDate: 2021-07-27
+ * @UpdateDate: 2021-07-28
  * @UpdateRemark: <>
  * @Version: 1.0
  */
@@ -26,10 +24,10 @@ public class BizDownSampleDO extends BaseDO {
      */
     private static final long serialVersionUID = -6489662348408452665L;
 
-    @ApiModelProperty(value = "数据采集时间", notes = "")
-    private Long timestamp;
+    @ApiModelProperty(value = "部件id", notes = "")
+    private Long componentId;
 
-    @ApiModelProperty(value = "传感器编号", notes = "")
+    @ApiModelProperty(value = "测点id", notes = "")
     private String pointId;
 
     @ApiModelProperty(value = "数据", notes = "")
