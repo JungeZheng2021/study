@@ -1,18 +1,28 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://192.168.16.43:8761/eureka/
+      defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
     fetchRegistry: true
+    register-with-eureka: false
   instance:
     prefer-ip-address: true
+customer:
+  config:
+    html:
+      delete: true
 spring:
-  mybatisPlusConfig:
-    enable: true
+  config:
+    enableRedis: true
+    enableSwagger2: true
+    enableAlgorithm: true
+    enableMybatisPlus: true
+    enableDataService: true
+    enableServiceExtImpl: true
   application:
     name: nuclear-report
   #数据源
   datasource:
-    url: jdbc:mysql://192.168.16.28:3306/nuclear_phm?characterEncoding=utf-8&allowMultiQueries=true
+    url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: aims2016
     type: com.zaxxer.hikari.HikariDataSource
@@ -58,7 +68,7 @@ spring:
   #MQTT配置信息
 mybatis-plus:
   quarzt-enable: 1 #启用任务
-  mapper-locations: classpath*:**/sqlmap/*.xml
+  mapper-locations: classpath*:/mapper/**/*.xml
   typeAliasesPackage: com.aimsphm.nuclear.*.entity
   global-config:
     #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
@@ -88,7 +98,9 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 20000
+            timeoutInMilliseconds: 40000
+        timeout:
+          enable: false
 #ribbon的超时时间, 防止feign调用超时
 ribbon:
   ReadTimeout: 25000
