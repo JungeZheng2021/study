@@ -21,16 +21,18 @@ public interface FaultReasoningService {
      *
      * @param pointIds
      * @param deviceId
+     * @param gmtLastAlarm
      * @return
      */
-    List<FaultReasoningVO> faultReasoningVO(List<String> pointIds, Long deviceId);
+    List<FaultReasoningVO> faultReasoningVO(List<String> pointIds, Long deviceId, Long gmtLastAlarm);
 
     /**
      * 征兆判断
      *
      * @param pointIds
+     * @param gmtLastAlarm
      * @return
      */
-    SymptomResponseDTO symptomJudgment(List<String> pointIds);
+    SymptomResponseDTO symptomJudgment(List<String> pointIds, Long gmtLastAlarm);
 
 }

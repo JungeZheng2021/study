@@ -183,19 +183,17 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     private Map<String, HistoryDataVO> listHistoryDataWithPointIdsFromMysql(HistoryQueryMultiBO multi) {
         Map<String, HistoryDataVO> result = Maps.newHashMap();
-        List<SparkDownSample> list = listSparkDownSampleByConditions(multi);
-        if (CollectionUtils.isEmpty(list)) {
+        Map<String, List<SparkDownSample>> collect = listSparkDownSampleByConditions(multi);
+        if (MapUtils.isEmpty(collect)) {
             return result;
         }
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, List<String>> collect = list.stream().filter(item -> StringUtils.isNotBlank(item.getPoints()) && StringUtils.isNotBlank(item.getPointId()))
-                .collect(Collectors.groupingBy(item -> item.getPointId().trim(), Collectors.mapping(item -> item.getPoints(), Collectors.toList())));
         for (String pointId : multi.getPointIds()) {
             CommonMeasurePointDO point = serviceExt.getPointByPointId(pointId);
             if (Objects.isNull(point) || CollectionUtils.isEmpty(collect.get(pointId))) {
                 continue;
             }
-            List<String> points = collect.get(pointId);
+            List<String> points = collect.get(pointId).stream().filter(x -> StringUtils.isNotBlank(x.getPoints())).map(x -> x.getPoints()).collect(Collectors.toList());
             String collect1 = points.stream().collect(Collectors.joining(COMMA));
             HistoryDataVO vo = new HistoryDataWithThresholdVO();
 //            if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
@@ -230,7 +228,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             List<Object> pointValue = points.get(points.size() - 1);
             long end = multi.getEnd();
             Long start = (Long) pointValue.get(0);
-            if (end - start <= timeInterval * 1000) {
+            if (end - start <= timeInterval * 1000L) {
                 return;
             }
             HistoryQuerySingleWithFeatureBO single = new HistoryQuerySingleWithFeatureBO();
@@ -247,7 +245,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         }
     }
 
-    private List<SparkDownSample> listSparkDownSampleByConditions(HistoryQueryMultiBO multi) {
+    private Map<String, List<SparkDownSample>> listSparkDownSampleByConditions(HistoryQueryMultiBO multi) {
         Long end = multi.getEnd();
         Long start = multi.getStart();
         String tableName = TableNameParser.getTableName(start, end);
@@ -258,39 +256,44 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         if (TableNameEnum.DAILY.getValue().equals(tableName)) {
             int endYear = DateUtils.transition(new Date(end)).getYear();
             int startYear = DateUtils.transition(new Date(start)).getYear();
-            List<SparkDownSample> list = Lists.newArrayList();
+            Map<String, List<SparkDownSample>> result = Maps.newHashMap();
             for (int year = startYear; year <= endYear; year++) {
                 resetTableName(tableName, year);
-                list.addAll(listSparkDownSampleByPointIdsAndRangeTime(multi.getPointIds(), start, end));
+                result.putAll(listSparkDownSampleByPointIdsAndRangeTime(multi.getPointIds(), start, end));
             }
-            return list;
+            return result;
         }
         resetTableName(tableName, null);
         return listSparkDownSampleByPointIdsAndRangeTime(multi.getPointIds(), start, end);
     }
 
-    private List<SparkDownSample> listSparkDownSampleByPointIdsAndRangeTime(List<String> pointIds, Long start, Long end) {
+    private Map<String, List<SparkDownSample>> listSparkDownSampleByPointIdsAndRangeTime(List<String> pointIds, Long start, Long end) {
+        Map<String, List<SparkDownSample>> result = Maps.newHashMap();
         if (Objects.isNull(start) || Objects.isNull(end)) {
-            return Lists.newArrayList();
+            return result;
         }
         //开始时间计算成当前时间的小时值
         TimeRangeQueryBO rangeTime = TableNameParser.getRangeTime(start, end);
-        LambdaQueryWrapper<SparkDownSample> wrapper = Wrappers.lambdaQuery(SparkDownSample.class);
-        wrapper.in(SparkDownSample::getPointId, pointIds).ge(SparkDownSample::getStartTimestamp, rangeTime.getStart())
-                .le(SparkDownSample::getStartTimestamp, rangeTime.getEnd()).orderByAsc(SparkDownSample::getStartTimestamp);
-        List<SparkDownSample> list = downSampleServiceExt.list(wrapper);
-        if (CollectionUtils.isEmpty(list)) {
-            return Lists.newArrayList();
+
+        for (String pointId : pointIds) {
+            LambdaQueryWrapper<SparkDownSample> wrapper = Wrappers.lambdaQuery(SparkDownSample.class);
+            wrapper.eq(SparkDownSample::getPointId, pointId).ge(SparkDownSample::getStartTimestamp, rangeTime.getStart())
+                    .le(SparkDownSample::getStartTimestamp, rangeTime.getEnd()).orderByAsc(SparkDownSample::getStartTimestamp);
+            List<SparkDownSample> list = downSampleServiceExt.list(wrapper);
+            if (CollectionUtils.isEmpty(list)) {
+                continue;
+            }
+            SparkDownSample first = list.get(0);
+            //截取开头数据
+            subPointsByStartAndEnd(start, end, first);
+            if (list.size() > 1) {
+                SparkDownSample last = list.get(list.size() - 1);
+                //截取结束数据
+                subPointsByStartAndEnd(start, end, last);
+            }
+            result.put(pointId, list);
         }
-        SparkDownSample first = list.get(0);
-        //截取开头数据
-        subPointsByStartAndEnd(start, end, first);
-        if (list.size() > 1) {
-            SparkDownSample last = list.get(list.size() - 1);
-            //截取结束数据
-            subPointsByStartAndEnd(start, end, last);
-        }
-        return list;
+        return result;
     }
 
     /**

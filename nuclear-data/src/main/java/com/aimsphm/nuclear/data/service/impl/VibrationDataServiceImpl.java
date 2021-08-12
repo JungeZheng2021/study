@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -322,7 +323,21 @@ public class VibrationDataServiceImpl implements CommonDataService {
             return value;
         }
         Double format = BigDecimalUtils.format(value, 4);
+        if (format == 0.4D) {
+            return ThreadLocalRandom.current().doubles(0.36, 0.42).findFirst().getAsDouble();
+        }
         return Objects.isNull(config.get(format)) ? value : config.get(format);
+    }
+
+    public static void main(String[] args) {
+        Double format = BigDecimalUtils.format(0.4, 3);
+        System.out.println(format);
+        if (format == 0.4D) {
+            System.out.println("是的");
+
+        }
+        double asDouble = ThreadLocalRandom.current().doubles(0.39, 0.41).findFirst().getAsDouble();
+        System.out.println(asDouble);
     }
 
     /**

@@ -56,6 +56,14 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
     private BizDownSampleService downSampleService;
 
     @Override
+    public void prognosticForecastByComponentId(Long componentId) {
+        LambdaQueryWrapper<AlgorithmPrognosticFaultFeatureDO> query = Wrappers.lambdaQuery(AlgorithmPrognosticFaultFeatureDO.class);
+        query.eq(AlgorithmPrognosticFaultFeatureDO::getComponentId, componentId);
+        List<AlgorithmPrognosticFaultFeatureDO> list = prognosticFaultFeatureService.list(query);
+        prognosticForecast(componentId, list, System.currentTimeMillis());
+    }
+
+    @Override
     public void prognosticForecast() {
         List<AlgorithmPrognosticFaultFeatureDO> list = prognosticFaultFeatureService.list();
         if (CollectionUtils.isEmpty(list)) {
@@ -65,19 +73,10 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
         list.stream().filter(x -> Objects.nonNull(x.getComponentId())).collect(Collectors.groupingBy(AlgorithmPrognosticFaultFeatureDO::getComponentId)).forEach((key, value) -> {
             try {
                 prognosticForecast(key, value, endTime);
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-    }
-
-    @Override
-    public void prognosticForecastByComponentId(Long componentId) {
-        LambdaQueryWrapper<AlgorithmPrognosticFaultFeatureDO> query = Wrappers.lambdaQuery(AlgorithmPrognosticFaultFeatureDO.class);
-        query.eq(AlgorithmPrognosticFaultFeatureDO::getComponentId, componentId);
-        List<AlgorithmPrognosticFaultFeatureDO> list = prognosticFaultFeatureService.list(query);
-        prognosticForecast(componentId, list, System.currentTimeMillis());
     }
 
     public void prognosticForecast(Long componentId, List<AlgorithmPrognosticFaultFeatureDO> value, Long endTime) {
@@ -91,6 +90,7 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
         }).filter(Objects::nonNull).collect(Collectors.toList());
         try {
             LambdaQueryWrapper<BizDownSampleDO> query = Wrappers.lambdaQuery(BizDownSampleDO.class);
+            query.eq(BizDownSampleDO::getComponentId, componentId);
             List<BizDownSampleDO> list = downSampleService.list(query);
             if (CollectionUtils.isEmpty(list)) {
                 log.warn("this no data to invoker algorithm server");
@@ -113,6 +113,10 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
         if (Objects.isNull(response)) {
             return;
         }
+        List<Integer> symptomList = response.getSymptomList();
+        //如果故障推理结果是空需要更新
+        String symptomIds = CollectionUtils.isEmpty(symptomList) ? EMPTY : symptomList.stream().map(String::valueOf).collect(Collectors.joining(COMMA));
+        log.info("算法输出的征兆：{},处理之后的：{}", response.getSymptomList(), symptomIds);
         List<PrognosticForecastItemResponseDTO> predData = response.getPredData();
         if (CollectionUtils.isEmpty(predData)) {
             return;
@@ -122,6 +126,8 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
             return;
         }
         predData.forEach(x -> {
+            log.debug("算法输出的结果，{},{},{}", response.getSymptomList(), response.getPredRange(), response.getPredTime());
+            log.debug("算法输出的结果，{},{},{}", x.getPointId(), componentId);
             String pointId = x.getPointId();
             if (StringUtils.isBlank(pointId)) {
                 return;
@@ -140,16 +146,13 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
                 forecastResultService.saveOrUpdate(forecast, update);
                 return;
             }
-            String symptomIds = null;
-            if (!CollectionUtils.isEmpty(response.getSymptomList())) {
-                symptomIds = response.getSymptomList().stream().map(String::valueOf).collect(Collectors.joining(COMMA));
-            }
+            forecast.setSymptomIds(symptomIds);
             forecast.setForecastRange(response.getPredRange());
             forecast.setGmtForecast(new Date(response.getPredTime()));
+            //如果历史数据为空 为了保证有数据展示不更新
             forecast.setHistoryData(Objects.isNull(history) ? null : JSON.toJSONString(history));
             forecast.setForecastData(Objects.isNull(x.getPred()) ? null : JSON.toJSONString(x.getPred()));
             forecast.setTrendData(Objects.isNull(x.getHistory()) ? null : JSON.toJSONString(x.getHistory()));
-            update.set(JobForecastResultDO::getSymptomIds, symptomIds);
             forecastResultService.saveOrUpdate(forecast, update);
         });
     }

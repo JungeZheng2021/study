@@ -47,8 +47,8 @@ public class AlgorithmQueryController {
 
     @GetMapping("fault/reasoning")
     @ApiOperation(value = "故障推理")
-    public List<FaultReasoningVO> faultReasoning(@RequestParam("pointIds") List<String> pointIds, Long deviceId) {
-        return faultReasoningService.faultReasoningVO(pointIds, deviceId);
+    public List<FaultReasoningVO> faultReasoning(@RequestParam("pointIds") List<String> pointIds, Long deviceId, Long gmtLastAlarm) {
+        return faultReasoningService.faultReasoningVO(pointIds, deviceId, gmtLastAlarm);
     }
 
     @GetMapping("prediction")
