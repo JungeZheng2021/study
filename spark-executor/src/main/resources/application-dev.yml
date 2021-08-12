@@ -73,6 +73,10 @@ eureka:
     prefer-ip-address: true
 
 config:
+  base:
+    batch_size: 10
+    db_schema: nuclear_tw
+    daily_table_prefix: spark_down_sample_daily
   driver:
     memory:
       hourly: 1g
@@ -92,7 +96,7 @@ config:
       monthly: 3g
   cron:
     # 每隔13分
-    hourly: 0 0/13 * * * ?
+    hourly: 0 0/2 * * * ?
     # 每小时的13分
     #    hourly: 0 13 * * * ?
     # 每天1点23分

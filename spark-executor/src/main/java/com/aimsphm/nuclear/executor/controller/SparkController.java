@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.executor.controller;
 import com.aimsphm.nuclear.executor.bo.TestReqParam;
 import com.aimsphm.nuclear.executor.constant.TimeUnitConstant;
 import com.aimsphm.nuclear.executor.entity.SparkApplicationParam;
+import com.aimsphm.nuclear.executor.job.DownSampleScheduleJob;
 import com.aimsphm.nuclear.executor.job.DownSampleScheduleJobManually;
 import com.aimsphm.nuclear.executor.service.ISparkSubmitService;
 import com.aimsphm.nuclear.executor.util.TimeCalculator;
@@ -11,10 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import scala.Tuple2;
 
 import javax.annotation.Resource;
@@ -31,6 +29,30 @@ public class SparkController {
 
     @Resource
     DownSampleScheduleJobManually testService;
+    @Resource
+    private DownSampleScheduleJob job;
+
+    @GetMapping("/exec/{type}")
+    public Object exec(@PathVariable Integer type) {
+        try {
+            if (type == 1) {
+                return job.hourlyDownSample();
+            }
+            if (type == 2) {
+                return job.dailyDownSample();
+            }
+            if (type == 3) {
+                return job.weeklyDownSample();
+            }
+            if (type == 4) {
+                return job.monthlyDownSample();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     /**
      * 调用service进行远程提交spark任务

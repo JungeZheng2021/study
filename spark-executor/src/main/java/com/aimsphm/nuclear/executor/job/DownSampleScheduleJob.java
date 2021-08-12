@@ -76,12 +76,15 @@ public class DownSampleScheduleJob {
     @Value("${config.executor.memory.monthly:3g}")
     private String executorMemoryMonthly;
 
+    @Value("${config.base.batch_size:10}")
+    private String BATCH_SIZE;
 
-    private final String BATCH_SIZE = "30";
+    @Value("${config.base.db_schema:nuclear_tw}")
+    private String DB_SCHEMA;
 
-    private final String DB_SCHEMA = "nuclear_tw";
+    @Value("${config.base.daily_table_prefix:spark_down_sample_daily}")
+    private String DAILY_TABLE_PREFIX;
 
-    private final String DAILY_TABLE_PREFIX = "spark_down_sample_daily";
     @Autowired
     ISparkSubmitService sparkSubmitService;
     @Autowired
@@ -99,13 +102,10 @@ public class DownSampleScheduleJob {
         Date executionDate = calculateGapDate(currentDate);
         String currentYear = DateUtils.format(YEAR, executionDate);
         //找缓存中是否有这个表,只有天表比较大，所以分表
-        if (redis.get(DAILY_TABLE_PREFIX + currentYear) == null) {
-            String tableName = DAILY_TABLE_PREFIX.concat(SymbolConstant.UNDERLINE).concat(currentYear);
-            boolean hasTable = dbUtil.createAutoDailyDownSampleTable(DB_SCHEMA, tableName);
-            if (!hasTable) {
-                return null;
-            }
-            redis.set(DAILY_TABLE_PREFIX + currentYear, "1");
+        String tableName = DAILY_TABLE_PREFIX.concat(SymbolConstant.UNDERLINE).concat(currentYear);
+        boolean hasTable = dbUtil.createAutoDailyDownSampleTable(DB_SCHEMA, tableName);
+        if (!hasTable) {
+            return null;
         }
 //       five 执行用1个来做，即生产1条记录
         SparkApplicationParam param = initSparkParam(JobFrequencyConstant.HOURLY, executionDate, "1", "5", "5");
