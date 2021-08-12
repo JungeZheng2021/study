@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="chart-wrapper">
+    <div id="chart" style="height:800px;width:1850px;"></div>
+</div>
+
+<script src="/usr/share/local/echarts/echarts-all-4.8.0.js"></script>
+
+<script type="text/javascript">
+    // settings....start
+    var title = '#title#';
+    var yAxisName = '#yUnit#'
+    var objectData = '#objectData#';
+    var alarmType = '#alarmType#';
+    var titleFontSize = 30;
+    //  settings....end
+    var chartOption = {
+        title: {
+            text: title,
+            subtext: '',
+            top: -5,
+            left: 16,
+            subtextStyle: {'color': '#666', 'fontSize': 14, 'rich': {'result': {'color': '#3d63d8', 'fontSize': 14}}},
+            textStyle: {fontSize: titleFontSize, 'fontWeight': 'normal'}
+        },
+        color: ['#3f90ea', '#ebc200', 'rgba(255, 0, 0, 0.7)'],
+        grid: {
+            top: 40,
+            left: 60,
+            right: 130,
+            bottom: 55
+        },
+        legend: {
+            top: 10,
+            width: '60%',
+            textStyle: {
+                fontSize: 30
+            },
+            data: []
+
+        },
+        dataZoom: [
+            {
+                show: false,
+                realtime: true,
+                start: 0,
+                end: 100
+            },
+            {
+                type: 'inside',
+                realtime: true,
+                start: 0,
+                end: 100
+            }
+        ],
+        xAxis: {
+            type: 'time',
+            name: '时间',
+            axisTick: {
+                show: false
+            },
+            axisLabel: {color: '#666', fontSize: 20, show: true},
+            splitLine: {
+                show: true,
+                interval: 'auto',
+                lineStyle: {
+                    color: ['#f1f1f1']
+                }
+            },
+            axisLine: {
+                onZero: false,
+                lineStyle: {
+                    color: '#999'
+                }
+            },
+            data: []
+        },
+        yAxis: {
+            name: yAxisName,
+            type: 'value',
+            boundaryGap: ['5%', '5%'],
+            scale: true,
+            axisTick: {
+                show: false
+            },
+            axisLabel: {color: '#666', fontSize: 20, show: true},
+
+            splitLine: {
+                show: true,
+                interval: 'auto',
+                lineStyle: {
+                    color: ['#f1f1f1']
+                }
+            },
+            axisLine: {
+                onZero: false,
+                lineStyle: {
+                    color: '#999'
+                }
+            }
+        },
+        series: [
+            {
+                type: 'line',
+                name: '实测值',
+                smooth: false,
+                showSymbol: false,
+                data: [],
+                markLine: {
+                    label: {
+                        show: true,
+                        position: 'end',
+                        fontSize: 30
+                    },
+                    symbol: 'none',
+                    precision: 10,
+                    data: []
+                }
+            },
+            {
+                type: 'line',
+                name: '估计值',
+                smooth: false,
+                showSymbol: false,
+                data: []
+            },
+            {
+                type: 'scatter',
+                name: '报警测点',
+                symbol: 'circle',
+                symbolSize: 5,
+                itemStyle: {
+                    color: 'rgba(255, 0, 0, 0.7)'
+
+                },
+                data: []
+            }
+        ]
+    }
+
+    function setTrendChartOption(point, alarmType) {
+        var markLineValues = ['1', '2', '3']
+        var option = chartOption
+        // 算法报警使用actualData和estimatedData。非算法报警使用actualData
+        //实测值
+        var actualData = point.actualData || []
+        //估计值
+        var estimatedData = point.estimatedData || []
+        //残差
+        var residualData = point.residualData || []
+        var data1 = []
+        var data2 = []
+        actualData.forEach(function (i) {
+            data1.push(i[1])
+        })
+        estimatedData.forEach(function (i) {
+            data2.push(i[1])
+        })
+        if (alarmType === 5) {
+            // 算法报警
+            option.series[0].data = actualData
+            option.series[0].name = '实测值'
+            option.series[1].data = estimatedData
+            option.series[1].name = '估计值'
+            option.legend.data = ['实测值', '估计值', '报警测点']
+        } else if (alarmType === 51) {
+            option.series[0].data = residualData
+            option.series[0].name = '残差值'
+            option.series[1] = {name: '', data: [], type: 'line'}
+            option.legend.data = ['残差值', '报警测点']
+        } else {
+            // 非算法报警
+            option.series[0].data = actualData
+            option.series[0].name = '实测值'
+            option.series[1] = {name: '', data: [], type: 'line'}
+            option.legend.data = ['实测值', '报警测点']
+        }
+        // markLine
+        var markLineData = []
+        markLineValues.forEach(function (val) {
+            switch (val) {
+                case '1':
+                    var line1 = {
+                        yAxis: 0,
+                        lineStyle: {color: '', opacity: !point.earlyWarningHigh || false ? 0 : 1},
+                        label: {formatter: '', show: point.earlyWarningHigh !== null}
+                    }
+                    line1.yAxis = point.earlyWarningHigh || 0
+                    line1.lineStyle.color = '#ffaa00'
+                    line1.label.formatter = !point.earlyWarningHigh || false ? '' : '高预警'
+                    line1.label.distance = 5
+                    var line2 = {
+                        yAxis: 0,
+                        lineStyle: {color: '', opacity: !point.earlyWarningLow || false ? 0 : 1},
+                        label: {formatter: '', show: point.earlyWarningLow !== null}
+                    }
+                    line2.yAxis = point.earlyWarningLow || 0
+                    line2.lineStyle.color = '#ffaa00'
+                    line2.label.formatter = !point.earlyWarningLow || false ? '' : '低预警'
+                    line2.label.distance = 5
+                    markLineData.push(line1)
+                    markLineData.push(line2)
+                    break
+                case '2':
+                    var line3 = {
+                        yAxis: 0,
+                        lineStyle: {color: '', opacity: !point.thresholdHigh || false ? 0 : 1},
+                        label: {formatter: '', show: point.thresholdHigh !== null}
+                    }
+                    line3.yAxis = point.thresholdHigh || 0
+                    line3.lineStyle.color = '#ff7700'
+                    line3.label.formatter = !point.thresholdHigh || false ? '' : '高报'
+                    line3.label.distance = point.earlyWarningHigh ? 45 : 5
+                    var line4 = {
+                        yAxis: 0,
+                        lineStyle: {color: '', opacity: !point.thresholdLow || false ? 0 : 1},
+                        label: {formatter: '', show: point.thresholdLow !== null}
+                    }
+                    line4.yAxis = point.thresholdLow || 0
+                    line4.lineStyle.color = '#ff7700'
+                    line4.label.formatter = !point.thresholdLow || false ? '' : '低报'
+                    line4.label.distance = point.earlyWarningLow ? 45 : 5
+                    markLineData.push(line3)
+                    markLineData.push(line4)
+                    break
+                case '3':
+                    var line5 = {
+                        yAxis: 0,
+                        lineStyle: {color: '', opacity: !point.thresholdHigher || false ? 0 : 1},
+                        label: {formatter: '', show: point.thresholdHigher !== null}
+                    }
+                    line5.yAxis = point.thresholdHigher || 0
+                    line5.lineStyle.color = '#ff0000'
+                    line5.label.formatter = !point.thresholdHigher || false ? '' : '高高报'
+                    line5.label.distance =
+                        !point.earlyWarningHigh && !point.thresholdHigh ? 5 : point.earlyWarningHigh && point.thresholdHigh ? 75 : 45
+                    var line6 = {
+                        yAxis: 0,
+                        lineStyle: {color: '', opacity: !point.thresholdLower || false ? 0 : 1},
+                        label: {formatter: '', show: point.thresholdLower !== null}
+                    }
+                    line6.yAxis = point.thresholdLower || 0
+                    line6.lineStyle.color = '#ff0000'
+                    line6.label.formatter = !point.thresholdLower || false ? '' : '低低报'
+                    line6.label.position = 'end'
+                    line6.label.distance =
+                        !point.earlyWarningLow && !point.thresholdLow ? 5 : point.earlyWarningLow && point.thresholdLow ? 75 : 45
+                    markLineData.push(line5)
+                    markLineData.push(line6)
+                    break
+                default:
+            }
+        })
+        option.series[0].markLine.data = actualData.length > 0 || estimatedData.length > 0 ? markLineData : []
+        // markPoint 报警测点
+        var alarmData = point.alarmData || []
+        var minAY = Math.min.apply(null, data1)
+        var maxAY = Math.max.apply(null, data1)
+        var minEY = Math.min.apply(null, data2)
+        var maxEY = Math.max.apply(null, data2)
+        var Y
+        if (data2.length > 0) {
+            // 算法报警
+            if (maxEY > maxAY) {
+                Y = maxEY + (maxEY - minAY) * 0.1
+            } else {
+                Y = maxAY + (maxAY - minEY) * 0.1
+            }
+        } else {
+            // 非算法报警
+            Y = maxAY + (maxAY - minAY) * 0.1
+        }
+        var alarmPoints = []
+        alarmData.forEach(function (at) {
+            alarmPoints.push({value: [at, Y], symbolSize: 10})
+        })
+        option.series[2].data = alarmPoints
+
+        return option
+    }
+
+    var chart = echarts.init(document.getElementById('chart'))
+    //1是非算法 5是算法
+    var option = setTrendChartOption(objectData, alarmType)  // 非算法
+
+    chart.setOption(option)
+
+</script>
+</body>
+</html>
