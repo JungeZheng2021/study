@@ -1,31 +1,22 @@
 package com.aimsphm.nuclear.report.service.impl;
 
-import com.aimsphm.nuclear.algorithm.entity.dto.FaultReportMarkResponseDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.FaultReportResponseDTO;
 import com.aimsphm.nuclear.common.constant.SymbolConstant;
-import com.aimsphm.nuclear.common.entity.AlgorithmRulesConclusionDO;
-import com.aimsphm.nuclear.common.entity.BizReportConfigDO;
-import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
-import com.aimsphm.nuclear.common.entity.bo.ReportQueryBO;
-import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
-import com.aimsphm.nuclear.common.entity.vo.DeviceStatusVO;
-import com.aimsphm.nuclear.common.entity.vo.LabelVO;
-import com.aimsphm.nuclear.common.entity.vo.MeasurePointVO;
+import com.aimsphm.nuclear.common.entity.*;
+import com.aimsphm.nuclear.common.entity.bo.*;
+import com.aimsphm.nuclear.common.entity.vo.*;
+import com.aimsphm.nuclear.common.enums.AlarmTypeEnum;
 import com.aimsphm.nuclear.common.enums.DeviceHealthEnum;
 import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
+import com.aimsphm.nuclear.common.response.ResponseData;
 import com.aimsphm.nuclear.common.service.*;
+import com.aimsphm.nuclear.common.util.BigDecimalUtils;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.ext.service.MonitoringService;
-import com.aimsphm.nuclear.ext.service.RedisDataService;
 import com.aimsphm.nuclear.report.constant.PlaceholderConstant;
-import com.aimsphm.nuclear.report.entity.vo.GraphDataItemVO;
-import com.aimsphm.nuclear.report.entity.vo.PieDataItemVO;
-import com.aimsphm.nuclear.report.enums.FigureTypeEnum;
 import com.aimsphm.nuclear.report.enums.ReportCategoryEnum;
+import com.aimsphm.nuclear.report.feign.HistoryServerFeignClient;
 import com.aimsphm.nuclear.report.service.ReportDataService;
 import com.aimsphm.nuclear.report.service.ReportFileService;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
@@ -33,21 +24,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.File;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.ReportConstant.*;
-import static com.aimsphm.nuclear.common.constant.SymbolConstant.SLASH_ZH;
-import static com.aimsphm.nuclear.common.util.DateUtils.*;
+import static com.aimsphm.nuclear.common.response.ResponseData.SUCCESS_CODE;
+import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_I;
+import static com.aimsphm.nuclear.common.util.DateUtils.format;
 import static com.aimsphm.nuclear.report.constant.PlaceholderConstant.*;
 
 
@@ -65,14 +56,6 @@ import static com.aimsphm.nuclear.report.constant.PlaceholderConstant.*;
 @Service("RcvData")
 public class FanReportDataServiceImpl implements ReportDataService {
 
-    @Resource
-    private MonitoringService monitoringService;
-
-    @Resource
-    private BizReportConfigService configService;
-
-    @Resource
-    private JobAlarmThresholdService thresholdService;
 
     @Resource
     private ReportFileService fileService;
@@ -81,7 +64,23 @@ public class FanReportDataServiceImpl implements ReportDataService {
     private JobAlarmEventService eventService;
 
     @Resource
-    private BizDiagnosisResultService diagnosisResultService;
+    private CommonDeviceService deviceService;
+
+    @Resource
+    private BizReportConfigService configService;
+
+    @Resource
+    private MonitoringService monitoringService;
+
+    @Resource
+    private CommonMeasurePointService pointService;
+
+    @Resource
+    private JobAlarmRealtimeService realtimeService;
+
+    @Resource
+    private HistoryServerFeignClient historyServerClient;
+
 
     @Override
     public Map<String, Object> getAllReportData(ReportQueryBO query) {
@@ -92,30 +91,20 @@ public class FanReportDataServiceImpl implements ReportDataService {
         TimeRangeQueryBO range = new TimeRangeQueryBO();
         range.setStart(query.getStartTime());
         range.setEnd(query.getEndTime());
-
-        //创建时间
-        data.put(PlaceholderConstant.CREATE_DATE, DateUtils.formatCurrentDateTime(YEAR_MONTH_DAY_HH_MM_SS_ZH));
+        CommonDeviceDO device = deviceService.getById(deviceId);
+        data.put(PlaceholderConstant.DEVICE_CODE, device.getDeviceCode());
+        //起止时间
+        data.put(PlaceholderConstant.RANGE_DATE, DateUtils.format(DateUtils.YEAR_MONTH_DAY_ZH, query.getStartTime()) + "至" + DateUtils.format(DateUtils.YEAR_MONTH_DAY_ZH, query.getEndTime()));
         //报告名称
-        data.put(PlaceholderConstant.REPORT_NAME, StringUtils.isNotBlank(query.getReportName()) ? query.getReportName() : WORD_BLANK);
+        data.put(PlaceholderConstant.REPORT_NAME, StringUtils.isNotBlank(query.getReportName()) ? query.getReportName() : device.getDeviceCode() + "性能监测报告");
         //设备运行状态
         storeRunningStatus(deviceId, data);
         //设备运行统计
         Map<Integer, Long> integerLongMap = monitoringService.listRunningDuration(deviceId, range);
         //设备预警统计
         List<List<LabelVO>> lists = monitoringService.listWarningPoint(deviceId, range);
-        //测点类型
-        List<LabelVO> typeList = CollectionUtils.isNotEmpty(lists) ? lists.get(0) : Lists.newArrayList();
-        //报警级别
-        List<LabelVO> levelList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 3 ? lists.get(2) : Lists.newArrayList();
-        //算法报警趋势
-        List<LabelVO> trendList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 4 ? lists.get(3) : Lists.newArrayList();
         //油质测点表
         storeOilPointValue(deviceId, data);
-        //阈值报警
-        List<Object[]> alarmThresholdList = thresholdService.listCurrentThresholdAlarm(deviceId);
-        if (CollectionUtils.isNotEmpty(alarmThresholdList)) {
-            data.put(TABLE_ALARM_THRESHOLD, alarmThresholdList);
-        }
         List<BizReportConfigDO> list = configService.listConfigByDeviceId(deviceId);
         if (CollectionUtils.isEmpty(list)) {
             return data;
@@ -124,129 +113,278 @@ public class FanReportDataServiceImpl implements ReportDataService {
             if (StringUtils.isBlank(config.getPlaceholder())) {
                 continue;
             }
-            File image = null;
-            try {
-                switch (config.getSort()) {
-                    //运行状态
-                    case 1:
-                        image = getRunningDurationImage(config, integerLongMap);
-                        break;
-                    //算法报警
-                    case 2:
-                        image = getAlarmStatisticsImage(config, typeList, levelList);
-                        break;
-                    //报警统计
-                    case 3:
-                        image = getWarningImage(config, trendList);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (Exception e) {
-                log.error("get a error :{},{}", config, e);
-            }
-            if (Objects.nonNull(image)) {
-                config.setImage(image);
-            }
+            //已经查询的数据截图
+            baseData4Image(config, lists, integerLongMap);
+            //趋势图
+            trendData4Image(config, query);
+            //动态融合诊断
+            dynamicDiagnose4Image(data, config, query);
             data.put(config.getPlaceholder(), config);
         }
-        //振动图谱分析
-        storeDiagnosisValue(deviceId, data);
         return data;
     }
 
     /**
-     * 振动图谱分析
-     * 目前逻辑： 查询该设备下最新活动的事件，无结果的话不做任何操作，有的话调用故障推理算法，并将算法结果展示在成图谱分析和故障推理结果
-     * 有可能改成：执行一遍状态监测算法，如果有报警输出，再执行故障推理算法，无的话，不做任何操作
-     *
-     * @param deviceId
-     * @param data
+     * 动态阈值查询的时间范围[默认是最后依次报警的前后十二个小时]
      */
-    private void storeDiagnosisValue(Long deviceId, Map<String, Object> data) {
-        Long eventId = eventService.getNewestEventIdByDeviceId(deviceId);
-        if (Objects.isNull(eventId)) {
+    @Value("#{${config.dynamic-threshold-time-gap:12*60*60*1000}}")
+    private Long dynamicThresholdGap;
+
+    /**
+     * 获取动态诊断信息
+     *
+     * @param data
+     * @param config
+     * @param query
+     * @return
+     */
+    private void dynamicDiagnose4Image(Map<String, Object> data, BizReportConfigDO config, ReportQueryBO query) {
+        if (!ReportCategoryEnum.LINE_DYNAMIC_THRESHOLD.getCategory().equals(config.getCategory())) {
             return;
         }
-        Map<String, List<FaultReportResponseDTO>> reportData = diagnosisResultService.saveRulesConclusion(eventId, 1);
-//        List<FaultReportResponseDTO> list = JSON.parseArray(s, FaultReportResponseDTO.class);
-        if (MapUtils.isEmpty(reportData)) {
+        List<JobAlarmEventDO> eventDOS = eventService.listPointsWithAlarm(config.getSubSystemId(), config.getDeviceId(), query.getStartTime(), query.getEndTime());
+        if (CollectionUtils.isEmpty(eventDOS)) {
             return;
         }
-        List<FaultReportResponseDTO> list = Lists.newArrayList();
-        reportData.entrySet().stream().filter(x -> CollectionUtils.isNotEmpty(x.getValue())).forEach(x -> list.addAll(x.getValue()));
-        if (CollectionUtils.isEmpty(list)) {
-            return;
-        }
-        List<GraphDataItemVO> graphItems = Lists.newArrayList();
-        for (int i = 0, len = list.size(); i < len; i++) {
-            GraphDataItemVO vo = new GraphDataItemVO();
-            FaultReportResponseDTO item = list.get(i);
-            String figureType = FigureTypeEnum.getDesc(item.getFigureType());
-            String sensorCode = item.getSensorCode();
-            List<List<Double>> curve = item.getCurve();
-            List<FaultReportMarkResponseDTO> mark = item.getMark();
-            String title = i + 1 + SLASH_ZH.concat(sensorCode).concat(figureType).concat(FIX_EXCEPTION);
-            vo.setTitle(title);
-            List<String> marks = Lists.newArrayList();
-            if (CollectionUtils.isNotEmpty(mark)) {
-                mark.stream().filter(x -> CollectionUtils.isNotEmpty(x.getAnnotation())).forEach(x -> marks.addAll(x.getAnnotation()));
-                String desc = PRE_MARK.concat(String.join(SLASH_ZH, marks));
-                vo.setDesc(desc);
+        List<ReportAlarmEventVO> imageList = new ArrayList<>();
+        List<ReportFaultReasoningVO> reasoningList = new ArrayList<>();
+//        AtomicInteger i = new AtomicInteger();
+        eventDOS.stream().forEach(x -> {
+//            if (i.get() > 1) {
+//                return;
+//            }
+//            i.getAndIncrement();
+            String pointIds = x.getPointIds();
+            if (StringUtils.isBlank(pointIds)) {
+                return;
             }
-            List<List<List<Double>>> charData = new ArrayList<>();
-            charData.add(curve);
-            File image = getGraphImage(figureType, charData);
-            vo.setImage(image);
-            graphItems.add(vo);
+            log.info("execute ....{}", pointIds);
+            List<String> pointIdList = Arrays.asList(pointIds.split(SYMBOL_COMMA_EN));
+            Map<String, Long> modelIdPointId = pointService.listPointByDeviceIdInModel(pointIdList);
+            List<Map<String, List<BizReportConfigDO>>> images = pointIdList.stream().map(pointId -> getDynamicDiagnoseImage(pointId, modelIdPointId, x, config, query)).filter(MapUtils::isNotEmpty).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(images)) {
+                ReportAlarmEventVO vo = new ReportAlarmEventVO();
+                vo.setEventName(x.getEventName());
+                vo.setImages(images);
+                imageList.add(vo);
+            }
+
+            //最后报警时间
+            Date gmtLastAlarm = x.getGmtLastAlarm();
+            log.info("融合诊断： pointIdList: {}, start: {},end: {}", pointIdList, DateUtils.format(query.getStartTime()), DateUtils.format(query.getEndTime()));
+            ResponseData<List<FaultReasoningVO>> response = historyServerClient.faultReasoning(pointIdList, x.getDeviceId(), gmtLastAlarm.getTime());
+            if (Objects.nonNull(response) && CollectionUtils.isNotEmpty(response.getData()) && SUCCESS_CODE.equals(response.getCode())) {
+                ReportFaultReasoningVO item = new ReportFaultReasoningVO();
+                item.setEventName(x.getEventName());
+                item.setReasoningList(response.getData());
+                reasoningList.add(item);
+            }
+        });
+        data.put(PARAGRAPH_GRAPH_DATA_ITEMS, imageList);
+        data.put(PARAGRAPH_DIAGNOSIS_RESULTS, reasoningList);
+    }
+
+    private Map<String, List<BizReportConfigDO>> getDynamicDiagnoseImage(String pointId, Map<String, Long> modelIdPointId, JobAlarmEventDO x, BizReportConfigDO config, ReportQueryBO query) {
+        Map<String, List<BizReportConfigDO>> result = new HashMap<>(16);
+        //测点在不在模型中
+        Long modelId = modelIdPointId.get(pointId);
+        EventDataVO eventVO = new EventDataVO();
+        QueryBO<JobAlarmRealtimeDO> queryBO = initialQuery(x, query, AlarmTypeEnum.THRESHOLD);
+        //历史数据-阈值
+        Map<String, List<Long>> realtimeList = realtimeService.listJobAlarmRealtimeWithParams(queryBO, Lists.newArrayList(pointId));
+        //历史数据
+        Map<String, HistoryDataWithThresholdVO> data = listHistoryFromServer(queryBO.getQuery(), query.getDeviceId(), Lists.newArrayList(pointId));
+        if (MapUtils.isEmpty(data) || Objects.isNull(data.get(pointId)) || CollectionUtils.isEmpty(data.get(pointId).getChartData())) {
+            return result;
         }
-        data.put(PARAGRAPH_GRAPH_DATA_ITEMS, graphItems);
-        List<AlgorithmRulesConclusionDO> results = diagnosisResultService.lastRulesConclusionWithEventId(eventId);
-        if (CollectionUtils.isNotEmpty(results)) {
-            data.put(PARAGRAPH_DIAGNOSIS_RESULTS, results);
+        log.info("实时数据查询： pointId: {}, start: {},end: {}", pointId, DateUtils.format(query.getStartTime()), DateUtils.format(query.getEndTime()));
+        HistoryDataWithThresholdVO vo = data.get(pointId);
+        eventVO.setAlias(vo.getAlias());
+        eventVO.setPointId(vo.getPointId());
+//        BeanUtils.copyProperties(vo, eventVO);
+        //报警测点-阈值
+        eventVO.setAlarmData(realtimeList.get(pointId));
+        //实际值
+        eventVO.setActualData(vo.getChartData());
+        eventVO.setAlarmType(AlarmTypeEnum.THRESHOLD.getValue());
+        setImages(x.getEventName(), result, config, eventVO, "实时数据");
+        //参数自回归
+        if (Objects.nonNull(modelId) && modelId != -1) {
+            //算法数据
+            Map<String, EventDataVO> eventData = listRealtimeHistoryFromServer(queryBO.getQuery(), query.getDeviceId(), Lists.newArrayList(pointId));
+            EventDataVO dataVO = eventData.get(pointId);
+            EventDataVO dataVoNone = new EventDataVO();
+            if (Objects.isNull(dataVO) || CollectionUtils.isEmpty(dataVO.getActualData())) {
+                return null;
+            }
+            log.info("算法数据： pointId: {}, start: {},end: {}", pointId, DateUtils.format(query.getStartTime()), DateUtils.format(query.getEndTime()));
+            //报警测点-算法
+            QueryBO<JobAlarmRealtimeDO> doQueryBO = initialQuery(x, query, AlarmTypeEnum.ALGORITHM);
+            Map<String, List<Long>> realtimeEvent = realtimeService.listJobAlarmRealtimeWithParams(doQueryBO, Lists.newArrayList(pointId));
+            if (MapUtils.isNotEmpty(realtimeEvent)) {
+                dataVoNone.setAlarmData(realtimeEvent.get(pointId));
+                dataVoNone.setAlarmType(AlarmTypeEnum.ALGORITHM.getValue());
+                setImages(x.getEventName(), result, config, dataVoNone, "参数自回归估计值");
+            }
+            //残差值
+            dataVoNone.setAlarmType(51);
+            setImages(x.getEventName(), result, config, dataVoNone, "参数自回归残差值");
+        }
+        return result;
+    }
+
+    private void setImages(String eventName, Map<String, List<BizReportConfigDO>> result, BizReportConfigDO config, EventDataVO eventVO, String imageName) {
+        try {
+            config.setTitle(imageName);
+            File img = fileService.getImageFileWithData(config, eventVO, null);
+            if (Objects.nonNull(img)) {
+                BizReportConfigDO item = new BizReportConfigDO();
+                //图片title
+                item.setTitle(eventVO.getAlias() + imageName);
+                item.setImage(img);
+                //测点code
+                item.setPointIds(eventVO.getPointId());
+                //测点别名
+                item.setRemark(eventVO.getAlias());
+                List<BizReportConfigDO> dos = result.get(eventName);
+                if (Objects.isNull(dos)) {
+                    dos = new ArrayList<>();
+                    result.put(eventName, dos);
+                }
+                dos.add(item);
+            }
+        } catch (InterruptedException e) {
+            log.error("get data  img failed...{}", e.getCause());
         }
     }
 
+    private QueryBO<JobAlarmRealtimeDO> initialQuery(JobAlarmEventDO x, ReportQueryBO query, AlarmTypeEnum typeEnum) {
+        ConditionsQueryBO rangeDate = new ConditionsQueryBO();
+        rangeDate.setStart(query.getStartTime());
+        long start = x.getGmtLastAlarm().getTime() - dynamicThresholdGap;
+        long end = x.getGmtLastAlarm().getTime() + dynamicThresholdGap;
+        long now = System.currentTimeMillis();
+        end = end > now ? now : end;
+        rangeDate.setStart(start);
+        rangeDate.setEnd(end);
+        JobAlarmRealtimeDO realtimeDO = new JobAlarmRealtimeDO();
+        realtimeDO.setAlarmType(typeEnum.getValue());
+        return new QueryBO(realtimeDO, rangeDate);
+    }
+
     /**
-     * 获取图谱的异常图片
+     * 获取配置的趋势图[是降采样数据]
      *
-     * @param figureType
-     * @param charData
+     * @param config 配置信息
+     * @param query  查询条件
      * @return
      */
-    private File getGraphImage(String figureType, List<List<List<Double>>> charData) {
+    private void trendData4Image(BizReportConfigDO config, ReportQueryBO query) {
+        String pointIds = config.getPointIds();
+        if (!ReportCategoryEnum.LINE.getCategory().equals(config.getCategory()) || StringUtils.isBlank(pointIds)) {
+            return;
+        }
+        List<String> pointIdList = Arrays.asList(pointIds.split(SYMBOL_COMMA_EN));
+        TimeRangeQueryBO rangeDate = new TimeRangeQueryBO();
+        rangeDate.setStart(query.getStartTime());
+        rangeDate.setEnd(query.getEndTime());
+        log.info("历史趋势数据查询： pointId: {}, start: {},end: {}", pointIdList, DateUtils.format(query.getStartTime()), DateUtils.format(query.getEndTime()));
+        Map<String, HistoryDataWithThresholdVO> data = listHistoryFromServer(rangeDate, query.getDeviceId(), pointIdList);
+        if (MapUtils.isEmpty(data)) {
+            return;
+        }
+        CommonMeasurePointDO point = new CommonMeasurePointDO();
+        List<List<List<Object>>> collect = pointIdList.stream().map(x -> {
+            HistoryDataWithThresholdVO vo = data.get(x);
+            if (Objects.isNull(vo) || CollectionUtils.isEmpty(vo.getChartData())) {
+                return null;
+            }
+            point.setPointId(x);
+            BeanUtils.copyProperties(vo, point);
+            return vo.getChartData();
+        }).collect(Collectors.toList());
         try {
-            BizReportConfigDO config = new BizReportConfigDO();
-            config.setCategory(ReportCategoryEnum.LINE_SPECTRUM.getCategory());
-            config.setLegend(figureType);
-            return fileService.getImageFileWithData(config, charData, null);
+            File imag = this.fileService.getImageFileWithData(config, collect, point);
+            if (Objects.nonNull(imag)) {
+                config.setImage(imag);
+            }
         } catch (InterruptedException e) {
-            log.error("获取频谱图片报错：{}", e);
+            log.error("get history trend imag failed: {}", e.getCause());
+        }
+    }
+
+    private Map<String, HistoryDataWithThresholdVO> listHistoryFromServer(TimeRangeQueryBO rangDate, Long deviceId, List<String> pointIdList) {
+        try {
+            HistoryQueryMultiBO bo = operateQueryParams(rangDate, deviceId, pointIdList);
+            ResponseData<Map<String, HistoryDataWithThresholdVO>> response = historyServerClient.listHistoryWithPointList(bo);
+            if (Objects.isNull(response) || Objects.isNull(response.getData()) || !SUCCESS_CODE.equals(response.getCode())) {
+                return null;
+            }
+            return response.getData();
+        } catch (Exception e) {
+            log.error("history trend data ");
         }
         return null;
     }
 
-    private File getAlarmStatisticsImage(BizReportConfigDO config, List<LabelVO> typeList, List<LabelVO> levelList) throws InterruptedException {
-        List<PieDataItemVO> charData = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(typeList)) {
-            PieDataItemVO itemVO = new PieDataItemVO();
-            itemVO.setData(typeList);
-            itemVO.setTitle("测点类型");
-            itemVO.setUnit("次");
-            charData.add(itemVO);
-        }
-        if (CollectionUtils.isNotEmpty(levelList)) {
-            PieDataItemVO itemVO = new PieDataItemVO();
-            itemVO.setData(levelList);
-            itemVO.setTitle("报警级别");
-            itemVO.setUnit("次");
-            charData.add(itemVO);
-        }
-        if (CollectionUtils.isEmpty(charData)) {
-            return null;
-        }
-        return fileService.getImageFileWithData(config, charData, null);
+    private HistoryQueryMultiBO operateQueryParams(TimeRangeQueryBO rangDate, Long deviceId, List<String> pointIdList) {
+        HistoryQueryMultiBO bo = new HistoryQueryMultiBO();
+        bo.setPointIds(pointIdList);
+        bo.setEnd(rangDate.getEnd());
+        bo.setStart(rangDate.getStart());
+        bo.setDeviceId(deviceId);
+        return bo;
     }
+
+    private Map<String, EventDataVO> listRealtimeHistoryFromServer(TimeRangeQueryBO rangDate, Long deviceId, List<String> pointIdList) {
+        try {
+            HistoryQueryMultiBO bo = operateQueryParams(rangDate, deviceId, pointIdList);
+            ResponseData<Map<String, EventDataVO>> response = historyServerClient.listDataWithPointList(bo);
+            if (Objects.isNull(response) || Objects.isNull(response.getData()) || !SUCCESS_CODE.equals(response.getCode())) {
+                return null;
+            }
+            return response.getData();
+        } catch (Exception e) {
+            log.error("history realtime data ");
+        }
+        return null;
+    }
+
+    private void baseData4Image(BizReportConfigDO config, List<List<LabelVO>> lists, Map<Integer, Long> integerLongMap) {
+        if (Objects.isNull(config.getSort())) {
+            return;
+        }
+        File image = null;
+        try {
+            switch (config.getSort()) {
+                //运行状态柱状图
+                case 1:
+                    image = getRunningDurationImage(config, integerLongMap);
+                    break;
+                case 2:
+                    ////测点类型饼图
+                    List<LabelVO> typeList = CollectionUtils.isNotEmpty(lists) ? lists.get(0) : Lists.newArrayList();
+                    image = fileService.getImageFileWithData(config, typeList, null);
+                    break;
+                case 3:
+//                    事件级别饼图
+                    List<LabelVO> levelList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 2 ? lists.get(1) : Lists.newArrayList();
+                    image = fileService.getImageFileWithData(config, levelList, null);
+                    break;
+                case 4:
+                    //算法报警趋势//趋势柱状图
+                    List<LabelVO> trendList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 3 ? lists.get(2) : Lists.newArrayList();
+                    image = getWarningImage(config, trendList);
+                    break;
+                default:
+                    break;
+            }
+        } catch (InterruptedException e) {
+            log.error("get a error :{},{}", config, e);
+        }
+        config.setImage(image);
+    }
+
 
     /**
      * 算法报警趋势-柱状图
@@ -314,200 +452,50 @@ public class FanReportDataServiceImpl implements ReportDataService {
         }
         pointVOList.stream().forEach(point -> {
             String key = SymbolConstant.HASH.concat(point.getFeatureType()).concat(CONNECTOR).concat(point.getFeature());
-            data.put(key.concat(SymbolConstant.HASH), point.getValue());
+            data.put(key.concat(SymbolConstant.HASH), BigDecimalUtils.format(point.getValue(), 4));
             data.put(key.concat(CONNECTOR + FIX_DECIDE).concat(SymbolConstant.HASH), point.getStatusDesc());
+            data.put(key.concat(CONNECTOR + FIX_TH).concat(SymbolConstant.HASH), getThresholdDesc(point));
         });
     }
-//    测试数据
-//    String s =
-//                "[\n" +
-//                        "        {\n" +
-//                        "            \"sensorCode\":\"6M2DVC403MV-N\",\n" +
-//                        "            \"figureType\":\"envelopeSpectrum\",\n" +
-//                        "            \"curve\":[\n" +
-//                        "                [\n" +
-//                        "                    0,\n" +
-//                        "                    6.729337952756514e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    0.625,\n" +
-//                        "                    4.520986294844187e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1.25,\n" +
-//                        "                    4.764164238798577e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1.875,\n" +
-//                        "                    4.139547596052102e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    2.5,\n" +
-//                        "                    3.0080554834491434e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    3.125,\n" +
-//                        "                    6.845341933219464e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    3.75,\n" +
-//                        "                    3.831880668577914e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    4.375,\n" +
-//                        "                    6.771969193450171e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1255.625,\n" +
-//                        "                    4.212149517108385e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1256.25,\n" +
-//                        "                    2.2705804234531582e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1256.875,\n" +
-//                        "                    4.356402612254552e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1260.625,\n" +
-//                        "                    1.1396187569950748e-16\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1261.25,\n" +
-//                        "                    7.603454666560213e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1261.875,\n" +
-//                        "                    3.017589574357483e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1262.5,\n" +
-//                        "                    7.338445660264668e-18\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1263.125,\n" +
-//                        "                    1.4501759194018695e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1263.75,\n" +
-//                        "                    2.655476563723834e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1264.375,\n" +
-//                        "                    6.330708592517079e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1265,\n" +
-//                        "                    9.30131944573396e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1265.625,\n" +
-//                        "                    7.953770399274342e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1266.25,\n" +
-//                        "                    2.9448059839322125e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1266.875,\n" +
-//                        "                    4.0775871749976656e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1267.5,\n" +
-//                        "                    3.148973235442091e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1268.125,\n" +
-//                        "                    1.6725814363778495e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1268.75,\n" +
-//                        "                    1.440734773794269e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1269.375,\n" +
-//                        "                    1.1697720971325402e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1270,\n" +
-//                        "                    1.7908964812190707e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1270.625,\n" +
-//                        "                    3.14492540902047e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1271.25,\n" +
-//                        "                    3.048005052410712e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1271.875,\n" +
-//                        "                    2.063043448453698e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1272.5,\n" +
-//                        "                    3.192755129031135e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1273.125,\n" +
-//                        "                    2.3316069015928837e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1273.75,\n" +
-//                        "                    1.520265198492203e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1274.375,\n" +
-//                        "                    1.1340972216514965e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1275,\n" +
-//                        "                    1.3019172525862781e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1275.625,\n" +
-//                        "                    1.5900905185076648e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1276.25,\n" +
-//                        "                    1.9435577863989444e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1276.875,\n" +
-//                        "                    1.553687436422944e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1277.5,\n" +
-//                        "                    1.6788496233895393e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1278.125,\n" +
-//                        "                    2.3612352031627774e-17\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1278.75,\n" +
-//                        "                    7.479967911960386e-18\n" +
-//                        "                ],\n" +
-//                        "                [\n" +
-//                        "                    1279.375,\n" +
-//                        "                    1.4194478517987257e-18\n" +
-//                        "                ]\n" +
-//                        "            ],\n" +
-//                        "            \"mark\":[\n" +
-//                        "                {\n" +
-//                        "                    \"markType\":\"somePoint\",\n" +
-//                        "                    \"coordinate\":[\n" +
-//                        "                        [\n" +
-//                        "                            31.25,\n" +
-//                        "                            1\n" +
-//                        "                        ]\n" +
-//                        "                    ],\n" +
-//                        "                    \"annotation\":[\n" +
-//                        "                        \"故障频率\"\n" +
-//                        "                    ]\n" +
-//                        "                }\n" +
-//                        "            ]\n" +
-//                        "        }\n" +
-//                        "    ]\n";
+
+    /**
+     * 获取阈值描述
+     *
+     * @param point
+     * @return
+     */
+    private String getThresholdDesc(MeasurePointVO point) {
+        StringBuilder sb = new StringBuilder();
+        if (Objects.nonNull(point.getEarlyWarningLow())) {
+            checkFirst(sb);
+            sb.append("低预警：").append(point.getEarlyWarningLow());
+        }
+        if (Objects.nonNull(point.getEarlyWarningHigh())) {
+            checkFirst(sb);
+            sb.append("高预警：").append(point.getEarlyWarningHigh());
+        }
+        if (Objects.nonNull(point.getThresholdLow())) {
+            checkFirst(sb);
+            sb.append("低报：").append(point.getThresholdLow());
+        }
+        if (Objects.nonNull(point.getThresholdHigh())) {
+            checkFirst(sb);
+            sb.append("高报：").append(point.getThresholdHigh());
+        }
+        if (Objects.nonNull(point.getThresholdLower())) {
+            checkFirst(sb);
+            sb.append("低低报：").append(point.getThresholdLower());
+        }
+        if (Objects.nonNull(point.getThresholdHigher())) {
+            checkFirst(sb);
+            sb.append("高高报：").append(point.getThresholdHigher());
+        }
+        return sb.toString();
+    }
+
+    private void checkFirst(StringBuilder sb) {
+        if (sb.length() > 0) {
+            sb.append(";");
+        }
+    }
 }

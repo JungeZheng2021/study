@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Package: com.aimsphm.nuclear.report.controller
@@ -69,11 +70,13 @@ public class BizReportController {
     }
 
     @PostMapping
-    @ApiOperation(value = "自定义报告", notes = "只能自定义报告名称及报告的起止时间")
+    @ApiOperation(value = "手动报告", notes = "自定义报告名称及报告的起止时间")
     public void saveBizReport(@RequestBody ReportQueryBO query) {
         long currentTimeMillis = System.currentTimeMillis();
-        query.setEndTime(currentTimeMillis);
-        query.setStartTime(currentTimeMillis - ChronoUnit.DAYS.getDuration().getSeconds() * 30 * 1000);
+        if (Objects.isNull(query.getStartTime())) {
+            query.setEndTime(currentTimeMillis);
+            query.setStartTime(currentTimeMillis - ChronoUnit.DAYS.getDuration().getSeconds() * 30 * 1000);
+        }
         reportService.saveManualReport(query);
         long l = System.currentTimeMillis() - currentTimeMillis;
         log.debug("共计用时：{}", l);

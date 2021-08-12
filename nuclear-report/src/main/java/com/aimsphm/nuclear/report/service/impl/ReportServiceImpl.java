@@ -97,7 +97,8 @@ public class ReportServiceImpl implements ReportService {
         Long reportId = null;
         try {
             BizReportDO find = findReport(query);
-            if (find != null) {
+            if (Objects.nonNull(find)) {
+                reportId = saveReport(query, docName, type);
                 throw new CustomMessageException("当前有正在运行的报告");
             }
             reportId = saveReport(query, docName, type);
@@ -110,7 +111,7 @@ public class ReportServiceImpl implements ReportService {
             InputStream is;
             //上线要去除
             if (resource == null) {
-                is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources" + templatePath));
+                is = new FileInputStream("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources" + templatePath);
             } else {
                 is = resource.openStream();
             }
@@ -133,12 +134,12 @@ public class ReportServiceImpl implements ReportService {
             }
             fos = new FileOutputStream(file);
             doc.write(fos);
-            reportService.updateReportStatus(reportId, DataStatusEnum.SUCCESS.getValue());
+            reportService.updateReportStatus(reportId, DataStatusEnum.SUCCESS.getValue(), null);
             log.info("报告生成中....成功...");
             return docName;
         } catch (Exception e) {
             log.error("报告生成失败：{}", e);
-            reportService.updateReportStatus(reportId, DataStatusEnum.FAILED.getValue());
+            reportService.updateReportStatus(reportId, DataStatusEnum.FAILED.getValue(), e.getMessage());
             throw new CustomMessageException("报告生成失败");
         } finally {
             if (fos != null) {

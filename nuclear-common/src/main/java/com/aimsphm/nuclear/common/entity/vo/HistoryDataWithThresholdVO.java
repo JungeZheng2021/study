@@ -47,4 +47,7 @@ public class HistoryDataWithThresholdVO extends HistoryDataVO {
 
     @ApiModelProperty(value = "测点别名", notes = "")
     private String alias;
+
+    @ApiModelProperty(value = "测点名称", notes = "")
+    private String pointId;
 }

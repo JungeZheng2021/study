@@ -57,7 +57,10 @@ public final class BasicConstant {
 //            "algorithm_parameter_alarm_event"
 //            "algorithm_normal_rule_feature",
 //            "algorithm_normal_feature_feature"
-            "algorithm_normal_fault_conclusion"
+//            "algorithm_normal_fault_conclusion"
+//            "algorithm_prognostic_fault_feature"
+            "biz_down_sample"
+//            "job_forecast_result"
 //            "algorithm_normal_rule"
 //            "algorithm_normal_fault_feature"
 //            "biz_report",

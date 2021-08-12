@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.File;
+import java.util.*;
 
 /**
  * @Package: com.aimsphm.nuclear.common.entity
@@ -65,7 +66,6 @@ public class BizReportConfigDO extends BaseDO {
     private String remark;
 
     @TableField(exist = false)
-    @ApiModelProperty(value = "生成的图片", notes = "")
+    @ApiModelProperty(value = "生成的图片", notes = "一个和多个")
     private File image;
-
 }

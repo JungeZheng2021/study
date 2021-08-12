@@ -121,10 +121,11 @@ public class BizReportServiceImpl extends ServiceImpl<BizReportMapper, BizReport
     }
 
     @Override
-    public void updateReportStatus(Long reportId, Integer status) {
+    public void updateReportStatus(Long reportId, Integer status, String cause) {
         BizReportDO reportDO = new BizReportDO();
         reportDO.setId(reportId);
         reportDO.setStatus(status);
+        reportDO.setRemark(cause);
         this.updateById(reportDO);
     }
 

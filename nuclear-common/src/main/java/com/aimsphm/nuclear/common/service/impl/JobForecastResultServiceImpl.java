@@ -74,7 +74,7 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
-        wrapper.orderByDesc(JobForecastResultDO::getPointId);
+        wrapper.orderByAsc(JobForecastResultDO::getSort);
         return wrapper;
     }
 
@@ -88,6 +88,7 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
         LambdaQueryWrapper<JobForecastResultDO> query = Wrappers.lambdaQuery(JobForecastResultDO.class);
         query.eq(JobForecastResultDO::getDeviceId, deviceId);
         query.eq(JobForecastResultDO::getComponentId, componentId);
+        query.orderByAsc(JobForecastResultDO::getSort);
         List<JobForecastResultDO> list = this.list(query);
         if (CollectionUtils.isEmpty(list)) {
             return null;

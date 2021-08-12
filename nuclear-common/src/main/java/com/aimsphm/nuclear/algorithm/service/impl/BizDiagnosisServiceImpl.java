@@ -221,14 +221,14 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
                 List<AlgorithmNormalFaultFeatureVO> collect = symSet.stream().map(y -> {
                     AlgorithmNormalFaultFeatureVO featureVO = featureService.getAlgorithmNormalFaultFeatureByComponentId(y.getSymId());
                     return featureVO;
-                }).collect(Collectors.toList());
+                }).filter(Objects::nonNull).collect(Collectors.toList());
                 reasoningVO.setFeatures(collect);
             }
             Integer mechanismCode = x.getFaultInfo().getMechanismCode();
             AlgorithmNormalFaultConclusionDO conclusionDO = conclusionService.getById(mechanismCode);
             reasoningVO.setConclusion(conclusionDO);
             return reasoningVO;
-        }).collect(Collectors.toList());
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private void setSymSetByRuleId(FaultReasoningParamDTO.RefRuleSetElem item, Long ruleId) {

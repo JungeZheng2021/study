@@ -134,7 +134,7 @@ public class ScreenshotUtils {
             //截图之后删除图片
             try {
                 if (hasHtml && htmlDelete) {
-//                    new File(htmlPath).delete();
+                    new File(htmlPath).delete();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

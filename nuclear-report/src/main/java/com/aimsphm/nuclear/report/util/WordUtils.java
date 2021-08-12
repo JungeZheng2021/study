@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.report.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.util.ImageUtils;
 import org.apache.poi.util.Units;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Package: com.aimsphm.nuclear.report.util
@@ -24,6 +26,7 @@ import java.util.List;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 public final class WordUtils {
     /**
      * 图片缩放比例
@@ -33,7 +36,7 @@ public final class WordUtils {
 
     public static final BigDecimal bd2 = new BigDecimal("2");
 
-    public static final String MS_FONT_FAMILY = "微软雅黑";
+    public static final String MS_FONT_FAMILY = "宋体";
 
     /**
      * 添加图片到指定位置
@@ -51,13 +54,13 @@ public final class WordUtils {
             //添加图片到文档中
             run.addPicture(new FileInputStream(file), XWPFDocument.PICTURE_TYPE_PNG, file.getName(), Units.toEMU(dimension.width * IMAGE_RATE), Units.toEMU(dimension.getHeight() * IMAGE_RATE));
             //换行
-            run.addBreak();
-            //将占位符隐藏
-            run.setText(title, -1);
-        } catch (InvalidFormatException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            run.addCarriageReturn();
+            if (Objects.nonNull(title)) {
+                //将占位符隐藏
+                run.setText(title, -1);
+            }
+        } catch (Exception e) {
+            log.error("add image failed....");
         }
     }
 
@@ -96,7 +99,6 @@ public final class WordUtils {
                 setCellStyle(cell, 0, "#000000", m % 2 == 0 ? "#D9E2F3" : "#B4C6E7", String.valueOf(data[i]));
             }
         }
-
     }
 
     public static void initTableTHead(XWPFTable table, List<String> heads) {
@@ -117,9 +119,12 @@ public final class WordUtils {
         setCellStyle(cell, MS_FONT_FAMILY, "9", fontBold, "left", "top", fontColor, bgColor, content);
     }
 
+    public static void setCellStyle(XWPFTableCell cell, String fontSize, String text) {
+        setCellStyle(cell, MS_FONT_FAMILY, fontSize, 0, "left", null, "#ffffff", null, text);
+    }
+
     public static void setCellStyle(XWPFTableCell cell, String fontName, String fontSize, int fontBold,
-                                    String alignment, String vertical, String fontColor,
-                                    String bgColor, String content) {
+                                    String alignment, String vertical, String fontColor, String bgColor, String content) {
 
         //poi对字体大小设置特殊，不支持小数，但对原word字体大小做了乘2处理
         BigInteger bFontSize = new BigInteger("24");
@@ -135,146 +140,81 @@ public final class WordUtils {
         //=====获取单元格
         CTTc tc = cell.getCTTc();
         //获取单元格里的<w:tcPr>
-        CTTcPr tcPr = tc.getTcPr();
-        //没有<w:tcPr>，创建
-        if (tcPr == null) {
-            tcPr = tc.addNewTcPr();
-        }
+        CTTcPr tcPr = Objects.isNull(tc.getTcPr()) ? tc.addNewTcPr() : tc.getTcPr();
 
-        //  --vjc开始-->>
-        //获取<w:tcPr>  的<w:vAlign w:val="center"/>
-        CTVerticalJc vjc = tcPr.getVAlign();
-        //没有<w:w:vAlign/>，创建
-        if (vjc == null) {
-            vjc = tcPr.addNewVAlign();
-        }
+        CTVerticalJc vjc = Objects.isNull(tcPr.getVAlign()) ? tcPr.addNewVAlign() : tcPr.getVAlign();
         //设置单元格对齐方式 //垂直对齐
-        vjc.setVal(vertical.equals("top") ? STVerticalJc.TOP : vertical.equals("bottom") ? STVerticalJc.BOTTOM : STVerticalJc.CENTER);
+        vjc.setVal("top".equals(vertical) ? STVerticalJc.TOP : "bottom".equals(vertical) ? STVerticalJc.BOTTOM : STVerticalJc.CENTER);
 
-        CTShd shd = tcPr.getShd();
-        //没有<w:shd>，创建
-        if (shd == null) {
-            shd = tcPr.addNewShd();
-        }
+        CTShd shd = Objects.isNull(tcPr.getShd()) ? tcPr.addNewShd() : tcPr.getShd();
         // 设置背景颜色
-        shd.setFill(bgColor.substring(1));
-        //《《《《====tcPr结束====
+        if (Objects.nonNull(bgColor)) {
+            shd.setFill(bgColor.substring(1));
+        }
 
-        //====p开始====》》》》
+        List<CTP> pList = tc.getPList();
+        if (pList.size() == 0) {
+            cell.setText(content);
+            return;
+        }
         CTP p = tc.getPList().get(0);
 
-        //---ppr开始--->>>
         //获取<w:p>里的<w:pPr>
-        CTPPr ppr = p.getPPr();
-        //没有<w:pPr>，创建
-        if (ppr == null) {
-            ppr = p.addNewPPr();
-        }
+        CTPPr ppr = Objects.isNull(p.getPPr()) ? p.addNewPPr() : p.getPPr();
         //  --jc开始-->>
-        CTJc jc = ppr.getJc();
-        if (jc == null) {
-            jc = ppr.addNewJc();
-        }
+        CTJc jc = Objects.isNull(ppr.getJc()) ? ppr.addNewJc() : ppr.getJc();
         //设置单元格对齐方式//水平对齐
         jc.setVal(alignment.equals("left") ? STJc.LEFT : alignment.equals("right") ? STJc.RIGHT : STJc.CENTER);
         //  <<--jc结束--
         //  --pRpr开始-->>
-        CTParaRPr pRpr = ppr.getRPr();
-        if (pRpr == null) {
-            pRpr = ppr.addNewRPr();
-        }
-        CTFonts pFont = pRpr.getRFonts();
-        if (pFont == null) {
-            pFont = pRpr.addNewRFonts();
-        }
+        CTParaRPr pRpr = Objects.isNull(ppr.getRPr()) ? ppr.addNewRPr() : ppr.getRPr();
+        CTFonts pFont = Objects.isNull(pRpr.getRFonts()) ? pRpr.addNewRFonts() : pRpr.getRFonts();
         //设置字体
         pFont.setAscii(fontName);
         pFont.setEastAsia(fontName);
         pFont.setHAnsi(fontName);
 
-        CTOnOff pb = pRpr.getB();
-        if (pb == null) {
-            pb = pRpr.addNewB();
-        }
+        CTOnOff pb = Objects.isNull(pRpr.getB()) ? pRpr.addNewB() : pRpr.getB();
         //设置字体是否加粗
         pb.setVal(fontBold == 1 ? STOnOff.ON : STOnOff.OFF);
 
-        CTHpsMeasure psz = pRpr.getSz();
-        if (psz == null) {
-            psz = pRpr.addNewSz();
-        }
+        CTHpsMeasure psz = Objects.isNull(pRpr.getSz()) ? pRpr.addNewSz() : pRpr.getSz();
         // 设置单元格字体大小
         psz.setVal(bFontSize);
-        CTHpsMeasure pszCs = pRpr.getSzCs();
-        if (pszCs == null) {
-            pszCs = pRpr.addNewSzCs();
-        }
+        CTHpsMeasure pszCs = Objects.isNull(pRpr.getSzCs()) ? pRpr.addNewSzCs() : pRpr.getSzCs();
         // 设置单元格字体大小
         pszCs.setVal(bFontSize);
-        //  <<--pRpr结束--
-        //<<<---ppr结束---
-
-        //---r开始--->>>
-        List<CTR> rlist = p.getRList();
-        CTR r = null;
-        if (rlist != null && rlist.size() > 0) {
-            r = rlist.get(0);
-        } else {//没有<w:r>，创建
-            r = p.addNewR();
-        }
+        List<CTR> rList = p.getRList();
+        CTR r = rList != null && rList.size() > 0 ? rList.get(0) : p.addNewR();
         //--rpr开始-->>
-        CTRPr rpr = r.getRPr();
-        if (rpr == null) {
-            rpr = r.addNewRPr();
-        }
-        //->-
-        CTFonts font = rpr.getRFonts();
-        if (font == null) {
-            font = rpr.addNewRFonts();
-        }
+        CTRPr rpr = Objects.isNull(r.getRPr()) ? r.addNewRPr() : r.getRPr();
+
+        CTFonts font = Objects.isNull(rpr.getRFonts()) ? rpr.addNewRFonts() : rpr.getRFonts();
         //设置字体
         font.setAscii(fontName);
         font.setEastAsia(fontName);
         font.setHAnsi(fontName);
 
-        CTOnOff b = rpr.getB();
-        if (b == null) {
-            b = rpr.addNewB();
-        }
+        CTOnOff b = Objects.isNull(rpr.getB()) ? rpr.addNewB() : rpr.getB();
         //设置字体是否加粗
         b.setVal(fontBold == 1 ? STOnOff.ON : STOnOff.OFF);
-        CTColor color = rpr.getColor();
-        if (color == null) {
-            color = rpr.addNewColor();
-        }
+        CTColor color = Objects.isNull(rpr.getColor()) ? rpr.addNewColor() : rpr.getColor();
         // 设置字体颜色
         if (content.contains("↓")) {
             color.setVal("43CD80");
         } else if (content.contains("↑")) {
             color.setVal("943634");
-        } else {
+        } else if (Objects.nonNull(fontColor)) {
             color.setVal(fontColor.substring(1));
         }
-        CTHpsMeasure sz = rpr.getSz();
-        if (sz == null) {
-            sz = rpr.addNewSz();
-        }
+
+        CTHpsMeasure sz = Objects.isNull(rpr.getSz()) ? rpr.addNewSz() : rpr.getSz();
         sz.setVal(bFontSize);
-        CTHpsMeasure szCs = rpr.getSzCs();
-        if (szCs == null) {
-            szCs = rpr.addNewSz();
-        }
+        CTHpsMeasure szCs = Objects.isNull(rpr.getSzCs()) ? rpr.addNewSz() : rpr.getSzCs();
         szCs.setVal(bFontSize);
-        //<<--rpr结束--
         List<CTText> tList = r.getTList();
-        CTText t = null;
-        if (tList != null && tList.size() > 0) {
-            t = tList.get(0);
-        } else {//没有<w:r>，创建
-            t = r.addNewT();
-        }
+        CTText t = tList != null && tList.size() > 0 ? tList.get(0) : r.addNewT();
         t.setStringValue(content);
-        //<<<---r结束---
     }
 }
 

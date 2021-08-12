@@ -19,13 +19,17 @@ import java.util.stream.Collectors;
  */
 @Data
 @ApiModel(value = "历史查询多个测点")
-public class HistoryQueryMultiBO extends TimeRangeQueryBO {
+public class HistoryQueryMultiBO {
     @ApiModelProperty(value = "测点列表", notes = "")
     private List<String> pointIds;
     @ApiModelProperty(value = "模型id", notes = "查询实测值、估计值、残差时会用到")
     private Long modelId;
     @ApiModelProperty(value = "设备id", notes = "查询实测值、估计值、残差时会用到")
     private Long deviceId;
+    @ApiModelProperty(value = "开始时间")
+    private Long start;
+    @ApiModelProperty(value = "结束时间")
+    private Long end;
 
     public String key() {
         return this.getPointIds().stream().sorted().collect(Collectors.joining()).concat(String.valueOf(this.getStart())).concat(String.valueOf(this.getEnd()));

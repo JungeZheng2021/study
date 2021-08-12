@@ -399,6 +399,16 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 格式化
      *
+     * @param date 时间
+     * @return
+     */
+    public static String format(LocalDateTime date) {
+        return format(YEAR_MONTH_DAY_HH_MM_SS_M, date);
+    }
+
+    /**
+     * 格式化
+     *
      * @param pattern 指定样式
      * @param date    时间
      * @return
@@ -417,6 +427,16 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      */
     public static String format(String pattern, Long timestamp) {
         return format(pattern, new Date(timestamp));
+    }
+
+    /**
+     * 格式化数据
+     *
+     * @param timestamp 时间戳
+     * @return
+     */
+    public static String format(Long timestamp) {
+        return format(YEAR_MONTH_DAY_HH_MM_SS_M, timestamp);
     }
 
     /**

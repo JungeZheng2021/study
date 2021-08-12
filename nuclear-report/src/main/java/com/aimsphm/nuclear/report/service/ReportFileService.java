@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.report.service;
 import com.aimsphm.nuclear.common.constant.ReportConstant;
 import com.aimsphm.nuclear.common.entity.BizReportConfigDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
+import com.aimsphm.nuclear.common.entity.vo.EventDataVO;
 import com.aimsphm.nuclear.report.enums.ReportCategoryEnum;
 import com.aimsphm.nuclear.report.service.impl.ReportFileServiceImpl;
 import com.aimsphm.nuclear.report.util.UUIDUtils;
@@ -134,6 +135,12 @@ public interface ReportFileService {
                         line = line.replace(HTML_MARK_LINES_DATA, Objects.nonNull(point) ? JSON.toJSONString(Lists.newArrayList(point.getThresholdLower(), point.getThresholdLow(), point.getThresholdHigh(), point.getThresholdHigher())) : "[]");
                     }
                 }
+                //发电机动态阈值图数据
+                if (line.contains(HTML_OBJECT_DATA) || line.contains(HTML_ALARM_TYPE)) {
+                    EventDataVO vo = (EventDataVO) data;
+                    line = line.replace(HTML_ALARM_TYPE, Objects.isNull(vo) || Objects.isNull(vo.getAlarmType()) ? "5" : vo.getAlarmType() + BLANK);
+                    line = line.replace(HTML_OBJECT_DATA, JSON.toJSONString(data));
+                }
                 //修改单位
                 if (line.contains("type: 'time',") && isChangeXAxisType) {
                     line = line.replace("type: 'time',", BLANK);
@@ -197,6 +204,14 @@ public interface ReportFileService {
             InputStream is = ReportFileServiceImpl.class.getResourceAsStream(dir + ReportConstant.TEMPLATE_PIE_HTML_NAME);
             if (is == null) {
                 return new FileInputStream(new File(root + ReportConstant.TEMPLATE_PIE_HTML_NAME));
+            }
+            return is;
+        }
+        //动态阈值图
+        if (ReportCategoryEnum.LINE_DYNAMIC_THRESHOLD.getCategory().equals(category)) {
+            InputStream is = ReportFileServiceImpl.class.getResourceAsStream(dir + ReportConstant.TEMPLATE_LINE_DYNAMIC_THRESHOLD);
+            if (is == null) {
+                return new FileInputStream(root + ReportConstant.TEMPLATE_LINE_DYNAMIC_THRESHOLD);
             }
             return is;
         }

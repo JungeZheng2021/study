@@ -31,11 +31,11 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static com.aimsphm.nuclear.common.constant.ReportConstant.SYMBOL_COMMA_EN;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service.impl
@@ -108,7 +108,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
             wrapper.ge(JobAlarmEventDO::getGmtLastAlarm, new Date(query.getStart())).le(JobAlarmEventDO::getGmtFirstAlarm, new Date(query.getEnd()));
         }
         if (StringUtils.hasText(query.getKeyword())) {
-            wrapper.like(JobAlarmEventDO::getRemark, queryBO.getQuery().getKeyword());
+            wrapper.like(JobAlarmEventDO::getEventName, queryBO.getQuery().getKeyword());
         }
         if (Objects.nonNull(eventStatus)) {
             query.getAlarmStatusList().add(eventStatus);
@@ -129,6 +129,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
             entity.setPointIds(null);
             wrapper.apply("FIND_IN_SET('" + pointIds + "',point_ids) > 0");
         }
+        wrapper.ne(JobAlarmEventDO::getAlarmType, 12);
         wrapper.orderByDesc(JobAlarmEventDO::getGmtLastAlarm);
         return wrapper;
     }
@@ -151,5 +152,60 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
             return null;
         }
         return mPointService.listByIds(list.stream().map(x -> x.getPointId()).collect(Collectors.toSet()));
+    }
+
+    @Override
+    public List<JobAlarmEventDO> listPointsWithAlarm(Long subSystemId, Long deviceId, Long start, Long end) {
+        LambdaQueryWrapper<JobAlarmEventDO> wrapper = Wrappers.lambdaQuery(JobAlarmEventDO.class);
+        wrapper.gt(JobAlarmEventDO::getGmtLastAlarm, new Date(start));
+        wrapper.lt(JobAlarmEventDO::getGmtLastAlarm, new Date(end));
+        wrapper.eq(JobAlarmEventDO::getSubSystemId, subSystemId);
+        wrapper.eq(JobAlarmEventDO::getDeviceId, deviceId);
+        //数据缺失的条目不展示
+        wrapper.ne(JobAlarmEventDO::getAlarmType, 12);
+        //没有结束的数据
+        wrapper.ne(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.FINISHED);
+        return this.list(wrapper);
+    }
+
+    public Set<JobAlarmEventDO> listPointsWithAlarm(Long subSystemId, List<String> pointIds, Long start, Long end) {
+        LambdaQueryWrapper<JobAlarmEventDO> wrapper = Wrappers.lambdaQuery(JobAlarmEventDO.class);
+        wrapper.gt(JobAlarmEventDO::getGmtLastAlarm, new Date(start));
+        wrapper.lt(JobAlarmEventDO::getGmtLastAlarm, new Date(end));
+        wrapper.eq(JobAlarmEventDO::getSubSystemId, subSystemId);
+        //数据缺失的条目不展示
+        wrapper.ne(JobAlarmEventDO::getAlarmType, 12);
+        //没有结束的数据
+        wrapper.ne(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.FINISHED);
+        List<JobAlarmEventDO> list = this.list(wrapper);
+        if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        Set<JobAlarmEventDO> alarmEvents = new TreeSet<>(Comparator.comparing(JobAlarmEventDO::getPointIds));
+        list.stream().filter(x -> org.apache.commons.lang3.StringUtils.isNotBlank(x.getPointIds())).forEach(m -> addEvent(alarmEvents, m, pointIds));
+        return alarmEvents;
+    }
+
+    private void addEvent(Set<JobAlarmEventDO> events, JobAlarmEventDO m, List<String> pointIds) {
+        List<String> pointIdList = retainAll(m.getPointIds(), pointIds);
+        if (org.apache.commons.collections4.CollectionUtils.isEmpty(pointIdList)) {
+            return;
+        }
+        m.setPointIds(pointIdList.get(0));
+        events.add(m);
+        if (pointIdList.size() == 1) {
+            return;
+        }
+        for (int i = 1; i < pointIdList.size(); i++) {
+            JobAlarmEventDO alarmEvent = new JobAlarmEventDO();
+            BeanUtils.copyProperties(m, alarmEvent);
+            alarmEvent.setPointIds(pointIdList.get(i));
+            events.add(alarmEvent);
+        }
+    }
+
+    private static List<String> retainAll(String sensorTagIds, List<String> pointIds) {
+        List<String> strings = Arrays.asList(sensorTagIds.split(SYMBOL_COMMA_EN));
+        return strings.stream().filter(x -> pointIds.contains(x)).collect(Collectors.toList());
     }
 }

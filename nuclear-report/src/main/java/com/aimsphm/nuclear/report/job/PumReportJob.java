@@ -46,7 +46,6 @@ public class PumReportJob implements Job {
                 try {
                     queryBO.setDeviceName(device.getDeviceName());
                     queryBO.setDeviceId(device.getId());
-                    queryBO.setReportName(device.getDeviceName() + "自动报告");
                     service.saveAutoReport(queryBO);
                 } catch (Exception e) {
                     log.error("device ->{} create report failed ：{}", device.getDeviceName(), e);

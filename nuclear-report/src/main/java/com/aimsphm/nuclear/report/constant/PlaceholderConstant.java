@@ -12,9 +12,13 @@ package com.aimsphm.nuclear.report.constant;
  */
 public class PlaceholderConstant {
     /**
+     * 设备编码
+     */
+    public static final String DEVICE_CODE = "#deviceCode#";
+    /**
      * 报告创建时间
      */
-    public static final String CREATE_DATE = "#createDate#";
+    public static final String RANGE_DATE = "#rangeDate#";
     /**
      * 报告名称
      */
@@ -50,11 +54,11 @@ public class PlaceholderConstant {
      */
     public static final String TABLE_ALARM_THRESHOLD = "#tableAlarmThreshold#";
     /**
-     * 图谱数据
+     * 动态阈值报警事件图
      */
-    public static final String PARAGRAPH_GRAPH_DATA_ITEMS = "#paragraphGraphDataItems#";
+    public static final String PARAGRAPH_GRAPH_DATA_ITEMS = "#paragraphAlarmEventList#";
     /**
-     * 诊断结果
+     * 融合诊断结果
      */
     public static final String PARAGRAPH_DIAGNOSIS_RESULTS = "#paragraphDiagnosisResults#";
     /**

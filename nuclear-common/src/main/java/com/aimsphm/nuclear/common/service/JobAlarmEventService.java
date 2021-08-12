@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Package: com.aimsphm.nuclear.ext.service
@@ -55,4 +56,15 @@ public interface JobAlarmEventService extends IService<JobAlarmEventDO> {
      * @return
      */
     Long getNewestEventIdByDeviceId(Long deviceId);
+
+    /**
+     * 获取报警事件列表
+     *
+     * @param subSystemId 子系统id
+     * @param deviceId    设备id
+     * @param start       开始时间
+     * @param end         结束时间
+     * @return
+     */
+    List<JobAlarmEventDO> listPointsWithAlarm(Long subSystemId, Long deviceId, Long start, Long end);
 }

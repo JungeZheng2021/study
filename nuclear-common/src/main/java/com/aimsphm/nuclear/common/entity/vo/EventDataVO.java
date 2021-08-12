@@ -32,4 +32,9 @@ public class EventDataVO extends HistoryDataWithThresholdVO {
 
     @ApiModelProperty(value = "测点名称", notes = "")
     private String pointName;
+
+    @ApiModelProperty(value = "报警类型", notes = "1:阈值 5：算法 51：残差(在报告中使用)")
+    private Integer alarmType;
+
+
 }

@@ -23,9 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @EnableAsync
 @EnableCaching
-@EnableScheduling
+//@EnableScheduling
 @SpringBootApplication(scanBasePackages = {"com.aimsphm.nuclear"})
-@MapperScan({"com.aimsphm.nuclear.*.mapper**"})
 @EnableTransactionManagement
 @EnableFeignClients(basePackages = {"com.aimsphm.nuclear"})
 public class ReportApplication {

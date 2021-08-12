@@ -66,5 +66,5 @@ public interface BizReportService extends IService<BizReportDO> {
      * @param reportId 报告id
      * @param status   指定状态
      */
-    void updateReportStatus(Long reportId, Integer status);
+    void updateReportStatus(Long reportId, Integer status, String cause);
 }

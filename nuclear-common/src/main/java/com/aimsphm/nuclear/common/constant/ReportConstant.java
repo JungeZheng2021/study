@@ -89,6 +89,10 @@ public class ReportConstant {
      */
     public static final String TEMPLATE_PIE_HTML_NAME = "Pie.html";
     /**
+     * 动态阈值报警详情图
+     */
+    public static final String TEMPLATE_LINE_DYNAMIC_THRESHOLD = "Line-dynamic-threshold.html";
+    /**
      * html中占位符
      * 名称;
      * 颜色表:['#ff0000', '#ff7700', '#60b720', '#999'];
@@ -105,6 +109,9 @@ public class ReportConstant {
     public static final String HTML_SERIES_DATA_NAME = "'#seriesDataName#'";
     public static final String HTML_SERIES_DATA = "'#seriesData#'";
     public static final String HTML_MARK_LINES_DATA = "'#markLinesData#'";
+
+    public static String HTML_OBJECT_DATA = "'#objectData#'";
+    public static String HTML_ALARM_TYPE = "'#alarmType#'";
 
     /**
      * 驱动在项目中的根路径
@@ -144,6 +151,10 @@ public class ReportConstant {
      * 判定后缀
      */
     public static final String FIX_DECIDE = "decide";
+    /**
+     * 阈值后缀
+     */
+    public static final String FIX_TH = "th";
     /**
      * 异常文字后缀
      */

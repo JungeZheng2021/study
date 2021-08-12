@@ -642,6 +642,54 @@ public class HBaseUtil {
     }
 
     /**
+     * 根据小时获取数据(时间戳秒级数据分3600列存储)
+     *
+     * @param tableName 表格名称
+     * @param tag       唯一标识
+     * @param startTime 开始行
+     * @param endTime   结束行
+     * @param family    列族
+     * @return
+     * @throws IOException
+     */
+    public List<List> listDataSWith3600Columns(String tableName, String tag, Long startTime, Long
+            endTime, String family) throws IOException {
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            Scan scan = new Scan();
+            scan.addFamily(Bytes.toBytes(family));
+            Long startRow = startTime / (1000 * 3600) * (1000 * 3600);
+            Long endRow = endTime / (1000 * 3600) * (1000 * 3600) + 1;
+            scan.withStartRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + startRow));
+            scan.withStopRow(Bytes.toBytes(tag + ROW_KEY_SEPARATOR + endRow));
+            ResultScanner scanner = table.getScanner(scan);
+
+            List<List> items = new ArrayList();
+            for (Result rs : scanner) {
+                for (Cell cell : rs.listCells()) {
+                    double value = Bytes.toDouble(CellUtil.cloneValue(cell));
+                    Long timestamp = cell.getTimestamp();
+                    //如果列的时间戳大于终点查询时间跳出
+                    if (timestamp > endTime) {
+                        break;
+                    }
+                    //如果列的时间戳小于开始时间直接丢弃
+                    if (timestamp < startTime) {
+                        continue;
+                    }
+                    List<Object> item = Lists.newArrayList();
+                    item.add(timestamp);
+                    item.add(value);
+                    items.add(item);
+                }
+            }
+            return items;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
      * @param tableName  表格名称
      * @param start      开始rowKey
      * @param end        结束rowKey

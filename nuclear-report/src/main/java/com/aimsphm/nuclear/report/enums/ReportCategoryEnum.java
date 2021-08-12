@@ -32,6 +32,10 @@ public enum ReportCategoryEnum {
      */
     , LINE_NONE_PI(14)
     /**
+     * 有报警事件的测点需要画趋势图
+     */
+    , LINE_DYNAMIC_THRESHOLD(15)
+    /**
      * 柱状图
      */
     , BAR(2)

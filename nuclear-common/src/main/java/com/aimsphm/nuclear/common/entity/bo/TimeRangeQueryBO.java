@@ -3,6 +3,8 @@ package com.aimsphm.nuclear.common.entity.bo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @Package: com.aimsphm.nuclear.common.entity.bo
  * @Description: <时间区间查询>
@@ -14,7 +16,8 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-public class TimeRangeQueryBO {
+public class TimeRangeQueryBO implements Serializable {
+    private static final long serialVersionUID = -5360205367689511954L;
     @ApiModelProperty(value = "开始时间")
     private Long start;
     @ApiModelProperty(value = "结束时间")
