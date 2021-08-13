@@ -52,7 +52,7 @@ public class FanWordUtils {
 //        if (flag) {
 //            return;
 //        }
-        FileInputStream is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\templates\\template-dvc.docx"));
+        FileInputStream is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\templates\\template-rcv.docx"));
 //        FileInputStream is = new FileInputStream(new File("D:\\Desktop\\demo2.docx"));
 //        FileInputStream is = new FileInputStream(new File("D:\\Desktop\\template-turbine1.docx"));
 //        File image = new File("D:\\Desktop\\work\\2021年2月26日 184224田湾部署\\test.png");
@@ -253,7 +253,6 @@ public class FanWordUtils {
         run.addCarriageReturn();
         int tabSize = 2;
         for (FaultReasoningVO reasoning : reasoningList) {
-//            run.setBold(true);
             run.setFontSize(11);
             addTab(run, tabSize - 1);
             run.setText(" ■ ", -1);
@@ -270,13 +269,14 @@ public class FanWordUtils {
             run.setText("故障征兆：", -1);
             run.addCarriageReturn();
             List<AlgorithmNormalFaultFeatureVO> features = reasoning.getFeatures();
-            for (int i = 0; i < features.size(); i++) {
-                AlgorithmNormalFaultFeatureVO featureVO = features.get(i);
-                addTab(run, tabSize + 1);
-                run.setText(i + 1 + ". [" + featureVO.getComponentName() + "] " + featureVO.getFeatureName() + FeatureTypeEnum.getDescByValue(featureVO.getFeatureType()), -1);
-                run.addCarriageReturn();
+            if (CollectionUtils.isNotEmpty(features)) {
+                for (int i = 0; i < features.size(); i++) {
+                    AlgorithmNormalFaultFeatureVO featureVO = features.get(i);
+                    addTab(run, tabSize + 1);
+                    run.setText(i + 1 + ". [" + featureVO.getComponentName() + "] " + featureVO.getFeatureName() + FeatureTypeEnum.getDescByValue(featureVO.getFeatureType()), -1);
+                    run.addCarriageReturn();
+                }
             }
-
             addTab(run, tabSize);
             run.setText("故障原因：", -1);
             run.addCarriageReturn();
@@ -327,7 +327,7 @@ public class FanWordUtils {
                     if (j == 0) {
                         String alias = Objects.isNull(configDO.getRemark()) ? BLANK : configDO.getRemark();
                         String pointId = Objects.isNull(configDO.getPointIds()) ? BLANK : configDO.getPointIds();
-                        run.setText(String.format("●（%s）%s%s", (j + 1), alias, pointId), -1);
+                        run.setText(String.format("●（%s）%s(%s)", (j + 1), pointId, alias), -1);
                     }
                     run.addCarriageReturn();
                     WordUtils.addPicture(run, configDO.getImage(), null);

@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -201,7 +200,6 @@ public class FanReportDataServiceImpl implements ReportDataService {
         HistoryDataWithThresholdVO vo = data.get(pointId);
         eventVO.setAlias(vo.getAlias());
         eventVO.setPointId(vo.getPointId());
-//        BeanUtils.copyProperties(vo, eventVO);
         //报警测点-阈值
         eventVO.setAlarmData(realtimeList.get(pointId));
         //实际值
@@ -213,24 +211,33 @@ public class FanReportDataServiceImpl implements ReportDataService {
             //算法数据
             Map<String, EventDataVO> eventData = listRealtimeHistoryFromServer(queryBO.getQuery(), query.getDeviceId(), Lists.newArrayList(pointId));
             EventDataVO dataVO = eventData.get(pointId);
-            EventDataVO dataVoNone = new EventDataVO();
             if (Objects.isNull(dataVO) || CollectionUtils.isEmpty(dataVO.getActualData())) {
                 return null;
             }
+            clearThresholdInfo(dataVO);
             log.info("算法数据： pointId: {}, start: {},end: {}", pointId, DateUtils.format(query.getStartTime()), DateUtils.format(query.getEndTime()));
             //报警测点-算法
             QueryBO<JobAlarmRealtimeDO> doQueryBO = initialQuery(x, query, AlarmTypeEnum.ALGORITHM);
             Map<String, List<Long>> realtimeEvent = realtimeService.listJobAlarmRealtimeWithParams(doQueryBO, Lists.newArrayList(pointId));
             if (MapUtils.isNotEmpty(realtimeEvent)) {
-                dataVoNone.setAlarmData(realtimeEvent.get(pointId));
-                dataVoNone.setAlarmType(AlarmTypeEnum.ALGORITHM.getValue());
-                setImages(x.getEventName(), result, config, dataVoNone, "参数自回归估计值");
+                dataVO.setAlarmData(realtimeEvent.get(pointId));
+                dataVO.setAlarmType(AlarmTypeEnum.ALGORITHM.getValue());
+                setImages(x.getEventName(), result, config, dataVO, "参数自回归估计值");
             }
             //残差值
-            dataVoNone.setAlarmType(51);
-            setImages(x.getEventName(), result, config, dataVoNone, "参数自回归残差值");
+            dataVO.setAlarmType(51);
+            setImages(x.getEventName(), result, config, dataVO, "参数自回归残差值");
         }
         return result;
+    }
+
+    private void clearThresholdInfo(EventDataVO dataVO) {
+        dataVO.setEarlyWarningLow(null);
+        dataVO.setEarlyWarningHigh(null);
+        dataVO.setThresholdHigh(null);
+        dataVO.setThresholdHigher(null);
+        dataVO.setThresholdLow(null);
+        dataVO.setThresholdLower(null);
     }
 
     private void setImages(String eventName, Map<String, List<BizReportConfigDO>> result, BizReportConfigDO config, EventDataVO eventVO, String imageName) {
@@ -293,18 +300,15 @@ public class FanReportDataServiceImpl implements ReportDataService {
         if (MapUtils.isEmpty(data)) {
             return;
         }
-        CommonMeasurePointDO point = new CommonMeasurePointDO();
         List<List<List<Object>>> collect = pointIdList.stream().map(x -> {
             HistoryDataWithThresholdVO vo = data.get(x);
             if (Objects.isNull(vo) || CollectionUtils.isEmpty(vo.getChartData())) {
                 return null;
             }
-            point.setPointId(x);
-            BeanUtils.copyProperties(vo, point);
             return vo.getChartData();
         }).collect(Collectors.toList());
         try {
-            File imag = this.fileService.getImageFileWithData(config, collect, point);
+            File imag = this.fileService.getImageFileWithData(config, collect, null);
             if (Objects.nonNull(imag)) {
                 config.setImage(imag);
             }
@@ -322,7 +326,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
             }
             return response.getData();
         } catch (Exception e) {
-            log.error("history trend data ");
+            log.error("history trend data failed ....{}", pointIdList);
         }
         return null;
     }
