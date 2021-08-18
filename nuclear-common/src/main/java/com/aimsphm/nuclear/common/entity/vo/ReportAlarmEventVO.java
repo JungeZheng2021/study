@@ -22,5 +22,5 @@ public class ReportAlarmEventVO {
     private String eventName;
 
     @ApiModelProperty(value = "图片集合", notes = "")
-    private List<Map<String, List<BizReportConfigDO>>> images;
+    private Map<String, List<BizReportConfigDO>> images;
 }

@@ -17,6 +17,10 @@ import java.util.Objects;
  * @Version: 1.0
  */
 public final class BigDecimalUtils {
+    public static void main(String[] args) {
+        Double format = BigDecimalUtils.format(0, 4);
+        System.out.println(format);
+    }
 
     /**
      * 默认保存1位小数

@@ -26,6 +26,9 @@ public class MeasurePointVO extends CommonMeasurePointDO {
     @ApiModelProperty(value = "测点值", notes = "")
     private Double value;
 
+    @ApiModelProperty(value = "数据生成时间", notes = "")
+    private String valueDate;
+
     @ApiModelProperty(value = "测点状态", notes = "")
     private Byte status;
 

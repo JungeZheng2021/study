@@ -53,6 +53,9 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     private static final String WEB_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static void main(String[] args) {
+        long until = until(System.currentTimeMillis() - 8 * 86400 * 1000, System.currentTimeMillis(), ChronoUnit.DAYS);
+        System.out.println(until);
+
         Long aLong = plusHoursMaxValue(-2L);
         String format = format(YEAR_MONTH_DAY_HH_MM_SS_I, aLong);
         System.out.println(format);
@@ -464,7 +467,6 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static long until(Long startTime, Long endTime, TemporalUnit unit) {
         return until(new Date(startTime), new Date(endTime), unit);
     }
-
 
     /**
      * 获取当前月份最后一天

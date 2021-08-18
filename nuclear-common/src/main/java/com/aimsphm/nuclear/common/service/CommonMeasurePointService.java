@@ -92,11 +92,11 @@ public interface CommonMeasurePointService extends IService<CommonMeasurePointDO
 
     /**
      * 更新点位信息
-     *
-     * @param vo    点的基本信息
+     *  @param vo    点的基本信息
      * @param value 对应的value值
+     * @param timestamp
      */
-    void store2Redis(MeasurePointVO vo, Double value);
+    void store2Redis(MeasurePointVO vo, Double value, Long timestamp);
 
     /**
      * 获取点存储在redis中的key

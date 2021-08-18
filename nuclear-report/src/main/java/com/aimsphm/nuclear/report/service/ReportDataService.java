@@ -27,4 +27,12 @@ public interface ReportDataService {
      * @return
      */
     Map<String, Object> getAllReportData(ReportQueryBO query);
+
+    /**
+     * 获取油液数据
+     *
+     * @param deviceId
+     * @param data
+     */
+    void storeOilPointValue(Long deviceId, Map<String, Object> data);
 }

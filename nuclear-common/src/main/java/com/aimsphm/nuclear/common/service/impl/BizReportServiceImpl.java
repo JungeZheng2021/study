@@ -115,6 +115,7 @@ public class BizReportServiceImpl extends ServiceImpl<BizReportMapper, BizReport
     public BizReportDO getReport(ReportQueryBO query) {
         LambdaQueryWrapper<BizReportDO> wrapper = Wrappers.lambdaQuery(BizReportDO.class);
         wrapper.eq(BizReportDO::getSubSystemId, query.getSubSystemId())
+                .eq(BizReportDO::getDeviceId, query.getDeviceId())
                 .eq(BizReportDO::getStatus, DataStatusEnum.RUNNING.getValue());
         wrapper.last("limit 1");
         return this.getOne(wrapper);

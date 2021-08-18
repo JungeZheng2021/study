@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.report.util;
 
 import com.aimsphm.nuclear.common.constant.ReportConstant;
-import com.aimsphm.nuclear.common.entity.AlgorithmRulesConclusionDO;
 import com.aimsphm.nuclear.common.entity.BizReportConfigDO;
 import com.aimsphm.nuclear.common.entity.vo.AlgorithmNormalFaultFeatureVO;
 import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
@@ -9,7 +8,6 @@ import com.aimsphm.nuclear.common.entity.vo.ReportAlarmEventVO;
 import com.aimsphm.nuclear.common.entity.vo.ReportFaultReasoningVO;
 import com.aimsphm.nuclear.common.enums.FeatureTypeEnum;
 import com.aimsphm.nuclear.common.util.DateUtils;
-import com.aimsphm.nuclear.report.entity.vo.GraphDataItemVO;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -18,19 +16,20 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlCursor;
-import org.mortbay.log.Log;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTEmpty;
 import org.springframework.stereotype.Component;
 
-import java.beans.DesignMode;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 import static com.aimsphm.nuclear.common.constant.ReportConstant.BLANK;
 import static com.aimsphm.nuclear.common.constant.ReportConstant.WORD_BLANK;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.HASH;
+import static com.aimsphm.nuclear.common.constant.SymbolConstant.SPACE;
 import static com.aimsphm.nuclear.report.constant.PlaceholderConstant.PARAGRAPH_DIAGNOSIS_RESULTS;
-import static org.apache.poi.xwpf.usermodel.BreakType.*;
+import static com.aimsphm.nuclear.report.constant.PlaceholderConstant.PARAGRAPH_GRAPH_DATA_ITEMS;
 
 
 /**
@@ -69,6 +68,7 @@ public class FanWordUtils {
 
 
         test(data);
+        demo(data);
         BizReportConfigDO configDO = new BizReportConfigDO();
         configDO.setPlaceholder("#picRunningStatus#");
 //        configDO.setImage(image);
@@ -105,6 +105,13 @@ public class FanWordUtils {
         System.out.println(s);
         List<ReportFaultReasoningVO> reportFaultReasoningVOS = JSON.parseArray(s, ReportFaultReasoningVO.class);
         data.put(PARAGRAPH_DIAGNOSIS_RESULTS, reportFaultReasoningVOS);
+    }
+
+    private static void demo(Map<String, Object> data) {
+        String s = "[{\"eventName\":\"泵驱动端\",\"images\":{\"TW1RCV240MV\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot4663257404070570888.png\",\"pointIds\":\"TW1RCV240MV\",\"remark\":\"泵驱动端轴承振动\",\"title\":\"泵驱动端轴承振动实时数据\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot5187643431198984829.png\",\"pointIds\":\"TW1RCV240MV\",\"remark\":\"泵驱动端轴承振动\",\"title\":\"泵驱动端轴承振动参数自回归估计值\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot689965337317478253.png\",\"pointIds\":\"TW1RCV240MV\",\"remark\":\"泵驱动端轴承振动\",\"title\":\"泵驱动端轴承振动参数自回归残差值\"}],\"5M2RCV240MS-N-raw-stressWaveStrength\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot4309615434900271361.png\",\"pointIds\":\"5M2RCV240MS-N-raw-stressWaveStrength\",\"remark\":\"泵驱动端轴承声强-N声波强度\",\"title\":\"泵驱动端轴承声强-N声波强度实时数据\"}],\"5M2RCV240MV-N-vec-Rms\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot8579005503490138017.png\",\"pointIds\":\"5M2RCV240MV-N-vec-Rms\",\"remark\":\"泵驱动端轴承振动-N通频值\",\"title\":\"泵驱动端轴承振动-N通频值实时数据\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot7761695180506967482.png\",\"pointIds\":\"5M2RCV240MV-N-vec-Rms\",\"remark\":\"泵驱动端轴承振动-N通频值\",\"title\":\"泵驱动端轴承振动-N通频值参数自回归估计值\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot3020700030873522861.png\",\"pointIds\":\"5M2RCV240MV-N-vec-Rms\",\"remark\":\"泵驱动端轴承振动-N通频值\",\"title\":\"泵驱动端轴承振动-N通频值参数自回归残差值\"}]}},{\"eventName\":\"泵非驱动端\",\"images\":{\"TW1RCV241MV\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot1054045441427823598.png\",\"pointIds\":\"TW1RCV241MV\",\"remark\":\"泵非驱动端轴承振动\",\"title\":\"泵非驱动端轴承振动实时数据\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot3262110023630006662.png\",\"pointIds\":\"TW1RCV241MV\",\"remark\":\"泵非驱动端轴承振动\",\"title\":\"泵非驱动端轴承振动参数自回归估计值\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot7181083528529605076.png\",\"pointIds\":\"TW1RCV241MV\",\"remark\":\"泵非驱动端轴承振动\",\"title\":\"泵非驱动端轴承振动参数自回归残差值\"}],\"5M2RCV241MV-N-vec-Rms\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot4793369533760853843.png\",\"pointIds\":\"5M2RCV241MV-N-vec-Rms\",\"remark\":\"泵非驱动端轴承振动-N通频值\",\"title\":\"泵非驱动端轴承振动-N通频值实时数据\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot4559130627489170605.png\",\"pointIds\":\"5M2RCV241MV-N-vec-Rms\",\"remark\":\"泵非驱动端轴承振动-N通频值\",\"title\":\"泵非驱动端轴承振动-N通频值参数自回归估计值\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot5613300996878057224.png\",\"pointIds\":\"5M2RCV241MV-N-vec-Rms\",\"remark\":\"泵非驱动端轴承振动-N通频值\",\"title\":\"泵非驱动端轴承振动-N通频值参数自回归残差值\"}]}}]";
+        System.out.println(s);
+        List<ReportAlarmEventVO> imageList = JSON.parseArray(s, ReportAlarmEventVO.class);
+        data.put(PARAGRAPH_GRAPH_DATA_ITEMS, imageList);
     }
 
     public void operationPlaceholderInWord(XWPFDocument doc, Map<String, Object> data) throws Exception {
@@ -224,7 +231,7 @@ public class FanWordUtils {
         for (int i = 0; i < data.size(); i++) {
             Object x = data.get(i);
             if (x instanceof ReportAlarmEventVO) {
-                fillReportAlarmEventVOImages(run, (ReportAlarmEventVO) x);
+                fillReportAlarmEventVOImages(i + 1, run, (ReportAlarmEventVO) x);
             }
             if (x instanceof ReportFaultReasoningVO) {
                 fillReportFaultReasoning(i + 1, run, (ReportFaultReasoningVO) x);
@@ -308,30 +315,28 @@ public class FanWordUtils {
     /**
      * 生成动态阈值报警图片
      *
+     * @param index
      * @param run
      * @param item
      */
-    private void fillReportAlarmEventVOImages(XWPFRun run, ReportAlarmEventVO item) {
-        List<Map<String, List<BizReportConfigDO>>> images = item.getImages();
-        for (int i = 0, len = images.size(); i < len; i++) {
-            Map<String, List<BizReportConfigDO>> map = images.get(i);
-            Set<Map.Entry<String, List<BizReportConfigDO>>> entries = map.entrySet();
-            for (Iterator<Map.Entry<String, List<BizReportConfigDO>>> it = entries.iterator(); it.hasNext(); ) {
-                Map.Entry<String, List<BizReportConfigDO>> next = it.next();
-                String key = next.getKey();
-                List<BizReportConfigDO> value = next.getValue();
-                run.setText("1.4." + (i + 1) + key, -1);
-                run.addCarriageReturn();
-                for (int j = 0; j < value.size(); j++) {
-                    BizReportConfigDO configDO = value.get(j);
-                    if (j == 0) {
-                        String alias = Objects.isNull(configDO.getRemark()) ? BLANK : configDO.getRemark();
-                        String pointId = Objects.isNull(configDO.getPointIds()) ? BLANK : configDO.getPointIds();
-                        run.setText(String.format("●（%s）%s(%s)", (j + 1), pointId, alias), -1);
-                    }
+    private void fillReportAlarmEventVOImages(int index, XWPFRun run, ReportAlarmEventVO item) {
+        Map<String, List<BizReportConfigDO>> map = item.getImages();
+        Set<Map.Entry<String, List<BizReportConfigDO>>> entries = map.entrySet();
+        run.setText("1.4." + index + SPACE + item.getEventName(), -1);
+        run.addCarriageReturn();
+        int i = 1;
+        for (Iterator<Map.Entry<String, List<BizReportConfigDO>>> it = entries.iterator(); it.hasNext(); ) {
+            Map.Entry<String, List<BizReportConfigDO>> next = it.next();
+            List<BizReportConfigDO> value = next.getValue();
+            for (int j = 0; j < value.size(); j++) {
+                BizReportConfigDO configDO = value.get(j);
+                if (j == 0) {
+                    String alias = Objects.isNull(configDO.getRemark()) ? BLANK : configDO.getRemark();
+//                        String pointId = Objects.isNull(configDO.getPointIds()) ? BLANK : configDO.getPointIds();
+                    run.setText(String.format("（%s）%s", (i++), alias), -1);
                     run.addCarriageReturn();
-                    WordUtils.addPicture(run, configDO.getImage(), null);
                 }
+                WordUtils.addPicture(run, configDO.getImage(), null);
             }
         }
     }

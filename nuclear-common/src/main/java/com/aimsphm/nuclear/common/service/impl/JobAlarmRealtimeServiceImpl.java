@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.hbase.thirdparty.com.google.common.collect.Maps;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -107,7 +108,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
         wrapper.in(JobAlarmRealtimeDO::getPointId, pointIds);
         List<JobAlarmRealtimeDO> list = this.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
-            return null;
+            return Maps.newHashMap();
         }
         return list.stream().collect(Collectors.groupingBy(JobAlarmRealtimeDO::getPointId, Collectors.mapping(m -> m.getGmtAlarmTime().getTime(), Collectors.toList())));
     }

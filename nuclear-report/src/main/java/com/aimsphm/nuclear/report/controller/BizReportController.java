@@ -5,6 +5,7 @@ import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ReportQueryBO;
 import com.aimsphm.nuclear.common.service.BizReportService;
+import com.aimsphm.nuclear.report.service.ReportDataService;
 import com.aimsphm.nuclear.report.service.ReportService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -80,5 +83,16 @@ public class BizReportController {
         reportService.saveManualReport(query);
         long l = System.currentTimeMillis() - currentTimeMillis;
         log.debug("共计用时：{}", l);
+    }
+
+    @Resource
+    private ReportDataService dataService;
+
+    @GetMapping("test/{deviceId}")
+    @ApiOperation(value = "获取油液数据")
+    public Map<String, Object> oilData(@PathVariable Long deviceId) {
+        Map<String, Object> data = new HashMap<>(16);
+        dataService.storeOilPointValue(deviceId, data);
+        return data;
     }
 }

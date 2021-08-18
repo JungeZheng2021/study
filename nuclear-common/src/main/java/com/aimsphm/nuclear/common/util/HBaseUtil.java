@@ -351,6 +351,7 @@ public class HBaseUtil {
         return this.selectData(tableName, rowKey, family, null);
     }
 
+
     /**
      * 查找一行记录
      *
@@ -684,6 +685,41 @@ public class HBaseUtil {
                 }
             }
             return items;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    public void deleteDataWith3600Columns(String tableName, String sensorCode, Long startTime, Long endTime, String family) throws IOException {
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            Scan scan = new Scan();
+            scan.addFamily(Bytes.toBytes(family));
+            Long startRow = startTime / (1000 * 3600) * (1000 * 3600);
+            Long endRow = endTime / (1000 * 3600) * (1000 * 3600) + 1;
+            scan.withStartRow(Bytes.toBytes(sensorCode + ROW_KEY_SEPARATOR + startRow));
+            scan.withStopRow(Bytes.toBytes(sensorCode + ROW_KEY_SEPARATOR + endRow));
+            ResultScanner scanner = table.getScanner(scan);
+            List<Double> objects = Lists.newArrayList();
+            Map<Double, Delete> deleteList = Maps.newHashMap();
+            for (Result rs : scanner) {
+                for (Cell cell : rs.listCells()) {
+                    Long timestamp = cell.getTimestamp();
+                    Double value = Bytes.toDouble(CellUtil.cloneValue(cell));
+                    //如果列的时间戳大于终点查询时间跳出
+                    if (timestamp > endTime) {
+                        break;
+                    }
+                    //如果列的时间戳小于开始时间直接丢弃
+                    if (timestamp < startTime) {
+                        continue;
+                    }
+                    objects.add(value);
+                    Delete delete = new Delete(rs.getRow());
+                    delete.addColumn(CellUtil.cloneFamily(cell), CellUtil.cloneQualifier(cell));
+                    table.delete(delete);
+                }
+            }
         } catch (IOException e) {
             throw e;
         }
@@ -1079,6 +1115,22 @@ public class HBaseUtil {
         try (Table table = connection.getTable(name)) {
             Delete d = new Delete(rowKey.getBytes()).addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier));
             table.delete(d);
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * 删除多个记录
+     *
+     * @param tableName  表名
+     * @param deleteList 删除列表
+     */
+    public void deleteBatch(String tableName, List<Delete> deleteList) throws
+            IOException {
+        TableName name = TableName.valueOf(tableName);
+        try (Table table = connection.getTable(name)) {
+            table.delete(deleteList);
         } catch (IOException e) {
             throw e;
         }

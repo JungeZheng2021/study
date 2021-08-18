@@ -16,6 +16,7 @@ import com.aimsphm.nuclear.ext.service.RedisDataService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
@@ -43,6 +44,7 @@ import static com.aimsphm.nuclear.common.constant.SymbolConstant.ZERO;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class MonitoringServiceImpl implements MonitoringService {
@@ -246,15 +248,12 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     @Override
     public Map<Integer, Long> listRunningDuration(Long deviceId, TimeRangeQueryBO range) {
+        checkRangeTime(range);
         Long startTime = range.getStart();
         LambdaQueryWrapper<JobDeviceStatusDO> wrapper = Wrappers.lambdaQuery(JobDeviceStatusDO.class);
         wrapper.eq(JobDeviceStatusDO::getDeviceId, deviceId);
-        if (Objects.nonNull(range.getEnd())) {
-            wrapper.and(e -> e.le(JobDeviceStatusDO::getGmtEnd, new Date(range.getEnd())).or(d -> d.isNull(JobDeviceStatusDO::getGmtEnd)));
-        }
-        if (Objects.nonNull(startTime)) {
-            wrapper.apply("ifNull(gmt_end,now())>{0}", new Date(startTime));
-        }
+        wrapper.and(e -> e.and(x -> x.ge(JobDeviceStatusDO::getGmtModified, new Date(range.getStart()))).le(JobDeviceStatusDO::getGmtModified, new Date(range.getEnd()))
+                .or(x -> x.isNull(JobDeviceStatusDO::getGmtEnd).le(JobDeviceStatusDO::getGmtStart, new Date(range.getStart()))));
         List<JobDeviceStatusDO> list = statusService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return null;
@@ -271,7 +270,8 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (Objects.isNull(last.getGmtEnd())) {
             long time = last.getGmtStart().getTime();
             Integer status = last.getStatus();
-            collect.put(status, System.currentTimeMillis() - (time >= (Objects.isNull(startTime) ? 0 : startTime) ? time : startTime) + collect.get(status));
+            long l = range.getEnd() - (time >= (Objects.isNull(startTime) ? 0 : startTime) ? time : startTime);
+            collect.put(status, l + collect.get(status));
         }
         return collect;
     }
@@ -362,7 +362,7 @@ public class MonitoringServiceImpl implements MonitoringService {
                 BeanUtils.copyProperties(find, vo);
             }
             BeanUtils.copyProperties(item, vo);
-            pointService.store2Redis(vo, defaultValue ? new Random().nextDouble() : null);
+            pointService.store2Redis(vo, defaultValue ? new Random().nextDouble() : null, System.currentTimeMillis());
         });
         return redisDataService.listPointByRedisKey(list.stream().map(item -> pointService.getStoreKey(item)).collect(Collectors.toSet()));
     }

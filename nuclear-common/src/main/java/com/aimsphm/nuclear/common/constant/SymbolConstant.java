@@ -15,6 +15,12 @@ public final class SymbolConstant {
      * 业务中的中划线
      */
     public static final String DASH = "-";
+
+    /**
+     * 空格
+     */
+    public static final String SPACE = " ";
+
     /**
      * 下划线
      */
@@ -101,7 +107,6 @@ public final class SymbolConstant {
     String SEMICOLON = ";";
     String SINGLE_QUOTE = "'";
     String BACKTICK = "`";
-    String SPACE = " ";
     String TILDA = "~";
     String TRUE = "true";
     String UTF_8 = "UTF-8";

@@ -160,8 +160,11 @@ public class FanReportDataServiceImpl implements ReportDataService {
             log.info("execute ....{}", pointIds);
             List<String> pointIdList = Arrays.asList(pointIds.split(SYMBOL_COMMA_EN));
             Map<String, Long> modelIdPointId = pointService.listPointByDeviceIdInModel(pointIdList);
-            List<Map<String, List<BizReportConfigDO>>> images = pointIdList.stream().map(pointId -> getDynamicDiagnoseImage(pointId, modelIdPointId, x, config, query)).filter(MapUtils::isNotEmpty).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(images)) {
+
+            HashSet<String> pointIdSet = new HashSet<>(pointIdList);
+            Map<String, List<BizReportConfigDO>> images = new HashMap<>(16);
+            pointIdSet.stream().forEach(pointId -> getDynamicDiagnoseImage(pointId, images, modelIdPointId, x, config, query));
+            if (MapUtils.isNotEmpty(images)) {
                 ReportAlarmEventVO vo = new ReportAlarmEventVO();
                 vo.setEventName(x.getEventName());
                 vo.setImages(images);
@@ -183,8 +186,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
         data.put(PARAGRAPH_DIAGNOSIS_RESULTS, reasoningList);
     }
 
-    private Map<String, List<BizReportConfigDO>> getDynamicDiagnoseImage(String pointId, Map<String, Long> modelIdPointId, JobAlarmEventDO x, BizReportConfigDO config, ReportQueryBO query) {
-        Map<String, List<BizReportConfigDO>> result = new HashMap<>(16);
+    private Map<String, List<BizReportConfigDO>> getDynamicDiagnoseImage(String pointId, Map<String, List<BizReportConfigDO>> result, Map<String, Long> modelIdPointId, JobAlarmEventDO x, BizReportConfigDO config, ReportQueryBO query) {
         //测点在不在模型中
         Long modelId = modelIdPointId.get(pointId);
         EventDataVO eventVO = new EventDataVO();
@@ -205,7 +207,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
         //实际值
         eventVO.setActualData(vo.getChartData());
         eventVO.setAlarmType(AlarmTypeEnum.THRESHOLD.getValue());
-        setImages(x.getEventName(), result, config, eventVO, "实时数据");
+        setImages(result, config, eventVO, "实时数据");
         //参数自回归
         if (Objects.nonNull(modelId) && modelId != -1) {
             //算法数据
@@ -222,11 +224,11 @@ public class FanReportDataServiceImpl implements ReportDataService {
             if (MapUtils.isNotEmpty(realtimeEvent)) {
                 dataVO.setAlarmData(realtimeEvent.get(pointId));
                 dataVO.setAlarmType(AlarmTypeEnum.ALGORITHM.getValue());
-                setImages(x.getEventName(), result, config, dataVO, "参数自回归估计值");
+                setImages(result, config, dataVO, "参数自回归估计值");
             }
             //残差值
             dataVO.setAlarmType(51);
-            setImages(x.getEventName(), result, config, dataVO, "参数自回归残差值");
+            setImages(result, config, dataVO, "参数自回归残差值");
         }
         return result;
     }
@@ -240,7 +242,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
         dataVO.setThresholdLower(null);
     }
 
-    private void setImages(String eventName, Map<String, List<BizReportConfigDO>> result, BizReportConfigDO config, EventDataVO eventVO, String imageName) {
+    private void setImages(Map<String, List<BizReportConfigDO>> result, BizReportConfigDO config, EventDataVO eventVO, String imageName) {
         try {
             config.setTitle(imageName);
             File img = fileService.getImageFileWithData(config, eventVO, null);
@@ -253,10 +255,10 @@ public class FanReportDataServiceImpl implements ReportDataService {
                 item.setPointIds(eventVO.getPointId());
                 //测点别名
                 item.setRemark(eventVO.getAlias());
-                List<BizReportConfigDO> dos = result.get(eventName);
+                List<BizReportConfigDO> dos = result.get(eventVO.getPointId());
                 if (Objects.isNull(dos)) {
                     dos = new ArrayList<>();
-                    result.put(eventName, dos);
+                    result.put(eventVO.getPointId(), dos);
                 }
                 dos.add(item);
             }
@@ -368,12 +370,16 @@ public class FanReportDataServiceImpl implements ReportDataService {
                 case 2:
                     ////测点类型饼图
                     List<LabelVO> typeList = CollectionUtils.isNotEmpty(lists) ? lists.get(0) : Lists.newArrayList();
-                    image = fileService.getImageFileWithData(config, typeList, null);
+                    if (CollectionUtils.isNotEmpty(typeList)) {
+                        image = fileService.getImageFileWithData(config, typeList, null);
+                    }
                     break;
                 case 3:
 //                    事件级别饼图
                     List<LabelVO> levelList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 2 ? lists.get(1) : Lists.newArrayList();
-                    image = fileService.getImageFileWithData(config, levelList, null);
+                    if (CollectionUtils.isNotEmpty(levelList)) {
+                        image = fileService.getImageFileWithData(config, levelList, null);
+                    }
                     break;
                 case 4:
                     //算法报警趋势//趋势柱状图
@@ -447,7 +453,8 @@ public class FanReportDataServiceImpl implements ReportDataService {
      * @param deviceId
      * @param data
      */
-    private void storeOilPointValue(Long deviceId, Map<String, Object> data) {
+    @Override
+    public void storeOilPointValue(Long deviceId, Map<String, Object> data) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
         wrapper.eq(CommonMeasurePointDO::getDeviceId, deviceId).eq(CommonMeasurePointDO::getCategory, PointCategoryEnum.OIL_QUALITY.getValue());
         List<MeasurePointVO> pointVOList = monitoringService.listPointByWrapper(wrapper);

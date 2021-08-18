@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -108,7 +107,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (CollectionUtils.isEmpty(vos)) {
             return;
         }
-        vos.stream().forEach(item -> store2Redis(item, value));
+        vos.stream().forEach(item -> store2Redis(item, value, timestamp));
         //缓存指定长度的队列
         cacheQueueData(vos, timestamp);
     }
@@ -453,7 +452,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     }
 
     @Override
-    public void store2Redis(MeasurePointVO vo, Double value) {
+    public void store2Redis(MeasurePointVO vo, Double value, Long timestamp) {
         if (Objects.nonNull(value)) {
             vo.setValue(value);
         }
@@ -465,6 +464,8 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
                 vo.setStatusCause(vo.getStatusCause() + vo.getUnit());
             }
         }
+        //数据产生时间
+        vo.setValueDate(DateUtils.format(timestamp));
         String storeKey = getStoreKey(vo);
         redis.opsForValue().set(storeKey, vo);
     }
