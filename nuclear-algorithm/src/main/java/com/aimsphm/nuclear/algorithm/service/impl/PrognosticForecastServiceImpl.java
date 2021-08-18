@@ -7,7 +7,7 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.PrognosticForecastService;
 import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.service.AlgorithmPrognosticFaultFeatureService;
-import com.aimsphm.nuclear.common.service.BizDownSampleService;
+import com.aimsphm.nuclear.common.service.JobDownSampleService;
 import com.aimsphm.nuclear.common.service.CommonComponentService;
 import com.aimsphm.nuclear.common.service.JobForecastResultService;
 import com.alibaba.fastjson.JSON;
@@ -53,7 +53,7 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
     private AlgorithmHandlerService handlerService;
 
     @Resource
-    private BizDownSampleService downSampleService;
+    private JobDownSampleService downSampleService;
 
     @Override
     public void prognosticForecastByComponentId(Long componentId) {
@@ -89,9 +89,9 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
             return featureDO;
         }).filter(Objects::nonNull).collect(Collectors.toList());
         try {
-            LambdaQueryWrapper<BizDownSampleDO> query = Wrappers.lambdaQuery(BizDownSampleDO.class);
-            query.eq(BizDownSampleDO::getComponentId, componentId);
-            List<BizDownSampleDO> list = downSampleService.list(query);
+            LambdaQueryWrapper<JobDownSampleDO> query = Wrappers.lambdaQuery(JobDownSampleDO.class);
+            query.eq(JobDownSampleDO::getComponentId, componentId);
+            List<JobDownSampleDO> list = downSampleService.list(query);
             if (CollectionUtils.isEmpty(list)) {
                 log.warn("this no data to invoker algorithm server");
                 return;

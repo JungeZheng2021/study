@@ -2,13 +2,10 @@ package com.aimsphm.nuclear.algorithm.controller;
 
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.service.*;
-import com.aimsphm.nuclear.algorithm.util.WhetherThreadLocal;
-import com.aimsphm.nuclear.common.entity.BizDownSampleDO;
+import com.aimsphm.nuclear.common.entity.JobDownSampleDO;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
-import com.aimsphm.nuclear.common.service.BizDownSampleService;
-import com.aimsphm.nuclear.common.util.DateUtils;
+import com.aimsphm.nuclear.common.service.JobDownSampleService;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +40,7 @@ public class AlgorithmController {
     @Resource
     private DownSampleService downSampleService;
     @Resource
-    private BizDownSampleService bizDownSampleService;
+    private JobDownSampleService bizDownSampleService;
     @Resource
     private FeatureExtractionOperationService featureExtractionService;
     @Resource
@@ -80,7 +77,7 @@ public class AlgorithmController {
     @GetMapping("test/sample")
     @ApiOperation(value = "手动降采样(一周)")
     public void downSampleService() {
-        List<BizDownSampleDO> list = bizDownSampleService.list();
+        List<JobDownSampleDO> list = bizDownSampleService.list();
         List<Long> collect = list.stream().map(x -> x.getId()).collect(Collectors.toList());
         bizDownSampleService.removeByIds(collect);
         IntStream.rangeClosed(-7 * 24, 0).forEach(x -> {

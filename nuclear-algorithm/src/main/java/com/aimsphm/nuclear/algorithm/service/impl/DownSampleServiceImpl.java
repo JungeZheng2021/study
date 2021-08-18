@@ -2,12 +2,12 @@ package com.aimsphm.nuclear.algorithm.service.impl;
 
 import com.aimsphm.nuclear.algorithm.service.DownSampleService;
 import com.aimsphm.nuclear.common.entity.AlgorithmPrognosticFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.BizDownSampleDO;
+import com.aimsphm.nuclear.common.entity.JobDownSampleDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.enums.TimeUnitEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.AlgorithmPrognosticFaultFeatureService;
-import com.aimsphm.nuclear.common.service.BizDownSampleService;
+import com.aimsphm.nuclear.common.service.JobDownSampleService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
@@ -49,7 +49,7 @@ public class DownSampleServiceImpl implements DownSampleService {
     @Resource
     private CommonMeasurePointService pointService;
     @Resource
-    private BizDownSampleService downSampleService;
+    private JobDownSampleService downSampleService;
     @Resource
     private HBaseUtil hBase;
 
@@ -90,12 +90,12 @@ public class DownSampleServiceImpl implements DownSampleService {
             List<List<Object>> lists = listHistoryDataByScan(point, start, end, (int) timesInHour);
             log.debug("query result:{}", JSON.toJSONString(lists));
             long arraySize = timeRangeValue / TimeUnitEnum.HOUR.getValue() * timesInHour;
-            LambdaQueryWrapper<BizDownSampleDO> w = Wrappers.lambdaQuery(BizDownSampleDO.class);
-            w.eq(BizDownSampleDO::getPointId, pointId).eq(BizDownSampleDO::getComponentId, x.getComponentId());
+            LambdaQueryWrapper<JobDownSampleDO> w = Wrappers.lambdaQuery(JobDownSampleDO.class);
+            w.eq(JobDownSampleDO::getPointId, pointId).eq(JobDownSampleDO::getComponentId, x.getComponentId());
             w.last("limit 1");
-            BizDownSampleDO one = downSampleService.getOne(w);
+            JobDownSampleDO one = downSampleService.getOne(w);
             if (Objects.isNull(one)) {
-                one = new BizDownSampleDO();
+                one = new JobDownSampleDO();
                 one.setPointId(pointId);
                 one.setComponentId(x.getComponentId());
             }
@@ -113,8 +113,8 @@ public class DownSampleServiceImpl implements DownSampleService {
                 queue.add(obj);
             }
             String dataNew = JSON.toJSONString(queue.toArray());
-            LambdaUpdateWrapper<BizDownSampleDO> update = Wrappers.lambdaUpdate(BizDownSampleDO.class);
-            update.eq(BizDownSampleDO::getPointId, pointId).eq(BizDownSampleDO::getComponentId, x.getComponentId());
+            LambdaUpdateWrapper<JobDownSampleDO> update = Wrappers.lambdaUpdate(JobDownSampleDO.class);
+            update.eq(JobDownSampleDO::getPointId, pointId).eq(JobDownSampleDO::getComponentId, x.getComponentId());
             one.setData(dataNew);
             one.setGmtModified(new Date());
             downSampleService.saveOrUpdate(one, update);

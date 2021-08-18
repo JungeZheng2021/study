@@ -16,9 +16,9 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-@TableName("biz_down_sample")
+@TableName("job_down_sample")
 @ApiModel(value = "等间隔降采样数据实体")
-public class BizDownSampleDO extends BaseDO {
+public class JobDownSampleDO extends BaseDO {
     /**
      * 序列化时候使用
      */

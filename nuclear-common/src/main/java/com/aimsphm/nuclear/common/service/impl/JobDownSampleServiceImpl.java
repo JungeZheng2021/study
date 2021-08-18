@@ -1,10 +1,10 @@
 package com.aimsphm.nuclear.common.service.impl;
 
-import com.aimsphm.nuclear.common.entity.BizDownSampleDO;
+import com.aimsphm.nuclear.common.entity.JobDownSampleDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
-import com.aimsphm.nuclear.common.mapper.BizDownSampleMapper;
-import com.aimsphm.nuclear.common.service.BizDownSampleService;
+import com.aimsphm.nuclear.common.mapper.JobDownSampleMapper;
+import com.aimsphm.nuclear.common.service.JobDownSampleService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,10 +28,10 @@ import java.util.Objects;
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
-public class BizDownSampleServiceImpl extends ServiceImpl<BizDownSampleMapper, BizDownSampleDO> implements BizDownSampleService {
+public class JobDownSampleServiceImpl extends ServiceImpl<JobDownSampleMapper, JobDownSampleDO> implements JobDownSampleService {
 
     @Override
-    public Page<BizDownSampleDO> listBizDownSampleByPageWithParams(QueryBO<BizDownSampleDO> queryBO) {
+    public Page<JobDownSampleDO> listBizDownSampleByPageWithParams(QueryBO<JobDownSampleDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
             queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
@@ -44,8 +44,8 @@ public class BizDownSampleServiceImpl extends ServiceImpl<BizDownSampleMapper, B
      * @param queryBO
      * @return
      */
-    private LambdaQueryWrapper<BizDownSampleDO> customerConditions(QueryBO<BizDownSampleDO> queryBO) {
-        LambdaQueryWrapper<BizDownSampleDO> wrapper = queryBO.lambdaQuery();
+    private LambdaQueryWrapper<JobDownSampleDO> customerConditions(QueryBO<JobDownSampleDO> queryBO) {
+        LambdaQueryWrapper<JobDownSampleDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
         if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
         }
@@ -55,7 +55,7 @@ public class BizDownSampleServiceImpl extends ServiceImpl<BizDownSampleMapper, B
     }
 
     @Override
-    public List<BizDownSampleDO> listBizDownSampleWithParams(QueryBO<BizDownSampleDO> queryBO) {
+    public List<JobDownSampleDO> listBizDownSampleWithParams(QueryBO<JobDownSampleDO> queryBO) {
         return this.list(customerConditions(queryBO));
     }
 }

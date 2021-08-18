@@ -1,6 +1,6 @@
 package com.aimsphm.nuclear.common.mapper;
 
-import com.aimsphm.nuclear.common.entity.BizDownSampleDO;
+import com.aimsphm.nuclear.common.entity.JobDownSampleDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -13,6 +13,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-public interface BizDownSampleMapper extends BaseMapper<BizDownSampleDO> {
+public interface JobDownSampleMapper extends BaseMapper<JobDownSampleDO> {
 
 }
