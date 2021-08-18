@@ -129,4 +129,9 @@ ribbon:
   ConnectTimeout: 3000
   # 请求处理的超时时间
   ReadTimeout: 60000
-
+#自定义配置
+customer:
+  config:
+    # 单位分钟
+    sleepTime: 2
+    rangeTime: 4

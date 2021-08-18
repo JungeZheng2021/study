@@ -39,6 +39,8 @@ public class AlgorithmController {
     @Resource
     private AlgorithmService algorithmService;
     @Resource
+    private AlgorithmAsyncService asyncService;
+    @Resource
     private DownSampleService downSampleService;
     @Resource
     private BizDownSampleService bizDownSampleService;
@@ -76,7 +78,7 @@ public class AlgorithmController {
     }
 
     @GetMapping("test/sample")
-    @ApiOperation(value = "手动降采样")
+    @ApiOperation(value = "手动降采样(一周)")
     public void downSampleService() {
         List<BizDownSampleDO> list = bizDownSampleService.list();
         List<Long> collect = list.stream().map(x -> x.getId()).collect(Collectors.toList());
@@ -88,8 +90,14 @@ public class AlgorithmController {
     }
 
     @GetMapping("test/test")
-    @ApiOperation(value = "手动降采样")
+    @ApiOperation(value = "手动降采样(执行一次)")
     public void downSampleServiceTest() {
         downSampleService.execute();
+    }
+
+    @GetMapping("delete/{deviceId}")
+    @ApiOperation(value = "手动删除指定的设备下的Rms值", notes = "如果end有值，会直接删除，如果为空会休眠之后删除")
+    public void deleteData(@PathVariable Long deviceId, Long end) {
+        asyncService.deleteData(deviceId, end);
     }
 }

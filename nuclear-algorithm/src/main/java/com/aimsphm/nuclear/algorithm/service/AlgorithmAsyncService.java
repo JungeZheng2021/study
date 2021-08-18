@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.algorithm.service;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.PointDataBO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -45,4 +46,13 @@ public interface AlgorithmAsyncService {
      * @param countDownLatch
      */
     void listPointDataFromHBase(CommonMeasurePointDO item, PointDataBO data, CountDownLatch countDownLatch);
+
+    /**
+     * 删除一些数据
+     *
+     * @param deviceId 设备id
+     * @param end      截至时间
+     */
+    @Async
+    void deleteData(Long deviceId, Long end);
 }

@@ -260,6 +260,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         //上一次是停机，本次是启动需要改动 最近启动配置
         if (DeviceHealthEnum.STOP.getValue().equals(status.getStatus()) && !DeviceHealthEnum.STOP.getValue().equals(healthStatus)) {
             detailsService.updateLastStartTime(deviceId);
+            //异步删除一些数据
+            asyncService.deleteData(deviceId, null);
         }
         //启动报警状态且启停状态是启动状态，需要计算设备状态
         statusService.updateDeviceStatusWithCalculate(status, device, healthStatus);
