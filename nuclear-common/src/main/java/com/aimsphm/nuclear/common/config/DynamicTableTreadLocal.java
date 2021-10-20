@@ -1,14 +1,13 @@
 package com.aimsphm.nuclear.common.config;
 
 /**
- * @Package: com.study.auth.config.core
- * @Description: <动态表格存储类>
- * @Author: MILLA
- * @CreateDate: 2020/09/04 14:42
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/09/04 14:42
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:动态表格存储类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 14:42
  */
 public enum DynamicTableTreadLocal {
     INSTANCE;

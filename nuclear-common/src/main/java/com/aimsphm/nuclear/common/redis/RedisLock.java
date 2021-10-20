@@ -1,16 +1,6 @@
 package com.aimsphm.nuclear.common.redis;
 
-/**
- * @Package: com.aimsphm.nuclear.common.redis
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2021/01/18 17:33
- * @UpdateUser: MILLA
- * @UpdateDate: 2021/01/18 17:33
- * @UpdateRemark: <>
- * @Version: 1.0
- */
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStringCommands;
@@ -21,9 +11,21 @@ import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * <p>
+ * 功能描述:动态表格存储类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021/01/18 17:33
+ */
+@Slf4j
 @Component
 public class RedisLock {
 
@@ -65,7 +67,8 @@ public class RedisLock {
                     //try 50 per sec
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                    log.error("{}", e);
                     return null;
                 }
             }
@@ -106,9 +109,12 @@ public class RedisLock {
      */
     public boolean unlock(String name, String token) {
         byte[][] keysAndArgs = new byte[2][];
-        keysAndArgs[0] = name.getBytes(Charset.forName("UTF-8"));
-        keysAndArgs[1] = token.getBytes(Charset.forName("UTF-8"));
+        keysAndArgs[0] = name.getBytes(StandardCharsets.UTF_8);
+        keysAndArgs[1] = token.getBytes(StandardCharsets.UTF_8);
         RedisConnectionFactory factory = redisTemplate.getConnectionFactory();
+        if (Objects.isNull(factory)) {
+            return false;
+        }
         RedisConnection conn = factory.getConnection();
         try {
             Long result = conn.scriptingCommands().eval(unlockScript.getBytes(Charset.forName("UTF-8")), ReturnType.INTEGER, 1, keysAndArgs);

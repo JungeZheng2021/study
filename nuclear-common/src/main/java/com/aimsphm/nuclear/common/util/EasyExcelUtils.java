@@ -18,14 +18,13 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.common
- * @Description: <excel导出工具类>
- * @Author: MILLA
- * @CreateDate: 2018/5/4 16:02
- * @UpdateUser: MILLA
- * @UpdateDate: 2018/5/4 16:02
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:excel导出工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 14:42
  */
 @Slf4j
 public class EasyExcelUtils {
@@ -43,11 +42,6 @@ public class EasyExcelUtils {
         headWriteCellStyle.setWriteFont(headWriteFont);
         // 内容的策略
         WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
-        // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND 不然无法显示背景颜色.头默认了 FillPatternType所以可以不指定
-//        contentWriteCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
-//        contentWriteCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
-        // 背景绿色
-//        contentWriteCellStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
         // 字体策略
         WriteFont contentWriteFont = new WriteFont();
         // 字体大小
@@ -58,14 +52,6 @@ public class EasyExcelUtils {
         contentWriteCellStyle.setWrapped(true);
         //设置 垂直居中
         contentWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-//        //设置 水平居中
-//        contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
-//        //设置边框样式
-//        contentWriteCellStyle.setBorderLeft(DASHED);
-//        contentWriteCellStyle.setBorderTop(DASHED);
-//        contentWriteCellStyle.setBorderRight(DASHED);
-//        contentWriteCellStyle.setBorderBottom(DASHED);
-
         // 这个策略是 头是头的样式 内容是内容的样式 其他的策略可以自己实现
         HorizontalCellStyleStrategy horizontalCellStyleStrategy = new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
         EasyExcel.write(response.getOutputStream(), clazz).sheet(sheetName).registerWriteHandler(horizontalCellStyleStrategy).doWrite(list);
@@ -86,11 +72,6 @@ public class EasyExcelUtils {
         headWriteCellStyle.setWriteFont(headWriteFont);
         // 内容的策略
         WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
-        // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND 不然无法显示背景颜色.头默认了 FillPatternType所以可以不指定
-//        contentWriteCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
-//        contentWriteCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
-        // 背景绿色
-//        contentWriteCellStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
         // 字体策略
         WriteFont contentWriteFont = new WriteFont();
         // 字体大小
@@ -101,13 +82,6 @@ public class EasyExcelUtils {
         contentWriteCellStyle.setWrapped(true);
         //设置 垂直居中
         contentWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-//        //设置 水平居中
-//        contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
-//        //设置边框样式
-//        contentWriteCellStyle.setBorderLeft(DASHED);
-//        contentWriteCellStyle.setBorderTop(DASHED);
-//        contentWriteCellStyle.setBorderRight(DASHED);
-//        contentWriteCellStyle.setBorderBottom(DASHED);
 
         // 这个策略是 头是头的样式 内容是内容的样式 其他的策略可以自己实现
         HorizontalCellStyleStrategy horizontalCellStyleStrategy =

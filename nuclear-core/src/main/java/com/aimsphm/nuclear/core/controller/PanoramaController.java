@@ -13,14 +13,13 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.pump.controller
- * @Description: <系统总览-全景>
- * @Author: MILLA
- * @CreateDate: 2020/4/3 9:35
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/3 9:35
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:系统总览-全景
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-17 13:47
  */
 @RestController()
 @Api(tags = "panorama-系统总览控制类")
@@ -32,6 +31,13 @@ public class PanoramaController {
     @GetMapping("details")
     @ApiOperation(value = "系统总览")
     public List<PanoramaVO> getPanoramaDetails(Long subSystemId) {
+        try {
+            panoramaService.getPanoramaDetails(subSystemId);
+            System.out.println("开始等待.....");
+            Thread.sleep(301_000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return panoramaService.getPanoramaDetails(subSystemId);
     }
 }

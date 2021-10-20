@@ -12,19 +12,19 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Package: com.aimsphm.nuclear.hbase.config
- * @Description: <hbase配置信息>
- * @Author: MILLA
- * @CreateDate: 2020/3/5 13:16
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/5 13:16
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:hbase配置信息
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-03-05 14:42
  */
 @Configuration
 @ConfigurationProperties(prefix = HBaseConfig.CONF_PREFIX)
@@ -46,7 +46,7 @@ public class HBaseConfig {
     @Bean
     public Connection connection() throws IOException {
         org.apache.hadoop.conf.Configuration conf = HBaseConfiguration.create();
-        Assert.isTrue(properties != null && !properties.isEmpty(), "Hbase config can not be null");
+        Assert.isTrue(Objects.nonNull(properties) && !properties.isEmpty(), "Hbase config can not be null");
 
         for (Map.Entry<String, String> confEntry : properties.entrySet()) {
             conf.set(confEntry.getKey(), confEntry.getValue());

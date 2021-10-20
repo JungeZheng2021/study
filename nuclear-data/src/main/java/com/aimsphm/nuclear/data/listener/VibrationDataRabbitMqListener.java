@@ -14,15 +14,15 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.concurrent.atomic.LongAdder;
 
+
 /**
- * @Package: com.aimsphm.nuclear.data.config.rabbit
- * @Description: <rabbitMqPi数据消费者>
- * @Author: MILLA
- * @CreateDate: 2020/5/20 14:52
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/5/20 14:52
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:rabbitMqPi数据消费者
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-5-20 13:35
  */
 @Slf4j
 @Component
@@ -35,6 +35,7 @@ public class VibrationDataRabbitMqListener {
     private Long LOG_PRINT_TIME = 10000L;
 
     @RabbitListener(queues = "durableQueueVibration")
+    @RabbitListener(queues = "${spring.rabbitmq.config.none-pi-queue:durableQueueVibration}")
     public void messageConsumer(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
             if (count.longValue() % LOG_PRINT_TIME == 0) {

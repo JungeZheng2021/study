@@ -30,18 +30,13 @@ public class TokenAuthenticationService {
                 .compact();
     }
 
-//    public static void main(String[] args) {
-//        System.out.println(createToken("admin","CN","{}"));
-//    }
-
-   public  static String getUserName(HttpServletRequest request)
-    {
+    public static String getUserName(HttpServletRequest request) {
         Authentication authentication = getAuthentication(request);
-        return authentication==null?"":(String)authentication.getPrincipal();
+        return authentication == null ? "" : (String) authentication.getPrincipal();
     }
 
     // JWT验证方法
-   public static Authentication getAuthentication(HttpServletRequest request) {
+    public static Authentication getAuthentication(HttpServletRequest request) {
         // get token from header
         String token = request.getHeader(AuthConstant.AUTH_HEADER_STRING);
 

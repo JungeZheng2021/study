@@ -6,12 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * <p>
+ * 功能描述:拷贝
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-17 13:47
+ */
 public class BeanCopyUtils extends BeanUtils {
 
     /**
      * 集合数据的拷贝
+     *
      * @param sources: 数据源类
-     * @return
+     * @return 对象
      */
     public static <S, T> List<T> copyListProperties(List<S> sources, Supplier<T> target) {
         return copyListProperties(sources, target, null);
@@ -20,10 +30,11 @@ public class BeanCopyUtils extends BeanUtils {
 
     /**
      * 带回调函数的集合数据的拷贝（可自定义字段拷贝规则）
-     * @param sources: 数据源类
-     * @param target: 目标类::new(eg: UserVO::new)
+     *
+     * @param sources:  数据源类
+     * @param target:   目标类::new(eg: UserVO::new)
      * @param callBack: 回调函数
-     * @return
+     * @return 对象
      */
     public static <S, T> List<T> copyListProperties(List<S> sources, Supplier<T> target, BeanCopyUtilCallBack<S, T> callBack) {
         List<T> list = new ArrayList<>(sources.size());

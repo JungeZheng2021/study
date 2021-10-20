@@ -7,21 +7,15 @@ import java.text.NumberFormat;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.util
- * @Description: <需要保留小数点的操作>
- * @Author: MILLA
- * @CreateDate: 2020/4/17 13:22
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/17 13:22
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:需要保留小数点的操作
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-17 13:47
  */
 public final class BigDecimalUtils {
-    public static void main(String[] args) {
-        Double format = BigDecimalUtils.format(0, 4);
-        System.out.println(format);
-    }
-
     /**
      * 默认保存1位小数
      */
@@ -30,19 +24,19 @@ public final class BigDecimalUtils {
     /**
      * 格式化精度
      *
-     * @param v
+     * @param v     浮点数
      * @param digit 小数位数
      * @return double
      */
     public static Double format(double v, int digit) {
-        BigDecimal b = new BigDecimal(v);
+        BigDecimal b = BigDecimal.valueOf(v);
         return b.setScale(digit, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
      * 格式化精度
      *
-     * @param v
+     * @param v     浮点数
      * @param digit 小数位数
      * @return double
      */
@@ -52,9 +46,11 @@ public final class BigDecimalUtils {
     }
 
     /**
-     * @param v
-     * @param digit
-     * @return
+     * 格式化精度
+     *
+     * @param v     浮点数
+     * @param digit 小数位数
+     * @return double
      */
     public static Double formatRoundUp(double v, int digit) {
         NumberFormat nf = NumberFormat.getInstance();
@@ -70,8 +66,8 @@ public final class BigDecimalUtils {
     /**
      * 格式化金额。带千位符
      *
-     * @param v
-     * @return
+     * @param v 浮点数
+     * @return 字符串
      */
     public static String moneyFormat(Double v) {
         DecimalFormat format = new DecimalFormat();
@@ -84,8 +80,8 @@ public final class BigDecimalUtils {
     /**
      * 带小数的显示小数。不带小数的显示整数
      *
-     * @param d
-     * @return
+     * @param d 金额
+     * @return 字符串
      */
     public static String doubleTrans(Double d) {
         if (Math.round(d) - d == 0) {
@@ -97,8 +93,8 @@ public final class BigDecimalUtils {
     /**
      * BigDecimal 相加
      *
-     * @param v1
-     * @param v2
+     * @param v1 浮点数1
+     * @param v2 浮点数2
      * @return double
      */
     public static Double add(double v1, double v2) {
@@ -110,8 +106,8 @@ public final class BigDecimalUtils {
     /**
      * BigDecimal 相减
      *
-     * @param v1
-     * @param v2
+     * @param v1 浮点数1
+     * @param v2 浮点数2
      * @return double
      */
     public static Double subtract(double v1, double v2) {
@@ -123,8 +119,8 @@ public final class BigDecimalUtils {
     /**
      * BigDecimal 相乘
      *
-     * @param v1
-     * @param v2
+     * @param v1 浮点数1
+     * @param v2 浮点数2
      * @return double
      */
     public static Double multiply(double v1, double v2) {
@@ -136,8 +132,8 @@ public final class BigDecimalUtils {
     /**
      * BigDecimal 相除
      *
-     * @param v1
-     * @param v2
+     * @param v1 浮点数1
+     * @param v2 浮点数2
      * @return double
      */
     public static Double divide(double v1, double v2) {
@@ -153,9 +149,9 @@ public final class BigDecimalUtils {
     /**
      * 比较大小 小于0：v1 < v2 大于0：v1 > v2 等于0：v1 = v2
      *
-     * @param v1
-     * @param v2
-     * @return
+     * @param v1 浮点数1
+     * @param v2 浮点数2
+     * @return 整型
      */
     public static int compare(double v1, double v2) {
         BigDecimal n1 = new BigDecimal(String.valueOf(v1));

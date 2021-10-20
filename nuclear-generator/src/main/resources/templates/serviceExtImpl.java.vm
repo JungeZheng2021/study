@@ -41,7 +41,7 @@ public class ${table.serviceName}${cfg.serviceImplNameFix} extends ${table.servi
         }
         LambdaQueryWrapper<${entity}> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
 ##            wrapper.ge(${entity}::getGmtLastAlarm, new Date(query.getStart())).le(JobAlarmEventDO::getGmtLastAlarm, new Date(query.getEnd()));
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {

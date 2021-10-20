@@ -13,14 +13,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Package: com.aimsphm.nuclear.common.redis
- * @Description: <redis工具类>
- * @Author: MILLA
- * @CreateDate: 2020/11/21 16:19
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/21 16:19
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:redis工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-17 13:47
  */
 @Component
 @ConditionalOnProperty(prefix = "spring.config", name = "enableRedis", havingValue = "true")
@@ -1346,9 +1345,9 @@ public class RedisClient {
             return true;
         }
         // redis里key的时间
-        String currentValue = String.valueOf(this.get(key));
+        Long currentValue = (Long) this.get(key);
         // 判断锁是否已经过期，过期则重新设置并获取
-        if (currentValue != null && Long.parseLong(currentValue) < System.currentTimeMillis()) {
+        if (Objects.nonNull(currentValue) && currentValue < System.currentTimeMillis()) {
             // 设置锁并返回旧值
             Long oldValue = (Long) this.getAndSet(key, expires);
             // 比较锁的时间，如果不一致则可能是其他锁已经修改了值并获取

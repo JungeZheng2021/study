@@ -79,23 +79,9 @@ ribbon:
   # 请求处理的超时时间
   ReadTimeout: 60000
 
-#CAS服务地址
-cas:
-  server:
-    host:
-      url: https://sso.casuat.jnpc.com.cn/cas
-      #CAS服务登录地址
-      login_url: ${cas.server.host.url}/login
-      #CAS服务登出地址
-      logout_url: ${cas.server.host.url}/logout?service=${app.server.host.url}
-  #应用访问地址
-app:
-  server:
-    host:
-      url: http://10.23.16.167:10086${server.servlet.context-path}
-  #应用登录地址
-  login_url: /login
-  #应用登出地址
-  logout_url: /logout
-
-privileges-server-url: http://autogrant.jnpc.com.cn/autogrant/privileges/queryUserQXPrivileges.so
+customer:
+  config:
+    # 获取用户id
+    user-details-url: http://sv-epprd01.jnpc.com.cn:50000/UmpInterfaceService/UmpInterface
+    # 获取用户权限
+    user-privileges-url: http://autogrant.jnpc.com.cn/autogrant/privileges/queryUserQXPrivileges.so

@@ -30,8 +30,8 @@ object DownSampleBatchMode {
 
     val properties = new Properties()
     //                 类型     开始时间          结束时间          HBase表格名称     列族                   操作时间                           最大个数
-    //    val args = Array("daily", "1619160707000", "1607129478018", "npc_phm_data", "pRaw", "1", "5", "5", System.currentTimeMillis() + "", "30")
-    val in = DownSampleBatchMode.getClass.getClassLoader().getResourceAsStream("prod.properties");
+    //    val args = Array("daily", "1631497440000", "1631501050000", "npc_phm_data", "pRaw", "1", "5", "5", System.currentTimeMillis() + "", "30")
+    val in = DownSampleBatchMode.getClass.getClassLoader().getResourceAsStream("test.properties");
     properties.load(in)
     val defaultPartitionNum = "4"
     val freq = args(0)
@@ -90,10 +90,12 @@ object DownSampleBatchMode {
     val mysqlUrl = properties.getProperty("mysqlUrl")
     val mysqlUser = properties.getProperty("mysqlUser")
     val mysqlPassword = properties.getProperty("mysqlPassword")
-    //    println(mysqlUrl)
-    //    println(mysqlUser)
-    //    println(mysqlPassword)
+    println(mysqlUrl)
+    println(mysqlUser)
+    println(mysqlPassword)
     val tagConfig = Utils.listPointIdList(mysqlUrl, mysqlUser, mysqlPassword, freq)
+    println("查询出来的数据个数： " + tagConfig.size)
+
     val rowKeySeparator = Constant.H_BASE_ROW_KEY_CONNECTOR
 
     val threePointsTagConfig = tagConfig.filter(_.getAlgorithmType == AlgoEnum.THREEPOINTS)
@@ -354,5 +356,4 @@ object DownSampleBatchMode {
     spark.close()
   }
 }
-
 

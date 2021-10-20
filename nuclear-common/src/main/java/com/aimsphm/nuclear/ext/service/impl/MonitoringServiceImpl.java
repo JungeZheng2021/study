@@ -35,14 +35,13 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_DEVICE_
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.ZERO;
 
 /**
- * @Package: com.aimsphm.nuclear.core.service.impl
- * @Description: <>
- * @Author: milla
- * @CreateDate: 2020/11/18 16:49
- * @UpdateUser: milla
- * @UpdateDate: 2020/11/18 16:49
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:汽机报告数据准备类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-11-18 16:49
  */
 @Slf4j
 @Service
@@ -291,11 +290,13 @@ public class MonitoringServiceImpl implements MonitoringService {
         checkRangeTime(range);
         //测点类型占比
         List<LabelVO> pointTypeScale = listWarmingPointByPointType(deviceId, range);
-        //报警类型占比
-        List<LabelVO> levelList = listWarmingPointByAlarmTypeAndLevel(deviceId, range);
+        //报警类型占比  + 报警级别占比
+        List<List<LabelVO>> lists = listWarmingPointByAlarmTypeAndLevel(deviceId, range);
 //        //报警趋势占比
         List<LabelVO> alarmDistribution = listWarmingPointByDateDistribution(deviceId);
-        return Lists.newArrayList(pointTypeScale, levelList, alarmDistribution);
+        lists.add(0, pointTypeScale);
+        lists.add(alarmDistribution);
+        return lists;
     }
 
 
@@ -312,16 +313,17 @@ public class MonitoringServiceImpl implements MonitoringService {
         return pointList;
     }
 
-    private List<LabelVO> listWarmingPointByAlarmTypeAndLevel(Long deviceId, TimeRangeQueryBO range) {
+    private List<List<LabelVO>> listWarmingPointByAlarmTypeAndLevel(Long deviceId, TimeRangeQueryBO range) {
         LambdaQueryWrapper<JobAlarmProcessRecordDO> wrapper = Wrappers.lambdaQuery(JobAlarmProcessRecordDO.class);
         wrapper.eq(JobAlarmProcessRecordDO::getDeviceId, deviceId).ge(JobAlarmProcessRecordDO::getGmtEventTime, new Date(range.getStart())).le(JobAlarmProcessRecordDO::getGmtEventTime, new Date(range.getEnd()));
         List<JobAlarmProcessRecordDO> list = processRecordService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
-            return Lists.newArrayList();
+            return Lists.newArrayList(Lists.newArrayList(), Lists.newArrayList());
         }
         Map<Integer, Long> level = list.stream().collect(Collectors.groupingBy(item -> item.getAlarmLevel(), TreeMap::new, Collectors.counting()));
         List<LabelVO> levelList = level.entrySet().stream().map(item -> new LabelVO(AlgorithmLevelEnum.getDesc(item.getKey()), item.getValue())).collect(Collectors.toList());
-        return levelList;
+
+        return Lists.newArrayList(new ArrayList<>(), levelList);
     }
 
     @Override

@@ -40,16 +40,14 @@ import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_I;
 import static com.aimsphm.nuclear.common.util.DateUtils.format;
 import static com.aimsphm.nuclear.report.constant.PlaceholderConstant.*;
 
-
 /**
- * @Package: com.aimsphm.nuclear.report.service.impl
- * @Description: <汽机报告数据准备类>
- * @Author: MILLA
- * @CreateDate: 2020/6/12 14:02
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/12 14:02
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:汽机报告数据准备类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-06-12 14:02
  */
 @Slf4j
 @Service("RcvData")
@@ -116,7 +114,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
             baseData4Image(config, lists, integerLongMap);
             //趋势图
             trendData4Image(config, query);
-            //动态融合诊断
+//            //动态融合诊断
             dynamicDiagnose4Image(data, config, query);
             data.put(config.getPlaceholder(), config);
         }
@@ -376,14 +374,14 @@ public class FanReportDataServiceImpl implements ReportDataService {
                     break;
                 case 3:
 //                    事件级别饼图
-                    List<LabelVO> levelList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 2 ? lists.get(1) : Lists.newArrayList();
+                    List<LabelVO> levelList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 3 ? lists.get(2) : Lists.newArrayList();
                     if (CollectionUtils.isNotEmpty(levelList)) {
                         image = fileService.getImageFileWithData(config, levelList, null);
                     }
                     break;
                 case 4:
                     //算法报警趋势//趋势柱状图
-                    List<LabelVO> trendList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 3 ? lists.get(2) : Lists.newArrayList();
+                    List<LabelVO> trendList = CollectionUtils.isNotEmpty(lists) && lists.size() >= 4 ? lists.get(3) : Lists.newArrayList();
                     image = getWarningImage(config, trendList);
                     break;
                 default:

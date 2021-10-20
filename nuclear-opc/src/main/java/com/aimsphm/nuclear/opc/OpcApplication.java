@@ -46,25 +46,4 @@ public class OpcApplication {
         scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "10s_data.csv", "JSNPC.Upload", 10 * 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
         scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "10min_data.csv", "JSNPC.Upload", 10 * 60 * 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
     }
-
-//    @PostConstruct
-//    void test() throws InterruptedException {
-//        while (true) {
-//            int nasLevel = ThreadLocalRandom.current().ints(7, 12).findFirst().getAsInt();
-//            int month = ThreadLocalRandom.current().ints(10, 30).findFirst().getAsInt();
-//            int var46 = ThreadLocalRandom.current().ints(35, 50).findFirst().getAsInt();
-//            int var49 = ThreadLocalRandom.current().ints(20, 30).findFirst().getAsInt();
-//            int hours = ThreadLocalRandom.current().ints(0, 24).findFirst().getAsInt();
-//            int mins = ThreadLocalRandom.current().ints(0, 59).findFirst().getAsInt();
-//            int seconds = ThreadLocalRandom.current().ints(0, 59).findFirst().getAsInt();
-//            String s = "{\"d\":[{\"tag\":\"var41\",\"value\":" + var49 + ".28},{\"tag\":\"var38\",\"value\":" + var49 + ".32},{\"tag\":\"var42\",\"value\":0." + var49 + "634},{\"tag\":\"var43\",\"value\":" + var46 + ".74}" +
-//                    ",{\"tag\":\"var45\",\"value\":0." + nasLevel + "},{\"tag\":\"var46\",\"value\":" + var46 + "},{\"tag\":\"var53\",\"value\":" + hours + "},{\"tag\":\"var47\",\"value\":" + hours + "},{\"tag\":\"var48\",\"value\":" + hours + "}" +
-//                    ",{\"tag\":\"var49\",\"value\":" + var49 + "},{\"tag\":\"var51\",\"value\":" + nasLevel + "},{\"tag\":\"var70\",\"value\":" + hours + "},{\"tag\":\"var71\",\"value\":0},{\"tag\":\"var72\",\"value\":0},{\"tag\":\"var73\",\"value\":2},{\"tag\":\"var74\",\"value\":0},{\"tag\":\"var75\",\"value\":4}]," +
-//                    "\"ts\":\"2021-10-" + month + "T0" + hours + ":" + mins + ":" + seconds + "+0000\"}";
-//            //            String format = DateUtils.format(s, new Date());
-//            System.out.println(s);
-//            client.send2Mq(s, ".ST.3N031909071006.CurDataA");
-//            client.send2Mq(s, "pi.many");
-//        }
-//    }
 }

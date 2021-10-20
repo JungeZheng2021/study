@@ -9,13 +9,20 @@
     <artifactId>spark-job-down-sample</artifactId>
     <inceptionYear>2008</inceptionYear>
     <properties>
-        <scala.version>2.11.12</scala.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spark.version>2.4.5</spark.version>
-        <hadoop.version>2.7.3</hadoop.version>
+
+        <spark.version>3.1.2</spark.version>
+        <hadoop.version>3.2.2</hadoop.version>
+        <hbase.version>2.3.5</hbase.version>
+        <!--        可以运行的版本-->
+        <scala.version>2.12.0</scala.version>
+        <!--        <scala.version>2.11.12</scala.version>-->
+        <!--        <spark.version>2.4.5</spark.version>-->
+        <!--        <hadoop.version>2.7.3</hadoop.version>-->
+        <!--        <hbase.version>2.2.2</hbase.version>-->
+        <!--        可以运行的版本-->
         <mysql.version>5.1.29</mysql.version>
-        <hbase.version>2.2.2</hbase.version>
         <encoding>UTF-8</encoding>
     </properties>
 
@@ -30,7 +37,7 @@
         <!-- 导入spark的依赖 -->
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.11</artifactId>
+            <artifactId>spark-core_2.12</artifactId>
             <version>${spark.version}</version>
         </dependency>
 
@@ -43,7 +50,7 @@
 
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-mllib_2.11</artifactId>
+            <artifactId>spark-mllib_2.12</artifactId>
             <version>${spark.version}</version>
         </dependency>
 

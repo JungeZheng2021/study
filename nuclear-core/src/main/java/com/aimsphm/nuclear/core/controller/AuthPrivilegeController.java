@@ -15,14 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.core.controller
- * @Description: <权限资源信息-前端控制器>
- * @Author: MILLA
- * @CreateDate: 2021-05-06
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-05-06
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:权限资源信息-前端控制器
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-5-26 13:35
  */
 @RestController
 @Api(tags = "AuthPrivilege-权限资源信息-相关接口")
@@ -45,12 +44,19 @@ public class AuthPrivilegeController {
     }
 
     @GetMapping("records")
-    @ApiOperation(value = "获取某用户下具备的权限列表", notes = "多条件组合查询")
+    @ApiOperation(value = "获取某用户下具备的权限列表")
     public List<AuthPrivilegeDO> listAuthPrivilege(HttpServletRequest request) {
-        String userAccount = request.getHeader("token");
+        String username = request.getHeader("token");
         String sysCode = request.getHeader("sysCode");
         String structured = request.getHeader("structured");
-        return service.listAuthPrivilege(userAccount, sysCode, structured);
+        return service.listAuthPrivilege(username, sysCode, structured);
+    }
+
+    @GetMapping("getUserId")
+    @ApiOperation(value = "获取用户对应的userid")
+    public String getUserIdByUsername(HttpServletRequest request) {
+        String username = request.getHeader("token");
+        return service.getUserIdByUsername(username);
     }
 
     @GetMapping("pages")

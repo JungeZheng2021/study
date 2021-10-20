@@ -4,7 +4,6 @@ import com.aimsphm.nuclear.algorithm.entity.bo.EstimateParamDataBO;
 import com.aimsphm.nuclear.algorithm.entity.bo.PointDataBO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesObjectDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,14 +11,13 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.entity.bo
- * @Description: <滑动平均值结构体>
- * @Author: MILLA
- * @CreateDate: 2020/12/22 14:28
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/22 14:28
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:滑动平均值结构体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-17 13:47
  */
 @Data
 public class StateMonitorParamDTO {

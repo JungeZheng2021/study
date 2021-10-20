@@ -4,14 +4,13 @@ package com.aimsphm.nuclear.algorithm.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.enums
- * @Description: <特征值枚举类>
- * @Author: MILLA
- * @CreateDate: 2020/12/17 13:47
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/17 13:47
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:特征值枚举类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-17 13:47
  */
 public enum FeatureNameEnum {
     PT("PT", "acc-ZeroPeak", "峰值趋势"),
@@ -49,7 +48,7 @@ public enum FeatureNameEnum {
     }
 
     public static FeatureNameEnum getByValue(String type) {
-        if (type == null) {
+        if (Objects.isNull(type)) {
             return null;
         }
 

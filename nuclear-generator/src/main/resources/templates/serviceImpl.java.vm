@@ -63,7 +63,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     private LambdaQueryWrapper<${entity}> customerConditions(QueryBO<${entity}> queryBO) {
         LambdaQueryWrapper<${entity}> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }

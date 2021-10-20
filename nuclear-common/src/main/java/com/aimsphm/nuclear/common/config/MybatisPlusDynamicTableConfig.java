@@ -11,16 +11,16 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @Package: com.study.auth.config.core
- * @Description: <mybatis-plush配置类>
- * @Author: MILLA
- * @CreateDate: 2020/09/04 14:42
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/09/04 14:42
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:mybatis-plush配置类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 14:42
  */
 @Configuration
 @MapperScan("com.aimsphm.nuclear.common.mapper**")
@@ -42,10 +42,9 @@ public class MybatisPlusDynamicTableConfig {
 //        // 开启 count 的 join 优化,只针对部分 left join
         paginationInterceptor.setCountSqlParser(new JsqlParserCountOptimize(true));
         DynamicTableNameParser dynamicTableNameParser = new DynamicTableNameParser();
-        dynamicTableNameParser.setTableNameHandlerMap(new HashMap<String, ITableNameHandler>(2) {{
-            //动态表规则-生成自己需要的动态表名
-            put(DYNAMIC_TABLE_PRE, (metaObject, sql, tableName) -> DynamicTableTreadLocal.INSTANCE.getTableName());
-        }});
+        Map<String, ITableNameHandler> tableNameHandlerMap = new HashMap<>(2);
+        tableNameHandlerMap.put(DYNAMIC_TABLE_PRE, (metaObject, sql, tableName) -> DynamicTableTreadLocal.INSTANCE.getTableName());
+        dynamicTableNameParser.setTableNameHandlerMap(tableNameHandlerMap);
         paginationInterceptor.setSqlParserList(Collections.singletonList(dynamicTableNameParser));
         return paginationInterceptor;
     }

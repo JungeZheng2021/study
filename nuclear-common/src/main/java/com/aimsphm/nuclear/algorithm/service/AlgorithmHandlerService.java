@@ -10,18 +10,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.history.service
- * @Description: <调用算法>
- * @Author: MILLA
- * @CreateDate: 2020/12/22 13:35
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/22 13:35
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:调用算法
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/22 13:35
  */
 public interface AlgorithmHandlerService<P, R> {
     Logger log = LoggerFactory.getLogger(AlgorithmHandlerService.class);
@@ -74,7 +74,7 @@ public interface AlgorithmHandlerService<P, R> {
         } catch (Exception e) {
             log.error("data analysis failed...", e);
         }
-        return null;
+        return new ArrayList<>();
     }
 
 

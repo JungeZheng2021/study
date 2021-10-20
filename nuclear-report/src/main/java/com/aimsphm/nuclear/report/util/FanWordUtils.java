@@ -42,6 +42,16 @@ import static com.aimsphm.nuclear.report.constant.PlaceholderConstant.PARAGRAPH_
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+
+/**
+ * <p>
+ * 功能描述:主泵中使用的word工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-06-11 18:59
+ */
 @Slf4j
 @Component
 public class FanWordUtils {
@@ -51,9 +61,9 @@ public class FanWordUtils {
 //        if (flag) {
 //            return;
 //        }
-        FileInputStream is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\templates\\template-rcv.docx"));
+        FileInputStream is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\static\\static-rcv.docx"));
 //        FileInputStream is = new FileInputStream(new File("D:\\Desktop\\demo2.docx"));
-//        FileInputStream is = new FileInputStream(new File("D:\\Desktop\\template-turbine1.docx"));
+//        FileInputStream is = new FileInputStream(new File("D:\\Desktop\\static-turbine1.docx"));
 //        File image = new File("D:\\Desktop\\work\\2021年2月26日 184224田湾部署\\test.png");
         XWPFDocument doc = new XWPFDocument(is);
         HashMap<String, Object> data = Maps.newHashMap();
@@ -86,7 +96,7 @@ public class FanWordUtils {
     }
 
     private static boolean demo() throws IOException {
-        FileInputStream is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\templates\\template-rcv.docx"));
+        FileInputStream is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\static\\static-rcv.docx"));
         XWPFDocument doc = new XWPFDocument(is);
         List<XWPFParagraph> paragraphs = doc.getParagraphs();
         ListIterator<XWPFParagraph> it = paragraphs.listIterator();
@@ -148,15 +158,7 @@ public class FanWordUtils {
                     //设置均值
                     if (isNeedWrite && data.containsKey(text)) {
                         String string = MapUtils.getString(data, text);
-                        List<XWPFParagraph> paragraphs = cell.getParagraphs();
-                        XWPFParagraph paragraph = paragraphs.get(0);
-                        List<XWPFRun> runs = paragraph.getRuns();
-                        for (int i = 0; i < runs.size(); i++) {
-                            XWPFRun r = runs.get(i);
-                            XWPFRun run = runs.get(i);
-                            run.setFontSize(11);
-                            r.setText(i == 0 ? string : BLANK, 0);
-                        }
+                        setCellText(cell, string, 11, false);
                     } else if (isNeedWrite) {
                         //删除第一个位置的文字
                         cell.removeParagraph(0);
@@ -165,6 +167,29 @@ public class FanWordUtils {
                     WordUtils.setAlignmentCenter(cell);
                 }
             }
+        }
+    }
+
+    /**
+     * 设置单元格的内容
+     *
+     * @param cell            单元对象
+     * @param text            内容
+     * @param fontSize        字体大小
+     * @param alignmentCenter 是否居中
+     */
+    private void setCellText(XWPFTableCell cell, String text, int fontSize, boolean alignmentCenter) {
+        List<XWPFParagraph> paragraphs = cell.getParagraphs();
+        XWPFParagraph paragraph = paragraphs.get(0);
+        List<XWPFRun> runs = paragraph.getRuns();
+        for (int i = 0; i < runs.size(); i++) {
+            XWPFRun r = runs.get(i);
+            r.setFontSize(fontSize);
+            r.setBold(false);
+            r.setText(i == 0 ? text : BLANK, 0);
+        }
+        if (alignmentCenter) {
+            WordUtils.setAlignmentCenter(cell);
         }
     }
 
@@ -224,7 +249,7 @@ public class FanWordUtils {
 
     private void filParagraphWithData(XWPFRun run, List data) {
         if (CollectionUtils.isEmpty(data)) {
-            run.setText("无数据", 0);
+            run.setText("设备无异常", 0);
             return;
         }
         run.setText(BLANK, 0);

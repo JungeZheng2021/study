@@ -30,20 +30,21 @@ import java.util.*;
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATOR;
 
 /**
- * @Package: com.aimsphm.nuclear.common.util
- * @Description: <HBase操作工具类>
- * @Author: MILLA
- * @CreateDate: 2020/3/5 13:40
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/5 13:40
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:HBase操作工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-03-05 14:42
  */
 @Slf4j
 @ConditionalOnProperty(prefix = "spring.config", name = "enableHBase", havingValue = "true")
 @Component
 public class HBaseUtil {
     private Connection connection;
+
+    public static final String TABLE_NOT_EXISTS = "This table not exists";
 
     public HBaseUtil(Connection connection) {
         this.connection = connection;
@@ -71,6 +72,7 @@ public class HBaseUtil {
             }
             admin.createTable(desc.build());
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -129,6 +131,7 @@ public class HBaseUtil {
             sb.delete(sb.length() - 1, sb.length());
             return sb.toString();
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -137,7 +140,7 @@ public class HBaseUtil {
             throws IOException {
         TableName table = TableName.valueOf(tableName);
         try (Admin admin = connection.getAdmin()) {
-            Assert.isTrue(admin.tableExists(table), "This table not exists");
+            Assert.isTrue(admin.tableExists(table), TABLE_NOT_EXISTS);
             for (String cf : families) {
                 ColumnFamilyDescriptorBuilder builder = ColumnFamilyDescriptorBuilder.newBuilder(cf.getBytes());
                 if (type != null) {
@@ -148,6 +151,7 @@ public class HBaseUtil {
                 admin.addColumnFamily(table, builder.build());
             }
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -166,7 +170,7 @@ public class HBaseUtil {
         ArrayList<String> list = Lists.newArrayList();
         TableName table = TableName.valueOf(tableName);
         try (Admin admin = connection.getAdmin()) {
-            Assert.isTrue(admin.tableExists(table), "This table not exists");
+            Assert.isTrue(admin.tableExists(table), TABLE_NOT_EXISTS);
             for (String cf : families) {
                 try {
                     ColumnFamilyDescriptorBuilder builder = ColumnFamilyDescriptorBuilder.newBuilder(cf.getBytes());
@@ -182,6 +186,7 @@ public class HBaseUtil {
                 }
             }
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
         return list;
@@ -190,7 +195,7 @@ public class HBaseUtil {
     public void modifyColumnFamilyName(String tableName, String family, Compression.Algorithm type) throws IOException {
         TableName table = TableName.valueOf(tableName);
         try (Admin admin = connection.getAdmin()) {
-            Assert.isTrue(admin.tableExists(table), "This table not exists");
+            Assert.isTrue(admin.tableExists(table), TABLE_NOT_EXISTS);
             ColumnFamilyDescriptorBuilder builder = ColumnFamilyDescriptorBuilder.newBuilder(family.getBytes());
             if (type != null) {
                 builder.setCompressionType(type);
@@ -199,6 +204,7 @@ public class HBaseUtil {
             builder.setMaxVersions(1);
             admin.modifyColumnFamily(table, builder.build());
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -211,10 +217,11 @@ public class HBaseUtil {
     public void deleteTable(String tableName) throws IOException {
         TableName name = TableName.valueOf(tableName);
         try (Admin admin = connection.getAdmin()) {
-            Assert.isTrue(admin.tableExists(name), "This table not exists");
+            Assert.isTrue(admin.tableExists(name), TABLE_NOT_EXISTS);
             admin.disableTable(name);
             admin.deleteTable(name);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
 
@@ -229,9 +236,10 @@ public class HBaseUtil {
     public void deleteFamily(String tableName, String family) throws IOException {
         TableName name = TableName.valueOf(tableName);
         try (Admin admin = connection.getAdmin()) {
-            Assert.isTrue(admin.tableExists(name), "This table not exists");
+            Assert.isTrue(admin.tableExists(name), TABLE_NOT_EXISTS);
             admin.deleteColumnFamily(name, Bytes.toBytes(family));
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
 
@@ -287,6 +295,7 @@ public class HBaseUtil {
             put.addColumn(Bytes.toBytes(family), getBytes(column), getBytes(value));
             table.put(put);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -303,6 +312,7 @@ public class HBaseUtil {
         try (Table table = connection.getTable(name)) {
             table.put(putList);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -326,6 +336,7 @@ public class HBaseUtil {
                 table.put(put);
             }
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -377,6 +388,7 @@ public class HBaseUtil {
             assembleCellDataWithList(familyMap, dataWithQualifier, rs);
             return assembleReturnDataWithList(dataWithQualifier, familyMap.entrySet());
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -434,6 +446,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -469,6 +482,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -498,6 +512,7 @@ public class HBaseUtil {
             List<Cell> cells = next.listCells();
             return getObject(CellUtil.cloneValue(cells.get(cells.size() - 1)), Double.class);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -546,6 +561,7 @@ public class HBaseUtil {
             }
             return items;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -590,6 +606,7 @@ public class HBaseUtil {
             }
             return items;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -638,6 +655,7 @@ public class HBaseUtil {
             }
             return items;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -686,6 +704,7 @@ public class HBaseUtil {
             }
             return items;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -701,7 +720,6 @@ public class HBaseUtil {
             scan.withStopRow(Bytes.toBytes(sensorCode + ROW_KEY_SEPARATOR + endRow));
             ResultScanner scanner = table.getScanner(scan);
             List<Double> objects = Lists.newArrayList();
-            Map<Double, Delete> deleteList = Maps.newHashMap();
             for (Result rs : scanner) {
                 for (Cell cell : rs.listCells()) {
                     Long timestamp = cell.getTimestamp();
@@ -721,6 +739,7 @@ public class HBaseUtil {
                 }
             }
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -762,6 +781,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -823,6 +843,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -862,6 +883,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -898,6 +920,7 @@ public class HBaseUtil {
             }
             return assembleReturnDataWithList(dataWithQualifier, familyMap.entrySet());
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -929,6 +952,7 @@ public class HBaseUtil {
                 return true;
             }
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
         return false;
@@ -1038,37 +1062,6 @@ public class HBaseUtil {
     }
 
     /**
-     * 组装数据
-     *
-     * @param familyMap    列族集合
-     * @param qualifierMap 列集合
-     * @param rs
-     */
-    private void assembleCellData
-    (Map<String, Set<String>> familyMap, Map<String, List<Object>> qualifierMap, Result rs) {
-        if (rs.size() == 0) {
-            return;
-        }
-        for (Cell cell : rs.listCells()) {
-            String family = Bytes.toString(CellUtil.cloneFamily(cell));
-            String qualifier = Bytes.toString(CellUtil.cloneQualifier(cell));
-            double value = Bytes.toDouble(CellUtil.cloneValue(cell));
-            long timestamp = cell.getTimestamp();
-
-            if (!qualifierMap.containsKey(qualifier + "Times")) {
-                qualifierMap.put(qualifier + "Times", Lists.newArrayList());
-                qualifierMap.put(qualifier + "Values", Lists.newArrayList());
-            }
-            if (!familyMap.containsKey(family)) {
-                familyMap.put(family, Sets.newHashSet());
-            }
-            familyMap.get(family).add(qualifier);
-            qualifierMap.get(qualifier + "Times").add(timestamp);
-            qualifierMap.get(qualifier + "Values").add(value);
-        }
-    }
-
-    /**
      * 删除一行记录
      *
      * @param tableName 表名
@@ -1080,6 +1073,7 @@ public class HBaseUtil {
             Delete d = new Delete(rowKey.getBytes());
             table.delete(d);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -1097,6 +1091,7 @@ public class HBaseUtil {
             Delete d = new Delete(rowKey.getBytes()).addFamily(Bytes.toBytes(family));
             table.delete(d);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -1116,6 +1111,7 @@ public class HBaseUtil {
             Delete d = new Delete(rowKey.getBytes()).addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier));
             table.delete(d);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -1132,6 +1128,7 @@ public class HBaseUtil {
         try (Table table = connection.getTable(name)) {
             table.delete(deleteList);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -1153,6 +1150,7 @@ public class HBaseUtil {
             Result rs = table.get(g);
             return getObject(rs.value(), Double.class);
         } catch (IOException e) {
+            log.error("get failed:{}", e);
             throw e;
         }
     }
@@ -1179,11 +1177,12 @@ public class HBaseUtil {
 
         Scan scan = new Scan();
         // Hbase服务端需要开启该服务
-        AggregationClient aggregationClient = new AggregationClient(connection.getConfiguration());
-        Long count = aggregationClient.rowCount(name, new LongColumnInterpreter(), scan);
-        stopWatch.stop();
-        log.debug("RowCount:{} ,全表count统计耗时:{}", count, stopWatch.getTotalTimeMillis());
-        return count;
+        try (AggregationClient aggregationClient = new AggregationClient(connection.getConfiguration())) {
+            Long count = aggregationClient.rowCount(name, new LongColumnInterpreter(), scan);
+            stopWatch.stop();
+            log.debug("RowCount:{} ,全表count统计耗时:{}", count, stopWatch.getTotalTimeMillis());
+            return count;
+        }
     }
 
     /**

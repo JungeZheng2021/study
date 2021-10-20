@@ -7,7 +7,7 @@ spring:
     enableSwagger2: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://192.168.16.28:3306/${config.base.db_schema}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8
     username: root
     password: aims2016
     hikari:
@@ -75,7 +75,7 @@ eureka:
 config:
   base:
     batch_size: 10
-    db_schema: nuclear_tw
+    db_schema: nuclear_tw_test
     daily_table_prefix: spark_down_sample_daily
   driver:
     memory:

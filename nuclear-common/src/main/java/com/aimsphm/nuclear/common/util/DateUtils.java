@@ -16,14 +16,13 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.springframework.util.StringUtils.hasText;
 
 /**
- * @Package: com.aimsphm.common
- * @Description: <时间操作工具>
- * @Author: MILLA
- * @CreateDate: 2018/5/4 16:02
- * @UpdateUser: MILLA
- * @UpdateDate: 2018/5/4 16:02
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:时间操作工具
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2018/5/4 16:02
  */
 @Slf4j
 public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
@@ -50,7 +49,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static final String YEAR_MONTH_DAY_HH_MM_M = "yyyy-MM-dd HH:mm";
     public static final String YEAR_MONTH_DAY_HH_MM_SS_SSS_I = "yyyy/MM/dd HH:mm:ss.SSS";
     public static final String YEAR_MONTH_DAY_HH_MM_SS_SSS_M = "yyyy-MM-dd HH:mm:ss.SSS";
-    private static final String WEB_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String WEB_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     public static void main(String[] args) {
         long until = until(System.currentTimeMillis() - 8 * 86400 * 1000, System.currentTimeMillis(), ChronoUnit.DAYS);
@@ -62,43 +61,6 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         Long aLong1 = plusHoursMinValue(-2L);
         String format1 = format(YEAR_MONTH_DAY_HH_MM_SS_I, aLong1);
         System.out.println(format1);
-//        System.out.println(previousMonthFirstDay(System.currentTimeMillis()));
-//        System.out.println(previousMonthLastDay(System.currentTimeMillis()));
-//
-//        Date date = previousMonthFirstDay(1592972481000L);
-//        String format = format(YEAR_MONTH_DAY_HH_MM_SS_M, date);
-//        System.out.println(format);
-//        Date date1 = previousMonthLastDay(1592972481000L);
-//        String format1 = format(YEAR_MONTH_DAY_HH_MM_SS_M, date1);
-//        System.out.println(format1);
-//
-//        String s = formatPreviousMonth(1606796481000L, null);
-//        System.out.println(s);
-//        System.out.println(formatMonth(1606796481000L, null));
-//
-//        String s1 = formatCurrentDateTime(YEAR_ZH);
-//        System.out.println(s1);
-//        String s2 = formatPreviousYear(YEAR_ZH);
-//        System.out.println(s2);
-//
-//
-//        int dayOfYear = LocalDate.now().getDayOfYear();
-//
-//        System.out.println(dayOfYear);
-//
-//        boolean sameYear = isSameYear(new Date(), new Date(0));
-//        System.out.println(sameYear);
-//        int year = transition(new Date()).getYear();
-//        System.out.println(year);
-//        int year1 = transition(new Date(0)).getYear();
-//        System.out.println(year1);
-
-        //        System.out.println(previousMonthFirstDay());
-//        System.out.println(previousMonthLastDay());
-//        long until = DateUtils.until(previousMonthFirstDay(), previousMonthLastDay(), ChronoUnit.DAYS) + 1;
-//        System.out.println(until);
-//        System.out.println(new Date());
-//        System.out.println(plus(new Date(), 1L, ChronoUnit.DAYS));
     }
 
     public static String formatCurrentDateTime() {
@@ -112,7 +74,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @param now         指定时间
      * @param amountToAdd 增加的数量
      * @param unit        增加的单位
-     * @return
+     * @return 时间
      */
     public static Date plus(Date now, Long amountToAdd, TemporalUnit unit) {
         LocalDateTime nowDateTime = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -121,6 +83,13 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return Date.from(instant);
     }
 
+    /**
+     * 是否是同一年
+     *
+     * @param date1 日期1
+     * @param date2 日期2
+     * @return 布尔
+     */
     public static boolean isSameYear(Date date1, Date date2) {
         if (date1 != null && date2 != null) {
             Calendar cal1 = Calendar.getInstance();
@@ -139,7 +108,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @param now         指定时间
      * @param amountToAdd 增加的数量
      * @param unit        增加的单位
-     * @return
+     * @return 时间
      */
     public static Date plus(Long now, Long amountToAdd, TemporalUnit unit) {
         return plus(new Date(now), amountToAdd, unit);
@@ -219,8 +188,8 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 将LocalDate转换程Date对象
      *
-     * @param date
-     * @return
+     * @param date 时间
+     * @return 时间
      */
     public static Date transition(LocalDate date) {
         ZonedDateTime dateTime = date.atStartOfDay(ZoneId.systemDefault());
@@ -230,8 +199,8 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 将Date转换程LocalDate对象
      *
-     * @param date
-     * @return
+     * @param date 时间
+     * @return 时间
      */
     public static LocalDate transition(Date date) {
         LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -376,7 +345,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      *
      * @param pattern 指定样式
      * @param date    时间
-     * @return
+     * @return 字符串
      */
     public static String format(String pattern, LocalDate date) {
         if (Objects.isNull(pattern) || pattern.length() == 0) {
@@ -390,7 +359,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      *
      * @param pattern 指定样式
      * @param date    时间
-     * @return
+     * @return 字符串
      */
     public static String format(String pattern, LocalDateTime date) {
         if (Objects.isNull(pattern) || pattern.length() == 0) {
@@ -403,7 +372,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * 格式化
      *
      * @param date 时间
-     * @return
+     * @return 字符串
      */
     public static String format(LocalDateTime date) {
         return format(YEAR_MONTH_DAY_HH_MM_SS_M, date);
@@ -414,7 +383,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      *
      * @param pattern 指定样式
      * @param date    时间
-     * @return
+     * @return 字符串
      */
     public static String format(String pattern, Date date) {
         LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -426,7 +395,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      *
      * @param pattern   指定样式
      * @param timestamp 时间戳
-     * @return
+     * @return 字符串
      */
     public static String format(String pattern, Long timestamp) {
         return format(pattern, new Date(timestamp));
@@ -436,7 +405,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * 格式化数据
      *
      * @param timestamp 时间戳
-     * @return
+     * @return 字符串
      */
     public static String format(Long timestamp) {
         return format(YEAR_MONTH_DAY_HH_MM_SS_M, timestamp);
@@ -448,7 +417,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @param start 开始时间
      * @param end   结束时间
      * @param unit  单位
-     * @return
+     * @return 整型
      */
     public static long until(Date start, Date end, TemporalUnit unit) {
         LocalDateTime startDateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -462,7 +431,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @param startTime 开始时间
      * @param endTime   结束时间
      * @param unit      单位
-     * @return
+     * @return 整型
      */
     public static long until(Long startTime, Long endTime, TemporalUnit unit) {
         return until(new Date(startTime), new Date(endTime), unit);

@@ -32,14 +32,13 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_WAVE_DA
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.COMMA;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <故障诊断服务类 - 通用>
- * @Author: MILLA
- * @CreateDate: 2021-02-01
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-01
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:故障诊断服务类 - 通用
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-02-01 16:49
  */
 @Slf4j
 @Service
@@ -86,31 +85,23 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
         try {
             List<String> sensorCodeList = pointService.listSensorCodeByPointList(pointIdList);
             if (CollectionUtils.isEmpty(sensorCodeList)) {
-                result.setStatus(DataStatusEnum.FAILED.getValue());
-                result.setRemark("配置信息不完整");
-                return null;
+                return configIncomplete(result);
             }
             List<AlgorithmRulesDO> ruleList = rulesService.listRulesBySensorCodeList(sensorCodeList);
             if (CollectionUtils.isEmpty(ruleList)) {
-                result.setStatus(DataStatusEnum.FAILED.getValue());
-                result.setRemark("配置信息不完整");
-                return null;
+                return configIncomplete(result);
             }
             Map<Long, AlgorithmRulesDO> collect = ruleList.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
             List<AlgorithmRulesParameterDO> paramList = parameterService.listParamByRuleList(new ArrayList<>(collect.keySet()));
             if (CollectionUtils.isEmpty(paramList)) {
-                result.setStatus(DataStatusEnum.FAILED.getValue());
-                result.setRemark("配置信息不完整");
-                return null;
+                return configIncomplete(result);
             }
             //含有波形数据
             Map<String, String> codeAndType = paramList.stream().filter(x -> Objects.nonNull(x.getParameterType()) && x.getParameterType() == 1)
                     .collect(Collectors.toMap(x -> x.getSensorCode(), x -> x.getSensorSignalType(), (a, b) -> a));
             if (MapUtils.isEmpty(codeAndType)) {
                 log.warn("sensorCode or signalType is null in config files ...");
-                result.setStatus(DataStatusEnum.FAILED.getValue());
-                result.setRemark("配置信息不完整");
-                return null;
+                return configIncomplete(result);
             }
             //发送信息要求设置参数信息 - 如果没有获取到会阻塞
             sendMsgAndCheckParamsIsExist(codeAndType);
@@ -130,9 +121,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
                 return dto;
             }).filter(Objects::nonNull).collect(Collectors.toList());
             if (CollectionUtils.isEmpty(ruleParamList)) {
-                result.setStatus(DataStatusEnum.FAILED.getValue());
-                result.setRemark("配置信息不完整");
-                return null;
+                return configIncomplete(result);
             }
             FaultDiagnosisParamDTO paramDTO = new FaultDiagnosisParamDTO();
             paramDTO.setRules(ruleParamList);
@@ -149,19 +138,25 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
         return null;
     }
 
+    private Map<String, List<FaultReportResponseDTO>> configIncomplete(BizDiagnosisResultDO result) {
+        result.setStatus(DataStatusEnum.FAILED.getValue());
+        result.setRemark("配置信息不完整");
+        return null;
+    }
+
     @Override
     public List<FaultReasoningVO> faultReasoning(SymptomResponseDTO responseDTO, Long deviceId) {
+        if (Objects.isNull(responseDTO) || CollectionUtils.isEmpty(responseDTO.getSymptomList())) {
+            return new ArrayList<>();
+        }
         CommonDeviceDO device = deviceService.getById(deviceId);
         if (Objects.isNull(device)) {
-            return null;
-        }
-        if (Objects.isNull(responseDTO) || CollectionUtils.isEmpty(responseDTO.getSymptomList())) {
-            return null;
+            return new ArrayList<>();
         }
         //征兆集合
         FaultReasoningParamDTO params = new FaultReasoningParamDTO();
         params.setDeviceType(device.getDeviceType());
-        List<FaultReasoningParamVO.SymptomVO> symSet = responseDTO.getSymptomList().stream().map(x -> new FaultReasoningParamVO.SymptomVO(new Long(x))).collect(Collectors.toList());
+        List<FaultReasoningParamVO.SymptomVO> symSet = responseDTO.getSymptomList().stream().map(x -> new FaultReasoningParamVO.SymptomVO(Long.valueOf(x))).collect(Collectors.toList());
         params.setSymSet(symSet);
         //所有的关联规则
         LambdaQueryWrapper<AlgorithmNormalRuleDO> wrapper = Wrappers.lambdaQuery(AlgorithmNormalRuleDO.class);
@@ -197,7 +192,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
 
     private List<FaultReasoningVO> faultReasoningVO(FaultReasoningResponseDTO responseDTO) {
         if (Objects.isNull(responseDTO) || CollectionUtils.isEmpty(responseDTO.getReasonResultList())) {
-            return null;
+            return new ArrayList<>();
         }
         List<FaultReasoningResponseDTO.ReasonResult> reasonResultList = responseDTO.getReasonResultList();
         return reasonResultList.stream().map(x -> {
@@ -219,8 +214,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
             List<FaultReasoningParamVO.SymptomVO> symSet = faultInfo.getSymSet();
             if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(symSet)) {
                 List<AlgorithmNormalFaultFeatureVO> collect = symSet.stream().map(y -> {
-                    AlgorithmNormalFaultFeatureVO featureVO = featureService.getAlgorithmNormalFaultFeatureByComponentId(y.getSymId());
-                    return featureVO;
+                    return featureService.getAlgorithmNormalFaultFeatureByComponentId(y.getSymId());
                 }).filter(Objects::nonNull).collect(Collectors.toList());
                 reasoningVO.setFeatures(collect);
             }
@@ -300,7 +294,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
                     if (isSuccess.contains(edgeCode)) {
                         return;
                     }
-                    List<String> list = v.stream().map(x -> x.getSensorCode()).collect(Collectors.toList());
+                    List<String> list = v.stream().map(CommonSensorDO::getSensorCode).collect(Collectors.toList());
                     ConfigSettingsDTO settings = new ConfigSettingsDTO();
                     settings.setVibrationWaveUploadRequest(list);
                     ResponseData<Boolean> response = dataFeignClient.invokeService(edgeCode, settings);
@@ -345,7 +339,8 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
             try {
                 Thread.sleep(Objects.isNull(times) ? 1000L : times);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("get a error:{}", e);
+                Thread.currentThread().interrupt();
             }
         }
     }

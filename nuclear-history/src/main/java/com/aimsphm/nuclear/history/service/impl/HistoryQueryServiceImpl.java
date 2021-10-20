@@ -45,14 +45,13 @@ import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
 
 /**
- * @Package: com.aimsphm.nuclear.history.service.impl
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/11/21 17:42
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/21 17:42
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:HBase操作工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-11-21 17:42
  */
 @Slf4j
 @Service
@@ -70,10 +69,15 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     }
 
     /**
-     * 默认超过2分钟需要补点
+     * 时间间隔小于2分钟不补点
      */
-    @Value("${time.interval:120}")
-    private Long timeInterval;
+    @Value("#{${customer.config.min-time-interval:120}*1000}")
+    private Long minTimeInterval;
+    /**
+     * 时间间隔超过2个小时就不补点
+     */
+    @Value("#{${customer.config.max-time-interval:2}*3600*1000}")
+    private Long maxTimeInterval;
 
     @Override
     public List<List<Object>> listHistoryDataWithPointByScan(HistoryQuerySingleWithFeatureBO single) {
@@ -228,7 +232,9 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             List<Object> pointValue = points.get(points.size() - 1);
             long end = multi.getEnd();
             Long start = (Long) pointValue.get(0);
-            if (end - start <= timeInterval * 1000L) {
+            long gap = end - start;
+            if (minTimeInterval >= gap || gap >= maxTimeInterval) {
+                log.debug("min:{},max:{},gap:{}", minTimeInterval, maxTimeInterval, gap);
                 return;
             }
             HistoryQuerySingleWithFeatureBO single = new HistoryQuerySingleWithFeatureBO();

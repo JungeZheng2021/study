@@ -4,14 +4,13 @@ package com.aimsphm.nuclear.algorithm.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.enums
- * @Description: <算法枚举类>
- * @Author: MILLA
- * @CreateDate: 2020/12/17 13:47
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/17 13:47
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法枚举类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-17 13:47
  */
 public enum AlgorithmTypeEnum {
     MOVING_AVERAGE("MA", "滑动平均值"),
@@ -57,13 +56,12 @@ public enum AlgorithmTypeEnum {
     }
 
     public static AlgorithmTypeEnum getByValue(String type) {
-        if (type == null) {
+        if (Objects.isNull(type)) {
             return null;
         }
-
         AlgorithmTypeEnum[] instances = AlgorithmTypeEnum.values();
         for (AlgorithmTypeEnum i : instances) {
-            if (type != null && type.equals(i.getType())) {
+            if (i.getType().equals(type)) {
                 return i;
             }
         }
