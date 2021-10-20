@@ -8,14 +8,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <算法配置服务类>
- * @Author: MILLA
- * @CreateDate: 2021-02-23
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-23
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-02-23 14:30
  */
 public interface BizJobQuartzConfigService extends IService<BizJobQuartzConfigDO> {
 
@@ -23,7 +22,7 @@ public interface BizJobQuartzConfigService extends IService<BizJobQuartzConfigDO
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<BizJobQuartzConfigDO> listBizJobQuartzConfigByPageWithParams(QueryBO<BizJobQuartzConfigDO> queryBO);
 
@@ -31,7 +30,7 @@ public interface BizJobQuartzConfigService extends IService<BizJobQuartzConfigDO
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<BizJobQuartzConfigDO> listBizJobQuartzConfigWithParams(QueryBO<BizJobQuartzConfigDO> queryBO);
 }

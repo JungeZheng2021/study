@@ -14,15 +14,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;
+
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <模型对应测点信息服务实现类>
- * @Author: MILLA
- * @CreateDate: 2020-12-23
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-23
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:模型对应测点信息服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-23 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -31,11 +31,11 @@ public class AlgorithmModelPointServiceImpl extends ServiceImpl<AlgorithmModelPo
     @Override
     public Page<AlgorithmModelPointDO> listAlgorithmModelPointByPageWithParams(QueryBO<AlgorithmModelPointDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<AlgorithmModelPointDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }

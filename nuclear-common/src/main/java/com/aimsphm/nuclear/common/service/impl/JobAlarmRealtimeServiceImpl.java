@@ -27,14 +27,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <服务实现类>
- * @Author: MILLA
- * @CreateDate: 2020-12-24
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-24
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-24 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -46,7 +45,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
     @Override
     public Page<JobAlarmRealtimeDO> listJobAlarmRealtimeByPageWithParams(QueryBO<JobAlarmRealtimeDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         return this.page(queryBO.getPage(), customerConditions(queryBO));
     }
@@ -72,7 +71,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
     private LambdaQueryWrapper<JobAlarmRealtimeDO> customerConditions(QueryBO<JobAlarmRealtimeDO> queryBO) {
         LambdaQueryWrapper<JobAlarmRealtimeDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
             wrapper.between(JobAlarmRealtimeDO::getGmtAlarmTime, new Date(query.getStart()), new Date(query.getEnd()));
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
@@ -94,7 +93,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        return pointService.listPointAliasAndName(list.stream().map(x -> x.getPointId()).collect(Collectors.toList()), new CommonQueryBO());
+        return pointService.listPointAliasAndName(list.stream().map(JobAlarmRealtimeDO::getPointId).collect(Collectors.toList()), new CommonQueryBO());
     }
 
     @Override

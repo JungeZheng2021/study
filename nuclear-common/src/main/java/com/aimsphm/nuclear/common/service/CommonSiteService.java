@@ -7,21 +7,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
- * @Package: com.aimsphm.nuclear.ext.service
- * @Description: <电厂信息扩展服务类>
- * @Author: MILLA
- * @CreateDate: 2020-11-17
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-11-17
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-11-17 14:30
  */
 public interface CommonSiteService extends IService<CommonSiteDO> {
     /**
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<CommonSiteDO> listCommonSiteByPageWithParams(QueryBO<CommonSiteDO> queryBO);
 
@@ -29,7 +28,7 @@ public interface CommonSiteService extends IService<CommonSiteDO> {
      * 获取电厂信息结构树
      *
      * @param id 电厂id
-     * @return
+     * @return 对象
      */
     TreeVO<Long, String> listCommonSetTree(Long id);
 }

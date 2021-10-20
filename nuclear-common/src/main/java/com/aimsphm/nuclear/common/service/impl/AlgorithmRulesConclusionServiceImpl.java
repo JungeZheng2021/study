@@ -17,17 +17,14 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Objects;
 
-import static com.aimsphm.nuclear.common.constant.SymbolConstant.COMMA;
-
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <服务实现类>
- * @Author: MILLA
- * @CreateDate: 2021-01-29
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-29
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-01-29 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -36,21 +33,22 @@ public class AlgorithmRulesConclusionServiceImpl extends ServiceImpl<AlgorithmRu
     @Override
     public Page<AlgorithmRulesConclusionDO> listAlgorithmRulesConclusionByPageWithParams(QueryBO<AlgorithmRulesConclusionDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         return this.page(queryBO.getPage(), customerConditions(queryBO));
     }
 
+
     /**
      * 拼装查询条件
      *
-     * @param queryBO
-     * @return
+     * @param queryBO 条件
+     * @return 封装后的条件
      */
     private LambdaQueryWrapper<AlgorithmRulesConclusionDO> customerConditions(QueryBO<AlgorithmRulesConclusionDO> queryBO) {
         LambdaQueryWrapper<AlgorithmRulesConclusionDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }

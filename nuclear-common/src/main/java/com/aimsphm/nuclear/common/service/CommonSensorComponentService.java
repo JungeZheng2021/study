@@ -8,22 +8,21 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <服务类>
- * @Author: MILLA
- * @CreateDate: 2021-06-03
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-06-03
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-11-17 14:30
  */
 public interface CommonSensorComponentService extends IService<CommonSensorComponentDO> {
-    
+
     /**
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<CommonSensorComponentDO> listCommonSensorComponentByPageWithParams(QueryBO<CommonSensorComponentDO> queryBO);
 
@@ -31,7 +30,7 @@ public interface CommonSensorComponentService extends IService<CommonSensorCompo
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<CommonSensorComponentDO> listCommonSensorComponentWithParams(QueryBO<CommonSensorComponentDO> queryBO);
 }

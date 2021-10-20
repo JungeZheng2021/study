@@ -8,14 +8,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <报告生成测点配置表服务类>
- * @Author: MILLA
- * @CreateDate: 2021-02-23
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-23
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-02-23 14:30
  */
 public interface BizReportConfigService extends IService<BizReportConfigDO> {
 
@@ -23,7 +22,7 @@ public interface BizReportConfigService extends IService<BizReportConfigDO> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<BizReportConfigDO> listBizReportConfigByPageWithParams(QueryBO<BizReportConfigDO> queryBO);
 
@@ -31,15 +30,15 @@ public interface BizReportConfigService extends IService<BizReportConfigDO> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<BizReportConfigDO> listBizReportConfigWithParams(QueryBO<BizReportConfigDO> queryBO);
 
     /**
      * 根据subsystemId获取配置
      *
-     * @param deviceId
-     * @return
+     * @param deviceId 设备id
+     * @return 集合
      */
     List<BizReportConfigDO> listConfigByDeviceId(Long deviceId);
 }

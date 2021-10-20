@@ -8,14 +8,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 /**
- * @Package: com.aimsphm.nuclear.ext.service.impl
- * @Description: <降采样扩展服务实现类>
- * @Author: MILLA
- * @CreateDate: 2020-12-14
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-14
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:降采样扩展服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-14 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")

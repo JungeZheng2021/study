@@ -21,7 +21,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -38,14 +37,13 @@ import java.util.stream.Collectors;
 import static com.aimsphm.nuclear.common.constant.ReportConstant.SYMBOL_COMMA_EN;
 
 /**
- * @Package: com.aimsphm.nuclear.ext.service.impl
- * @Description: <报警事件扩展服务实现类>
- * @Author: MILLA
- * @CreateDate: 2020-12-05
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-05
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:报警事件扩展服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-11-17 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -75,7 +73,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
             List<JobAlarmEventBO> collect = list.stream().map(x -> {
                 JobAlarmEventBO eventBO = new JobAlarmEventBO();
                 BeanUtils.copyProperties(x, eventBO);
-                eventBO.setId(Long.valueOf(index.getAndIncrement()));
+                eventBO.setId((long) index.getAndIncrement());
                 return eventBO;
             }).collect(Collectors.toList());
             EasyExcelUtils.Write2Website(response, collect, JobAlarmEventBO.class, null, String.format("报警事件-%s", time));
@@ -99,11 +97,11 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
         JobAlarmEventDO entity = queryBO.getEntity();
         Integer eventStatus = entity.getAlarmStatus();
         if (Objects.nonNull(queryBO.getPage()) && Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<JobAlarmEventDO> wrapper = queryBO.lambdaQuery();
         AlarmQueryBO query = (AlarmQueryBO) queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
             //last>start && first<end
             wrapper.ge(JobAlarmEventDO::getGmtLastAlarm, new Date(query.getStart())).le(JobAlarmEventDO::getGmtFirstAlarm, new Date(query.getEnd()));
         }
@@ -151,7 +149,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        return mPointService.listByIds(list.stream().map(x -> x.getPointId()).collect(Collectors.toSet()));
+        return mPointService.listByIds(list.stream().map(AlgorithmModelPointDO::getPointId).collect(Collectors.toSet()));
     }
 
     @Override
@@ -206,6 +204,6 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
 
     private static List<String> retainAll(String sensorTagIds, List<String> pointIds) {
         List<String> strings = Arrays.asList(sensorTagIds.split(SYMBOL_COMMA_EN));
-        return strings.stream().filter(x -> pointIds.contains(x)).collect(Collectors.toList());
+        return strings.stream().filter(pointIds::contains).collect(Collectors.toList());
     }
 }

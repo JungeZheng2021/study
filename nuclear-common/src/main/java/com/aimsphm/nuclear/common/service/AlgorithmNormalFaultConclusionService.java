@@ -8,22 +8,21 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <服务类>
- * @Author: MILLA
- * @CreateDate: 2021-06-09
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-06-09
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-06-09 14:30
  */
 public interface AlgorithmNormalFaultConclusionService extends IService<AlgorithmNormalFaultConclusionDO> {
-    
+
     /**
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<AlgorithmNormalFaultConclusionDO> listAlgorithmNormalFaultConclusionByPageWithParams(QueryBO<AlgorithmNormalFaultConclusionDO> queryBO);
 
@@ -31,7 +30,7 @@ public interface AlgorithmNormalFaultConclusionService extends IService<Algorith
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<AlgorithmNormalFaultConclusionDO> listAlgorithmNormalFaultConclusionWithParams(QueryBO<AlgorithmNormalFaultConclusionDO> queryBO);
 }

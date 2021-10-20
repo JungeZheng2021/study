@@ -6,54 +6,46 @@ import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.AuthPrivilegeMapper;
 import com.aimsphm.nuclear.common.service.AuthPrivilegeService;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.aimsphm.nuclear.common.util.AuthRequestUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
-import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_PRIVILEGES;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <权限资源信息服务实现类>
- * @Author: MILLA
- * @CreateDate: 2021-05-06
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-05-06
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:权限资源信息服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-05-06 14:30
  */
 @Slf4j
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, AuthPrivilegeDO> implements AuthPrivilegeService {
+    @Resource
+    private AuthRequestUtils authUtils;
+
 
     @Override
     public Page<AuthPrivilegeDO> listAuthPrivilegeByPageWithParams(QueryBO<AuthPrivilegeDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         return this.page(queryBO.getPage(), customerConditions(queryBO));
     }
@@ -89,16 +81,11 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
     }
 
     @Override
-    public List<AuthPrivilegeDO> listAuthPrivilege(String userAccount, String sysCode, String structured) {
-        //TODO 权限以后做
-        userAccount = "20104580";
-        if (StringUtils.isEmpty(userAccount)) {
+    public List<AuthPrivilegeDO> listAuthPrivilege(String username, String sysCode, String structured) {
+        if (StringUtils.isEmpty(username)) {
             throw new CustomMessageException("User not logged in");
         }
-        if (StringUtils.isEmpty(sysCode)) {
-            sysCode = "70";
-        }
-        Set<String> privileges = getUserPrivilegeRest(userAccount, sysCode);
+        Set<String> privileges = authUtils.getUserPrivilegeByUsername(username, sysCode);
         if (CollectionUtils.isEmpty(privileges)) {
             return null;
         }
@@ -114,6 +101,11 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
         wrapper.in(AuthPrivilegeDO::getCategory, 1);
         List<AuthPrivilegeDO> list = this.list(wrapper);
         return operatePrivileges(list);
+    }
+
+    @Override
+    public String getUserIdByUsername(String username) {
+        return authUtils.getUserIdByUserName(username);
     }
 
     private List<AuthPrivilegeDO> operatePrivileges(List<AuthPrivilegeDO> list) {
@@ -136,112 +128,5 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
         });
         List<AuthPrivilegeDO> collect1 = list.stream().filter(x -> !needless.contains(x.getId())).collect(Collectors.toList());
         return collect1;
-    }
-
-    @Value("${privileges-server-url:http://autogrant.jnpc.com.cn/autogrant/privileges/queryUserQXPrivileges.so}")
-    private String targetURL;
-
-    /**
-     * restTemplate请求
-     *
-     * @param userAccount
-     * @param sysCode
-     * @return
-     */
-    private Set<String> getUserPrivilegeRest(String userAccount, String sysCode) {
-        RestTemplate template = new RestTemplate();
-        String json = "?userAccount=%s&sysCode=%s";
-        String format = String.format(json, userAccount, sysCode);
-        ResponseEntity<String> entity = template.getForEntity(targetURL + format, String.class);
-        log.debug("get用户权限结果为：{}", entity);
-        int statusCodeValue = entity.getStatusCodeValue();
-        if (statusCodeValue != 200) {
-            return null;
-        }
-        String body = entity.getBody();
-        return privileges(body);
-    }
-
-    /**
-     * 田湾请求方式
-     *
-     * @param userAccount
-     * @param sysCode
-     * @return
-     */
-    private Set<String> getUserPrivilege(String userAccount, String sysCode) {
-        InputStream is = null;
-        HttpURLConnection conn = null;
-        try {
-
-            URL url = new URL(targetURL);
-            //打开和url之间的连接
-            conn = (HttpURLConnection) url.openConnection();
-            //请求方式
-//            conn.setRequestMethod("POST");
-            //设置请求编码
-            conn.setRequestProperty("Charsert", "UTF-8");
-            //设置通用的请求属性
-//            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            // 维持长连接
-            conn.setRequestProperty("Connection", "Keep-Alive");
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-
-//            String json = "{\"userAccount\":\"%s\",\"sysCode\":\"%s\"}";
-            String json = "userAccount=%s&sysCode=%s";
-            String format = String.format(json, userAccount, sysCode);
-            out.write(format.getBytes("UTF-8"));
-            //缓冲数据
-            out.flush();
-            out.close();
-            int responseCode = conn.getResponseCode();
-            System.out.println(responseCode);
-            if (responseCode == 200) {
-                //获取URLConnection对象对应的输入流
-                is = conn.getInputStream();
-                //构造一个字符流缓存
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String lines;
-                StringBuffer sb = new StringBuffer();
-                while ((lines = reader.readLine()) != null) {
-                    lines = new String(lines.getBytes(), "utf-8");
-                    sb.append(lines);
-                }
-                return privileges(sb.toString());
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            log.error("get user privilege failed --> userAccount:{} , sysCode:{}, error:{}", userAccount, sysCode, e);
-        } finally {
-            //关闭流
-            try {
-                if (Objects.nonNull(is)) {
-
-                    is.close();
-                }
-                if (Objects.nonNull(conn)) {
-                    conn.disconnect();
-                }
-            } catch (IOException e) {
-            }
-        }
-        return null;
-    }
-
-    private Set<String> privileges(String sb) {
-        JSONObject responseData = JSON.parseObject(sb);
-        Integer result = responseData.getInteger("result");
-        if (result != 1) {
-            return null;
-        }
-        String message = responseData.getString("message");
-        if (!StringUtils.hasText(message)) {
-            return null;
-        }
-
-        return Arrays.stream(message.split(",")).collect(Collectors.toSet());
     }
 }

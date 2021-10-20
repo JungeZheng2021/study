@@ -1,12 +1,18 @@
 package com.aimsphm.nuclear.common.service.impl;
 
-import com.aimsphm.nuclear.common.entity.*;
+import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
+import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
+import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.CommonDeviceDetailsMapper;
-import com.aimsphm.nuclear.common.service.*;
+import com.aimsphm.nuclear.common.service.CommonDeviceDetailsService;
+import com.aimsphm.nuclear.common.service.CommonDeviceService;
+import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
+import com.aimsphm.nuclear.common.service.CommonSubSystemService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -24,19 +30,16 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FEATURES;
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_OIL_SETTINGS;
 
-
 /**
- * @Package: com.aimsphm.nuclear.ext.service.impl
- * @Description: <设备详细信息扩展服务实现类>
- * @Author: MILLA
- * @CreateDate: 2020-11-17
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-11-17
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:设备详细信息扩展服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-11-17 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -54,11 +57,11 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
     @Override
     public Page<CommonDeviceDetailsDO> listCommonDeviceDetailsByPageWithParams(QueryBO<CommonDeviceDetailsDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<CommonDeviceDetailsDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
@@ -90,7 +93,7 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
         if (CollectionUtils.isEmpty(list)) {
             return retVal;
         }
-        Map<Long, CommonDeviceDetailsDO> collect = list.stream().filter(x -> Objects.nonNull(x.getDeviceId())).collect(Collectors.toMap(x -> x.getDeviceId(), x -> x, (a, b) -> a));
+        Map<Long, CommonDeviceDetailsDO> collect = list.stream().filter(x -> Objects.nonNull(x.getDeviceId())).collect(Collectors.toMap(CommonDeviceDetailsDO::getDeviceId, x -> x, (a, b) -> a));
         if (MapUtils.isEmpty(collect)) {
             return retVal;
         }
@@ -102,7 +105,7 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
         if (CollectionUtils.isEmpty(points)) {
             return retVal;
         }
-        Map<Long, List<CommonMeasurePointDO>> map = points.stream().collect(Collectors.groupingBy(x -> x.getDeviceId()));
+        Map<Long, List<CommonMeasurePointDO>> map = points.stream().collect(Collectors.groupingBy(CommonMeasurePointDO::getDeviceId));
         for (Map.Entry<Long, CommonDeviceDetailsDO> x : collect.entrySet()) {
             Long deviceId = x.getKey();
             CommonDeviceDetailsDO detailsDO = x.getValue();
@@ -110,7 +113,7 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
             if (CollectionUtils.isEmpty(pointDOS)) {
                 continue;
             }
-            pointDOS.stream().forEach(m -> retVal.put(m.getSensorCode(), detailsDO));
+            pointDOS.forEach(m -> retVal.put(m.getSensorCode(), detailsDO));
         }
         return retVal;
     }
@@ -120,7 +123,7 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
      * 目前能支持到系统下公共设别明细
      *
      * @param query 查询条件
-     * @return
+     * @return 封装后的条件
      */
     private LambdaQueryWrapper<CommonDeviceDetailsDO> initWrapper(CommonQueryBO query) {
         LambdaQueryWrapper<CommonDeviceDetailsDO> wrapper = Wrappers.lambdaQuery(CommonDeviceDetailsDO.class);

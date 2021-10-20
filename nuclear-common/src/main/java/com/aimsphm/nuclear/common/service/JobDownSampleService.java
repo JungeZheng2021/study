@@ -8,22 +8,21 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <等间隔降采样数据服务类>
- * @Author: MILLA
- * @CreateDate: 2021-07-27
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-07-27
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-07-17 14:30
  */
 public interface JobDownSampleService extends IService<JobDownSampleDO> {
-    
+
     /**
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<JobDownSampleDO> listBizDownSampleByPageWithParams(QueryBO<JobDownSampleDO> queryBO);
 
@@ -31,7 +30,7 @@ public interface JobDownSampleService extends IService<JobDownSampleDO> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<JobDownSampleDO> listBizDownSampleWithParams(QueryBO<JobDownSampleDO> queryBO);
 }

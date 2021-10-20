@@ -8,14 +8,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <波形数据信息服务类>
- * @Author: MILLA
- * @CreateDate: 2021-02-03
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-03
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-02-03 14:30
  */
 public interface BizOriginalDataService extends IService<BizOriginalDataDO> {
 
@@ -23,7 +22,7 @@ public interface BizOriginalDataService extends IService<BizOriginalDataDO> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<BizOriginalDataDO> listBizOriginalDataByPageWithParams(QueryBO<BizOriginalDataDO> queryBO);
 
@@ -31,17 +30,17 @@ public interface BizOriginalDataService extends IService<BizOriginalDataDO> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<BizOriginalDataDO> listBizOriginalDataWithParams(QueryBO<BizOriginalDataDO> queryBO);
 
     /**
      * 根据时间区间和传感器code获取原始数据
      *
-     * @param sensorCode
-     * @param start
-     * @param end
-     * @return
+     * @param sensorCode 编码
+     * @param start      开始
+     * @param end        结束
+     * @return 集合
      */
     List<Long> listBizOriginalDataByParams(String sensorCode, Long start, Long end);
 }

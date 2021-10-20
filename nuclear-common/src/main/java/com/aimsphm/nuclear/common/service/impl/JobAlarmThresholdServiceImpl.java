@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
+import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmThresholdDO;
 import com.aimsphm.nuclear.common.entity.bo.AlarmQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.JobAlarmThresholdBO;
@@ -21,7 +22,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
@@ -38,18 +38,17 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.aimsphm.nuclear.common.constant.ReportConstant.*;
+import static com.aimsphm.nuclear.common.constant.ReportConstant.WORD_BLANK;
 import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_M;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <阈值报警信息服务实现类>
- * @Author: MILLA
- * @CreateDate: 2021-01-04
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-04
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:阈值报警信息服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-01-04 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -65,7 +64,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
         JobAlarmThresholdDO entity = queryBO.getEntity();
         Integer alarmStatus = entity.getAlarmStatus();
         if (Objects.nonNull(queryBO.getPage()) && Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<JobAlarmThresholdDO> wrapper = queryBO.lambdaQuery();
         AlarmQueryBO query = (AlarmQueryBO) queryBO.getQuery();
@@ -92,15 +91,17 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
         }
         if (Objects.nonNull(query.getDuration())) {
             ThresholdDurationEnum durationEnum = ThresholdDurationEnum.getByValue(query.getDuration());
-            Long start1 = durationEnum.getStart();
-            Long end1 = durationEnum.getEnd();
-            StringBuilder pre = new StringBuilder("ifNull(UNIX_TIMESTAMP(gmt_end_alarm),UNIX_TIMESTAMP(NOW()))- UNIX_TIMESTAMP(gmt_start_alarm)");
-            StringBuilder sb = new StringBuilder(pre);
-            sb.append(" > ").append(start1);
-            if (Objects.nonNull(end1)) {
-                sb.append(" and ").append(pre).append(" <= ").append(end1);
+            if (Objects.nonNull(durationEnum)) {
+                Long start1 = durationEnum.getStart();
+                Long end1 = durationEnum.getEnd();
+                StringBuilder pre = new StringBuilder("ifNull(UNIX_TIMESTAMP(gmt_end_alarm),UNIX_TIMESTAMP(NOW()))- UNIX_TIMESTAMP(gmt_start_alarm)");
+                StringBuilder sb = new StringBuilder(pre);
+                sb.append(" > ").append(start1);
+                if (Objects.nonNull(end1)) {
+                    sb.append(" and ").append(pre).append(" <= ").append(end1);
+                }
+                wrapper.apply(sb.toString());
             }
-            wrapper.apply(sb.toString());
         }
         wrapper.orderByDesc(JobAlarmThresholdDO::getId);
         return wrapper;
@@ -117,7 +118,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
         //将已经消失的阈值报警更新状态
         updateThresholdAlarmList(pointList);
         //本次所有需要存储的报警点
-        pointList.stream().forEach(item -> {
+        pointList.forEach(item -> {
             LambdaQueryWrapper<JobAlarmThresholdDO> query = Wrappers.lambdaQuery(JobAlarmThresholdDO.class);
             query.eq(JobAlarmThresholdDO::getPointId, item.getPointId()).eq(JobAlarmThresholdDO::getAlarmLevel, item.getAlarmLevel())
                     .orderByDesc(JobAlarmThresholdDO::getId).last(" limit 1");
@@ -153,7 +154,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
             List<JobAlarmThresholdBO> collect = list.stream().map(x -> {
                 JobAlarmThresholdBO eventBO = new JobAlarmThresholdBO();
                 BeanUtils.copyProperties(x, eventBO);
-                eventBO.setId(Long.valueOf(index.getAndIncrement()));
+                eventBO.setId((long) index.getAndIncrement());
                 Double subtract = BigDecimalUtils.subtract(Objects.isNull(x.getGmtEndAlarm()) ? System.currentTimeMillis() : x.getGmtEndAlarm().getTime() / 1000, x.getGmtStartAlarm().getTime() / 1000);
                 eventBO.setDuration(subtract.toString());
                 return eventBO;
@@ -186,11 +187,10 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
     /**
      * 修改之前的报警为结束
      *
-     * @param vos
-     * @return
+     * @param vos 集合
      */
     private void updateThresholdAlarmList(List<MeasurePointVO> vos) {
-        List<String> collect = vos.stream().map(x -> x.getPointId()).collect(Collectors.toList());
+        List<String> collect = vos.stream().map(CommonMeasurePointDO::getPointId).collect(Collectors.toList());
         LambdaUpdateWrapper<JobAlarmThresholdDO> wrapper = Wrappers.lambdaUpdate(JobAlarmThresholdDO.class);
         //状态修改成已结束
         wrapper.set(JobAlarmThresholdDO::getAlarmStatus, ThresholdAlarmStatusEnum.FINISHED.getValue());

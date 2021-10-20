@@ -34,14 +34,13 @@ import java.util.stream.Collectors;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.COMMA;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <故障诊断信息服务实现类>
- * @Author: MILLA
- * @CreateDate: 2021-02-01
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-01
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:故障诊断信息服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-02-01 14:30
  */
 @Slf4j
 @Service
@@ -60,7 +59,7 @@ public class BizDiagnosisResultServiceImpl extends ServiceImpl<BizDiagnosisResul
     @Override
     public Page<BizDiagnosisResultDO> listBizDiagnosisResultByPageWithParams(QueryBO<BizDiagnosisResultDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         return this.page(queryBO.getPage(), customerConditions(queryBO));
     }
@@ -68,13 +67,13 @@ public class BizDiagnosisResultServiceImpl extends ServiceImpl<BizDiagnosisResul
     /**
      * 拼装查询条件
      *
-     * @param queryBO
-     * @return
+     * @param query 查询条件
+     * @return 封装后的条件
      */
     private LambdaQueryWrapper<BizDiagnosisResultDO> customerConditions(QueryBO<BizDiagnosisResultDO> queryBO) {
         LambdaQueryWrapper<BizDiagnosisResultDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }

@@ -9,14 +9,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
- * @Package: com.aimsphm.nuclear.ext.service
- * @Description: <设备状态扩展服务类>
- * @Author: MILLA
- * @CreateDate: 2020-12-04
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-04
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-24 14:30
  */
 public interface JobDeviceStatusService extends IService<JobDeviceStatusDO> {
 
@@ -24,23 +23,24 @@ public interface JobDeviceStatusService extends IService<JobDeviceStatusDO> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<JobDeviceStatusDO> listJobDeviceStatusByPageWithParams(QueryBO<JobDeviceStatusDO> queryBO);
 
     /**
      * 获取设备运行状态
      *
-     * @param deviceId
-     * @return
+     * @param deviceId 设备
+     * @return 对象
      */
     JobDeviceStatusDO getDeviceRunningStatus(Long deviceId);
 
     /**
      * 计算设备的状态
-     *  @param status
-     * @param enableMonitor
-     * @param healthStatus
+     *
+     * @param status        状态
+     * @param enableMonitor 是否启用
+     * @param healthStatus  健康状态
      */
     void updateDeviceStatusWithCalculate(JobDeviceStatusDO status, CommonDeviceDO enableMonitor, Integer healthStatus);
 
@@ -57,7 +57,7 @@ public interface JobDeviceStatusService extends IService<JobDeviceStatusDO> {
      *
      * @param deviceId     设备id
      * @param healthStatus 设备状态
-     * @return
+     * @return 整型
      */
     Integer getDeviceCurrentStatus(CommonDeviceDO deviceId, Integer healthStatus);
 
@@ -67,7 +67,7 @@ public interface JobDeviceStatusService extends IService<JobDeviceStatusDO> {
      *
      * @param deviceId     设备id
      * @param rangeQueryBO 起止时间
-     * @return
+     * @return 整型
      */
     int countStopStatus(Long deviceId, TimeRangeQueryBO rangeQueryBO);
 }

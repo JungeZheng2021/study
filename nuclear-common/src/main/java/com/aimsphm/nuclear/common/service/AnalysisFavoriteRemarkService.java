@@ -8,14 +8,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <振动分析用户备注服务类>
- * @Author: MILLA
- * @CreateDate: 2021-01-14
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-14
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-01-14 14:30
  */
 public interface AnalysisFavoriteRemarkService extends IService<AnalysisFavoriteRemarkDO> {
 
@@ -23,15 +22,15 @@ public interface AnalysisFavoriteRemarkService extends IService<AnalysisFavorite
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<AnalysisFavoriteRemarkDO> listAnalysisFavoriteRemarkByPageWithParams(QueryBO<AnalysisFavoriteRemarkDO> queryBO);
 
     /**
      * 根据收藏夹id获取备注个数
      *
-     * @param favoriteId
-     * @return
+     * @param favoriteId 收藏id
+     * @return 证书
      */
     Integer countRemarked(Long favoriteId);
 
@@ -39,7 +38,7 @@ public interface AnalysisFavoriteRemarkService extends IService<AnalysisFavorite
      * 获取所有的备注信息
      *
      * @param favoriteId 收藏夹id
-     * @return
+     * @return 集合
      */
     List<AnalysisFavoriteRemarkDO> listRemarkByFavoriteId(Long favoriteId);
 }

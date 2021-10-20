@@ -8,21 +8,20 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.ext.service
- * @Description: <设备信息扩展服务类>
- * @Author: MILLA
- * @CreateDate: 2020-11-17
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-11-17
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-11-17 14:30
  */
 public interface CommonDeviceService extends IService<CommonDeviceDO> {
     /**
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<CommonDeviceDO> listCommonDeviceByPageWithParams(QueryBO<CommonDeviceDO> queryBO);
 
@@ -30,7 +29,7 @@ public interface CommonDeviceService extends IService<CommonDeviceDO> {
      * 获取数据列表
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<CommonDeviceDO> listCommonDeviceWithParams(QueryBO<CommonDeviceDO> queryBO);
 
@@ -38,7 +37,7 @@ public interface CommonDeviceService extends IService<CommonDeviceDO> {
      * 根据子系统id获取设备列表
      *
      * @param subSystemId 子系统id
-     * @return
+     * @return 集合
      */
     List<CommonDeviceDO> listCommonDeviceBySubSystemId(Long subSystemId);
 

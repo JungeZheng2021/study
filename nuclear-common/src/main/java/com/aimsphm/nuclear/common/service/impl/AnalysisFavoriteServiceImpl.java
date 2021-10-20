@@ -27,14 +27,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <振动分析收藏夹服务实现类>
- * @Author: MILLA
- * @CreateDate: 2021-01-14
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-14
- * @UpdateRemark: <>s
- * @Version: 1.0
+ * <p>
+ * 功能描述:振动分析收藏夹服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-01-14 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -49,11 +48,11 @@ public class AnalysisFavoriteServiceImpl extends ServiceImpl<AnalysisFavoriteMap
     @Override
     public Page<AnalysisFavoriteDO> listAnalysisFavoriteByPageWithParams(QueryBO<AnalysisFavoriteDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<AnalysisFavoriteDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
             wrapper.ge(AnalysisFavoriteDO::getAcquisitionTime, query.getStart()).le(AnalysisFavoriteDO::getAcquisitionTime, query.getEnd());
         }
         wrapper.orderByDesc(AnalysisFavoriteDO::getAcquisitionTime);

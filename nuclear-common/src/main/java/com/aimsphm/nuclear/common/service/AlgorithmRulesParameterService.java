@@ -8,14 +8,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <服务类>
- * @Author: MILLA
- * @CreateDate: 2021-01-29
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-29
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-01-29 14:30
  */
 public interface AlgorithmRulesParameterService extends IService<AlgorithmRulesParameterDO> {
 
@@ -23,7 +22,7 @@ public interface AlgorithmRulesParameterService extends IService<AlgorithmRulesP
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<AlgorithmRulesParameterDO> listAlgorithmRulesParameterByPageWithParams(QueryBO<AlgorithmRulesParameterDO> queryBO);
 
@@ -31,7 +30,7 @@ public interface AlgorithmRulesParameterService extends IService<AlgorithmRulesP
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<AlgorithmRulesParameterDO> listAlgorithmRulesParameterWithParams(QueryBO<AlgorithmRulesParameterDO> queryBO);
 
@@ -39,7 +38,7 @@ public interface AlgorithmRulesParameterService extends IService<AlgorithmRulesP
      * 根据规则id获取参数
      *
      * @param ruleIds 规则id列表
-     * @return
+     * @return 集合
      */
     List<AlgorithmRulesParameterDO> listParamByRuleList(List<Long> ruleIds);
 }

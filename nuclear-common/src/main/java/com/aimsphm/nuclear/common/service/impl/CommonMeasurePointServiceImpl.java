@@ -45,14 +45,13 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
 
 /**
- * @Package: com.aimsphm.nuclear.ext.service.impl
- * @Description: <测点信息扩展服务实现类>
- * @Author: milla
- * @CreateDate: 2020-11-16
- * @UpdateUser: milla
- * @UpdateDate: 2020-11-16
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:测点信息扩展服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-11-16 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -71,9 +70,6 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     private CommonSubSystemService subSystemServiceExt;
 
     @Resource
-    private JobAlarmThresholdService thresholdService;
-
-    @Resource
     private AlgorithmModelPointService algorithmModelPointService;
 
     /**
@@ -86,11 +82,11 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     @Override
     public Page<CommonMeasurePointDO> listCommonMeasurePointByPageWithParams(QueryBO<CommonMeasurePointDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
@@ -107,7 +103,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (CollectionUtils.isEmpty(vos)) {
             return;
         }
-        vos.stream().forEach(item -> store2Redis(item, value, timestamp));
+        vos.forEach(item -> store2Redis(item, value, timestamp));
         //缓存指定长度的队列
         cacheQueueData(vos, timestamp);
     }
@@ -127,14 +123,15 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (Objects.isNull(vo) || Objects.isNull(vo.getValue())) {
             return 0D;
         }
-        return value - vo.getValue();
+        double sub = value - vo.getValue();
+        return sub < 0 ? 0D : sub;
     }
 
     /**
      * 缓存队列数据
      *
-     * @param vos
-     * @param timestamp
+     * @param vos       集合
+     * @param timestamp 时间戳
      */
     private void cacheQueueData(List<MeasurePointVO> vos, Long timestamp) {
         for (MeasurePointVO point : vos) {
@@ -151,7 +148,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             HBaseTimeSeriesDataDTO data = new HBaseTimeSeriesDataDTO();
             data.setValue(point.getValue());
             data.setTimestamp(timestamp);
-            if (size.intValue() >= CACHE_QUEUE_DATA_SIZE) {
+            if (Objects.nonNull(size) && size.intValue() >= CACHE_QUEUE_DATA_SIZE) {
                 redis.opsForList().rightPush(key, data);
                 redis.opsForList().leftPop(key);
                 continue;
@@ -310,7 +307,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        return list.stream().collect(Collectors.toMap(x -> x.getLocationCode(), x -> x, (a, b) -> Objects.isNull(a.getSort()) ? b : a));
+        return list.stream().collect(Collectors.toMap(CommonSensorDO::getLocationCode, x -> x, (a, b) -> Objects.isNull(a.getSort()) ? b : a));
     }
 
     @Override
@@ -321,7 +318,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        return list.stream().map(x -> x.getSensorCode()).distinct().collect(Collectors.toList());
+        return list.stream().map(CommonMeasurePointDO::getSensorCode).distinct().collect(Collectors.toList());
     }
 
     @Override
@@ -351,8 +348,8 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        Map<Long, CommonMeasurePointDO> ids = list.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
-        Map<String, CommonMeasurePointDO> pointDOMap = list.stream().collect(Collectors.toMap(x -> x.getPointId(), x -> x, (a, b) -> a));
+        Map<Long, CommonMeasurePointDO> ids = list.stream().collect(Collectors.toMap(BaseDO::getId, x -> x));
+        Map<String, CommonMeasurePointDO> pointDOMap = list.stream().collect(Collectors.toMap(CommonMeasurePointDO::getPointId, x -> x, (a, b) -> a));
         LambdaQueryWrapper<AlgorithmModelPointDO> modelWrapper = Wrappers.lambdaQuery(AlgorithmModelPointDO.class);
         modelWrapper.in(AlgorithmModelPointDO::getPointId, ids.keySet());
         modelWrapper.last("and exists  (select model_id from algorithm_model where id=model_id and model_type=1)");
@@ -411,7 +408,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         if (MapUtils.isEmpty(data)) {
             return null;
         }
-        Set<String> collect = data.values().stream().filter(x -> StringUtils.hasText(x.getSensorCode())).map(x -> x.getSensorCode()).collect(Collectors.toSet());
+        Set<String> collect = data.values().stream().filter(x -> StringUtils.hasText(x.getSensorCode())).map(CommonSensorDO::getSensorCode).collect(Collectors.toSet());
         return listFeatures(Lists.newArrayList(collect));
     }
 
@@ -420,7 +417,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
      * 目前能支持到系统下公共测点
      *
      * @param query 查询条件
-     * @return
+     * @return 封装后的条件
      */
     private LambdaQueryWrapper<CommonMeasurePointDO> initWrapper(CommonQueryBO query) {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
@@ -474,8 +471,8 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
      * 获取存储到redis中的key
      * 如果设备id存在的话就将deviId拼接上
      *
-     * @param vo
-     * @return
+     * @param vo 对象
+     * @return 字符
      */
     @Override
     public String getStoreKey(CommonMeasurePointDO vo) {
@@ -490,15 +487,15 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     /**
      * 计算健康状态
      *
-     * @param vo
-     * @return
+     * @param vo 对象
+     * @return 布尔
      */
     private boolean calculateHealthStatus(MeasurePointVO vo) {
         if (Objects.isNull(vo.getCategory()) || Objects.isNull(vo.getValue())) {
             return false;
         }
         //报警测点
-        if (PointCategoryEnum.ALARM.getValue().equals(vo.getCategory().byteValue())) {
+        if (PointCategoryEnum.ALARM.getValue().equals(vo.getCategory())) {
             //等于1看作为异常
             if (Objects.nonNull(vo.getValue()) && vo.getValue().intValue() == 1) {
                 vo.setStatus(AlarmMessageEnum.ALARM_TEXT.getColor());

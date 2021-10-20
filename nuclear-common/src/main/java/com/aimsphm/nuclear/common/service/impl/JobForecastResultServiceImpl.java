@@ -35,14 +35,13 @@ import java.util.stream.Collectors;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.COMMA;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <预测结果信息服务实现类>
- * @Author: MILLA
- * @CreateDate: 2021-07-15
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-07-15
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:预测结果信息服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-07-15 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
@@ -56,7 +55,7 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
     @Override
     public Page<JobForecastResultDO> listJobForecastResultByPageWithParams(QueryBO<JobForecastResultDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         return this.page(queryBO.getPage(), customerConditions(queryBO));
     }
@@ -64,13 +63,13 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
     /**
      * 拼装查询条件
      *
-     * @param queryBO
-     * @return
+     * @param queryBO 查询条件
+     * @return 封装后的条件
      */
     private LambdaQueryWrapper<JobForecastResultDO> customerConditions(QueryBO<JobForecastResultDO> queryBO) {
         LambdaQueryWrapper<JobForecastResultDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
@@ -97,7 +96,7 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
         List<JobForecastResultVO.ForecastDataVO> dataList = Lists.newArrayList();
         vo.setDataList(dataList);
         AtomicReference<JobForecastResultDO> first = new AtomicReference<>();
-        list.stream().forEach(x -> {
+        list.forEach(x -> {
             JobForecastResultVO.ForecastDataVO dataVO = new JobForecastResultVO.ForecastDataVO();
             CommonMeasurePointDO point = pointService.getPointByPointId(x.getPointId());
             if (Objects.isNull(point)) {
@@ -120,14 +119,14 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
         if (StringUtils.hasText(result.getSymptomIds())) {
             List<Integer> collect = null;
             try {
-                collect = Arrays.stream(result.getSymptomIds().split(COMMA)).map(x -> Integer.parseInt(x)).collect(Collectors.toList());
+                collect = Arrays.stream(result.getSymptomIds().split(COMMA)).map(Integer::parseInt).collect(Collectors.toList());
             } catch (Exception e) {
                 log.error("convent data failed ...{}", e);
             }
             dto.setSymptomList(collect);
         }
-        List<FaultReasoningVO> faultReasoningVOS = diagnosisService.faultReasoning(dto, deviceId);
-        vo.setForecastList(faultReasoningVOS);
+        List<FaultReasoningVO> vos = diagnosisService.faultReasoning(dto, deviceId);
+        vo.setForecastList(vos);
         return vo;
     }
 

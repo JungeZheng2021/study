@@ -8,14 +8,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service
- * @Description: <权限资源信息服务类>
- * @Author: MILLA
- * @CreateDate: 2021-05-06
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-05-06
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-05-06 14:30
  */
 public interface AuthPrivilegeService extends IService<AuthPrivilegeDO> {
 
@@ -23,7 +22,7 @@ public interface AuthPrivilegeService extends IService<AuthPrivilegeDO> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页
      */
     Page<AuthPrivilegeDO> listAuthPrivilegeByPageWithParams(QueryBO<AuthPrivilegeDO> queryBO);
 
@@ -31,23 +30,31 @@ public interface AuthPrivilegeService extends IService<AuthPrivilegeDO> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 集合
      */
     List<AuthPrivilegeDO> listAuthPrivilegeWithParams(QueryBO<AuthPrivilegeDO> queryBO);
 
     /**
      * 获取资源数据
      *
-     * @return
+     * @return 集合
      */
     List<AuthPrivilegeDO> listAuthPrivilege();
 
     /**
      * 根据用户名和系统号查询用户权限
      *
-     * @param userAccount
-     * @param sysCode
-     * @return
+     * @param username 用户名
+     * @param sysCode  系统code
+     * @return 集合
      */
-    List<AuthPrivilegeDO> listAuthPrivilege(String userAccount, String sysCode, String structured);
+    List<AuthPrivilegeDO> listAuthPrivilege(String username, String sysCode, String structured);
+
+    /**
+     * 根据username获取userid
+     *
+     * @param username 用户名称
+     * @return 字符串
+     */
+    String getUserIdByUsername(String username);
 }

@@ -32,14 +32,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.impl
- * @Description: <传感器信息服务实现类>
- * @Author: MILLA
- * @CreateDate: 2021-01-21
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-21
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:传感器信息服务实现类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-06-03 14:30
  */
 @Slf4j
 @Service
@@ -52,7 +51,7 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
     @Override
     public Page<CommonSensorDO> listCommonSensorByPageWithParams(QueryBO<CommonSensorDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         return this.page(queryBO.getPage(), customerConditions(queryBO));
     }
@@ -66,7 +65,7 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
     private LambdaQueryWrapper<CommonSensorDO> customerConditions(QueryBO<CommonSensorDO> queryBO) {
         LambdaQueryWrapper<CommonSensorDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
@@ -136,7 +135,7 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
         if (Objects.isNull(soundValueSleepTime) || Objects.isNull(soundWaveSleepTime)) {
             return;
         }
-        Boolean isSuccess = soundValueSleepTime == 1 && soundWaveSleepTime == 1;
+        boolean isSuccess = soundValueSleepTime == 1 && soundWaveSleepTime == 1;
         LambdaUpdateWrapper<CommonSensorSettingsDO> update = Wrappers.lambdaUpdate(CommonSensorSettingsDO.class);
         update.set(CommonSensorSettingsDO::getConfigStatus, isSuccess ? ConfigStatusEnum.CONFIG_SUCCESS.getValue() : ConfigStatusEnum.CONFIG_FAILED.getValue())
                 .eq(CommonSensorSettingsDO::getEdgeCode, edgeCode).eq(CommonSensorSettingsDO::getCategory, PointCategoryEnum.ACOUSTICS.getValue());
@@ -160,7 +159,7 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
             return;
         }
         //采样方式和周期
-        Boolean isSuccess = oilSleepTime == 1 && method == 1;
+        boolean isSuccess = oilSleepTime == 1 && method == 1;
         LambdaUpdateWrapper<CommonSensorDO> update = Wrappers.lambdaUpdate(CommonSensorDO.class);
         update.set(CommonSensorDO::getConfigStatus, isSuccess ? ConfigStatusEnum.CONFIG_SUCCESS.getValue() : ConfigStatusEnum.CONFIG_FAILED.getValue())
                 .eq(CommonSensorDO::getEdgeCode, edgeCode).eq(CommonSensorDO::getCategory, PointCategoryEnum.OIL_QUALITY.getValue());
@@ -188,7 +187,7 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
             return;
         }
         LambdaUpdateWrapper<CommonSensorSettingsDO> update = Wrappers.lambdaUpdate(CommonSensorSettingsDO.class);
-        Boolean isSuccess = vibrationValueSleepTime == 1 && vibrationWaveAcquisitionTime == 1 && vibrationWaveSleepTime == 1;
+        boolean isSuccess = vibrationValueSleepTime == 1 && vibrationWaveAcquisitionTime == 1 && vibrationWaveSleepTime == 1;
         update.set(CommonSensorSettingsDO::getConfigStatus, isSuccess ? ConfigStatusEnum.CONFIG_SUCCESS.getValue() : ConfigStatusEnum.CONFIG_FAILED.getValue())
                 .eq(CommonSensorSettingsDO::getEdgeCode, edgeCode).eq(CommonSensorSettingsDO::getCategory, PointCategoryEnum.VIBRATION.getValue());
         settingsService.update(update);
