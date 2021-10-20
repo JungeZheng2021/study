@@ -2,28 +2,18 @@ package com.aimsphm.nuclear.algorithm.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.FeatureExtractionParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.FeatureExtractionResponseDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.SymptomParamDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.SymptomResponseDTO;
 import com.aimsphm.nuclear.algorithm.enums.FeatureNameEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import com.aimsphm.nuclear.algorithm.service.FeatureExtractionOperationService;
-import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
-import com.aimsphm.nuclear.common.entity.CommonSensorComponentDO;
-import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
-import com.aimsphm.nuclear.common.enums.TimeUnitEnum;
 import com.aimsphm.nuclear.common.service.AlgorithmNormalFaultFeatureService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.CommonSensorComponentService;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.compress.Compression;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,10 +27,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
+import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATOR;
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_WAVE_DATA_ACC;
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_WAVE_DATA_VEC;
-import static com.aimsphm.nuclear.common.constant.ReportConstant.BLANK;
 import static com.baomidou.mybatisplus.core.toolkit.StringPool.DASH;
 
 /**

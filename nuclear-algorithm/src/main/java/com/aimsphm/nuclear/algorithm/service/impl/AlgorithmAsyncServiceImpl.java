@@ -179,7 +179,6 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
 
     private TimeRangeQueryBO getRangeDate(CommonMeasurePointDO item, String sensorCode) {
         CommonSensorSettingsDO config = sensorService.getSensorConfigBySensorCode(sensorCode, PointCategoryEnum.VIBRATION.getValue());
-//        CommonSensorSettingsDO config = sensorService.getSensorConfigBySensorCode(sensorCode, PointCategoryEnum.OIL_QUALITY.getValue());
         //秒级
         Long period = Objects.isNull(config) || Objects.isNull(config.getEigenvalueSamplePeriod()) ? 10 * 60 * 1000 : config.getEigenvalueSamplePeriod() * 1000;
         TimeRangeQueryBO bo = new TimeRangeQueryBO();

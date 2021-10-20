@@ -53,8 +53,6 @@ public class PumpThresholdMonitorJob implements BaseMonitorJob {
      * 测试：每7分钟执行一次
      * 线上：每小时的13分的时候执行一次
      */
-//    @Scheduled(cron = "0 0/7 * * * ? ")
-//    @Scheduled(cron = "0 13 * * * ? ")
     @Async
     @Scheduled(cron = "${scheduled.config.PumpThresholdMonitorJob:0 13 * * * ?}")
     @DistributedLock("FanMonitorJobLock")

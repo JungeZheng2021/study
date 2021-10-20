@@ -45,7 +45,6 @@ public class FanStateJob implements BaseMonitorJob {
      * 一分钟(每分钟的10秒)执行一次执行一次
      */
     @Async
-//    @Scheduled(cron = "30 0/10 * * * ? ")
     @Scheduled(cron = "${scheduled.config.FanStateJob:30 0/10 * * * ? }")
     @DistributedLock("FanStartStopStatusJobLock")
     public void monitorStartStopStatus() {

@@ -17,7 +17,6 @@ public interface AlgorithmService {
     /**
      * 设备状态监测算法
      *
-     *
      * @param algorithmType
      * @param deviceId
      * @param algorithmPeriod
@@ -27,7 +26,6 @@ public interface AlgorithmService {
 
     /**
      * 设备启停状态判断
-     *
      *
      * @param algorithmType
      * @param deviceId

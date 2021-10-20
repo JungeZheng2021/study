@@ -18,6 +18,8 @@ scheduled:
     PumpThresholdMonitorJob: 1 0/1 * * * ?
     # 特征提取 每8,18,28的43秒执行一次
     FeatureExtractionJob: 43 8/10 * * * ?
+    # 等间隔降采样 每小时执行一次
+    DownSampleJobLock: 57 4/60 * * * ?
 spring:
   mybatisPlusConfig:
     enable: true

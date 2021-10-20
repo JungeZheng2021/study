@@ -11,7 +11,6 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.entity.*;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesObjectDTO;
 import com.aimsphm.nuclear.common.enums.DeviceHealthEnum;
-import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import com.aimsphm.nuclear.common.service.*;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_DEVICE_CONDITION;
-import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
 
 /**
  * @Package: com.aimsphm.nuclear.algorithm.service.impl
@@ -400,8 +398,6 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         for (CommonMeasurePointDO item : list) {
             PointDataBO data = new PointDataBO();
             data.setPointId(item.getPointId());
-            String family = PointTypeEnum.PI.getValue().equals(item.getPointType()) ? H_BASE_FAMILY_NPC_PI_REAL_TIME : item.getFeatureType() + DASH + item.getFeature();
-//            asyncService.listPointDataFromHBase(family, item.getId(), item.getSensorCode(), data, countDownLatch);
             asyncService.listPointDataFromHBase(item, data, countDownLatch);
             collect.add(data);
         }

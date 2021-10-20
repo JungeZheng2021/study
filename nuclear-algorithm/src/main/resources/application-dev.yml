@@ -23,7 +23,7 @@ scheduled:
     # 特征提取 每8,18,28的43秒执行一次
     FeatureExtractionJob: 43 8/10 * * * ?
     # 等间隔降采样 每小时执行一次
-    DownSampleJobLock: 57 0/30 * * * ?
+    DownSampleJobLock: 57 4/60 * * * ?
     # 征兆预测每12小时运行一次
     PrognosticForecastJob: 13 7/27 * * * ?
 spring:

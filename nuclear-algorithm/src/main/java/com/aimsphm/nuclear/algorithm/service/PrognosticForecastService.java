@@ -1,10 +1,5 @@
 package com.aimsphm.nuclear.algorithm.service;
 
-import com.aimsphm.nuclear.common.entity.AlgorithmPrognosticFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.CommonComponentDO;
-
-import java.util.List;
-
 /**
  * <p>
  * 功能描述:

@@ -44,7 +44,6 @@ public class FanThresholdMonitorJob implements BaseMonitorJob {
      * 线上： 每小时的37分的时候执行一次
      */
     @Async
-//    @Scheduled(cron = "0/2 * * * * ?")
     @Scheduled(cron = "${scheduled.config.FanThresholdMonitorJob:29 0 * * * ?}")
     @DistributedLock("FanThresholdMonitorJob")
     public void monitor() {

@@ -2,13 +2,13 @@ package com.aimsphm.nuclear.algorithm.service.impl;
 
 import com.aimsphm.nuclear.algorithm.service.DownSampleService;
 import com.aimsphm.nuclear.common.entity.AlgorithmPrognosticFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.JobDownSampleDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
+import com.aimsphm.nuclear.common.entity.JobDownSampleDO;
 import com.aimsphm.nuclear.common.enums.TimeUnitEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.service.AlgorithmPrognosticFaultFeatureService;
-import com.aimsphm.nuclear.common.service.JobDownSampleService;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
+import com.aimsphm.nuclear.common.service.JobDownSampleService;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.alibaba.fastjson.JSON;
