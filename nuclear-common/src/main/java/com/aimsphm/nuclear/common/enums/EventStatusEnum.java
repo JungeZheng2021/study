@@ -3,21 +3,20 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <测点类型枚举类>
- * @Author: MILLA
- * @CreateDate: 2020/4/17 14:30
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/17 14:30
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:测点类型枚举类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum EventStatusEnum {
 
     FINISHED(0, "已结束"),
     IN_ACTIVITY(1, "待分析"),
     ACKNOWLEDGED(2, "分析中"),
-    
+
     IGNORED(3, "已忽略"),
     PAUSED(4, "已暂停"),
     OTHERS(-1, "其他");
@@ -37,13 +36,13 @@ public enum EventStatusEnum {
     }
 
     public static EventStatusEnum getByValue(Integer value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
 
         EventStatusEnum[] instances = EventStatusEnum.values();
         for (EventStatusEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

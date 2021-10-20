@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <配置状态枚举>
- * @Author: MILLA
- * @CreateDate: 2020/12/17 13:47
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/17 13:47
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:配置状态枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum ConfigStatusEnum {
     OTHER(-1, "其他"),
@@ -33,13 +32,13 @@ public enum ConfigStatusEnum {
     }
 
     public static ConfigStatusEnum getByValue(Integer value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
 
         ConfigStatusEnum[] instances = ConfigStatusEnum.values();
         for (ConfigStatusEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <测点Visible枚举类>
- * @Author: MILLA
- * @CreateDate: 2020/4/17 14:30
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/17 14:30
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:测点Visible枚举类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum PointVisibleEnum {
     DOWN_SAMPLE(2, "降采样"),
@@ -38,13 +37,13 @@ public enum PointVisibleEnum {
     }
 
     public static PointVisibleEnum getByValue(Integer value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
 
         PointVisibleEnum[] instances = PointVisibleEnum.values();
         for (PointVisibleEnum i : instances) {
-            if (value != null && value.equals(i.getCategory())) {
+            if (i.getCategory().equals(value)) {
                 return i;
             }
         }

@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <设备类型枚举>
- * @Author: MILLA
- * @CreateDate: 2020/12/17 13:47
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/17 13:47
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:设备类型枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum DeviceTypeEnum {
 
@@ -32,13 +31,13 @@ public enum DeviceTypeEnum {
     }
 
     public static DeviceTypeEnum getByValue(Integer value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
 
         DeviceTypeEnum[] instances = DeviceTypeEnum.values();
         for (DeviceTypeEnum i : instances) {
-            if (value != null && value.equals(i.getType())) {
+            if (i.getType().equals(value)) {
                 return i;
             }
         }

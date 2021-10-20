@@ -2,15 +2,15 @@ package com.aimsphm.nuclear.common.enums;
 
 import java.util.Objects;
 
+
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <报警类型枚举>
- * @Author: MILLA
- * @CreateDate: 2020/4/15 16:26
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/15 16:26
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:报警类型枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum AlarmMessageEnum {
     //3红色-三级阈值报警  2橙色-二级阈值报警 1黄色-一级阈值报警
@@ -38,13 +38,13 @@ public enum AlarmMessageEnum {
     }
 
     public static AlarmMessageEnum getByValue(Integer level) {
-        if (level == null) {
+        if (Objects.isNull(level)) {
             return null;
         }
 
         AlarmMessageEnum[] instances = AlarmMessageEnum.values();
         for (AlarmMessageEnum i : instances) {
-            if (level != null && level.equals(i.getLevel())) {
+            if (i.getLevel().equals(level)) {
                 return i;
             }
         }
@@ -71,13 +71,12 @@ public enum AlarmMessageEnum {
     private Integer level;
 
     public static AlarmMessageEnum instance(String text) {
-        if (text == null || text.length() == 0) {
+        if (Objects.isNull(text)) {
             return null;
         }
-
         AlarmMessageEnum[] instances = AlarmMessageEnum.values();
         for (AlarmMessageEnum i : instances) {
-            if (text != null && text.equals(i.getText())) {
+            if (i.getText().equals(text)) {
                 return i;
             }
         }

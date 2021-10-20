@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <单位枚举 //单位  0 天 1 小时 2 分钟 3 秒 4 毫秒 5 次>
- * @Author: MILLA
- * @CreateDate: 2020/12/17 13:47
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/17 13:47
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:单位枚举 //单位  0 天 1 小时 2 分钟 3 秒 4 毫秒 5 次
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum UnitEnum {
     OTHER(-1, "其他"), DAY(0, "天"), HOUR(1, "时"), MINUTE(2, "分"), SECOND(3, "秒"), MILLION_SECOND(4, "毫秒"), TIMES(5, "次");
@@ -30,13 +29,12 @@ public enum UnitEnum {
     }
 
     public static UnitEnum getByValue(Integer value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
-
         UnitEnum[] instances = UnitEnum.values();
         for (UnitEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

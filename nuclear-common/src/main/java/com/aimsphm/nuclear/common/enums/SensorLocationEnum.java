@@ -1,14 +1,15 @@
 package com.aimsphm.nuclear.common.enums;
 
+import java.util.Objects;
+
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <旋机测点安装位置枚举>
- * @Author: milla
- * @CreateDate: 2020/08/14 15:38
- * @UpdateUser: milla
- * @UpdateDate: 2020/08/14 15:38
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:旋机测点安装位置枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum SensorLocationEnum {
     M1("M1", "电机非驱动端"),
@@ -28,13 +29,13 @@ public enum SensorLocationEnum {
     }
 
     public static SensorLocationEnum getByValue(String value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return OTHER;
         }
 
         SensorLocationEnum[] instances = SensorLocationEnum.values();
         for (SensorLocationEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <算法报警类型枚举>
- * @Author: MILLA
- * @CreateDate: 2020/4/17 14:30
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/17 14:30
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法报警级别枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum AlgorithmLevelEnum {
     LEVEL_ONE(1, "1级报警"),
@@ -27,13 +26,13 @@ public enum AlgorithmLevelEnum {
     }
 
     public static AlgorithmLevelEnum getByValue(Integer value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
 
         AlgorithmLevelEnum[] instances = AlgorithmLevelEnum.values();
         for (AlgorithmLevelEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

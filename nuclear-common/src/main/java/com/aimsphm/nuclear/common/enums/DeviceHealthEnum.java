@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <设备状态枚举>
- * @Author: MILLA
- * @CreateDate: 2020/11/23 16:55
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/23 16:55
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:设备状态枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum DeviceHealthEnum {
     HEALTH(0, "健康", "green"),
@@ -19,19 +18,19 @@ public enum DeviceHealthEnum {
     ALARM(3, "报警", "red"),
     STOP(4, "停机", "gray");
 
-    private DeviceHealthEnum(Integer value, String desc, String color) {
+    DeviceHealthEnum(Integer value, String desc, String color) {
         this.value = value;
         this.desc = desc;
         this.color = color;
     }
 
     public static DeviceHealthEnum getByValue(Integer value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
         DeviceHealthEnum[] instances = DeviceHealthEnum.values();
         for (DeviceHealthEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

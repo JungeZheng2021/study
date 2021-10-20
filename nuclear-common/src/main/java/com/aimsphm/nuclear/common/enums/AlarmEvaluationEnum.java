@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <算法报警类型枚举>
- * @Author: LUyi
- * @CreateDate: 2020/4/17 14:30
- * @UpdateUser: LUyi
- * @UpdateDate: 2020/4/17 14:30
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法报警类型枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum AlarmEvaluationEnum {
 
@@ -35,13 +34,13 @@ public enum AlarmEvaluationEnum {
     }
 
     public static AlarmEvaluationEnum getByValue(String value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
 
         AlarmEvaluationEnum[] instances = AlarmEvaluationEnum.values();
         for (AlarmEvaluationEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

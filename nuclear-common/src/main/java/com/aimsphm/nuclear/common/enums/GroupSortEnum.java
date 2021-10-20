@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <测点分组排序枚举类>
- * @Author: MILLA
- * @CreateDate: 2020/4/17 14:30
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/17 14:30
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:测点分组排序枚举类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum GroupSortEnum {
     TEMPERATURE("轴承温度", 1),
@@ -35,13 +34,13 @@ public enum GroupSortEnum {
     }
 
     public static GroupSortEnum getByValue(Integer sort) {
-        if (sort == null) {
+        if (Objects.isNull(sort)) {
             return null;
         }
 
         GroupSortEnum[] instances = GroupSortEnum.values();
         for (GroupSortEnum i : instances) {
-            if (sort != null && sort.equals(i.getSort())) {
+            if (i.getSort().equals(sort)) {
                 return i;
             }
         }
@@ -56,7 +55,7 @@ public enum GroupSortEnum {
 
         GroupSortEnum[] instances = GroupSortEnum.values();
         for (GroupSortEnum i : instances) {
-            if (name != null && name.equals(i.getName())) {
+            if (i.getName().equals(name)) {
                 return i.getSort();
             }
         }

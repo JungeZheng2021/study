@@ -6,14 +6,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <单位枚举 //单位  0 天 1 小时 2 分钟 3 秒 4 毫秒 5 次>
- * @Author: MILLA
- * @CreateDate: 2020/12/17 13:47
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/17 13:47
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:单位枚举 //单位  0 天 1 小时 2 分钟 3 秒 4 毫秒 5 次
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 @Slf4j
 public enum TimeUnitEnum {
@@ -44,7 +43,7 @@ public enum TimeUnitEnum {
             return null;
         }
         String name = gapTime.substring(gapTime.length() - 1);
-        Long gap = null;
+        Long gap;
         try {
             gap = Long.parseLong(gapTime.substring(0, gapTime.length() - 1));
         } catch (NumberFormatException e) {
@@ -59,13 +58,13 @@ public enum TimeUnitEnum {
     }
 
     public static TimeUnitEnum getByName(String name) {
-        if (name == null) {
+        if (Objects.isNull(name)) {
             return null;
         }
 
         TimeUnitEnum[] instances = TimeUnitEnum.values();
         for (TimeUnitEnum i : instances) {
-            if (name.equalsIgnoreCase(i.getName())) {
+            if (i.getName().equalsIgnoreCase(name)) {
                 return i;
             }
         }

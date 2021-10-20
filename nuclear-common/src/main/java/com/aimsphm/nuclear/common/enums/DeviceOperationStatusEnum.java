@@ -1,5 +1,16 @@
 package com.aimsphm.nuclear.common.enums;
 
+import java.util.Objects;
+
+/**
+ * <p>
+ * 功能描述:设备操作状态枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
+ */
 public enum DeviceOperationStatusEnum {
     Good(1, "正常运行", "green"),
     Stop(2, "停机", "red"),
@@ -7,20 +18,20 @@ public enum DeviceOperationStatusEnum {
     UnKnown(9, "无法判断", "orange");
 
 
-    private DeviceOperationStatusEnum(Integer value, String desc, String color) {
+    DeviceOperationStatusEnum(Integer value, String desc, String color) {
         this.value = value;
         this.desc = desc;
         this.color = color;
     }
 
     public static DeviceOperationStatusEnum getByValue(Integer value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
 
         DeviceOperationStatusEnum[] instances = DeviceOperationStatusEnum.values();
         for (DeviceOperationStatusEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

@@ -1,14 +1,15 @@
 package com.aimsphm.nuclear.common.enums;
 
+import java.util.Objects;
+
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <测点特征类型枚举类(一级特征)>
- * @Author: MILLA
- * @CreateDate: 2020/11/23 16:55
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/23 16:55
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:测点特征类型枚举类(一级特征)
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum PointFeatureEnum {
     ABR("abr", "磨损分析"),
@@ -35,12 +36,12 @@ public enum PointFeatureEnum {
     }
 
     public static String getLabel(String value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
         PointFeatureEnum[] instances = PointFeatureEnum.values();
         for (PointFeatureEnum i : instances) {
-            if (value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i.getLabel();
             }
         }
