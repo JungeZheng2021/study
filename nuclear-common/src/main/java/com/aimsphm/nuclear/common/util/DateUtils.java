@@ -51,22 +51,9 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static final String YEAR_MONTH_DAY_HH_MM_SS_SSS_M = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String WEB_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
-    public static void main(String[] args) {
-        long until = until(System.currentTimeMillis() - 8 * 86400 * 1000, System.currentTimeMillis(), ChronoUnit.DAYS);
-        System.out.println(until);
-
-        Long aLong = plusHoursMaxValue(-2L);
-        String format = format(YEAR_MONTH_DAY_HH_MM_SS_I, aLong);
-        System.out.println(format);
-        Long aLong1 = plusHoursMinValue(-2L);
-        String format1 = format(YEAR_MONTH_DAY_HH_MM_SS_I, aLong1);
-        System.out.println(format1);
-    }
-
     public static String formatCurrentDateTime() {
         return formatCurrentDateTime(null);
     }
-
 
     /**
      * 对给定时间进行时间的加减操作

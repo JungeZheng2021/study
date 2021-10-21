@@ -52,14 +52,14 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
 
     /**
      * 拼装查询条件
-     *
+     *DateUtils
      * @param queryBO
      * @return
      */
     private LambdaQueryWrapper<AuthPrivilegeDO> customerConditions(QueryBO<AuthPrivilegeDO> queryBO) {
         LambdaQueryWrapper<AuthPrivilegeDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getEnd()) && Objects.nonNull(query.getEnd())) {
+        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }

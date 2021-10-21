@@ -10,7 +10,6 @@ import com.aimsphm.nuclear.executor.util.TimeCalculator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import scala.Tuple2;
@@ -48,7 +47,7 @@ public class SparkController {
                 return job.monthlyDownSample();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("get failed:{}", e);
         }
 
         return null;
@@ -67,7 +66,6 @@ public class SparkController {
         try {
             return iSparkSubmitService.submitApplication(param.getSparkApplicationParam());
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
             log.error("执行出错：{}", e.getMessage());
         }
         return null;

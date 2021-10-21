@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 
 import static com.aimsphm.nuclear.common.constant.ReportConstant.BLANK;
@@ -93,16 +92,6 @@ public class FanWordUtils {
         }
         FileOutputStream fos = new FileOutputStream(file);
         doc.write(fos);
-    }
-
-    private static boolean demo() throws IOException {
-        FileInputStream is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\static\\static-rcv.docx"));
-        XWPFDocument doc = new XWPFDocument(is);
-        List<XWPFParagraph> paragraphs = doc.getParagraphs();
-        ListIterator<XWPFParagraph> it = paragraphs.listIterator();
-        for (; it.hasNext(); ) {
-        }
-        return true;
     }
 
     private static void test(Map<String, Object> data) {

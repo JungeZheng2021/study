@@ -114,7 +114,8 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             CommonMeasurePointDO point = checkParam(single);
             return listHistoryDataFromHBaseByPoint(single, point);
         } catch (Exception e) {
-            e.printStackTrace();
+           log.error("get failed:{}", e);
+            
         }
         return null;
     }
@@ -210,7 +211,8 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 fillPoint(collect2, point, multi);
                 vo.setChartData(collect2);
             } catch (IOException e) {
-                e.printStackTrace();
+               log.error("get failed:{}", e);
+            
             }
             result.put(pointId, vo);
         }

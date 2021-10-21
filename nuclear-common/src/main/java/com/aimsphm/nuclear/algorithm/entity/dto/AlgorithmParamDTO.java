@@ -5,14 +5,13 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.entity.bo
- * @Description: <算法的公共入参>
- * @Author: MILLA
- * @CreateDate: 2020/12/22 14:22
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/22 14:22
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法的公共入参
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/22 14:22
  */
 @Data
 public class AlgorithmParamDTO<T> implements Serializable {

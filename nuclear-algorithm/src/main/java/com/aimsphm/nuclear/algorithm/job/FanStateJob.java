@@ -16,17 +16,15 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN;
-import static com.aimsphm.nuclear.common.util.DateUtils.YEAR_MONTH_DAY_HH_MM_SS_SSS_M;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.job
- * @Description: <风机状态监测>
- * @Author: MILLA
- * @CreateDate: 2020/6/28 10:54
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/28 10:54
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:风机状态监测
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/6/28 10:54
  */
 @Component
 @Slf4j
@@ -51,9 +49,9 @@ public class FanStateJob implements BaseMonitorJob {
         redis.opsForValue().set(REDIS_KEY_FAN, 1);
         try {
             execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
-            log.info("执行----慢： {}", DateUtils.formatCurrentDateTime(YEAR_MONTH_DAY_HH_MM_SS_SSS_M));
+            log.info("执行----慢： {}", DateUtils.formatCurrentDateTime());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("{}", e);
         }
         redis.delete(REDIS_KEY_FAN);
     }

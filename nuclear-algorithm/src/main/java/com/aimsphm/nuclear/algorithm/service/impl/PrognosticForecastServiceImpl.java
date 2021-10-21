@@ -74,7 +74,7 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
             try {
                 prognosticForecast(key, value, endTime);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("{}", e);
             }
         });
     }

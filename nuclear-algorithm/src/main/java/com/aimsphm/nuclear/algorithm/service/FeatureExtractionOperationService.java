@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.algorithm.service;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.service
- * @Description: <特征提取接口>
- * @Author: milla
- * @CreateDate: 2021/06/03 12:43
- * @UpdateUser: milla
- * @UpdateDate: 2021/06/03 12:43
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:特征提取接口
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021/06/03 12:43
  */
 public interface FeatureExtractionOperationService {
     /**

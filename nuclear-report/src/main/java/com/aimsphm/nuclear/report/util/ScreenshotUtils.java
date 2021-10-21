@@ -137,7 +137,8 @@ public class ScreenshotUtils {
                     new File(htmlPath).delete();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("get failed:{}", e);
+
             }
         }
     }
@@ -177,7 +178,8 @@ public class ScreenshotUtils {
                     new File(htmlPath).delete();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("get failed:{}", e);
+
             }
         }
     }
@@ -191,7 +193,7 @@ public class ScreenshotUtils {
      */
     public <X> X getScreenshotAsById(OutputType<X> outputType, String Id) throws WebDriverException {
         //tag名称为空直接采用driver的截图方式
-        if (Objects.isNull(Id) && Id.length() == 0) {
+        if (Objects.isNull(Id) || Id.length() == 0) {
             return ((TakesScreenshot) driver).getScreenshotAs(outputType);
         }
         WebElement element;
@@ -230,7 +232,7 @@ public class ScreenshotUtils {
      */
     public <X> X getScreenshotAs(OutputType<X> outputType, String tagName) throws WebDriverException {
         //tag名称为空直接采用driver的截图方式
-        if (Objects.isNull(tagName) && tagName.length() == 0) {
+        if (Objects.isNull(tagName) || tagName.length() == 0) {
             return ((TakesScreenshot) driver).getScreenshotAs(outputType);
         }
         WebElement element;

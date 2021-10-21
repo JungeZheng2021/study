@@ -38,14 +38,13 @@ import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_DEVICE_CONDITION;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.service.impl
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/12/23 16:16
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/23 16:16
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 202012/23 16:16
  */
 @Slf4j
 @Service
@@ -84,7 +83,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     /**
      * 15天毫秒值 残差是15天内的
      */
-    private Integer days15 = 10 * 3600 * 1000;
+    private final Integer days15 = 10 * 3600 * 1000;
 
     @Override
     public void deviceStateMonitorInfo(AlgorithmTypeEnum algorithmType, Long deviceId, Integer algorithmPeriod) {
@@ -114,7 +113,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    void saveResult(StateMonitorResponseDTO response) {
+    public void saveResult(StateMonitorResponseDTO response) {
         if (Objects.isNull(response)) {
             return;
         }
@@ -171,7 +170,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     /**
      * 保存报警事件
      *
-     * @param realtimeList
+     * @param realtimeList 集合
      */
     private void saveRealtimeAlarm(List<JobAlarmRealtimeDO> realtimeList) {
         if (CollectionUtils.isEmpty(realtimeList)) {
@@ -199,7 +198,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             //保存事件
             eventService.saveOrUpdate(eventDTO);
             if (CollectionUtils.isNotEmpty(realTimeAlarms)) {
-                realTimeAlarms.stream().forEach(x -> {
+                realTimeAlarms.forEach(x -> {
                     x.setEventId(eventDTO.getId());
                     x.setDeviceId(response.getDeviceId());
                     x.setSubSystemId(response.getSubSystemId());
@@ -268,7 +267,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     /**
      * 获取状态监测算法、设备、模型、测点之间的数据
      *
-     * @return
+     * @return 对象
      */
     private StateMonitorParamDTO operateParams(Long deviceId, AlgorithmTypeEnum type, Integer modelType) {
         LambdaQueryWrapper<AlgorithmConfigDO> wrapper = Wrappers.lambdaQuery(AlgorithmConfigDO.class);
@@ -284,7 +283,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             return null;
         }
         LambdaQueryWrapper<AlgorithmModelPointDO> modePointWrapper = Wrappers.lambdaQuery(AlgorithmModelPointDO.class);
-        modePointWrapper.in(AlgorithmModelPointDO::getModelId, modelList.stream().map(x -> x.getId()).collect(Collectors.toSet()));
+        modePointWrapper.in(AlgorithmModelPointDO::getModelId, modelList.stream().map(BaseDO::getId).collect(Collectors.toSet()));
         List<AlgorithmModelPointDO> pointDOS = pointService.list(modePointWrapper);
         if (CollectionUtils.isEmpty(pointDOS)) {
             return null;
@@ -303,7 +302,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         param.setDeviceName(device.getDeviceName());
         param.setDeviceCode(device.getDeviceCode());
         param.setSubSystemId(device.getSubSystemId());
-        param.setModelIds(modelList.stream().map(v -> v.getId()).distinct().collect(Collectors.toList()));
+        param.setModelIds(modelList.stream().map(BaseDO::getId).distinct().collect(Collectors.toList()));
         param.setOnlyCondition(1);
         //启停算法不需要残值值
         if (modelType != 0) {
@@ -337,7 +336,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
      * 获取没有结束的报警
      *
      * @param deviceId 设备id
-     * @return
+     * @return 集合
      */
     private List<JobAlarmEventDO> listAlarmEventByDeviceId(Long deviceId) {
         LambdaQueryWrapper<JobAlarmEventDO> wrapper = Wrappers.lambdaQuery(JobAlarmEventDO.class);
@@ -360,7 +359,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
             }
             LambdaQueryWrapper<CommonMeasurePointDO> pointsWrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
             pointsWrapper.select(CommonMeasurePointDO::getPointId);
-            pointsWrapper.in(CommonMeasurePointDO::getId, pointDOS.stream().map(item -> item.getPointId()).collect(Collectors.toList()));
+            pointsWrapper.in(CommonMeasurePointDO::getId, pointDOS.stream().map(AlgorithmModelPointDO::getPointId).collect(Collectors.toList()));
             List<CommonMeasurePointDO> list = pointsService.list(pointsWrapper);
             bo.setEstimateTotal(listPointEstimateResultsData(m.getId(), list));
             return bo;
@@ -373,7 +372,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         }
         PointEstimateResultsDataBO bo = new PointEstimateResultsDataBO();
         List<PointEstimateResultsDataBO> data = Lists.newArrayList(bo);
-        List<String> ids = Lists.newArrayList(list.stream().filter(Objects::nonNull).map(x -> x.getPointId()).collect(Collectors.toSet()));
+        List<String> ids = Lists.newArrayList(list.stream().filter(Objects::nonNull).map(CommonMeasurePointDO::getPointId).collect(Collectors.toSet()));
         try {
             List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, System.currentTimeMillis() - days15
                     , System.currentTimeMillis(), H_BASE_FAMILY_NPC_ESTIMATE, ids, modelId);
@@ -404,7 +403,8 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("list data get error : {}", e);
+            Thread.currentThread().interrupt();
         }
         return collect;
     }

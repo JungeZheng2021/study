@@ -1,16 +1,5 @@
 package com.aimsphm.nuclear.history.controller;
 
-/**
- * @Package: com.aimsphm.nuclear.history.controller
- * @Description: <历史数据查询-相关接口>
- * @Author: MILLA
- * @CreateDate: 2020/11/21 11:39
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/21 11:39
- * @UpdateRemark: <>
- * @Version: 1.0
- */
-
 import com.aimsphm.nuclear.algorithm.util.RawDataThreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
@@ -32,13 +21,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.io.compress.Compression;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +42,16 @@ import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
 
+/**
+ * <p>
+ * 功能描述:历史数据查询-相关接口
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/21 11:39
+ */
+@Slf4j
 @RestController
 @Api(tags = "History-历史数据查询-相关接口")
 @RequestMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -117,7 +118,8 @@ public class HistoryQueryController {
             });
             writer.finish();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("get failed:{}", e);
+
         }
     }
 
@@ -164,7 +166,8 @@ public class HistoryQueryController {
         try {
             return hBase.addFamily2TableIncrementalAdd(H_BASE_TABLE_NPC_PHM_DATA, Lists.newArrayList(features), Compression.Algorithm.SNAPPY);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("get failed:{}", e);
+
         }
         return null;
     }

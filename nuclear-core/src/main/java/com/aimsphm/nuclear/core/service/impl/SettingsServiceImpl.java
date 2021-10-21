@@ -28,14 +28,13 @@ import java.util.HashMap;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.core.service.impl
- * @Description: <系统设置>
- * @Author: MILLA
- * @CreateDate: 2021/01/21 11:06
- * @UpdateUser: MILLA
- * @UpdateDate: 2021/01/21 11:06
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:系统设置
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021/01/21 11:06
  */
 @Slf4j
 @Service
@@ -83,8 +82,8 @@ public class SettingsServiceImpl implements SettingsService {
 
     private void sendMessage2Edge(CommonSensorDO dto, CommonSensorDO one) {
         boolean flag = Objects.isNull(dto.getSensitivity()) ||
-                (ConfigStatusEnum.CONFIG_SUCCESS.equals(one.getConfigStatus()) && one.getSensitivity().equals(dto.getSensitivity()) ||
-                        (ConfigStatusEnum.CONFIG_SUCCESS.equals(one.getConfigStatus()) && one.getViscosityCalculateMethod().equals(dto.getViscosityCalculateMethod())
+                (ConfigStatusEnum.CONFIG_SUCCESS.getValue().equals(one.getConfigStatus()) && one.getSensitivity().equals(dto.getSensitivity()) ||
+                        (ConfigStatusEnum.CONFIG_SUCCESS.getValue().equals(one.getConfigStatus()) && one.getViscosityCalculateMethod().equals(dto.getViscosityCalculateMethod())
                                 && one.getSamplePeriod().equals(dto.getSamplePeriod())));
         if (flag) {
             return;
@@ -92,9 +91,9 @@ public class SettingsServiceImpl implements SettingsService {
         try {
             String edgeCode = one.getEdgeCode();
             ConfigSettingsDTO settings = new ConfigSettingsDTO();
-            settings.setVibrationSensitivity(new HashMap<String, Double>(16) {{
-                put(one.getSensorCode(), dto.getSensitivity());
-            }});
+            HashMap<String, Double> map = new HashMap<>(16);
+            map.put(one.getSensorCode(), dto.getSensitivity());
+            settings.setVibrationSensitivity(map);
             settings.setOilViscosityCalculMethod(dto.getViscosityCalculateMethod());
             settings.setOilSleepTime(dto.getSamplePeriod());
             ResponseData<Boolean> response = dataFeignClient.invokeService(edgeCode, settings);
@@ -148,7 +147,7 @@ public class SettingsServiceImpl implements SettingsService {
                 && Objects.isNull(dto.getWaveformSamplePeriod()) ? true : dto.getWaveformSamplePeriod().equals(one.getWaveformSamplePeriod())
                 && Objects.isNull(dto.getDataReset()) ? true : dto.getDataReset().equals(one.getDataReset());
         //数据和上次一样且上次是配置成功，不下发数据
-        if (flag && ConfigStatusEnum.CONFIG_SUCCESS.equals(one.getConfigStatus())) {
+        if (flag && ConfigStatusEnum.CONFIG_SUCCESS.getValue().equals(one.getConfigStatus())) {
             return;
         }
         try {

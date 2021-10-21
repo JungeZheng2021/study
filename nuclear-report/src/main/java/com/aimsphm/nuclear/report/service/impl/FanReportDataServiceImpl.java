@@ -262,6 +262,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
             }
         } catch (InterruptedException e) {
             log.error("get data  img failed...{}", e.getCause());
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -314,6 +315,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
             }
         } catch (InterruptedException e) {
             log.error("get history trend imag failed: {}", e.getCause());
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -389,6 +391,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
             }
         } catch (InterruptedException e) {
             log.error("get a error :{},{}", config, e);
+            Thread.currentThread().interrupt();
         }
         config.setImage(image);
     }

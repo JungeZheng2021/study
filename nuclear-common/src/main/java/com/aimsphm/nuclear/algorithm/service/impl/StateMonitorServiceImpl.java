@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.algorithm.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.StateMonitorParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.StateMonitorResponseDTO;
-import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
 import lombok.extern.slf4j.Slf4j;

@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.algorithm.service;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.service
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/12/23 16:11
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/23 16:11
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/23 16:16
  */
 public interface AlgorithmService {
 

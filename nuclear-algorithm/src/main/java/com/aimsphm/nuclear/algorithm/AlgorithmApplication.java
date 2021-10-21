@@ -7,16 +7,14 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-
 /**
- * @Package: com.aimsphm.nuclear.history
- * @Description: <算法调用服务类>
- * @Author: MILLA
- * @CreateDate: 2020/6/28 10:54
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/28 10:54
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法调用服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/6/28 10:54
  */
 @EnableAsync
 @EnableEurekaClient

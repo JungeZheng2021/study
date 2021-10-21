@@ -31,13 +31,6 @@ public class PanoramaController {
     @GetMapping("details")
     @ApiOperation(value = "系统总览")
     public List<PanoramaVO> getPanoramaDetails(Long subSystemId) {
-        try {
-            panoramaService.getPanoramaDetails(subSystemId);
-            System.out.println("开始等待.....");
-            Thread.sleep(301_000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return panoramaService.getPanoramaDetails(subSystemId);
     }
 }

@@ -13,14 +13,13 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.job
- * @Description: <>
- * @Author: milla
- * @CreateDate: 2021/02/26 13:19
- * @UpdateUser: milla
- * @UpdateDate: 2021/02/26 13:19
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021/02/26 13:19
  */
 public interface BaseMonitorJob {
     Logger log = LoggerFactory.getLogger(BaseMonitorJob.class);

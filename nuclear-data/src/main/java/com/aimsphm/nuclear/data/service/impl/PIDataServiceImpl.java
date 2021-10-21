@@ -45,7 +45,8 @@ public class PIDataServiceImpl implements CommonDataService {
             batchUpdateAndSave(topic, message);
             Thread.sleep(10);
         } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
+            log.error("get failed:{}", e);
+            Thread.currentThread().interrupt();
         }
     }
 

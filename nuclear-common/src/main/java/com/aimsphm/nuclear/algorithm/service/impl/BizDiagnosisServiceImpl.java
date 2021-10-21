@@ -98,7 +98,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
             }
             //含有波形数据
             Map<String, String> codeAndType = paramList.stream().filter(x -> Objects.nonNull(x.getParameterType()) && x.getParameterType() == 1)
-                    .collect(Collectors.toMap(x -> x.getSensorCode(), x -> x.getSensorSignalType(), (a, b) -> a));
+                    .collect(Collectors.toMap(AlgorithmRulesParameterDO::getSensorCode, AlgorithmRulesParameterDO::getSensorSignalType, (a, b) -> a));
             if (MapUtils.isEmpty(codeAndType)) {
                 log.warn("sensorCode or signalType is null in config files ...");
                 return configIncomplete(result);
@@ -106,7 +106,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
             //发送信息要求设置参数信息 - 如果没有获取到会阻塞
             sendMsgAndCheckParamsIsExist(codeAndType);
             //调用算法
-            Map<Integer, List<AlgorithmRulesParameterDO>> params = paramList.stream().collect(Collectors.groupingBy(x -> x.getRuleId()));
+            Map<Integer, List<AlgorithmRulesParameterDO>> params = paramList.stream().collect(Collectors.groupingBy(AlgorithmRulesParameterDO::getRuleId));
             List<RuleParamDTO> ruleParamList = params.entrySet().stream().map(x -> {
                 Integer ruleId = x.getKey();
                 AlgorithmRulesDO rule = collect.get(Long.valueOf(ruleId));
@@ -213,9 +213,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
             //故障特征
             List<FaultReasoningParamVO.SymptomVO> symSet = faultInfo.getSymSet();
             if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(symSet)) {
-                List<AlgorithmNormalFaultFeatureVO> collect = symSet.stream().map(y -> {
-                    return featureService.getAlgorithmNormalFaultFeatureByComponentId(y.getSymId());
-                }).filter(Objects::nonNull).collect(Collectors.toList());
+                List<AlgorithmNormalFaultFeatureVO> collect = symSet.stream().map(y -> featureService.getAlgorithmNormalFaultFeatureByComponentId(y.getSymId())).filter(Objects::nonNull).collect(Collectors.toList());
                 reasoningVO.setFeatures(collect);
             }
             Integer mechanismCode = x.getFaultInfo().getMechanismCode();
@@ -283,7 +281,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
         if (CollectionUtils.isEmpty(sensorList)) {
             throw new CustomMessageException("sensorCode config has no edgeCode");
         }
-        Map<String, List<CommonSensorDO>> collect = sensorList.stream().filter(x -> StringUtils.hasText(x.getEdgeCode())).collect(Collectors.groupingBy(x -> x.getEdgeCode()));
+        Map<String, List<CommonSensorDO>> collect = sensorList.stream().filter(x -> StringUtils.hasText(x.getEdgeCode())).collect(Collectors.groupingBy(CommonSensorDO::getEdgeCode));
         Set<String> isSuccess = new HashSet<>();
         int retryCount = -1;
         //循环下发指令

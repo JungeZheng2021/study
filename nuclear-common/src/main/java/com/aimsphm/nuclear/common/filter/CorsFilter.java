@@ -1,26 +1,21 @@
 package com.aimsphm.nuclear.common.filter;
 
+import com.aimsphm.nuclear.common.redis.RedisClient;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.aimsphm.nuclear.common.redis.RedisClient;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
+@Slf4j
 public class CorsFilter implements Filter {
 
     @Autowired
@@ -46,7 +41,7 @@ public class CorsFilter implements Filter {
                 redisClient.set(authorization, redisClient.get(authorization), 3600, TimeUnit.SECONDS);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("{}", e);
         }
         HttpServletResponse response = (HttpServletResponse) res;
         response.setHeader("Access-Control-Allow-Origin", "*");

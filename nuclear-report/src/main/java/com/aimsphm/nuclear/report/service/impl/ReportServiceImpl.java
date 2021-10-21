@@ -95,6 +95,7 @@ public class ReportServiceImpl implements ReportService {
         final String docName = (Objects.nonNull(query.getDeviceId()) ? PATH_DEVICE + query.getDeviceId() : PATH_SUB_SYSTEM + query.getSubSystemId()) + File.separator + UUIDUtils.randomUUID() + ReportConstant.DOC_SUFFIX;
         FileOutputStream fos = null;
         Long reportId = null;
+        InputStream is = null;
         try {
             BizReportDO find = findReport(query);
             if (Objects.nonNull(find)) {
@@ -108,7 +109,6 @@ public class ReportServiceImpl implements ReportService {
             String templatePath = query.getTemplatePath();
 //                        加载模板
             URL resource = this.getClass().getResource(templatePath);
-            InputStream is;
             //上线要去除
             if (resource == null) {
                 is = new FileInputStream("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources" + templatePath);
@@ -142,11 +142,16 @@ public class ReportServiceImpl implements ReportService {
             reportService.updateReportStatus(reportId, DataStatusEnum.FAILED.getValue(), e.getMessage());
             throw new CustomMessageException("报告生成失败");
         } finally {
-            if (fos != null) {
+            if (Objects.nonNull(is)) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                }
+            }
+            if (Objects.nonNull(fos)) {
                 try {
                     fos.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }

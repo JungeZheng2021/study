@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.report.config;
 import com.aimsphm.nuclear.common.constant.ReportConstant;
 import com.aimsphm.nuclear.report.enums.DriverEnum;
 import com.aimsphm.nuclear.report.util.ScreenshotUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
@@ -18,18 +19,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Objects;
 import java.util.logging.Level;
 
 /**
- * @Package: com.aimsphm.nuclear.report.config
- * @Description: <浏览器驱动配置类>
- * @Author: MILLA
- * @CreateDate: 2020/4/26 13:53
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/26 13:53
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:浏览器驱动配置类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/26 13:53
  */
+@Slf4j
 @Configuration
 public class WebDriverConfig {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -73,24 +75,32 @@ public class WebDriverConfig {
 
 
     private void decompressionEChartsJs2TempPath(ClassLoader classLoader, String eChartsJsName) throws IOException {
-        //获取临时目录
-        URL resource = classLoader.getResource(ReportConstant.PROJECT_STATIC_ROOT_DIR + eChartsJsName);
-        //上线要去除
-        InputStream inputStream;
-        if (resource == null) {
-            inputStream = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\static\\" + eChartsJsName));
-        } else {
-            inputStream = resource.openStream();
-        }
-        File file = new File(ReportConstant.ECHARTS_TEMP_DIR + eChartsJsName);
-        if (!file.exists()) {
-            FileUtils.copyInputStreamToFile(inputStream, file);
-        }
-        File docTemp = new File(ReportConstant.DOC_TEMP_DIR_PRE);
-        if (!docTemp.exists()) {
-            docTemp.mkdirs();//创建文档目录
-        }
+        InputStream inputStream = null;
+        try {
+            //获取临时目录
+            URL resource = classLoader.getResource(ReportConstant.PROJECT_STATIC_ROOT_DIR + eChartsJsName);
+            //上线要去除
 
+            if (resource == null) {
+                inputStream = new FileInputStream("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\static\\" + eChartsJsName);
+            } else {
+                inputStream = resource.openStream();
+            }
+            File file = new File(ReportConstant.ECHARTS_TEMP_DIR + eChartsJsName);
+            if (!file.exists()) {
+                FileUtils.copyInputStreamToFile(inputStream, file);
+            }
+            File docTemp = new File(ReportConstant.DOC_TEMP_DIR_PRE);
+            if (!docTemp.exists()) {
+                docTemp.mkdirs();//创建文档目录
+            }
+        } catch (IOException e) {
+            log.error("", e);
+        } finally {
+            if (Objects.nonNull(inputStream)) {
+                inputStream.close();
+            }
+        }
     }
 
     /**

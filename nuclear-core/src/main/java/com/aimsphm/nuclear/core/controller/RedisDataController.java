@@ -20,14 +20,13 @@ import java.util.*;
 import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.*;
 
 /**
- * @Package: com.aimsphm.nuclear.pump.controller
- * @Description: <Redis数据操作类-开发使用>
- * @Author: MILLA
- * @CreateDate: 2020/4/3 9:35
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/3 9:35
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:Redis数据操作类-开发使用
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/3 9:35
  */
 @RestController()
 @Api(tags = "AAA-Redis数据操作类-开发使用")
@@ -90,10 +89,10 @@ public class RedisDataController {
     @GetMapping("data/{key}")
     @ApiOperation(value = "增加key的值-指定对象增加", notes = "后期删除")
     public Map<String, Object> postKey(@PathVariable String key) {
-        return new HashMap<String, Object>(16) {{
-            put(key, redisTemplate.opsForValue().get(key));
-            put(key + "_str", stringRedisTemplate.opsForValue().get(key + "_str"));
-        }};
+        HashMap<String, Object> map = new HashMap<>(16);
+        map.put(key, redisTemplate.opsForValue().get(key));
+        map.put(key + "_str", stringRedisTemplate.opsForValue().get(key + "_str"));
+        return map;
     }
 
     @GetMapping("delete/{pre}")

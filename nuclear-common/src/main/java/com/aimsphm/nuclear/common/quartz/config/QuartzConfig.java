@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.quartz.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -21,6 +22,7 @@ import java.util.Properties;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 @Configuration
 public class QuartzConfig {
     @Bean
@@ -31,7 +33,7 @@ public class QuartzConfig {
             schedulerFactoryBean.setQuartzProperties(properties);
             schedulerFactoryBean.setJobFactory(new SpringBeanJobFactory());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("{}", e);
         }
         return schedulerFactoryBean;
     }

@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.algorithm.job;
 
 import com.aimsphm.nuclear.algorithm.service.PrognosticForecastService;
 import com.aimsphm.nuclear.common.annotation.DistributedLock;
-import com.aimsphm.nuclear.common.enums.PointTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -10,14 +9,13 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.job
- * @Description: <征兆预测任务>
- * @Author: MILLA
- * @CreateDate: 2020/6/28 10:54
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/28 10:54
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:征兆预测任务
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/6/28 10:54
  */
 @Slf4j
 @Component

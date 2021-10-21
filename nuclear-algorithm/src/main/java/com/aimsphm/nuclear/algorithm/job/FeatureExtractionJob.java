@@ -10,14 +10,13 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.job
- * @Description: <特征提取任务>
- * @Author: MILLA
- * @CreateDate: 2020/6/28 10:54
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/28 10:54
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:特征提取任务
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/6/28 10:54
  */
 @Component
 @Slf4j

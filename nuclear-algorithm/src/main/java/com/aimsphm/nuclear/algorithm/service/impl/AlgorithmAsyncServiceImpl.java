@@ -36,14 +36,13 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_QUEUE_R
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.service.impl
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/12/23 16:16
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/23 16:16
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/23 16:16
  */
 @Slf4j
 @Service
@@ -174,6 +173,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
 
         } catch (InterruptedException e) {
             log.error("打补丁异常：删除记录异常：{}", deviceId);
+            Thread.currentThread().interrupt();
         }
     }
 

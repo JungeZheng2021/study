@@ -7,6 +7,7 @@ spring:
     allow-bean-definition-overriding: true
   config:
     enableRedis: true
+    enableAlgorithm: true
     enableMybatisPlus: true
     enableServiceExtImpl: true
   datasource:
@@ -28,8 +29,8 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
-eureka:
-  client:
-    register-with-eureka: false
-    serviceUrl:
-      defaultZone: http://192.168.16.43:8761/eureka/
+#eureka:
+#  client:
+#    register-with-eureka: false
+#    serviceUrl:
+#      defaultZone: http://192.168.16.43:8761/eureka/

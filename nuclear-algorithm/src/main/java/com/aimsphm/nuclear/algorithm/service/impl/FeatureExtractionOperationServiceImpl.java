@@ -34,14 +34,13 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_WAVE_DA
 import static com.baomidou.mybatisplus.core.toolkit.StringPool.DASH;
 
 /**
- * @Package: com.aimsphm.nuclear.algorithm.service.impl
- * @Description: <>
- * @Author: milla
- * @CreateDate: 2021/06/03 12:44
- * @UpdateUser: milla
- * @UpdateDate: 2021/06/03 12:44
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021/06/03 12:44
  */
 @Slf4j
 @Service
@@ -67,7 +66,7 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
     /**
      * 1小时的毫秒数
      */
-    private long timeGap = 60 * 60 * 1000;
+    private long timeGap = 3600_000;
 
     @Override
     public void operationFeatureExtractionData(PointTypeEnum calculate) {

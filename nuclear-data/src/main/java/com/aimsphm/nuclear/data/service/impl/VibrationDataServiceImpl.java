@@ -45,14 +45,13 @@ import static com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum.SETTINGS_STA
 import static com.aimsphm.nuclear.data.enums.SensorDataCategoryEnum.WAVEFORM_DATA;
 
 /**
- * @Package: com.aimsphm.nuclear.common.service.ext.service.impl
- * @Description: <振动数据处理服务>
- * @Author: MILLA
- * @CreateDate: 2020/3/31 11:41
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/31 11:41
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:振动数据处理服务
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020-12-17 13:47
  */
 @Slf4j
 @Service("vibration")
@@ -305,9 +304,8 @@ public class VibrationDataServiceImpl implements CommonDataService {
             hBaseService.batchSave2HBase(H_BASE_TABLE_NPC_PHM_DATA, putList);
         } catch (IOException e) {
             log.error("batch save 2 hBase failed:{}", e);
-        } finally {
-            return true;
         }
+        return true;
     }
 
     /**
@@ -386,7 +384,7 @@ public class VibrationDataServiceImpl implements CommonDataService {
         try {
             hBaseService.familyExists(H_BASE_TABLE_NPC_PHM_DATA, feature, true, Compression.Algorithm.SNAPPY);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("get failed:{}", e);
         }
         Put put = new Put(Bytes.toBytes(rowKey));
         put.setTimestamp(timestamp);

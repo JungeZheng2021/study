@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -37,8 +38,9 @@ import java.util.Objects;
  *
  * @author MILLA
  * @version 1.0
- * @since 2021-02-03 14:30
+ * @since 2021/02/03 14:30
  */
+@Slf4j
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class BizReportServiceImpl extends ServiceImpl<BizReportMapper, BizReportDO> implements BizReportService {
@@ -149,13 +151,13 @@ public class BizReportServiceImpl extends ServiceImpl<BizReportMapper, BizReport
             outputStream = response.getOutputStream();
             outputStream.write(data, 0, data.length);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("get failed:{}", e);
         } finally {
             if (null != outputStream) {
                 try {
                     outputStream.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("get failed:{}", e);
                 }
             }
         }

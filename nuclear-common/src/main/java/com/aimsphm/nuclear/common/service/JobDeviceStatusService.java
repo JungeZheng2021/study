@@ -4,7 +4,6 @@ import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.JobDeviceStatusDO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 

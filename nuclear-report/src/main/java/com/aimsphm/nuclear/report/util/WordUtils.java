@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.report.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.util.ImageUtils;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
@@ -46,13 +45,15 @@ public final class WordUtils {
      * @throws Exception
      */
     public static void addPicture(XWPFRun run, File file, String title) {
+        FileInputStream inputStream = null;
         try {
+            inputStream = new FileInputStream(file);
             //将占位符隐藏
             run.setText("", 0);
             //获取图片的大小，在word中进行等比缩放
             Dimension dimension = ImageUtils.getImageDimension(new FileInputStream(file), 7);
             //添加图片到文档中
-            run.addPicture(new FileInputStream(file), XWPFDocument.PICTURE_TYPE_PNG, file.getName(), Units.toEMU(dimension.width * IMAGE_RATE), Units.toEMU(dimension.getHeight() * IMAGE_RATE));
+            run.addPicture(inputStream, XWPFDocument.PICTURE_TYPE_PNG, file.getName(), Units.toEMU(dimension.width * IMAGE_RATE), Units.toEMU(dimension.getHeight() * IMAGE_RATE));
             //换行
             run.addCarriageReturn();
             if (Objects.nonNull(title)) {
@@ -61,6 +62,13 @@ public final class WordUtils {
             }
         } catch (Exception e) {
             log.error("add image failed....");
+        } finally {
+            if (Objects.nonNull(inputStream)) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                }
+            }
         }
     }
 

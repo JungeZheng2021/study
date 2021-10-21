@@ -70,43 +70,44 @@ public class MqClientPushJob {
 
 
     private void readDataFromFileOil(File file, String topic, Long sleepTime) throws IOException, InterruptedException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line;
-        String header = reader.readLine();
-        String[] split = header.split(SEPARATOR);
-        List<String> headers = Arrays.asList(split);
-        Map<String, Map<String, Double>> pointValues = Maps.newHashMap();
-        while ((line = reader.readLine()) != null) {
-            pointValues.clear();
-            long time = System.currentTimeMillis();
-            String[] values = line.split(SEPARATOR);
-            for (int i = 0; i < values.length; i++) {
-                double value = Double.parseDouble(values[i]);
-                String pointId = headers.get(i);
-                int middleIndex = pointId.indexOf("-N-");
-                String feature = pointId.substring(middleIndex + 3);
-                String sensorCode = pointId.substring(0, middleIndex + 2);
-                pointValues.putIfAbsent(sensorCode, Maps.newHashMap());
-                pointValues.get(sensorCode).putIfAbsent(feature, value);
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            String header = reader.readLine();
+            String[] split = header.split(SEPARATOR);
+            List<String> headers = Arrays.asList(split);
+            Map<String, Map<String, Double>> pointValues = Maps.newHashMap();
+            while ((line = reader.readLine()) != null) {
+                pointValues.clear();
+                long time = System.currentTimeMillis();
+                String[] values = line.split(SEPARATOR);
+                for (int i = 0; i < values.length; i++) {
+                    double value = Double.parseDouble(values[i]);
+                    String pointId = headers.get(i);
+                    int middleIndex = pointId.indexOf("-N-");
+                    String feature = pointId.substring(middleIndex + 3);
+                    String sensorCode = pointId.substring(0, middleIndex + 2);
+                    pointValues.putIfAbsent(sensorCode, Maps.newHashMap());
+                    pointValues.get(sensorCode).putIfAbsent(feature, value);
+                }
+                if (MapUtils.isEmpty(pointValues)) {
+                    continue;
+                }
+                pointValues.entrySet().stream().forEach(x -> {
+                    String sensorCode = x.getKey();
+                    Map<String, Double> value = x.getValue();
+                    SensorDataDTO data = new SensorDataDTO();
+                    PacketDTO dto = new PacketDTO();
+                    data.setPacket(dto);
+                    data.setType(13);
+                    dto.setTagStatus("0");
+                    dto.setSensorCode(sensorCode);
+                    dto.setFeaturesResult(value);
+                    dto.setTimestamp(time);
+                    client.send2Mq(JSON.toJSONString(data), topic);
+                });
+                Thread.sleep(sleepTime);
+                log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
             }
-            if (MapUtils.isEmpty(pointValues)) {
-                continue;
-            }
-            pointValues.entrySet().stream().forEach(x -> {
-                String sensorCode = x.getKey();
-                Map<String, Double> value = x.getValue();
-                SensorDataDTO data = new SensorDataDTO();
-                PacketDTO dto = new PacketDTO();
-                data.setPacket(dto);
-                data.setType(13);
-                dto.setTagStatus("0");
-                dto.setSensorCode(sensorCode);
-                dto.setFeaturesResult(value);
-                dto.setTimestamp(time);
-                client.send2Mq(JSON.toJSONString(data), topic);
-            });
-            Thread.sleep(sleepTime);
-            log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
         }
     }
 //
@@ -186,38 +187,39 @@ public class MqClientPushJob {
     final static String SEPARATOR = ",";
 
     private void readDataFromFile(File file, String topic, Long sleepTime) throws Exception {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line;
-        String header = reader.readLine();
-        String[] split = header.split(SEPARATOR);
-        List<String> headers = Arrays.asList(split);
-        ArrayList<DataItem> dataItems = new ArrayList<>();
-        while ((line = reader.readLine()) != null) {
-            dataItems.clear();
-            String[] values = line.split(SEPARATOR);
-            for (int i = 0; i < values.length; i++) {
-                String point = headers.get(i);
-                double value = Double.parseDouble(values[i]);
-                if (StringUtils.equalsAny(point, "20ZAS-ET-1A-71H", "20ZAS-ET-1A-71L", "20ZAS-EP-ET101B-DCFA")) {
-                    value = 1.0D;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            String header = reader.readLine();
+            String[] split = header.split(SEPARATOR);
+            List<String> headers = Arrays.asList(split);
+            ArrayList<DataItem> dataItems = new ArrayList<>();
+            while ((line = reader.readLine()) != null) {
+                dataItems.clear();
+                String[] values = line.split(SEPARATOR);
+                for (int i = 0; i < values.length; i++) {
+                    String point = headers.get(i);
+                    double value = Double.parseDouble(values[i]);
+                    if (StringUtils.equalsAny(point, "20ZAS-ET-1A-71H", "20ZAS-ET-1A-71L", "20ZAS-EP-ET101B-DCFA")) {
+                        value = 1.0D;
+                    }
+                    DataItem item = new DataItem();
+                    item.setItemId(point);
+                    item.setValue(value);
+                    item.setTimestamp(System.currentTimeMillis());
+                    dataItems.add(item);
                 }
-                DataItem item = new DataItem();
-                item.setItemId(point);
-                item.setValue(value);
-                item.setTimestamp(System.currentTimeMillis());
-                dataItems.add(item);
-            }
-            if (file.getName().contains("ZAS_sensordata")) {
-                DataItem item = new DataItem();
-                item.setItemId("20ZAS-ET01-I02-DCN");
-                item.setValue(1.0);
-                item.setTimestamp(System.currentTimeMillis());
-                dataItems.add(item);
+                if (file.getName().contains("ZAS_sensordata")) {
+                    DataItem item = new DataItem();
+                    item.setItemId("20ZAS-ET01-I02-DCN");
+                    item.setValue(1.0);
+                    item.setTimestamp(System.currentTimeMillis());
+                    dataItems.add(item);
 //                log.info("新增测点{}", item);
+                }
+                client.send2Mq(dataItems, topic);
+                Thread.sleep(sleepTime);
+                log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
             }
-            client.send2Mq(dataItems, topic);
-            Thread.sleep(sleepTime);
-            log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
         }
     }
 

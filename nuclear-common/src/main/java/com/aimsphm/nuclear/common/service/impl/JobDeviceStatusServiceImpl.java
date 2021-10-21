@@ -31,7 +31,7 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_DEVICE_
  *
  * @author MILLA
  * @version 1.0
- * @since 2021-01-04 14:30
+ * @since 2021/01/04 14:30
  */
 @Service
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")

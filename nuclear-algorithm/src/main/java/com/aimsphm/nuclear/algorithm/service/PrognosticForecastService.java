@@ -19,7 +19,7 @@ public interface PrognosticForecastService {
     /**
      * 根据部件id
      *
-     * @param componentId
+     * @param componentId 部件id
      */
     void prognosticForecastByComponentId(Long componentId);
 
