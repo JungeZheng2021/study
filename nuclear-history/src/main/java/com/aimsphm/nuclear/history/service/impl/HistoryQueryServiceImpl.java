@@ -2,6 +2,7 @@ package com.aimsphm.nuclear.history.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
 import com.aimsphm.nuclear.algorithm.util.RawDataThreadLocal;
+import com.aimsphm.nuclear.algorithm.util.WhetherThreadLocal;
 import com.aimsphm.nuclear.common.config.DynamicTableTreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.SparkDownSample;
@@ -46,7 +47,7 @@ import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
 
 /**
  * <p>
- * 功能描述:HBase操作工具类
+ * 功能描述:历史查询
  * </p>
  *
  * @author MILLA
@@ -62,7 +63,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     @Resource
     private SparkDownSampleService downSampleServiceExt;
 
-    private HBaseUtil hBase;
+    private final HBaseUtil hBase;
 
     public HistoryQueryServiceImpl(HBaseUtil hBase) {
         this.hBase = hBase;
@@ -114,8 +115,8 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             CommonMeasurePointDO point = checkParam(single);
             return listHistoryDataFromHBaseByPoint(single, point);
         } catch (Exception e) {
-           log.error("get failed:{}", e);
-            
+            log.error("get failed:{}", e);
+
         }
         return null;
     }
@@ -198,21 +199,18 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             if (Objects.isNull(point) || CollectionUtils.isEmpty(collect.get(pointId))) {
                 continue;
             }
-            List<String> points = collect.get(pointId).stream().filter(x -> StringUtils.isNotBlank(x.getPoints())).map(x -> x.getPoints()).collect(Collectors.toList());
+            List<String> points = collect.get(pointId).stream().filter(x -> StringUtils.isNotBlank(x.getPoints())).map(SparkDownSample::getPoints).collect(Collectors.toList());
             String collect1 = points.stream().collect(Collectors.joining(COMMA));
             HistoryDataVO vo = new HistoryDataWithThresholdVO();
-//            if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
             BeanUtils.copyProperties(point, vo);
-//                WhetherThreadLocal.INSTANCE.remove();
-//            }
             try {
                 List<List<Object>> charData = mapper.readValue(LEFT_SQ_BRACKET + collect1 + RIGHT_SQ_BRACKET, List.class);
                 List<List<Object>> collect2 = charData.stream().filter(x -> Objects.nonNull(x.get(0))).collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(x -> (Long) x.get(0)))), ArrayList::new));
                 fillPoint(collect2, point, multi);
                 vo.setChartData(collect2);
             } catch (IOException e) {
-               log.error("get failed:{}", e);
-            
+                log.error("get failed:{}", e);
+
             }
             result.put(pointId, vo);
         }
@@ -220,7 +218,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     }
 
     /**
-     * 判断是否需要补点
+     * 判断是否需要补点(默认补点)
      *
      * @param points
      * @param point
@@ -228,6 +226,10 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
      */
     private void fillPoint(List<List<Object>> points, CommonMeasurePointDO point, HistoryQueryMultiBO multi) {
         try {
+            if (Objects.nonNull(WhetherThreadLocal.INSTANCE.getWhether()) && !WhetherThreadLocal.INSTANCE.getWhether()) {
+                WhetherThreadLocal.INSTANCE.remove();
+                return;
+            }
             if (CollectionUtils.isEmpty(points)) {
                 return;
             }
@@ -355,10 +357,8 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 || Objects.isNull(multi.getEnd()) || Objects.isNull(multi.getStart()) || multi.getEnd() <= multi.getStart()) {
             return result;
         }
-        List<Get> getList = initGetListByConditions(multi);
         try {
-//            Map<String, List<HBaseTimeSeriesDataDTO>> data = hBase.selectDataList(H_BASE_TABLE_NPC_PHM_DATA, getList);
-            multi.getPointIds().stream().forEach(item -> {
+            multi.getPointIds().forEach(item -> {
                 CommonMeasurePointDO point = serviceExt.getPointByPointId(item);
                 HistoryDataVO vo = new HistoryDataWithThresholdVO();
                 BeanUtils.copyProperties(point, vo);
@@ -384,7 +384,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         if (MapUtils.isEmpty(hBaseData)) {
             return null;
         }
-        pointIds.stream().forEach(pointId -> {
+        pointIds.forEach(pointId -> {
             EventDataVO vo = new EventDataVO();
             CommonMeasurePointDO point = serviceExt.getPointByPointId(pointId);
             if (Objects.isNull(point)) {
@@ -449,10 +449,6 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     }
 
     private List<Get> initGetListByConditions(HistoryQueryMultiBO multi) {
-        List<String> pointIds = multi.getPointIds();
-        Long end = multi.getEnd();
-        Long start = multi.getStart();
-
         return null;
     }
 }

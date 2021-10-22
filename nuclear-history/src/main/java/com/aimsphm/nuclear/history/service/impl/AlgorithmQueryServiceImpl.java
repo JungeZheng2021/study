@@ -6,6 +6,7 @@ import com.aimsphm.nuclear.algorithm.entity.dto.MovingAverageParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.PredictionParamDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
+import com.aimsphm.nuclear.algorithm.util.WhetherThreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.DataAnalysisQueryMultiBO;
@@ -35,14 +36,13 @@ import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_FAMILY_NP
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
 
 /**
- * @Package: com.aimsphm.nuclear.history.service
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/12/22 13:35
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/22 13:35
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:数据状态枚举
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/22 13:35
  */
 @Service
 public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
@@ -57,10 +57,10 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
 
     @Override
     public Map<String, HistoryDataVO> listMovingAverageInfo(HistoryQueryMultiBO multi) {
-//        WhetherThreadLocal.INSTANCE.setWhether(false);
+        WhetherThreadLocal.INSTANCE.setWhether(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.MOVING_AVERAGE.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
-        data.entrySet().stream().forEach(x -> {
+        data.entrySet().forEach(x -> {
             HistoryDataVO value = x.getValue();
             if (Objects.nonNull(value) && CollectionUtils.isNotEmpty(value.getChartData())) {
                 MovingAverageParamDTO dto = new MovingAverageParamDTO();
@@ -79,7 +79,7 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
 //        WhetherThreadLocal.INSTANCE.setWhether(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.TREND_FORECAST.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
-        data.entrySet().stream().forEach(x -> {
+        data.entrySet().forEach(x -> {
             HistoryDataVO value = x.getValue();
             if (Objects.nonNull(value) && CollectionUtils.isNotEmpty(value.getChartData())) {
                 PredictionParamDTO dto = new PredictionParamDTO();

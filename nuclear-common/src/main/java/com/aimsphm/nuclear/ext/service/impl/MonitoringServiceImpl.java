@@ -79,7 +79,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (CollectionUtils.isEmpty(points)) {
             return null;
         }
-        return points.stream().filter((item -> StringUtils.hasText(item.getPlaceholder()))).collect(Collectors.toMap(o -> o.getPlaceholder(), point -> point, (one, two) -> one));
+        return points.stream().filter((item -> StringUtils.hasText(item.getPlaceholder()))).collect(Collectors.toMap(CommonMeasurePointDO::getPlaceholder, point -> point, (one, two) -> one));
     }
 
     private LambdaQueryWrapper<CommonMeasurePointDO> initWrapper(Long deviceId) {
@@ -146,9 +146,9 @@ public class MonitoringServiceImpl implements MonitoringService {
             String startTime = config.get(START_TIME);
             String totalRunningDuration = config.get(TOTAL_RUNNING_DURATION);
             String stopTimes = config.get(STOP_TIMES);
-            status.setTotalRunningTime(StringUtils.hasText(totalRunningDuration) ? Long.valueOf(totalRunningDuration) : 0L);
-            status.setStopTimes(StringUtils.hasText(stopTimes) ? Integer.valueOf(stopTimes) : 0);
-            status.setStartTime(StringUtils.hasText(startTime) ? Long.valueOf(startTime) : 0L);
+            status.setTotalRunningTime(StringUtils.hasText(totalRunningDuration) ? Long.parseLong(totalRunningDuration) : 0L);
+            status.setStopTimes(StringUtils.hasText(stopTimes) ? Integer.parseInt(stopTimes) : 0);
+            status.setStartTime(StringUtils.hasText(startTime) ? Long.parseLong(startTime) : 0L);
             //当前状态影响可持续运行时常
             if (DeviceHealthEnum.STOP.getValue().equals(status.getStatus())) {
                 status.setContinuousRunningTime(0L);
@@ -261,7 +261,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         JobDeviceStatusDO first = list.get(0);
         if (Objects.nonNull(startTime) && Objects.nonNull(first.getGmtEnd())) {
             Integer status = first.getStatus();
-            if (startTime > first.getGmtStart().getTime()) {
+            if (startTime > first.getGmtStart().getTime() && startTime < first.getGmtEnd().getTime()) {
                 collect.put(status, collect.get(status) - (startTime - first.getGmtStart().getTime()));
             }
         }
@@ -309,7 +309,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (CollectionUtils.isEmpty(pointList)) {
             return Lists.newArrayList();
         }
-        pointList.stream().forEach(item -> item.setName(PointCategoryEnum.getDesc((Integer) item.getName())));
+        pointList.forEach(item -> item.setName(PointCategoryEnum.getDesc((Integer) item.getName())));
         return pointList;
     }
 
@@ -320,7 +320,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (CollectionUtils.isEmpty(list)) {
             return Lists.newArrayList(Lists.newArrayList(), Lists.newArrayList());
         }
-        Map<Integer, Long> level = list.stream().collect(Collectors.groupingBy(item -> item.getAlarmLevel(), TreeMap::new, Collectors.counting()));
+        Map<Integer, Long> level = list.stream().collect(Collectors.groupingBy(JobAlarmProcessRecordDO::getAlarmLevel, TreeMap::new, Collectors.counting()));
         List<LabelVO> levelList = level.entrySet().stream().map(item -> new LabelVO(AlgorithmLevelEnum.getDesc(item.getKey()), item.getValue())).collect(Collectors.toList());
 
         return Lists.newArrayList(new ArrayList<>(), levelList);
@@ -340,7 +340,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (CollectionUtils.isEmpty(pointList)) {
             return null;
         }
-        return pointList.stream().filter(o -> Objects.nonNull(o)).collect(Collectors.toList());
+        return pointList.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -355,7 +355,7 @@ public class MonitoringServiceImpl implements MonitoringService {
             pointService.clearAllPointsData();
             return null;
         }
-        list.stream().forEach(item -> {
+        list.forEach(item -> {
             String storeKey = pointService.getStoreKey(item);
             Object obj = redisDataService.getByKey(storeKey);
             MeasurePointVO vo = new MeasurePointVO();
