@@ -161,7 +161,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
             }).collect(Collectors.toList());
             EasyExcelUtils.Write2Website(response, collect, JobAlarmThresholdBO.class, null, String.format("阈值报警-%s", time));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("error:{}", e);
         }
     }
 

@@ -3,8 +3,6 @@ package com.aimsphm.nuclear.common.entity.vo;
 import lombok.Data;
 
 /**
- * 
- *
  * @author lu.yi
  * @since 2020-08-11
  */
@@ -28,37 +26,4 @@ public class WiredSensorExtrainfoVO {
     private Double vtThrLo;
     private Integer iswifi;
     private String alias;
-//private String sensorSerial;
-//private Long productId;
-//private Long edgeId;
-//private Integer firmware;
-//private Float temp1;
-//private Float temp2;
-//
-//private Long unitId;
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//private Double fmin;
-//private Double fmax;
-//private Double vtEarlyWarningLo;
-//private Double vtThrLo;
-//private Double vtThrLolo;
-//private Double t1EarlyWarningHi;
-//private Double t1ThrHi;
-//private Double t1ThrHihi;
-//private Double t2EarlyWarningHi;
-//private Double t2ThrHi;
-//private Double t2ThrHihi;
-//private Integer transferType;
-//private Double sensitivity;
-
 }

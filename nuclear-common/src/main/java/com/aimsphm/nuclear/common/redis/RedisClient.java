@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.redis;
 
+import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.Cursor;
@@ -1339,21 +1340,25 @@ public class RedisClient {
      * @return 获取锁成功返回ture，超时返回false
      * @throws InterruptedException
      */
-    public synchronized boolean lock(String key) throws InterruptedException, Exception {
+    public synchronized boolean lock(String key) {
         Long expires = System.currentTimeMillis() + expireMsecs + 1;
-        if (this.setIfAbsent(key, expires)) {
-            return true;
-        }
-        // redis里key的时间
-        Long currentValue = (Long) this.get(key);
-        // 判断锁是否已经过期，过期则重新设置并获取
-        if (Objects.nonNull(currentValue) && currentValue < System.currentTimeMillis()) {
-            // 设置锁并返回旧值
-            Long oldValue = (Long) this.getAndSet(key, expires);
-            // 比较锁的时间，如果不一致则可能是其他锁已经修改了值并获取
-            if (Objects.nonNull(oldValue) && oldValue.equals(currentValue)) {
+        try {
+            if (this.setIfAbsent(key, expires)) {
                 return true;
             }
+            // redis里key的时间
+            Long currentValue = (Long) this.get(key);
+            // 判断锁是否已经过期，过期则重新设置并获取
+            if (Objects.nonNull(currentValue) && currentValue < System.currentTimeMillis()) {
+                // 设置锁并返回旧值
+                Long oldValue = (Long) this.getAndSet(key, expires);
+                // 比较锁的时间，如果不一致则可能是其他锁已经修改了值并获取
+                if (Objects.nonNull(oldValue) && oldValue.equals(currentValue)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            throw new CustomMessageException(e.getCause());
         }
         return false;
     }

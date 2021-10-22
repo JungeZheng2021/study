@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.common.entity.vo;
 
 import com.aimsphm.nuclear.common.entity.AnalysisFavoriteDO;
 import com.aimsphm.nuclear.common.entity.AnalysisFavoriteRemarkDO;
-import com.aimsphm.nuclear.common.entity.BaseDO;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

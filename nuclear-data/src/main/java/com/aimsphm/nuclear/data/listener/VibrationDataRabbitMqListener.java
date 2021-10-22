@@ -47,7 +47,7 @@ public class VibrationDataRabbitMqListener {
             service.operateData(message.getMessageProperties().getReceivedRoutingKey(), new String(message.getBody()));
         } catch (Exception e) {
 //            产生异常
-            e.printStackTrace();
+            log.error("error:{}", e);
         }
     }
 }

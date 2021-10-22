@@ -1,14 +1,13 @@
 package com.aimsphm.nuclear.algorithm.util;
 
 /**
- * @Package: com.study.auth.config.core
- * @Description: <是否逻辑线程存储>
- * @Author: MILLA
- * @CreateDate: 2020/09/04 14:42
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/09/04 14:42
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:是否逻辑线程存储
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 14:42
  */
 public enum WhetherThreadLocal {
     INSTANCE;
@@ -18,7 +17,7 @@ public enum WhetherThreadLocal {
         return whether.get();
     }
 
-    public void setWhether(Boolean yes) {
+    public void setting(Boolean yes) {
         this.whether.set(yes);
     }
 

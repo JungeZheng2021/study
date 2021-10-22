@@ -1,21 +1,18 @@
 package com.aimsphm.nuclear.common.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.aimsphm.nuclear.common.entity.BaseDO;
-import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity
- * @Description: <算法配置实体>
- * @Author: MILLA
- * @CreateDate: 2021-02-04
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-04
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法配置实体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-02-04 14:30
  */
 @Data
 @TableName("algorithm_config")
@@ -26,10 +23,10 @@ public class AlgorithmConfigDO extends BaseDO {
      */
     private static final long serialVersionUID = -5360204367689511954L;
 
-    @ApiModelProperty(value = "", notes = "")
+    @ApiModelProperty(value = "算法名称")
     private String algorithmName;
 
-    @ApiModelProperty(value = "", notes = "")
+    @ApiModelProperty(value = "算法类型")
     private String algorithmType;
 
 }

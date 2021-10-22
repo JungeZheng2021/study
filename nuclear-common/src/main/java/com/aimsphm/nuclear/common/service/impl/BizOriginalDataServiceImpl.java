@@ -70,6 +70,6 @@ public class BizOriginalDataServiceImpl extends ServiceImpl<BizOriginalDataMappe
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        return list.stream().map(x -> x.getTimestamp()).collect(Collectors.toList());
+        return list.stream().map(BizOriginalDataDO::getTimestamp).collect(Collectors.toList());
     }
 }

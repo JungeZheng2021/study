@@ -1,11 +1,10 @@
 package com.aimsphm.nuclear.common.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.aimsphm.nuclear.common.entity.BaseDO;
 import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.util.List;
 

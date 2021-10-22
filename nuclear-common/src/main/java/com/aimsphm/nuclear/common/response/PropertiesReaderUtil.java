@@ -3,32 +3,33 @@ package com.aimsphm.nuclear.common.response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
- * @Package: com.aimsphm.nuclear.common.response
- * @Description: <读取配置properties工具类>
- * @Author: MILLA
- * @CreateDate: 2018/8/10 10:30
- * @UpdateUser: MILLA
- * @UpdateDate: 2018/8/10 10:30
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:读取配置properties工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2018/8/10 10:30
  */
 public final class PropertiesReaderUtil {
     private static final String ENCODING = "UTF-8";
     private static final Logger logger = LoggerFactory.getLogger(PropertiesReaderUtil.class);
-    private static Properties propsZh = new Properties();
-    private static Properties propsEn = new Properties();
+    private static final Properties PROPS_ZH = new Properties();
+    private static final Properties PROPS_EN = new Properties();
+
+    private PropertiesReaderUtil() {
+    }
 
     static {
         //加载英文
-        loadProps(propsEn, "properties/message_en_US.properties");
+        loadProps(PROPS_EN, "properties/message_en_US.properties");
         //加载中文
-        loadProps(propsZh, "properties/message_zh_CN.properties");
+        loadProps(PROPS_ZH, "properties/message_zh_CN.properties");
     }
 
     /**
@@ -37,22 +38,12 @@ public final class PropertiesReaderUtil {
      * in = PropertyUtil.class.getResourceAsStream("/properties/message_en_US.properties");
      * in = PropertiesReaderUtil.class.getClassLoader().getResourceAsStream("properties/message_en_US.properties");
      */
-    synchronized static private void loadProps(Properties properties, String fileName) {
+    private synchronized static void loadProps(Properties properties, String fileName) {
         logger.debug("start loading properties");
-        InputStream in = null;
-        try {
-            in = PropertiesReaderUtil.class.getClassLoader().getResourceAsStream(fileName);
+        try (InputStream in = PropertiesReaderUtil.class.getClassLoader().getResourceAsStream(fileName)) {
             properties.load(new InputStreamReader(in, ENCODING));
         } catch (Exception e) {
             logger.debug("loading properties error :{}", e);
-        } finally {
-            try {
-                if (null != in) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                logger.debug("closing properties io error :{}", e);
-            }
         }
     }
 
@@ -65,18 +56,18 @@ public final class PropertiesReaderUtil {
     }
 
     public static String getPropertyZh(String key) {
-        return propsZh.getProperty(key);
+        return PROPS_ZH.getProperty(key);
     }
 
     public static String getPropertyZh(String key, String defaultValue) {
-        return propsZh.getProperty(key, defaultValue);
+        return PROPS_ZH.getProperty(key, defaultValue);
     }
 
     public static String getPropertyEn(String key) {
-        return propsEn.getProperty(key);
+        return PROPS_EN.getProperty(key);
     }
 
     public static String getPropertyEn(String key, String defaultValue) {
-        return propsEn.getProperty(key, defaultValue);
+        return PROPS_EN.getProperty(key, defaultValue);
     }
 }

@@ -1,14 +1,13 @@
 package com.aimsphm.nuclear.common.constant;
 
 /**
- * @Package: com.aimsphm.nuclear.common.constant
- * @Description: <符号常量>
- * @Author: milla
- * @CreateDate: 2020/11/17 14:24
- * @UpdateUser: milla
- * @UpdateDate: 2020/11/17 14:24
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法配置实体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/17 14:24
  */
 public final class SymbolConstant {
     /**
@@ -67,61 +66,61 @@ public final class SymbolConstant {
     private SymbolConstant() {
     }
 
-    String AMPERSAND = "&";
-    String AND = "and";
-    String AT = "@";
-    String ASTERISK = "*";
-    String BACK_SLASH = "\\";
+    public static final String AMPERSAND = "&";
+    public static final String AND = "and";
+    public static final String AT = "@";
+    public static final String ASTERISK = "*";
+    public static final String BACK_SLASH = "\\";
 
-    String DOLLAR = "$";
-    String DOT = ".";
-    String DOTDOT = "..";
-    String DOT_CLASS = ".class";
-    String DOT_JAVA = ".java";
-    String DOT_XML = ".xml";
-    String EQUALS = "=";
-    String FALSE = "false";
-    String SLASH = "/";
-    String HAT = "^";
-    String LEFT_BRACE = "{";
-    String LEFT_BRACKET = "(";
-    String LEFT_CHEV = "<";
-    String DOT_NEWLINE = ",\n";
-    String NEWLINE = "\n";
-    String N = "n";
-    String NO = "no";
-    String NULL = "null";
-    String OFF = "off";
-    String ON = "on";
-    String PERCENT = "%";
-    String PIPE = "|";
-    String PLUS = "+";
-    String QUESTION_MARK = "?";
-    String EXCLAMATION_MARK = "!";
-    String QUOTE = "\"";
-    String RETURN = "\r";
-    String TAB = "\t";
-    String RIGHT_BRACE = "}";
-    String RIGHT_BRACKET = ")";
-    String RIGHT_CHEV = ">";
-    String SEMICOLON = ";";
-    String SINGLE_QUOTE = "'";
-    String BACKTICK = "`";
-    String TILDA = "~";
-    String TRUE = "true";
-    String UTF_8 = "UTF-8";
-    String US_ASCII = "US-ASCII";
-    String ISO_8859_1 = "ISO-8859-1";
-    String Y = "y";
-    String YES = "yes";
-    String ONE = "1";
-    String DOLLAR_LEFT_BRACE = "${";
-    String HASH_LEFT_BRACE = "#{";
-    String CRLF = "\r\n";
-    String HTML_NBSP = "&nbsp;";
-    String HTML_AMP = "&amp";
-    String HTML_QUOTE = "&quot;";
-    String HTML_LT = "&lt;";
-    String HTML_GT = "&gt;";
+    public static final String DOLLAR = "$";
+    public static final String DOT = ".";
+    public static final String DOT_DOT = "..";
+    public static final String DOT_CLASS = ".class";
+    public static final String DOT_JAVA = ".java";
+    public static final String DOT_XML = ".xml";
+    public static final String EQUALS = "=";
+    public static final String FALSE = "false";
+    public static final String SLASH = "/";
+    public static final String HAT = "^";
+    public static final String LEFT_BRACE = "{";
+    public static final String LEFT_BRACKET = "(";
+    public static final String LEFT_CHEV = "<";
+    public static final String DOT_NEWLINE = ",\n";
+    public static final String NEWLINE = "\n";
+    public static final String N = "n";
+    public static final String NO = "no";
+    public static final String NULL = "null";
+    public static final String OFF = "off";
+    public static final String ON = "on";
+    public static final String PERCENT = "%";
+    public static final String PIPE = "|";
+    public static final String PLUS = "+";
+    public static final String QUESTION_MARK = "?";
+    public static final String EXCLAMATION_MARK = "!";
+    public static final String QUOTE = "\"";
+    public static final String RETURN = "\r";
+    public static final String TAB = "\t";
+    public static final String RIGHT_BRACE = "}";
+    public static final String RIGHT_BRACKET = ")";
+    public static final String RIGHT_CHEV = ">";
+    public static final String SEMICOLON = ";";
+    public static final String SINGLE_QUOTE = "'";
+    public static final String BACKTICK = "`";
+    public static final String TILDA = "~";
+    public static final String TRUE = "true";
+    public static final String UTF_8 = "UTF-8";
+    public static final String US_ASCII = "US-ASCII";
+    public static final String ISO_8859_1 = "ISO-8859-1";
+    public static final String Y = "y";
+    public static final String YES = "yes";
+    public static final String ONE = "1";
+    public static final String DOLLAR_LEFT_BRACE = "${";
+    public static final String HASH_LEFT_BRACE = "#{";
+    public static final String CRLF = "\r\n";
+    public static final String HTML_NBSP = "&nbsp;";
+    public static final String HTML_AMP = "&amp";
+    public static final String HTML_QUOTE = "&quot;";
+    public static final String HTML_LT = "&lt;";
+    public static final String HTML_GT = "&gt;";
 
 }

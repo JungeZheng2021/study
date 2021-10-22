@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.AuthPrivilegeDO;
+import com.aimsphm.nuclear.common.entity.BaseDO;
 import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
@@ -52,7 +53,8 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
 
     /**
      * 拼装查询条件
-     *DateUtils
+     * DateUtils
+     *
      * @param queryBO
      * @return
      */
@@ -121,7 +123,7 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
                 if (key.equals(id)) {
                     List<AuthPrivilegeDO> value = x.getValue();
                     m.setChildren(value);
-                    List<Long> collect1 = value.stream().map(i -> i.getId()).collect(Collectors.toList());
+                    List<Long> collect1 = value.stream().map(BaseDO::getId).collect(Collectors.toList());
                     needless.addAll(collect1);
                 }
             });

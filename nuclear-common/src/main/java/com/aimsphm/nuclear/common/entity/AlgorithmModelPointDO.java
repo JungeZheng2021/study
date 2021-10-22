@@ -8,14 +8,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity
- * @Description: <模型对应测点信息实体>
- * @Author: MILLA
- * @CreateDate: 2021-01-05
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-05
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:模型对应测点信息实体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-01-05 14:30
  */
 @Data
 @TableName("algorithm_model_point")
@@ -26,19 +25,19 @@ public class AlgorithmModelPointDO extends BaseDO {
      */
     private static final long serialVersionUID = -4688558069793862933L;
 
-    @ApiModelProperty(value = "子系统id", notes = "")
+    @ApiModelProperty(value = "子系统id")
     private Long subSystemId;
 
-    @ApiModelProperty(value = "设备id", notes = "")
+    @ApiModelProperty(value = "设备id")
     private Long deviceId;
 
-    @ApiModelProperty(value = "模型id", notes = "")
+    @ApiModelProperty(value = "模型id")
     private Long modelId;
 
-    @ApiModelProperty(value = "算法id", notes = "")
+    @ApiModelProperty(value = "算法id")
     private Long algorithmId;
 
-    @ApiModelProperty(value = "测点id-真实id", notes = "")
+    @ApiModelProperty(value = "测点id-真实id")
     private Long pointId;
 
 }

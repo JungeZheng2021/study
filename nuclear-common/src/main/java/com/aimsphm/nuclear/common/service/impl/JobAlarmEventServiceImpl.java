@@ -78,7 +78,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
             }).collect(Collectors.toList());
             EasyExcelUtils.Write2Website(response, collect, JobAlarmEventBO.class, null, String.format("报警事件-%s", time));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("error:{}", e);
         }
     }
 

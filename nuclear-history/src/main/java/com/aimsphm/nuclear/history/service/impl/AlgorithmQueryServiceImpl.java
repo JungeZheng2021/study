@@ -57,7 +57,7 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
 
     @Override
     public Map<String, HistoryDataVO> listMovingAverageInfo(HistoryQueryMultiBO multi) {
-        WhetherThreadLocal.INSTANCE.setWhether(false);
+        WhetherThreadLocal.INSTANCE.setting(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.MOVING_AVERAGE.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
         data.entrySet().forEach(x -> {

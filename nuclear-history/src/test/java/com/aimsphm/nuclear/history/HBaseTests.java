@@ -45,7 +45,7 @@ public class HBaseTests {
             hbaseUtil = new HBaseUtil(connection);
             table = connection.getTable(TableName.valueOf(H_BASE_TABLE_NPC_PHM_DATA));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("error:{}", e);
         }
     }
 }

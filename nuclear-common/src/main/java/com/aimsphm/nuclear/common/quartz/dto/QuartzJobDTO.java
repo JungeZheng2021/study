@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.quartz.dto;
 
+import com.aimsphm.nuclear.common.entity.BizJobQuartzConfigDO;
 import lombok.Data;
 
 /**
@@ -13,11 +14,11 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-public class QuartzJobDTO {
+public class QuartzJobDTO extends BizJobQuartzConfigDO {
     /**
      * 主键
      */
-    private Integer id;
+    private Long id;
     /**
      * 任务名
      */

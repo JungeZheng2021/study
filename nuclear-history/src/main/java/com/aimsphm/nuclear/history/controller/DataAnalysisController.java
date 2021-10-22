@@ -22,6 +22,7 @@ import com.alibaba.excel.converters.date.DateNumberConverter;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @RestController
 @Api(tags = "Data-数据分析-相关接口")
 @RequestMapping(value = "analysis", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -74,8 +76,8 @@ public class DataAnalysisController {
             });
             writer.finish();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("error:{}", e);
         }
-        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
+        log.debug("scan 共计耗时： " + (System.currentTimeMillis() - l));
     }
 }

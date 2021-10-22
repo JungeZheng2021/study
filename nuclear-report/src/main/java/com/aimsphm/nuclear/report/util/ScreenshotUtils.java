@@ -12,14 +12,13 @@ import java.io.File;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.report.util
- * @Description: <截图工具类>
- * @Author: MILLA
- * @CreateDate: 2020/4/28 9:32
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/28 9:32
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:截图工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/28 9:32
  */
 @Component
 @Slf4j
@@ -134,7 +133,10 @@ public class ScreenshotUtils {
             //截图之后删除图片
             try {
                 if (hasHtml && htmlDelete) {
-                    new File(htmlPath).delete();
+                    boolean delete = new File(htmlPath).delete();
+                    if (!delete) {
+                        log.error("delete file  failed:{}", htmlPath);
+                    }
                 }
             } catch (Exception e) {
                 log.error("get failed:{}", e);

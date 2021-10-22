@@ -8,14 +8,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity
- * @Description: <算法模型信息实体>
- * @Author: MILLA
- * @CreateDate: 2021-01-20
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-20
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法模型信息实体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-01-20 14:30
  */
 @Data
 @TableName("algorithm_model")
@@ -26,22 +25,22 @@ public class AlgorithmModelDO extends BaseDO {
      */
     private static final long serialVersionUID = -5328195471307949083L;
 
-    @ApiModelProperty(value = "子系统id", notes = "")
+    @ApiModelProperty(value = "子系统id")
     private Long subSystemId;
 
-    @ApiModelProperty(value = "设备id", notes = "")
+    @ApiModelProperty(value = "设备id")
     private Long deviceId;
 
-    @ApiModelProperty(value = "算法id", notes = "")
+    @ApiModelProperty(value = "算法id")
     private Long algorithmId;
 
-    @ApiModelProperty(value = "", notes = "")
+    @ApiModelProperty(value = "模型名称")
     private String modelName;
 
-    @ApiModelProperty(value = "", notes = "")
+    @ApiModelProperty(value = "类型")
     private Integer modelType;
 
-    @ApiModelProperty(value = "", notes = "")
+    @ApiModelProperty(value = "备注")
     private String remark;
 
 }

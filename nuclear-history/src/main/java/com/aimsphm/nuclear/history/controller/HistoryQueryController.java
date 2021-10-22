@@ -130,7 +130,7 @@ public class HistoryQueryController {
     @ApiOperation(value = "导出原始数据", notes = "接口中不使用")
     public Map<String, HistoryDataVO> listHistoryPointList(HistoryQueryMultiBO queryMultiBO, String sql) {
         operationPoints(queryMultiBO, sql);
-        RawDataThreadLocal.INSTANCE.setWhether(true);
+        RawDataThreadLocal.INSTANCE.setting(true);
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
         return data;
     }
@@ -139,7 +139,7 @@ public class HistoryQueryController {
     @ApiOperation(value = "导出原始数据excel", notes = "接口中不使用")
     public void listHistoryPointListExcel(HistoryQueryMultiBO queryMultiBO, HttpServletResponse response, String sql) {
         operationPoints(queryMultiBO, sql);
-        RawDataThreadLocal.INSTANCE.setWhether(true);
+        RawDataThreadLocal.INSTANCE.setting(true);
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
         writeExcelFile(response, data);
     }

@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.common.constant;
 import java.io.File;
 
 /**
- * @Package: com.aimsphm.nuclear.report.constant
- * @Description: <常量类>
- * @Author: MILLA
- * @CreateDate: 2020/4/27 18:09
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/27 18:09
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:常量类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/27 18:09
  */
 public class ReportConstant {
     /**
@@ -110,8 +109,8 @@ public class ReportConstant {
     public static final String HTML_SERIES_DATA = "'#seriesData#'";
     public static final String HTML_MARK_LINES_DATA = "'#markLinesData#'";
 
-    public static String HTML_OBJECT_DATA = "'#objectData#'";
-    public static String HTML_ALARM_TYPE = "'#alarmType#'";
+    public static final String HTML_OBJECT_DATA = "'#objectData#'";
+    public static final String HTML_ALARM_TYPE = "'#alarmType#'";
 
     /**
      * 驱动在项目中的根路径

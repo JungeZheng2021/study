@@ -76,16 +76,8 @@ public enum TimeUnitEnum {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Long getValue() {
         return value;
-    }
-
-    public void setValue(Long value) {
-        this.value = value;
     }
 
     private String name;
