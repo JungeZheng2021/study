@@ -4,9 +4,6 @@ import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsPacketDTO;
 import com.aimsphm.nuclear.data.feign.entity.dto.MqConfigDTO;
 import com.aimsphm.nuclear.data.feign.entity.dto.PublishParamDTO;
 import com.aimsphm.nuclear.data.util.MqPushClient;
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -18,14 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * @Package: com.aimsphm.nuclear.data.controller
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2021/01/22 16:50
- * @UpdateUser: MILLA
- * @UpdateDate: 2021/01/22 16:50
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021/01/22 16:50
  */
 @Slf4j
 @RestController

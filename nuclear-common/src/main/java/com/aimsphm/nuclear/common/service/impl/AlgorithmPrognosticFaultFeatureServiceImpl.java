@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.AlgorithmPrognosticFaultFeatureDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.AlgorithmPrognosticFaultFeatureMapper;
 import com.aimsphm.nuclear.common.service.AlgorithmPrognosticFaultFeatureService;
@@ -11,7 +10,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,13 +43,7 @@ public class AlgorithmPrognosticFaultFeatureServiceImpl extends ServiceImpl<Algo
      * @return 封装后的条件
      */
     private LambdaQueryWrapper<AlgorithmPrognosticFaultFeatureDO> customerConditions(QueryBO<AlgorithmPrognosticFaultFeatureDO> queryBO) {
-        LambdaQueryWrapper<AlgorithmPrognosticFaultFeatureDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
-        return wrapper;
+        return queryBO.lambdaQuery();
     }
 
     @Override

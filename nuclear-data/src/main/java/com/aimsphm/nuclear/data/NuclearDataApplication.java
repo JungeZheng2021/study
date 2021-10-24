@@ -5,17 +5,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @Package: com.aimsphm.nuclear.data
- * @Description: <服务入口>
- * @Author: MILLA
- * @CreateDate: 2020/10/23 11:27
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/10/23 11:27
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务入口
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/10/23 11:27
  */
 @EnableAsync
 @EnableCaching

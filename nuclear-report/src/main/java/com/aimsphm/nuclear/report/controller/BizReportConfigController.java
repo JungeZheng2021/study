@@ -14,14 +14,13 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.report.controller
- * @Description: <报告生成测点配置表-前端控制器>
- * @Author: MILLA
- * @CreateDate: 2021-02-23
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-23
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:报告生成测点配置表-前端控制器
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 18:58
  */
 @RestController
 @Api(tags = "BizReportConfig-报告生成测点配置表-相关接口")

@@ -20,7 +20,7 @@ public enum ConnectionLocal {
         return connection.get();
     }
 
-    public void setting(RedisClusterConnection param) {
+    public void info(RedisClusterConnection param) {
         connection.set(param);
     }
 

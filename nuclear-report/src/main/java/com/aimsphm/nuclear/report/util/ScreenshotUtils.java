@@ -140,14 +140,13 @@ public class ScreenshotUtils {
                 }
             } catch (Exception e) {
                 log.error("get failed:{}", e);
-
             }
         }
     }
 
     /**
      * @param htmlPath   html文件路径
-     * @param Id         html中Id名称
+     * @param id         html中Id名称
      * @param outputType 输出类型
      * @param sleepTime  延时时间
      * @param <X>        具体类型
@@ -155,7 +154,7 @@ public class ScreenshotUtils {
      * @throws WebDriverException
      * @throws InterruptedException
      */
-    public <X> X screenshotById(String htmlPath, String Id, OutputType<X> outputType, Long sleepTime) throws WebDriverException, InterruptedException {
+    public <X> X screenshotById(String htmlPath, String id, OutputType<X> outputType, Long sleepTime) throws WebDriverException, InterruptedException {
         //是否有html
         boolean hasHtml = Objects.nonNull(htmlPath) && htmlPath.length() > 0;
         try {
@@ -169,15 +168,18 @@ public class ScreenshotUtils {
                 Thread.sleep(sleepTime);
             }
             //如果有tagName
-            if (Objects.nonNull(Id) && Id.length() > 0) {
-                return getScreenshotAsById(outputType, Id);
+            if (Objects.nonNull(id) && id.length() > 0) {
+                return getScreenshotAsById(outputType, id);
             }
             return getScreenshotAs(outputType, ReportConstant.ECHARTS_CANVAS);
         } finally {
             //截图之后删除图片
             try {
                 if (hasHtml && htmlDelete) {
-                    new File(htmlPath).delete();
+                    boolean delete = new File(htmlPath).delete();
+                    if (!delete) {
+                        log.error("delete file  failed:{}", htmlPath);
+                    }
                 }
             } catch (Exception e) {
                 log.error("get failed:{}", e);
@@ -188,19 +190,19 @@ public class ScreenshotUtils {
 
     /**
      * @param outputType 输出类型
-     * @param Id         html中元素名称
+     * @param id         html中元素名称
      * @param <X>        具体类型
      * @return
      * @throws WebDriverException
      */
-    public <X> X getScreenshotAsById(OutputType<X> outputType, String Id) throws WebDriverException {
+    public <X> X getScreenshotAsById(OutputType<X> outputType, String id) throws WebDriverException {
         //tag名称为空直接采用driver的截图方式
-        if (Objects.isNull(Id) || Id.length() == 0) {
+        if (Objects.isNull(id) || id.length() == 0) {
             return ((TakesScreenshot) driver).getScreenshotAs(outputType);
         }
         WebElement element;
         try {
-            element = driver.findElement(By.id(Id));
+            element = driver.findElement(By.id(id));
         } catch (Exception exception) {
             log.error("使用id->chart截图失败，{}", exception);
             return ((TakesScreenshot) driver).getScreenshotAs(outputType);

@@ -62,6 +62,9 @@ public class HbaseController {
 
     @GetMapping(value = "table/{tableName}")
     @ApiOperation(value = "获取表格的所有数据量", notes = "需要Hbase服务端配置插件[目前不能测试]")
+    /**
+     * @deprecated (服务器目前不支持)
+     */
     @Deprecated
     public Long getTableDataCount(@PathVariable String tableName) {
         return service.getTableDataCount(tableName);

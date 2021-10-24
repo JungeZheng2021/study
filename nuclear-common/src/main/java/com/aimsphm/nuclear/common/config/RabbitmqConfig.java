@@ -1,9 +1,5 @@
 package com.aimsphm.nuclear.common.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -21,7 +17,7 @@ import org.springframework.context.annotation.Primary;
  * 用于配置rabbitMQ
  */
 @Configuration
-@ConditionalOnProperty(prefix = "spring.rabbitmqconfig", name = "enable", havingValue = "true",matchIfMissing= false)
+@ConditionalOnProperty(prefix = "spring.rabbitmqconfig", name = "enable", havingValue = "true", matchIfMissing = false)
 public class RabbitmqConfig {
 
 
@@ -53,15 +49,13 @@ public class RabbitmqConfig {
         return connectionFactory(host, port, username, password);
     }
 
-  
 
-    public CachingConnectionFactory connectionFactory(String host,int port,String username,String password){
+    public CachingConnectionFactory connectionFactory(String host, int port, String username, String password) {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
         connectionFactory.setHost(host);
         connectionFactory.setPort(port);
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
-      //  connectionFactory.setVirtualHost(virtual_host);
         return connectionFactory;
     }
 
@@ -83,8 +77,6 @@ public class RabbitmqConfig {
         daHuaRabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
         return daHuaRabbitTemplate;
     }
-
- 
 
 
     @Bean(name = "myFactory")
@@ -109,30 +101,5 @@ public class RabbitmqConfig {
         configurer.configure(factory, connectionFactory);
         return factory;
     }
-   
-
-    /*
-    声明交换机 amq.topic topic类型的，其他类型的直接改TopicExchange
-     */
-//    @Bean
-//    public TopicExchange basicExchange(){
-//        return new TopicExchange("amq.topic", true,false);
-//    }
-//
-//    /*
-//    声明消息队列 启动创建，停止自动删除
-//     */
-//    @Bean(name = "basicQueue")
-//    public Queue basicQueue(){
-//        return new Queue("acquire-alarm-volume", false,true,false);
-//    }
-//
-//    /*
-//    队列绑定交换机 *.*.*.*.*.*为rountingkey
-//     */
-//    @Bean
-//    public Binding basicBinding(){
-//        return BindingBuilder.bind(basicQueue()).to(basicExchange()).with("*.*.*.*.*.*");}
-
 }
 

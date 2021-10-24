@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.common.config;
 
 import com.aimsphm.nuclear.common.response.ResponseData;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;

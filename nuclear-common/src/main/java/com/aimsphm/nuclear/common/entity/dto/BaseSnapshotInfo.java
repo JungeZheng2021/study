@@ -7,6 +7,15 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/3/6 10:04
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

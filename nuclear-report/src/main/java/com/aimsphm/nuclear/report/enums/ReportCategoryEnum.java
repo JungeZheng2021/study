@@ -1,14 +1,13 @@
 package com.aimsphm.nuclear.report.enums;
 
 /**
- * @Package: com.aimsphm.nuclear.report.enums
- * @Description: <测点配置类型>
- * @Author: milla
- * @CreateDate: 2020/07/20 13:44
- * @UpdateUser: milla
- * @UpdateDate: 2020/07/20 13:44
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:测点配置类型
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/07/20 13:44
  */
 public enum ReportCategoryEnum {
     /**

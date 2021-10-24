@@ -2,24 +2,24 @@ package com.aimsphm.nuclear.opc.client;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.jinterop.dcom.common.JIException;
 import org.openscada.opc.dcom.list.ClassDetails;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.da.Server;
-import org.openscada.opc.lib.da.ServerConnectionStateListener;
 import org.openscada.opc.lib.list.Categories;
 import org.openscada.opc.lib.list.Category;
 import org.openscada.opc.lib.list.ServerList;
 
-import java.net.UnknownHostException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 @Slf4j
 public class OpcClient extends Observable {
 
-    public static Server server = null;
+    private Server server = null;
 
     /**
      * 连接服务
@@ -48,12 +48,7 @@ public class OpcClient extends Observable {
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             server = new Server(connectionInformation, executorService);
             server.connect();
-            server.addStateListener(new ServerConnectionStateListener() {
-                @Override
-                public void connectionStateChanged(boolean state) {
-                    log.info("connectionStateChanged state=" + state);
-                }
-            });
+            server.addStateListener(state -> log.info("connectionStateChanged state=" + state));
 
             mState = true;
         } catch (Exception e) {
@@ -82,9 +77,7 @@ public class OpcClient extends Observable {
             for (ClassDetails detail : details) {
                 log.info("ClsId=" + detail.getClsId() + " ProgId=" + detail.getProgId() + " Description=" + detail.getDescription());
             }
-        } catch (UnknownHostException e) {
-            log.error(e.getMessage());
-        } catch (JIException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
     }

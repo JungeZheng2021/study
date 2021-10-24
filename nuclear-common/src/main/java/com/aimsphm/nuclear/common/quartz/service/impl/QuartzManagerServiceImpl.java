@@ -77,15 +77,15 @@ public class QuartzManagerServiceImpl implements QuartzManagerService {
         }
         switch (operateEnum) {
             //删除
-            case stop:
+            case STOP:
                 find.setJobStatus(QuartzJobStateEnum.STOPPED.getCode());
                 manager.pauseJob(find);
                 break;
-            case resume:
+            case RESUME:
                 find.setJobStatus(QuartzJobStateEnum.RUNNING.getCode());
                 manager.resumeJob(find);
                 break;
-            case update:
+            case UPDATE:
                 if (StringUtils.isEmpty(job.getCronExpression())) {
                     throw new CustomMessageException("任务表达式书写错误");
                 }

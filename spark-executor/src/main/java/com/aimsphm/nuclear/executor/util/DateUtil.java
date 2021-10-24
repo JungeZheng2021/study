@@ -15,16 +15,19 @@ import java.util.Date;
 
 /**
  * 基于Java8的时间工具类
- *
  */
 public class DateUtil {
 
+    private DateUtil() {
+    }
 
     public static final String DATE = "yyyy-MM-dd";
 
     public static final String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
     public static final String TIME = "HHmmss";
+
+    public static final String DATE_NONE = "yyyyMMdd";
 
     public static final String TIME_WITHOUT_SECOND = "HH:mm";
 
@@ -67,11 +70,11 @@ public class DateUtil {
     /**
      * 格式化日期为字符串
      *
-     * @param date date
+     * @param date    date
      * @param pattern 格式
      * @return 日期字符串
      */
-    public static String format(Date date,String pattern){
+    public static String format(Date date, String pattern) {
 
         Instant instant = date.toInstant();
 
@@ -144,7 +147,7 @@ public class DateUtil {
      * @param monthsToSubtract 月份
      * @return Date
      */
-    public static Date minusMonths(long monthsToSubtract){
+    public static Date minusMonths(long monthsToSubtract) {
         LocalDate localDate = LocalDate.now().minusMonths(monthsToSubtract);
 
         return localDate2Date(localDate);
@@ -183,9 +186,8 @@ public class DateUtil {
         LocalDateTime localDateTime = LocalDateTime.now().withMonth(1).withDayOfMonth(1);
 
         if (StringUtils.isEmpty(pattern)) {
-            pattern = "yyyyMMdd";
+            pattern = DATE_NONE;
         }
-
         return format(localDateTime2Date(localDateTime), pattern);
     }
 
@@ -199,7 +201,7 @@ public class DateUtil {
         LocalDateTime localDateTime = LocalDateTime.now().minusYears(1L).withMonth(12).withDayOfMonth(1);
 
         if (StringUtils.isEmpty(pattern)) {
-            pattern = "yyyyMMdd";
+            pattern = DATE_NONE;
         }
 
         return format(localDateTime2Date(localDateTime), pattern);
@@ -215,7 +217,7 @@ public class DateUtil {
         LocalDateTime localDateTime = LocalDateTime.now().minusYears(1L).with(TemporalAdjusters.lastDayOfYear());
 
         if (StringUtils.isEmpty(pattern)) {
-            pattern = "yyyyMMdd";
+            pattern = DATE_NONE;
         }
 
         return format(localDateTime2Date(localDateTime), pattern);
@@ -231,16 +233,15 @@ public class DateUtil {
         LocalDateTime localDateTime = LocalDateTime.now();
 
         if (StringUtils.isEmpty(pattern)) {
-            pattern = "yyyyMMdd";
+            pattern = DATE_NONE;
         }
 
         return format(localDateTime2Date(localDateTime), pattern);
     }
 
-    public static LocalDateTime DateToLocalDateTime(Date date) {
+    public static LocalDateTime dateToLocalDateTime(Date date) {
         Instant instant = date.toInstant();
         ZoneId zone = ZoneId.systemDefault();
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
-        return localDateTime;
+        return LocalDateTime.ofInstant(instant, zone);
     }
 }

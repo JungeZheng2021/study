@@ -11,6 +11,8 @@ package com.aimsphm.nuclear.common.constant;
  * @Version: 1.0
  */
 public final class CodeMessageConstant {
+    private CodeMessageConstant() {
+    }
 
     /**
      * 用户未登录

@@ -2,17 +2,14 @@ package com.aimsphm.nuclear.report.service;
 
 import com.aimsphm.nuclear.common.entity.bo.ReportQueryBO;
 
-import java.io.FileNotFoundException;
-
 /**
- * @Package: com.aimsphm.nuclear.report.service
- * @Description: <报告生成服务类>
- * @Author: MILLA
- * @CreateDate: 2020/5/11 11:00
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/5/11 11:00
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:报告生成服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/28 17:49
  */
 public interface ReportService {
 

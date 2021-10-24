@@ -39,16 +39,14 @@ public class HBaseServiceImpl implements HBaseService {
     @Resource
     private HBaseUtil hbase;
 
-    /**
-     * 3600列数据
-     */
-    private Long data3600 = 3600 * 1000L;
+    public static final String TABLE_NAME_IS_NULL_MSG = "tableName can not be null";
 
+    public static final String FAMILY_IS_NULL_MSG = "family can not be null";
 
     @Override
     public void saveTable(HBaseTableDTO table) {
-        Assert.hasText(table.getTableName(), "tableName can not be null");
-        Assert.isTrue(table.getFamilies() != null && table.getFamilies().size() > 0, "family list can not be null");
+        Assert.hasText(table.getTableName(), TABLE_NAME_IS_NULL_MSG);
+        Assert.isTrue(table.getFamilies() != null && !table.getFamilies().isEmpty(), "family list can not be null");
         try {
             hbase.createTable(table.getTableName(), table.getFamilies(), Compression.Algorithm.SNAPPY);
         } catch (Exception e) {
@@ -58,8 +56,8 @@ public class HBaseServiceImpl implements HBaseService {
 
     @Override
     public void saveFamily2Table(HBaseTableDTO table) {
-        Assert.hasText(table.getTableName(), "tableName can not be null");
-        Assert.isTrue(table.getFamilies() != null && table.getFamilies().size() > 0, "family list can not be null");
+        Assert.hasText(table.getTableName(), TABLE_NAME_IS_NULL_MSG);
+        Assert.isTrue(table.getFamilies() != null && !table.getFamilies().isEmpty(), "family list can not be null");
         try {
             hbase.addFamily2Table(table.getTableName(), table.getFamilies(), Compression.Algorithm.SNAPPY);
         } catch (Exception e) {
@@ -69,7 +67,7 @@ public class HBaseServiceImpl implements HBaseService {
 
     @Override
     public void removeTable(String tableName) {
-        Assert.hasText(tableName, "tableName can not be null");
+        Assert.hasText(tableName, TABLE_NAME_IS_NULL_MSG);
         try {
             hbase.deleteTable(tableName);
         } catch (Exception e) {
@@ -107,16 +105,16 @@ public class HBaseServiceImpl implements HBaseService {
      */
     private void checkHBaseParams(HBaseParamDTO itemDTO) {
         Assert.hasText(itemDTO.getPointId(), "tag can not be null");
-        Assert.hasText(itemDTO.getFamily(), "family can not be null");
-        Assert.hasText(itemDTO.getTableName(), "tableName can not be null");
+        Assert.hasText(itemDTO.getFamily(), FAMILY_IS_NULL_MSG);
+        Assert.hasText(itemDTO.getTableName(), TABLE_NAME_IS_NULL_MSG);
         Assert.notNull(itemDTO.getTimestamp(), "timestamp can not be null");
         Assert.isTrue(!itemDTO.getPointId().contains(ROW_KEY_SEPARATOR), "tag can not contains '" + ROW_KEY_SEPARATOR + "'");
     }
 
     private void checkHBaseQuery(HBaseQueryBO itemDTO) {
         Assert.hasText(itemDTO.getPointId(), "tag can not be null");
-        Assert.hasText(itemDTO.getFamily(), "family can not be null");
-        Assert.hasText(itemDTO.getTableName(), "tableName can not be null");
+        Assert.hasText(itemDTO.getFamily(), FAMILY_IS_NULL_MSG);
+        Assert.hasText(itemDTO.getTableName(), TABLE_NAME_IS_NULL_MSG);
         Assert.notNull(itemDTO.getEndTime(), "end time can not be null");
         Assert.notNull(itemDTO.getStartTime(), "start time can not be null");
         Assert.isTrue(!itemDTO.getPointId().contains(ROW_KEY_SEPARATOR), "tag can not contains '" + ROW_KEY_SEPARATOR + "'");
@@ -146,7 +144,7 @@ public class HBaseServiceImpl implements HBaseService {
         if (Objects.isNull(query) || CollectionUtils.isEmpty(query.getParams()) || StringUtils.isEmpty(query.getTableName())) {
             return null;
         }
-        List<Get> collect = query.getParams().stream().filter(x -> checkHBaseItemParams(x)).map(x -> {
+        List<Get> collect = query.getParams().stream().filter(this::checkHBaseItemParams).map(x -> {
             Get get = new Get((x.getPointId() + ROW_KEY_SEPARATOR + hbase.rowKeyOf3600(x.getTimestamp())).getBytes());
             get.addColumn(x.getFamily().getBytes(), Bytes.toBytes(hbase.indexOf3600(x.getTimestamp())));
             return get;
@@ -207,7 +205,7 @@ public class HBaseServiceImpl implements HBaseService {
         try {
             //删除指定的列数据
             if (StringUtils.hasText(familyDTO.getQualifier())) {
-                Assert.hasText(familyDTO.getFamily(), "family can not be null");
+                Assert.hasText(familyDTO.getFamily(), FAMILY_IS_NULL_MSG);
                 hbase.deleteColumnData(tableName, rowKey, familyDTO.getFamily(), familyDTO.getQualifier());
                 return;
             }
@@ -236,7 +234,7 @@ public class HBaseServiceImpl implements HBaseService {
     public List<Map<String, Object>> getDataByRowKey(String tableName, String rowKey, HBaseFamilyDTO familyDTO) {
         try {
             if (StringUtils.hasText(familyDTO.getQualifier())) {
-                Assert.hasText(familyDTO.getFamily(), "family can not be null");
+                Assert.hasText(familyDTO.getFamily(), FAMILY_IS_NULL_MSG);
                 return hbase.selectData(tableName, rowKey, familyDTO.getFamily(), familyDTO.getQualifier());
             }
             if (StringUtils.hasText(familyDTO.getFamily())) {

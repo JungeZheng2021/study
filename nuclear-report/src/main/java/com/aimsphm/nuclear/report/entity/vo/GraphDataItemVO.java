@@ -5,14 +5,13 @@ import lombok.Data;
 import java.io.File;
 
 /**
- * @Package: com.aimsphm.nuclear.report.entity.vo
- * @Description: <频谱数据>
- * @Author: MILLA
- * @CreateDate: 2021/03/09 16:50
- * @UpdateUser: MILLA
- * @UpdateDate: 2021/03/09 16:50
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:频谱数据
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021/03/09 16:50
  */
 @Data
 public class GraphDataItemVO {

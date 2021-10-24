@@ -16,6 +16,9 @@ import java.util.Objects;
  * @since 2020-12-17 13:47
  */
 public final class BigDecimalUtils {
+    private BigDecimalUtils() {
+    }
+
     /**
      * 默认保存1位小数
      */

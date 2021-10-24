@@ -1,16 +1,18 @@
 package com.aimsphm.nuclear.history.constant;
 
 /**
- * @Package: com.aimsphm.nuclear.history.constant
- * @Description: <毫秒值常量类>
- * @Author: MILLA
- * @CreateDate: 2020/11/21 11:39
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/21 11:39
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:毫秒值常量类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/21 11:39
  */
 public class MillisecondValueConstant {
+    private MillisecondValueConstant() {
+    }
+
     /**
      * 一秒的毫秒值
      */

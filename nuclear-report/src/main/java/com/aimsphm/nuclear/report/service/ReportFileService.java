@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,14 +23,13 @@ import java.util.Objects;
 import static com.aimsphm.nuclear.common.constant.ReportConstant.*;
 
 /**
- * @Package: com.aimsphm.nuclear.report.service
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/6/12 14:46
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/12 14:46
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/6/12 14:46
  */
 public interface ReportFileService {
     Logger log = LoggerFactory.getLogger(ReportFileService.class);
@@ -45,28 +45,19 @@ public interface ReportFileService {
      * @return返回html路径
      */
     default String exportToHtml(BizReportConfigDO config, Object data, CommonMeasurePointDO point) {
-        Writer writer = null;
         List<String> lines = readLines(config, data, point);
         if (CollectionUtils.isEmpty(lines)) {
             return null;
         }
         //写入文件
         File html = new File(ECHARTS_TEMP_DIR + UUIDUtils.randomUUID() + ECHARTS_HTML_SUFFIX);
-        try {
-            writer = new OutputStreamWriter(new FileOutputStream(html), "UTF-8");
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(html), StandardCharsets.UTF_8);) {
+
             for (String l : lines) {
                 writer.write(l + "\n");
             }
         } catch (Exception e) {
             log.error("生成html失败：{}", e);
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    log.error("资源关闭失败：{}", e);
-                }
-            }
         }
         //处理
         try {

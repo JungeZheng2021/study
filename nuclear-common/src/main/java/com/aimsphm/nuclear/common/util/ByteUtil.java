@@ -6,16 +6,17 @@ import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import java.io.*;
 
 /**
- * @Package: com.aimsphm.nuclear.hbase.util
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/3/6 11:53
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/6 11:53
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:拷贝工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/3/6 11:53
  */
 public final class ByteUtil {
+    private ByteUtil() {
+    }
 
     /**
      * 对象转数组

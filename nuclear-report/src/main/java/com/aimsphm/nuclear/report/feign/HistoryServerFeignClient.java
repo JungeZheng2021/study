@@ -3,16 +3,12 @@ package com.aimsphm.nuclear.report.feign;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.vo.EventDataVO;
 import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
-import com.aimsphm.nuclear.common.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.common.entity.vo.HistoryDataWithThresholdVO;
 import com.aimsphm.nuclear.common.response.ResponseData;
-import feign.QueryMap;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -28,7 +24,6 @@ import java.util.Map;
  * @version 1.0
  * @since 2021/08/09 19:49
  */
-
 @Component
 @FeignClient(name = "history/history")//, fallback = HistoryServerFeignFallback.class)
 public interface HistoryServerFeignClient {

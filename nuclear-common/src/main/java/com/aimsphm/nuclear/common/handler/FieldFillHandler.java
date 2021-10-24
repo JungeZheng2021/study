@@ -20,11 +20,13 @@ import java.util.Date;
 @Component
 @ConditionalOnProperty(prefix = "spring.config", name = "enableServiceExtImpl", havingValue = "true")
 public class FieldFillHandler implements MetaObjectHandler {
+    public static final String OPERATOR = "服务器";
+
     @Override
     public void insertFill(MetaObject metaObject) {
         Date date = new Date();
-        this.setFieldValByName("creator", "milla", metaObject);
-        this.setFieldValByName("modifier", "milla", metaObject);
+        this.setFieldValByName("creator", OPERATOR, metaObject);
+        this.setFieldValByName("modifier", OPERATOR, metaObject);
         this.setFieldValByName("gmtCreate", date, metaObject);
         this.setFieldValByName("gmtModified", date, metaObject);
     }
@@ -32,6 +34,6 @@ public class FieldFillHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         this.setFieldValByName("gmtModified", new Date(), metaObject);
-        this.setFieldValByName("modifier", "milla", metaObject);
+        this.setFieldValByName("modifier", OPERATOR, metaObject);
     }
 }

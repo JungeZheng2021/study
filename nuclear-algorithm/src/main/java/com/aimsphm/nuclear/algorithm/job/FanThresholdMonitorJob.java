@@ -30,12 +30,12 @@ import static com.aimsphm.nuclear.common.constant.RedisKeyConstant.REDIS_KEY_FAN
 public class FanThresholdMonitorJob implements BaseMonitorJob {
 
     @Resource
+    private CommonDeviceService deviceService;
+    @Resource
     private AlgorithmService algorithmService;
     @Resource
     @Qualifier("redisTemplate")
-    private RedisTemplate<String, Object> redis;
-    @Resource
-    private CommonDeviceService deviceService;
+    private RedisTemplate<String, Object> template;
 
     /**
      * 设备状态监测算法
@@ -46,7 +46,7 @@ public class FanThresholdMonitorJob implements BaseMonitorJob {
     @Scheduled(cron = "${scheduled.config.FanThresholdMonitorJob:29 0 * * * ?}")
     @DistributedLock("FanThresholdMonitorJob")
     public void monitor() {
-        Boolean running = redis.hasKey(REDIS_KEY_FAN);
+        Boolean running = template.hasKey(REDIS_KEY_FAN);
         if (running) {
             return;
         }

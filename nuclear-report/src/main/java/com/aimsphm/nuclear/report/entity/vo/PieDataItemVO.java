@@ -6,14 +6,13 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.report.entity.vo
- * @Description: <>
- * @Author: milla
- * @CreateDate: 2021/03/09 16:50
- * @UpdateUser: milla
- * @UpdateDate: 2021/03/09 16:50
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:频谱数据
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021/03/09 16:50
  */
 @Data
 public class PieDataItemVO {

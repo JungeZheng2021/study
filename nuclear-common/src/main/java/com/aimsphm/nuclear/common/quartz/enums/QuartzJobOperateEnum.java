@@ -11,5 +11,5 @@ package com.aimsphm.nuclear.common.quartz.enums;
  * @Version: 1.0
  */
 public enum QuartzJobOperateEnum {
-    stop, resume, update
+    STOP, RESUME, UPDATE
 }

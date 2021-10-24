@@ -3,16 +3,13 @@ package com.aimsphm.nuclear.core.excel.entity;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
 
 @Data
-
 public class AlarmRealTimeExcelModel {
-    //    序号” ，“报警时间”，“报警类型”，“报警测点”，“测点名称”，“所属设备”，“测点趋势”，“报警评价”。
     @ExcelProperty(value = "序号", index = 0)
     private int seq;
     @ExcelProperty(value = "报警时间", index = 1)

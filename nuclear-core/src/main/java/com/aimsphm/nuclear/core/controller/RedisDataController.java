@@ -118,8 +118,7 @@ public class RedisDataController {
     @GetMapping("queue/{pointId}")
     @ApiOperation(value = "查询波形队列数据", notes = "后期删除")
     public List queue(@PathVariable Long pointId) {
-        List range = redisTemplate.opsForList().range(REDIS_QUEUE_REAL_TIME_PRE + pointId, 0, -1);
-        return range;
+        return redisTemplate.opsForList().range(REDIS_QUEUE_REAL_TIME_PRE + pointId, 0, -1);
     }
 
     @GetMapping("queue/remove")

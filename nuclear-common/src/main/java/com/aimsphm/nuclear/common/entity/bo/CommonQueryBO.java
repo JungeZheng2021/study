@@ -1,20 +1,16 @@
 package com.aimsphm.nuclear.common.entity.bo;
 
-import com.aimsphm.nuclear.common.enums.PointCategoryEnum;
-import com.aimsphm.nuclear.common.enums.PointFeatureEnum;
-import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * @Package: com.aimsphm.nuclear.core.entity.bo
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/12/04 17:39
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/04 17:39
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 14:42
  */
 @Data
 public class CommonQueryBO {

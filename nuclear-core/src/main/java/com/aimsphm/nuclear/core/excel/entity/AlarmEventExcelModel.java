@@ -3,14 +3,7 @@ package com.aimsphm.nuclear.core.excel.entity;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
-import com.alibaba.excel.annotation.write.style.HeadRowHeight;
-import com.alibaba.excel.metadata.BaseRowModel;
-//import com.alibaba.excel.annotation.write.style.ContentFontStyle;
-//import com.alibaba.excel.annotation.write.style.ContentStyle;
-//import com.alibaba.excel.annotation.write.style.HeadFontStyle;
-//import com.alibaba.excel.annotation.write.style.HeadStyle;
 import lombok.Data;
-import org.apache.poi.ss.usermodel.FillPatternType;
 
 import java.util.Date;
 

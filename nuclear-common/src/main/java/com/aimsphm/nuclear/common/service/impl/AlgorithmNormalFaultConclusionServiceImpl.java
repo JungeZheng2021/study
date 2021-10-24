@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.AlgorithmNormalFaultConclusionDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.AlgorithmNormalFaultConclusionMapper;
 import com.aimsphm.nuclear.common.service.AlgorithmNormalFaultConclusionService;
@@ -12,7 +11,6 @@ import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -47,15 +45,7 @@ public class AlgorithmNormalFaultConclusionServiceImpl extends ServiceImpl<Algor
      * @return 封装后的条件
      */
     private LambdaQueryWrapper<AlgorithmNormalFaultConclusionDO> customerConditions(QueryBO<AlgorithmNormalFaultConclusionDO> queryBO) {
-        LambdaQueryWrapper<AlgorithmNormalFaultConclusionDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-            log.debug("startTime:{}, endTime:{}", query.getStart(), query.getEnd());
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-            log.debug("keyword:{}", queryBO.getQuery().getKeyword());
-        }
-        return wrapper;
+        return queryBO.lambdaQuery();
     }
 
     @Override

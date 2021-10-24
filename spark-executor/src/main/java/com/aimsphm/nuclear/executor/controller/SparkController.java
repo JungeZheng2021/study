@@ -18,8 +18,11 @@ import javax.annotation.Resource;
 import java.io.IOException;
 
 
+/**
+ * @author MILLA
+ */
 @Slf4j
-@Api(description = "Rest Spark Submit")
+@Api(tags = "Rest Spark Submit")
 @Controller
 @RequestMapping("/spark")
 public class SparkController {
@@ -79,14 +82,14 @@ public class SparkController {
     public Object testDaily(@RequestBody TestReqParam reqParam) throws Exception {
 
         long startTs = reqParam.getStartTimestamp() - reqParam.getStartTimestamp() % 3600000;
-        long loops = (reqParam.getEndTimestamp() - startTs) / TimeUnitConstant.daysOnMills;
+        long loops = (reqParam.getEndTimestamp() - startTs) / TimeUnitConstant.DAYS_ON_MILLS;
         for (int i = 0; i < loops; i++) {
-            long stepStart = startTs + i * TimeUnitConstant.daysOnMills;
-            long stepEnd = stepStart + (i + 1) * TimeUnitConstant.daysOnMills;
+            long stepStart = startTs + i * TimeUnitConstant.DAYS_ON_MILLS;
+            long stepEnd = stepStart + (i + 1) * TimeUnitConstant.DAYS_ON_MILLS;
             Object code = testService.dailyDownSample(stepStart, stepEnd);
+            log.debug("{}", code);
             Thread.sleep(30000);
         }
-
 
         return null;
 
@@ -99,11 +102,12 @@ public class SparkController {
     public Object testWeekly(@RequestBody TestReqParam reqParam) throws Exception {
 
         long startTs = reqParam.getStartTimestamp() - reqParam.getStartTimestamp() % 3600000;
-        long loops = (reqParam.getEndTimestamp() - startTs) / TimeUnitConstant.weekInMills;
+        long loops = (reqParam.getEndTimestamp() - startTs) / TimeUnitConstant.WEEK_IN_MILLS;
         for (int i = 0; i < loops; i++) {
-            long stepStart = startTs + i * TimeUnitConstant.weekInMills;
-            long stepEnd = stepStart + (i + 1) * TimeUnitConstant.weekInMills;
+            long stepStart = startTs + i * TimeUnitConstant.WEEK_IN_MILLS;
+            long stepEnd = stepStart + (i + 1) * TimeUnitConstant.WEEK_IN_MILLS;
             Object code = testService.weeklyDownSample(stepStart, stepEnd);
+            log.debug("{}", code);
             Thread.sleep(30000);
         }
 
@@ -130,6 +134,7 @@ public class SparkController {
             long stepEnd = Long.parseLong(pair._2);
             tempTs = stepEnd;
             Object code = testService.monthlyDownSample(stepStart, stepEnd);
+            log.debug("{}", code);
             Thread.sleep(30000);
         }
 
@@ -142,15 +147,15 @@ public class SparkController {
     @PostMapping("/doHourlyBatch")
     @ApiOperation(value = "batch hourly execution", notes = "na")
     public Object downSampleHistoryDailyBatch(@RequestBody TestReqParam reqParam) throws Exception {
-        long startTs = reqParam.getStartTimestamp() - reqParam.getStartTimestamp() % TimeUnitConstant.HourInMills;
-        long loops = (reqParam.getEndTimestamp() - startTs) / TimeUnitConstant.HourInMills;
+        long startTs = reqParam.getStartTimestamp() - reqParam.getStartTimestamp() % TimeUnitConstant.HOUR_IN_MILLS;
+        long loops = (reqParam.getEndTimestamp() - startTs) / TimeUnitConstant.HOUR_IN_MILLS;
         for (int i = 0; i < loops; i++) {
-            long stepStart = startTs + i * TimeUnitConstant.HourInMills;
+            long stepStart = startTs + i * TimeUnitConstant.HOUR_IN_MILLS;
             long stepEnd = stepStart;
             Object code = testService.hourlyDownSample(stepStart, stepEnd);
+            log.debug("{}", code);
             Thread.sleep(30000);
         }
-
         return null;
 
     }
@@ -166,7 +171,8 @@ public class SparkController {
         String freq = reqParam.getFreq();
         int partition = reqParam.getPartitions();
         Object code = testService.downSampleSingleJob(freq, startTs, endTs, partition);
-        return null;
+        log.debug("{}", code);
+        return code;
 
     }
 }

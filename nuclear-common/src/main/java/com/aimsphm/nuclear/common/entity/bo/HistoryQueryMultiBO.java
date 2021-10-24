@@ -8,14 +8,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity.bo
- * @Description: <多个测点>
- * @Author: MILLA
- * @CreateDate: 2020/11/21 17:33
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/21 17:33
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:多测点查询
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/21 17:33
  */
 @Data
 @ApiModel(value = "历史查询多个测点")

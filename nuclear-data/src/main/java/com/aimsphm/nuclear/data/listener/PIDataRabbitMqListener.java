@@ -32,12 +32,12 @@ public class PIDataRabbitMqListener {
 
     final LongAdder count = new LongAdder();
 
-    private Long LOG_PRINT_TIME = 10000L;
+    private Long logPrintTime = 10000L;
 
     @RabbitListener(queues = "${spring.rabbitmq.config.pi-queue:durableQueuePI}")
     public void messageConsumer(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
-            if (count.longValue() % LOG_PRINT_TIME == 0) {
+            if (count.longValue() % logPrintTime == 0) {
                 log.info("data:{}", new String(message.getBody()));
             } else {
                 log.info("接收到数据");

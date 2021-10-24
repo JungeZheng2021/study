@@ -17,13 +17,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.hbase.thirdparty.com.google.common.collect.Maps;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -74,8 +70,6 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
         if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
             wrapper.between(JobAlarmRealtimeDO::getGmtAlarmTime, new Date(query.getStart()), new Date(query.getEnd()));
         }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
         wrapper.orderByDesc(JobAlarmRealtimeDO::getGmtAlarmTime);
         return wrapper;
     }
@@ -91,7 +85,7 @@ public class JobAlarmRealtimeServiceImpl extends ServiceImpl<JobAlarmRealtimeMap
         wrapper.groupBy(JobAlarmRealtimeDO::getPointId);
         List<JobAlarmRealtimeDO> list = this.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
-            return null;
+            return new ArrayList<>();
         }
         return pointService.listPointAliasAndName(list.stream().map(JobAlarmRealtimeDO::getPointId).collect(Collectors.toList()), new CommonQueryBO());
     }

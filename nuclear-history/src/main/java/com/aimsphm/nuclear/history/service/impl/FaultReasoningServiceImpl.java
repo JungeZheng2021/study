@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_FAMILY_NPC_PI_REAL_TIME;
@@ -64,13 +61,13 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
     @Override
     public List<FaultReasoningVO> faultReasoningVO(List<String> pointIds, Long deviceId, Long gmtLastAlarm) {
         if (CollectionUtils.isEmpty(pointIds) || Objects.isNull(deviceId)) {
-            return null;
+            return new ArrayList<>();
         }
         //征兆集合
         SymptomResponseDTO symptomResponseDTO = this.symptomJudgment(pointIds, gmtLastAlarm);
         if (Objects.isNull(symptomResponseDTO) || CollectionUtils.isEmpty(symptomResponseDTO.getSymptomList())) {
             log.error("征兆判断算法报错：{}", symptomResponseDTO);
-            return null;
+            return new ArrayList<>();
         }
         return diagnosisService.faultReasoning(symptomResponseDTO, deviceId);
     }
@@ -87,13 +84,13 @@ public class FaultReasoningServiceImpl implements FaultReasoningService {
             return null;
         }
         LambdaQueryWrapper<CommonSensorComponentDO> sensorQuery = Wrappers.lambdaQuery(CommonSensorComponentDO.class);
-        sensorQuery.in(CommonSensorComponentDO::getSensorCode, points.stream().map(x -> x.getSensorCode()).collect(Collectors.toSet()));
+        sensorQuery.in(CommonSensorComponentDO::getSensorCode, points.stream().map(CommonMeasurePointDO::getSensorCode).collect(Collectors.toSet()));
         List<CommonSensorComponentDO> sensorComponentList = sensorComponentService.list(sensorQuery);
         if (CollectionUtils.isEmpty(sensorComponentList)) {
             return null;
         }
         LambdaQueryWrapper<AlgorithmNormalFaultFeatureDO> wrapper = Wrappers.lambdaQuery(AlgorithmNormalFaultFeatureDO.class);
-        wrapper.in(AlgorithmNormalFaultFeatureDO::getComponentId, sensorComponentList.stream().map(x -> x.getComponentId()).collect(Collectors.toSet()));
+        wrapper.in(AlgorithmNormalFaultFeatureDO::getComponentId, sensorComponentList.stream().map(CommonSensorComponentDO::getComponentId).collect(Collectors.toSet()));
         List<AlgorithmNormalFaultFeatureDO> list = featureService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             log.error("没有对应的规则");

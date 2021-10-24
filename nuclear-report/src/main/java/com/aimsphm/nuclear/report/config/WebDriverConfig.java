@@ -5,7 +5,6 @@ import com.aimsphm.nuclear.report.enums.DriverEnum;
 import com.aimsphm.nuclear.report.util.ScreenshotUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -39,15 +38,6 @@ public class WebDriverConfig {
         WebDriver webDriver = config.phantomJSDriver();
         ScreenshotUtils utils = new ScreenshotUtils();
         utils.setDriver(webDriver);
-
-        String htmlPath = "D:/Downloads/23ca044fe16d477fa1a25c10804f4baf.html";
-//        String htmlPath = "D:/usr/share/local/echarts/0d4f6c7fc5be477dbcd392eca55dbf3b.html";
-//        String htmlPath = "D:\\Desktop\\新建文件夹\\fdcf5b1afc3e49d0add897efe2195ba0(1).html";
-        File screenshotAs = utils.getScreenshotAs(htmlPath, OutputType.FILE, 800L);
-//        File screenshotAs = utils.screenshotById(htmlPath, "chart", OutputType.FILE, 800L);
-        FileUtils.copyFile(screenshotAs, new File("D:/usr/share/local/echarts/test.png"));
-        System.out.println(screenshotAs.getAbsolutePath());
-
     }
 
     @Bean("phantomJSDriver")
@@ -115,21 +105,29 @@ public class WebDriverConfig {
     private File decompressionDriver2TempPath(ClassLoader classLoader, String driverName, boolean isCmd) throws IOException {
         //获取临时目录
         URL resource = classLoader.getResource(ReportConstant.PROJECT_DRIVER_ROOT_DIR + driverName);
-
-        //上线要去除
-        InputStream inputStream;
-        if (resource == null) {
-            inputStream = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_phm\\nuclear-report\\src\\main\\resources\\driver\\" + driverName));
-        } else {
-            inputStream = resource.openStream();
-        }
-        File file = new File(ReportConstant.SYSTEM_CONSTANT_OS_TEMP_DIR + File.separator + driverName);
-        if (!file.exists()) {
-            FileUtils.copyInputStreamToFile(inputStream, file);
-            //将文件变成可执行状态
-            if (isCmd) {
-                Runtime r = Runtime.getRuntime();
-                r.exec(ReportConstant.LINUX_EXECUTABLE_CMD_PRE + file.getAbsolutePath());
+        File file = null;
+        InputStream inputStream = null;
+        try {
+            file = new File(ReportConstant.SYSTEM_CONSTANT_OS_TEMP_DIR + File.separator + driverName);
+            //上线要去除
+            if (resource == null) {
+                inputStream = new FileInputStream("D:\\Java\\workspace\\nuclear_phm\\nuclear-report\\src\\main\\resources\\driver\\" + driverName);
+            } else {
+                inputStream = resource.openStream();
+            }
+            if (!file.exists()) {
+                FileUtils.copyInputStreamToFile(inputStream, file);
+                //将文件变成可执行状态
+                if (isCmd) {
+                    Runtime r = Runtime.getRuntime();
+                    r.exec(ReportConstant.LINUX_EXECUTABLE_CMD_PRE + file.getAbsolutePath());
+                }
+            }
+        } catch (IOException e) {
+            log.error("error");
+        } finally {
+            if (Objects.nonNull(inputStream)) {
+                inputStream.close();
             }
         }
         return file;
@@ -147,14 +145,14 @@ public class WebDriverConfig {
         //获取操作系统的名字
         String osName = System.getProperty(ReportConstant.SYSTEM_CONSTANT_OS_NAME, ReportConstant.BLANK);
         if (osName.startsWith(ReportConstant.OS_NAME_PRE_MAC)) {
-            File file = decompressionDriver2TempPath(classLoader, DriverEnum.PhantomJSDriver.getDriverNameMac(), false);
+            File file = decompressionDriver2TempPath(classLoader, DriverEnum.PHANTOM_JS_DRIVER.getDriverNameMac(), false);
             phantomJSPath = file.getAbsolutePath();
             //windows的打开方式
         } else if (osName.startsWith(ReportConstant.OS_NAME_PRE_WINDOWS)) {
-            File file = decompressionDriver2TempPath(classLoader, DriverEnum.PhantomJSDriver.getDriverNameWin(), false);
+            File file = decompressionDriver2TempPath(classLoader, DriverEnum.PHANTOM_JS_DRIVER.getDriverNameWin(), false);
             phantomJSPath = file.getAbsolutePath();
         } else {//unix,linux
-            File file = decompressionDriver2TempPath(classLoader, DriverEnum.PhantomJSDriver.getDriverNameLinux(), true);
+            File file = decompressionDriver2TempPath(classLoader, DriverEnum.PHANTOM_JS_DRIVER.getDriverNameLinux(), true);
             phantomJSPath = file.getAbsolutePath();
         }
         options.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomJSPath);

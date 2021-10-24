@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.common.exception;
 import com.aimsphm.nuclear.common.constant.CodeMessageConstant;
 import com.aimsphm.nuclear.common.response.PropertiesReaderUtil;
 import com.aimsphm.nuclear.common.response.ResponseData;
+import com.alibaba.fastjson.JSONException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.boot.json.JsonParseException;
@@ -20,14 +21,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 /**
- * @Package: com.study.auth.exception
- * @Description: <所有异常拦截类>
- * @Author: milla
- * @CreateDate: 2020/09/04 15:35
- * @UpdateUser: milla
- * @UpdateDate: 2020/09/04 15:35
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:所有异常拦截类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 15:35
  */
 @Slf4j
 @RestControllerAdvice
@@ -201,16 +201,16 @@ public class RestfulExceptionHandler {
         return responseData(CodeMessageConstant.EX_HTTP_MEDIA_TYPE_NOT_ACCEPTABLE_EXCEPTION, e);
     }
 
-//    /**
-//     * 参数解析异常
-//     *
-//     * @param e 异常
-//     * @return
-//     */
-//    @ExceptionHandler(JSONException.class)
-//    public ResponseData runtimeExceptionHandler(JSONException e) {
-//        return responseData(CodeMessageConstant.PARAMS_PARSE_EXCEPTION, e);
-//    }
+    /**
+     * 参数解析异常
+     *
+     * @param e 异常
+     * @return
+     */
+    @ExceptionHandler(JSONException.class)
+    public ResponseData runtimeExceptionHandler(JSONException e) {
+        return responseData(CodeMessageConstant.PARAMS_PARSE_EXCEPTION, e);
+    }
 
     /**
      * 参数解析异常

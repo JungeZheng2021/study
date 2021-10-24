@@ -14,14 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.core.controller
- * @Description: <模型对应测点信息-前端控制器>
- * @Author: MILLA
- * @CreateDate: 2020-12-23
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-23
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:模型对应测点信息-前端控制器
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/23 10:54
  */
 @RestController
 @Api(tags = "AlgorithmModelPoint-模型对应测点信息-相关接口")

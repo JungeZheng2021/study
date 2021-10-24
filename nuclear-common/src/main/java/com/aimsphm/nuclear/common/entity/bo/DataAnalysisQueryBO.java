@@ -7,14 +7,13 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @Package:com.aimsphm.nuclear.common.entity.bo
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/3/6 10:58
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/6 10:58
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 14:42
  */
 @Data
 public class DataAnalysisQueryBO {

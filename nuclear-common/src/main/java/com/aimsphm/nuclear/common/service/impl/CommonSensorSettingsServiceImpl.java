@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonSensorSettingsDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.CommonSensorSettingsMapper;
 import com.aimsphm.nuclear.common.service.CommonSensorSettingsService;
@@ -12,7 +11,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,13 +43,7 @@ public class CommonSensorSettingsServiceImpl extends ServiceImpl<CommonSensorSet
      * @return 封装后的条件
      */
     private LambdaQueryWrapper<CommonSensorSettingsDO> customerConditions(QueryBO<CommonSensorSettingsDO> queryBO) {
-        LambdaQueryWrapper<CommonSensorSettingsDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
-        return wrapper;
+        return queryBO.lambdaQuery();
     }
 
     @Override

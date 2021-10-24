@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.common.constant;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.text.MessageFormat;
 
 /**
@@ -12,6 +14,7 @@ import java.text.MessageFormat;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 public final class CoreConstants {
     /**
      * 总览中超限测点个数字符串常量
@@ -77,8 +80,6 @@ public final class CoreConstants {
 
     public static void main(String[] args) {
         String s = "我是{0}的测试";
-        System.out.println(MessageFormat.format(s, "44"));
+        log.debug(MessageFormat.format(s, "44"));
     }
-
-
 }

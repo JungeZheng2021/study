@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.hbase.client.Get;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -130,10 +129,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         featureBO.setSensorCode(notPIPoint ? point.getSensorCode() : point.getPointId());
         BeanUtils.copyProperties(single, featureBO);
         List<List<Object>> dataDTOS = listHistoryDataWithPointByScan(featureBO);
-//        if (Objects.isNull(WhetherThreadLocal.INSTANCE.getWhether()) || WhetherThreadLocal.INSTANCE.getWhether()) {
         BeanUtils.copyProperties(point, vo);
-//            WhetherThreadLocal.INSTANCE.remove();
-//        }
         vo.setChartData(dataDTOS);
         return vo;
     }
@@ -260,7 +256,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         Long start = multi.getStart();
         String tableName = TableNameParser.getTableName(start, end);
         if (StringUtils.isBlank(tableName) || CollectionUtils.isEmpty(multi.getPointIds())) {
-            return null;
+            return new HashMap<>();
         }
         //如果是天表[天表根据年份分表-需要将跨跃2年的部分拼接起来]
         if (TableNameEnum.DAILY.getValue().equals(tableName)) {
@@ -344,10 +340,10 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
 
     private void resetTableName(String tableName, Integer year) {
         if (Objects.isNull(year)) {
-            DynamicTableTreadLocal.INSTANCE.setTableName(tableName);
+            DynamicTableTreadLocal.INSTANCE.tableName(tableName);
             return;
         }
-        DynamicTableTreadLocal.INSTANCE.setTableName(tableName + UNDERLINE + year);
+        DynamicTableTreadLocal.INSTANCE.tableName(tableName + UNDERLINE + year);
     }
 
     @Override
@@ -366,7 +362,6 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 List<List<Object>> data = new ArrayList<>();
                 data.add(list);
                 vo.setChartData(data);
-                ArrayList<Long> list1 = Lists.newArrayList(1L, 3L, 4L);
                 result.putIfAbsent(item, vo);
             });
         } catch (Exception e) {
@@ -402,12 +397,14 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         if (MapUtils.isEmpty(needsQueryIds)) {
             return null;
         }
-        List<String> queryPointIds = needsQueryIds.entrySet().stream().filter(x -> x.getValue() > 0).map(x -> x.getKey()).collect(Collectors.toList());
+        List<String> queryPointIds = needsQueryIds.entrySet().stream().filter(x -> x.getValue() > 0)
+                .map(Map.Entry::getKey).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(queryPointIds)) {
             return null;
         }
         multi.setPointIds(queryPointIds);
-        Map<Long, List<String>> queryMap = needsQueryIds.entrySet().stream().filter(x -> x.getValue() > 0).collect(Collectors.groupingBy(x -> x.getValue(), Collectors.mapping(x -> x.getKey(), Collectors.toList())));
+        Map<Long, List<String>> queryMap = needsQueryIds.entrySet().stream().filter(x -> x.getValue() > 0)
+                .collect(Collectors.groupingBy(Map.Entry::getValue, Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
         final Map<String, List<PointEstimateDataBO>> hBaseData = Maps.newHashMap();
         queryMap.entrySet().stream().forEach(x -> {
             Long modelId = x.getKey();
@@ -415,7 +412,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             try {
                 List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, multi.getStart(), multi.getEnd(), H_BASE_FAMILY_NPC_ESTIMATE, pointIds, modelId);
                 if (CollectionUtils.isNotEmpty(collect)) {
-                    Map<String, List<PointEstimateDataBO>> map = collect.stream().collect(Collectors.groupingBy(point -> point.getPointId()));
+                    Map<String, List<PointEstimateDataBO>> map = collect.stream().collect(Collectors.groupingBy(PointEstimateDataBO::getPointId));
                     hBaseData.putAll(map);
                 }
             } catch (IOException e) {
@@ -446,9 +443,5 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 || Objects.isNull(multi.getEnd()) || Objects.isNull(multi.getStart()) || multi.getEnd() <= multi.getStart()) {
             throw new CustomMessageException("some parameter is missing");
         }
-    }
-
-    private List<Get> initGetListByConditions(HistoryQueryMultiBO multi) {
-        return null;
     }
 }

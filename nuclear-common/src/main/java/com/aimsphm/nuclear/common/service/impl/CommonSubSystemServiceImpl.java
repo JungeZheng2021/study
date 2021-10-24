@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonDeviceDO;
 import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.TreeVO;
 import com.aimsphm.nuclear.common.mapper.CommonSubSystemMapper;
@@ -16,7 +15,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -44,11 +42,6 @@ public class CommonSubSystemServiceImpl extends ServiceImpl<CommonSubSystemMappe
             queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<CommonSubSystemDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
         return this.page(queryBO.getPage(), wrapper);
     }
 

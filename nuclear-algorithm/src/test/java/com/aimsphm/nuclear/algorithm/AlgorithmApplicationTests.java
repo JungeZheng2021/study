@@ -5,6 +5,7 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,13 +14,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
 
+/**
+ * <p>
+ * 功能描述: 测试
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 12:57
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 public class AlgorithmApplicationTests {
     @Resource
     private AlgorithmService algorithmService;
@@ -47,9 +57,9 @@ public class AlgorithmApplicationTests {
             bo.setResidual(random.nextInt(10) * random.nextDouble());
             bo.setTimestamp(s);
             dataList.add(bo);
-            System.out.println(s);
+            log.debug("{}", s);
             hBase.insertObject(H_BASE_TABLE_NPC_PHM_DATA, deviceId + ROW_KEY_SEPARATOR + bo.getTimestamp(), H_BASE_FAMILY_NPC_ESTIMATE, bo.getPointId(), bo, bo.getTimestamp());
-            System.out.println("添加成功： " + bo);
+            log.debug("添加成功： " + bo);
         }
     }
 

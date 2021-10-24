@@ -38,16 +38,20 @@ public class QuartzConfig {
         return schedulerFactoryBean;
     }
 
-    // 指定quartz.properties，可在配置文件中配置相关属性
+    /**
+     * 指定quartz.properties，可在配置文件中配置相关属性
+     * propertiesFactoryBean.setLocation(new ClassPathResource("/config/quartz.properties"));
+     */
     @Bean("quartz")
     public Properties quartzProperties() throws IOException {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-//            propertiesFactoryBean.setLocation(new ClassPathResource("/config/quartz.properties"));
         propertiesFactoryBean.afterPropertiesSet();
         return propertiesFactoryBean.getObject();
     }
 
-    // 创建schedule
+    /**
+     * 创建schedule
+     */
     @Bean(name = "scheduler")
     public Scheduler scheduler(SchedulerFactoryBean scheduler) {
         return scheduler.getScheduler();

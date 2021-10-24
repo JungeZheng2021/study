@@ -8,14 +8,13 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity
- * @Description: <故障诊断信息实体>
- * @Author: MILLA
- * @CreateDate: 2021-02-03
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-02-03
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:故障诊断信息实体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-02-04 14:30
  */
 @Data
 @TableName("biz_diagnosis_result")

@@ -5,14 +5,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity.bo
- * @Description: <单个测点>
- * @Author: MILLA
- * @CreateDate: 2020/11/21 17:33
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/21 17:33
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:历史查询单个测点
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/21 17:33
  */
 @Data
 @ApiModel(value = "历史查询单个测点")

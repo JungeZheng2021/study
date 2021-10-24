@@ -76,8 +76,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
      * 缓存队列的长度
      */
     @Value("${customer.config.cache_queue_data_size:60}")
-    private Integer CACHE_QUEUE_DATA_SIZE;
-
+    private Integer cacheQueueDataSize;
 
     @Override
     public Page<CommonMeasurePointDO> listCommonMeasurePointByPageWithParams(QueryBO<CommonMeasurePointDO> queryBO) {
@@ -87,8 +86,10 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
         if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
+            log.debug("起止时间查询条件补充处");
         }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
+            log.debug("关键字");
         }
         return this.page(queryBO.getPage(), wrapper);
     }
@@ -148,7 +149,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
             HBaseTimeSeriesDataDTO data = new HBaseTimeSeriesDataDTO();
             data.setValue(point.getValue());
             data.setTimestamp(timestamp);
-            if (Objects.nonNull(size) && size.intValue() >= CACHE_QUEUE_DATA_SIZE) {
+            if (Objects.nonNull(size) && size.intValue() >= cacheQueueDataSize) {
                 redis.opsForList().rightPush(key, data);
                 redis.opsForList().leftPop(key);
                 continue;
@@ -185,7 +186,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         wrapper.eq(CommonMeasurePointDO::getPointId, itemId);
         List<CommonMeasurePointDO> pointDOList = this.list(wrapper);
         if (CollectionUtils.isEmpty(pointDOList)) {
-            return null;
+            return new ArrayList<>();
         }
         return pointDOList.stream().map(item -> {
             MeasurePointVO vo = new MeasurePointVO();
@@ -201,7 +202,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         wrapper.ne(CommonMeasurePointDO::getPointType, 1);
         List<CommonMeasurePointDO> pointDOList = this.list(wrapper);
         if (CollectionUtils.isEmpty(pointDOList)) {
-            return null;
+            return new HashSet<>();
         }
         return pointDOList.stream().map(item -> item.getFeatureType() + DASH + item.getFeature()).collect(Collectors.toSet());
     }
@@ -276,7 +277,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     public List<LabelVO> listLocationInfo(CommonQueryBO query) {
         Map<String, CommonSensorDO> collect = listSensorCodeLocation(query);
         if (MapUtils.isEmpty(collect)) {
-            return null;
+            return new ArrayList<>();
         }
         return collect.entrySet().stream().sorted((a, b) -> {
             CommonSensorDO left = a.getValue();
@@ -316,7 +317,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         query.in(CommonMeasurePointDO::getPointId, pointIdList);
         List<CommonMeasurePointDO> list = this.list(query);
         if (CollectionUtils.isEmpty(list)) {
-            return null;
+            return new ArrayList<>();
         }
         return list.stream().map(CommonMeasurePointDO::getSensorCode).distinct().collect(Collectors.toList());
     }
@@ -372,7 +373,7 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
     @Override
     public List<CommonMeasurePointDO> listPointAliasAndName(List<String> pointIDList, CommonQueryBO queryBO) {
         if (CollectionUtils.isEmpty(pointIDList)) {
-            return null;
+            return new ArrayList<>();
         }
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = initWrapper(queryBO);
         wrapper.in(CommonMeasurePointDO::getPointId, pointIDList);
@@ -455,11 +456,9 @@ public class CommonMeasurePointServiceImpl extends ServiceImpl<CommonMeasurePoin
         }
         //计算健康状况
         calculateHealthStatus(vo);
-        if (StringUtils.hasText(vo.getStatusCause())) {
-            if (PointCategoryEnum.ALARM.getValue() != vo.getCategory().byteValue()) {
-                //设置单位
-                vo.setStatusCause(vo.getStatusCause() + vo.getUnit());
-            }
+        if (StringUtils.hasText(vo.getStatusCause()) && PointCategoryEnum.ALARM.getValue() != vo.getCategory().byteValue()) {
+            //设置单位
+            vo.setStatusCause(vo.getStatusCause() + vo.getUnit());
         }
         //数据产生时间
         vo.setValueDate(DateUtils.format(timestamp));

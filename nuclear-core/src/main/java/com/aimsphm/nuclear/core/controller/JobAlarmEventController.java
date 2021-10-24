@@ -9,7 +9,6 @@ import com.aimsphm.nuclear.common.service.JobAlarmEventService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.core.controller
- * @Description: <报警事件-前端控制器>
- * @Author: MILLA
- * @CreateDate: 2020-12-05
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-05
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:报警事件-前端控制器
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/05 14:30
  */
 @RestController
 @Api(tags = "报警事件-相关接口")

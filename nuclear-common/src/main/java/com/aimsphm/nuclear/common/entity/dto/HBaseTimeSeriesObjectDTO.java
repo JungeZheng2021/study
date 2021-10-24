@@ -9,14 +9,13 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @Package: com.aimsphm.nuclear.common.util
- * @Description: <HBase中时序数据传输实体>
- * @Author: milla
- * @CreateDate: 2020/10/28 10:04
- * @UpdateUser: milla
- * @UpdateDate: 2020/10/28 10:04
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:HBase中时序数据传输实体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/10/28 10:04
  */
 @Data
 public class HBaseTimeSeriesObjectDTO implements Serializable {

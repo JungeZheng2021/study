@@ -1,19 +1,16 @@
 package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.BizReportConfigDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.BizReportConfigMapper;
 import com.aimsphm.nuclear.common.service.BizReportConfigService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -47,13 +44,7 @@ public class BizReportConfigServiceImpl extends ServiceImpl<BizReportConfigMappe
      * @return 封装后的条件
      */
     private LambdaQueryWrapper<BizReportConfigDO> customerConditions(QueryBO<BizReportConfigDO> queryBO) {
-        LambdaQueryWrapper<BizReportConfigDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
-        return wrapper;
+        return queryBO.lambdaQuery();
     }
 
     @Override

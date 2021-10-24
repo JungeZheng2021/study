@@ -91,7 +91,7 @@ public class BizDiagnosisServiceImpl implements BizDiagnosisService {
             if (CollectionUtils.isEmpty(ruleList)) {
                 return configIncomplete(result);
             }
-            Map<Long, AlgorithmRulesDO> collect = ruleList.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+            Map<Long, AlgorithmRulesDO> collect = ruleList.stream().collect(Collectors.toMap(BaseDO::getId, x -> x));
             List<AlgorithmRulesParameterDO> paramList = parameterService.listParamByRuleList(new ArrayList<>(collect.keySet()));
             if (CollectionUtils.isEmpty(paramList)) {
                 return configIncomplete(result);

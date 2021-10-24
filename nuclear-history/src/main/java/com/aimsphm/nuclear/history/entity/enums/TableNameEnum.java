@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.history.entity.enums;
 
+import java.util.Objects;
+
 import static com.aimsphm.nuclear.history.constant.MillisecondValueConstant.*;
 
 /**
@@ -50,9 +52,6 @@ public enum TableNameEnum {
      */
     TRIPLE_ANNUALLY("spark_down_sample_triple_annually", MILLISECOND_VALUE_OF_A_MONTH);
 
-    TableNameEnum(String value) {
-        this.value = value;
-    }
 
     TableNameEnum(String value, Long timeUnit) {
         this.value = value;
@@ -60,13 +59,13 @@ public enum TableNameEnum {
     }
 
     public static TableNameEnum getByValue(String value) {
-        if (value == null) {
+        if (Objects.isNull(value)) {
             return null;
         }
 
         TableNameEnum[] instances = TableNameEnum.values();
         for (TableNameEnum i : instances) {
-            if (value != null && value.equals(i.getValue())) {
+            if (i.getValue().equals(value)) {
                 return i;
             }
         }

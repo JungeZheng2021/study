@@ -1,5 +1,7 @@
 package com.aimsphm.nuclear.report.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.UUID;
 
 /**
@@ -12,6 +14,7 @@ import java.util.UUID;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 public final class UUIDUtils {
 
     /**
@@ -25,7 +28,7 @@ public final class UUIDUtils {
 
     public static void main(String[] args) {
         String s = "测点%s趋势%s，变化强度 %s";
-        System.out.println(String.format(s, "XX", "下降", 120));
+        log.debug(String.format(s, "XX", "下降", 120));
     }
 
 }

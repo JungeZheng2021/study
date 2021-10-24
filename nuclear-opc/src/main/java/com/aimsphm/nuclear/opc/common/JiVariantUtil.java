@@ -11,6 +11,8 @@ import java.util.Map;
 
 @Slf4j
 public class JiVariantUtil {
+    private JiVariantUtil() {
+    }
 
     /**
      * java的数值、对象、字符类型的前缀
@@ -31,10 +33,9 @@ public class JiVariantUtil {
      */
     public static DataItem parseValue(String itemId, ItemState itemState) throws Exception {
         Map<String, Object> value = getValue(itemState.getValue());
-        System.out.println("原先值：" + itemId + ": " + itemState.getTimestamp().getTime().getTime());
+        log.debug("{}", "原先值：" + itemId + ": " + itemState.getTimestamp().getTime().getTime());
         itemId = itemId.replaceAll("\\.", "").replaceAll("_", "-");
-        System.out.println("替换后值：" + itemId + ": " + itemState.getTimestamp().getTime().getTime() + " 系统时间：" + System.currentTimeMillis());
-        System.out.println();
+        log.debug("{}", "替换后值：" + itemId + ": " + itemState.getTimestamp().getTime().getTime() + " 系统时间：" + System.currentTimeMillis());
         return new DataItem(
                 itemId,
                 value.get("type").toString(),

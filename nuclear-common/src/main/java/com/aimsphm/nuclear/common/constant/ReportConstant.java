@@ -11,7 +11,10 @@ import java.io.File;
  * @version 1.0
  * @since 2020/4/27 18:09
  */
-public class ReportConstant {
+public final class ReportConstant {
+    private ReportConstant() {
+    }
+
     /**
      * Window系统前缀
      */

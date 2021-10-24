@@ -83,7 +83,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
     /**
      * 15天毫秒值 残差是15天内的
      */
-    private final Integer days15 = 10 * 3600 * 1000;
+    private static final Integer DAYS_MILLS = 10 * 3600 * 1000;
 
     @Override
     public void deviceStateMonitorInfo(AlgorithmTypeEnum algorithmType, Long deviceId, Integer algorithmPeriod) {
@@ -288,7 +288,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         if (CollectionUtils.isEmpty(pointDOS)) {
             return null;
         }
-        Map<Long, List<AlgorithmModelPointDO>> pointMap = pointDOS.stream().collect(Collectors.groupingBy(x -> x.getModelId()));
+        Map<Long, List<AlgorithmModelPointDO>> pointMap = pointDOS.stream().collect(Collectors.groupingBy(AlgorithmModelPointDO::getModelId));
 
         CommonDeviceDO device = deviceService.getById(deviceId);
         //设备不存在或者是 设备未开启报警且modelType不是启停模型 1：开启 0:未开启
@@ -374,7 +374,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         List<PointEstimateResultsDataBO> data = Lists.newArrayList(bo);
         List<String> ids = Lists.newArrayList(list.stream().filter(Objects::nonNull).map(CommonMeasurePointDO::getPointId).collect(Collectors.toSet()));
         try {
-            List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, System.currentTimeMillis() - days15
+            List<PointEstimateDataBO> collect = hBase.selectModelDataList(H_BASE_TABLE_NPC_PHM_DATA, System.currentTimeMillis() - DAYS_MILLS
                     , System.currentTimeMillis(), H_BASE_FAMILY_NPC_ESTIMATE, ids, modelId);
             bo.setEstimateResults(collect);
         } catch (IOException e) {
@@ -390,7 +390,7 @@ public class AlgorithmServiceImpl implements AlgorithmService {
         LambdaQueryWrapper<CommonMeasurePointDO> pointsWrapper = Wrappers.lambdaQuery(CommonMeasurePointDO.class);
         pointsWrapper.select(CommonMeasurePointDO::getId, CommonMeasurePointDO::getImportance, CommonMeasurePointDO::getPointId, CommonMeasurePointDO::getPointType,
                 CommonMeasurePointDO::getSensorCode, CommonMeasurePointDO::getFeatureType, CommonMeasurePointDO::getFeature);
-        pointsWrapper.in(CommonMeasurePointDO::getId, pointList.stream().map(item -> item.getPointId()).collect(Collectors.toSet()));
+        pointsWrapper.in(CommonMeasurePointDO::getId, pointList.stream().map(AlgorithmModelPointDO::getPointId).collect(Collectors.toSet()));
         List<CommonMeasurePointDO> list = pointsService.list(pointsWrapper);
         CountDownLatch countDownLatch = new CountDownLatch(list.size());
         List<PointDataBO> collect = Lists.newArrayList();

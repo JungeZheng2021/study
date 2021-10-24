@@ -1,25 +1,21 @@
 package com.aimsphm.nuclear.common.entity.bo;
 
-import com.aimsphm.nuclear.common.entity.BaseDO;
 import com.aimsphm.nuclear.common.enums.EventStatusEnum;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity
- * @Description: <报警事件信息实体>
- * @Author: MILLA
- * @CreateDate: 2020-12-28
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-28
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:报警事件信息实体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/28 15:27
  */
 @Data
 @ApiModel(value = "报警事件信息实体")

@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.BizOriginalDataDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.BizOriginalDataMapper;
 import com.aimsphm.nuclear.common.service.BizOriginalDataService;
@@ -13,8 +12,8 @@ import com.google.common.base.CaseFormat;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -48,13 +47,7 @@ public class BizOriginalDataServiceImpl extends ServiceImpl<BizOriginalDataMappe
      * @return 封装后的条件
      */
     private LambdaQueryWrapper<BizOriginalDataDO> customerConditions(QueryBO<BizOriginalDataDO> queryBO) {
-        LambdaQueryWrapper<BizOriginalDataDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
-        return wrapper;
+        return queryBO.lambdaQuery();
     }
 
     @Override
@@ -68,7 +61,7 @@ public class BizOriginalDataServiceImpl extends ServiceImpl<BizOriginalDataMappe
         query.eq(BizOriginalDataDO::getSensorCode, sensorCode).ge(BizOriginalDataDO::getTimestamp, start).le(BizOriginalDataDO::getTimestamp, end);
         List<BizOriginalDataDO> list = this.list(query);
         if (CollectionUtils.isEmpty(list)) {
-            return null;
+            return new ArrayList<>();
         }
         return list.stream().map(BizOriginalDataDO::getTimestamp).collect(Collectors.toList());
     }

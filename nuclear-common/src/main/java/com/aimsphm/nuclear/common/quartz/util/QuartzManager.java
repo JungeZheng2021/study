@@ -3,7 +3,6 @@ package com.aimsphm.nuclear.common.quartz.util;
 import com.aimsphm.nuclear.common.quartz.dto.QuartzJobDTO;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;

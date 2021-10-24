@@ -6,13 +6,13 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @Package: com.aimsphm.nuclear.common.response
- * @Description: <返回数据>
- * @Author: MILLA
- * @CreateDate: 2018/4/8 9:10
- * @UpdateUser: MILLA
- * @UpdateDate: 2018/4/8 9:10
- * @Version: 1.0
+ * <p>
+ * 功能描述:返回数据
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 @Data
 public final class ResponseData<T> implements Serializable {
@@ -90,6 +90,6 @@ public final class ResponseData<T> implements Serializable {
         return true;
     }
 
-    public ResponseData() {
+    private ResponseData() {
     }
 }

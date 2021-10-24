@@ -1,16 +1,5 @@
 package com.aimsphm.nuclear.history.controller;
 
-/**
- * @Package: com.aimsphm.nuclear.history.controller
- * @Description: <历史数据查询-相关接口>
- * @Author: MILLA
- * @CreateDate: 2020/11/21 11:39
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/11/21 11:39
- * @UpdateRemark: <>
- * @Version: 1.0
- */
-
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.entity.vo.HistoryDataVO;
@@ -36,6 +25,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * <p>
+ * 功能描述:历史数据查询-相关接口
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/21 11:39
+ */
 @Slf4j
 @RestController
 @Api(tags = "Data-数据分析-相关接口")
@@ -50,7 +48,7 @@ public class DataAnalysisController {
     public Map<String, HistoryDataVO> listAnalysisDataWithPointList(HistoryQueryMultiBO queryMultiBO) {
         long l = System.currentTimeMillis();
         Map<String, HistoryDataVO> data = service.listAnalysisDataWithPointList(queryMultiBO);
-        System.out.println("scan 共计耗时： " + (System.currentTimeMillis() - l));
+        log.debug("scan 共计耗时： " + (System.currentTimeMillis() - l));
         return data;
     }
 

@@ -12,10 +12,10 @@ import java.util.Objects;
  * @since 2020/4/17 14:30
  */
 public enum MethodCnTypeEnum {
-    add(0, "新增"),
-    update(1, "修改"),
-    delete(2, "删除"),
-    others(3, "其它");
+    ADD(0, "新增"),
+    UPDATE(1, "修改"),
+    DELETE(2, "删除"),
+    OTHERS(3, "其它");
 
     MethodCnTypeEnum(Integer value, String name) {
         this.value = value;

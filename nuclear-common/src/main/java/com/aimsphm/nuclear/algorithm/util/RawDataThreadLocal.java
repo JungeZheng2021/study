@@ -17,7 +17,7 @@ public enum RawDataThreadLocal {
         return whether.get();
     }
 
-    public void setting(Boolean yes) {
+    public void perhaps(Boolean yes) {
         this.whether.set(yes);
     }
 

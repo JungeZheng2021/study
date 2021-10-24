@@ -5,8 +5,6 @@ import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsCommandDTO;
 import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsDTO;
 import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsPacketDTO;
 import com.aimsphm.nuclear.data.feign.entity.dto.PublishParamDTO;
-import com.jcraft.jsch.Packet;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Version: 1.0
  */
 @Component
-//@FeignClient(name = "invoke")//, fallback = AlgorithmServiceFeignFallback.class)
 @FeignClient(name = "nuclear-data")//, fallback = AlgorithmServiceFeignFallback.class)
 @ConditionalOnProperty(prefix = "spring.config", name = "enableDataService", havingValue = "true")
 public interface DataServiceFeignClient {

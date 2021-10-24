@@ -8,14 +8,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Package: com.aimsphm.nuclear.report.config
- * @Description: <线程池配置>
- * @Author: MILLA
- * @CreateDate: 2020/5/12 12:57
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/5/12 12:57
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:线程池配置
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 12:57
  */
 @Configuration
 public class ThreadPoolConfig {

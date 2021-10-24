@@ -1,21 +1,19 @@
 package com.aimsphm.nuclear.report.service;
 
 import com.aimsphm.nuclear.common.entity.bo.ReportQueryBO;
-import com.aimsphm.nuclear.common.entity.vo.SensorTrendVO;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @Package: com.aimsphm.nuclear.report.service
- * @Description: <图表操基类-图表文件>
- * @Author: MILLA
- * @CreateDate: 2020/4/28 17:49
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/28 17:49
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:图表操基类-图表文件
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/28 17:49
  */
 public interface ReportFileOperationService {
 

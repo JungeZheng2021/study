@@ -1,11 +1,8 @@
 package com.aimsphm.nuclear.data.feign.fallback;
 
-import com.aimsphm.nuclear.algorithm.entity.dto.AlgorithmParamDTO;
 import com.aimsphm.nuclear.common.response.ResponseData;
-import com.aimsphm.nuclear.data.feign.DataServiceFeignClient;
 import com.aimsphm.nuclear.data.feign.entity.dto.PublishParamDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
  * @Package: com.aimsphm.nuclear.data.feign
@@ -17,14 +14,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
-//@Slf4j
-//@Component
-//@ConditionalOnProperty(prefix = "spring.config", name = "enableDataService", havingValue = "true")
+@Slf4j
 public class DataServiceFeignFallback {//implements DataServiceFeignClient {
 
     //    @Override
     public ResponseData<Boolean> dataServiceInvokeByParams(PublishParamDTO param) {
-        System.out.println("--------------------------" + System.currentTimeMillis());
+        log.error("---------------------{}-----{}:", System.currentTimeMillis(), param);
         return null;
     }
 }

@@ -5,7 +5,6 @@ import com.aimsphm.nuclear.common.entity.CommonDeviceDetailsDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.CommonSubSystemDO;
 import com.aimsphm.nuclear.common.entity.bo.CommonQueryBO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.CommonDeviceDetailsMapper;
@@ -24,7 +23,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -60,11 +58,6 @@ public class CommonDeviceDetailsServiceImpl extends ServiceImpl<CommonDeviceDeta
             queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         LambdaQueryWrapper<CommonDeviceDetailsDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
         return this.page(queryBO.getPage(), wrapper);
     }
 

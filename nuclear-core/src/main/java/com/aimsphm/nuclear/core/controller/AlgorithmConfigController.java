@@ -14,14 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.core.controller
- * @Description: <算法配置-前端控制器>
- * @Author: MILLA
- * @CreateDate: 2020-12-23
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-23
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:算法配置-前端控制器
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/23 10:54
  */
 @RestController
 @Api(tags = "AlgorithmConfig-算法配置-相关接口")

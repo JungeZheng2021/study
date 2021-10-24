@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -49,8 +48,6 @@ public class JobAlarmProcessRecordServiceImpl extends ServiceImpl<JobAlarmProces
         ConditionsQueryBO query = queryBO.getQuery();
         if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
             wrapper.between(JobAlarmProcessRecordDO::getGmtEventTime, new Date(query.getStart()), new Date(query.getEnd()));
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
         }
         return wrapper;
     }

@@ -1,5 +1,6 @@
 package com.aimsphm.nuclear.common.config;
 
+import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Connection;
@@ -8,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.util.Map;
@@ -46,8 +46,9 @@ public class HBaseConfig {
     @Bean
     public Connection connection() throws IOException {
         org.apache.hadoop.conf.Configuration conf = HBaseConfiguration.create();
-        Assert.isTrue(Objects.nonNull(properties) && !properties.isEmpty(), "Hbase config can not be null");
-
+        if (Objects.isNull(properties) || properties.isEmpty()) {
+            throw new CustomMessageException("Hbase config can not be null");
+        }
         for (Map.Entry<String, String> confEntry : properties.entrySet()) {
             conf.set(confEntry.getKey(), confEntry.getValue());
         }
@@ -56,7 +57,6 @@ public class HBaseConfig {
         conf.set("hbase.client.ipc.pool.size", "10");
         conf.set("hbase.hconnection.threads.max", "30");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 30, 2000, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(100));
-        Connection connection = ConnectionFactory.createConnection(conf, executor);
-        return connection;
+        return ConnectionFactory.createConnection(conf, executor);
     }
 }

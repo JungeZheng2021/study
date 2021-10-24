@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.data.service.impl;
 
 import com.aimsphm.nuclear.data.service.HBaseService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.io.compress.Compression;
@@ -22,6 +23,7 @@ import java.util.Objects;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 @Service
 public class HBaseServiceImpl implements HBaseService {
     @Resource
@@ -33,6 +35,7 @@ public class HBaseServiceImpl implements HBaseService {
         try (Table table = connection.getTable(name)) {
             table.put(putList);
         } catch (IOException e) {
+            log.error("get error :{}", e);
             throw e;
         }
     }
@@ -43,6 +46,7 @@ public class HBaseServiceImpl implements HBaseService {
         try (Table table = connection.getTable(name)) {
             table.put(put);
         } catch (IOException e) {
+            log.error("get error :{}", e);
             throw e;
         }
     }
@@ -65,6 +69,7 @@ public class HBaseServiceImpl implements HBaseService {
                 return true;
             }
         } catch (IOException e) {
+            log.error("get error :{}", e);
             throw e;
         }
         return false;

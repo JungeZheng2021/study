@@ -20,6 +20,9 @@ import static com.aimsphm.nuclear.history.constant.MillisecondValueConstant.*;
  * @Version: 1.0
  */
 public class TableNameParser {
+    private TableNameParser() {
+    }
+
     /**
      * 查过3个小时的数据降采样
      */

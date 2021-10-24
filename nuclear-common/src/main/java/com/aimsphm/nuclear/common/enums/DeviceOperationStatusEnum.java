@@ -12,11 +12,10 @@ import java.util.Objects;
  * @since 2020/4/17 14:30
  */
 public enum DeviceOperationStatusEnum {
-    Good(1, "正常运行", "green"),
-    Stop(2, "停机", "red"),
-    StartUpProgress(3, "启动过程", "lightgreen"),
-    UnKnown(9, "无法判断", "orange");
-
+    GOOD(1, "正常运行", "green"),
+    STOP(2, "停机", "red"),
+    START_UP_PROGRESS(3, "启动过程", "lightgreen"),
+    UN_KNOWN(9, "无法判断", "orange");
 
     DeviceOperationStatusEnum(Integer value, String desc, String color) {
         this.value = value;

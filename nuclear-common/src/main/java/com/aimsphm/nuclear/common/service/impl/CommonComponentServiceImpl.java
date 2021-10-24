@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonComponentDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.mapper.CommonComponentMapper;
 import com.aimsphm.nuclear.common.service.CommonComponentService;
@@ -11,7 +10,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,11 +43,6 @@ public class CommonComponentServiceImpl extends ServiceImpl<CommonComponentMappe
      */
     private LambdaQueryWrapper<CommonComponentDO> customerConditions(QueryBO<CommonComponentDO> queryBO) {
         LambdaQueryWrapper<CommonComponentDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
         //最大的设备部件不需要显示
         wrapper.ne(CommonComponentDO::getParentComponentId, 0);
         return wrapper;

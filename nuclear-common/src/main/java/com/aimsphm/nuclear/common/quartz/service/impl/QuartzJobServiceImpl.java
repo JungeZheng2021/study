@@ -1,6 +1,7 @@
 package com.aimsphm.nuclear.common.quartz.service.impl;
 
 import com.aimsphm.nuclear.common.quartz.service.QuartzJobService;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.SchedulerException;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,12 @@ import org.springframework.stereotype.Service;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 @Service("default")
 public class QuartzJobServiceImpl implements QuartzJobService {
 
     @Override
     public void initSchedule() throws SchedulerException, ClassNotFoundException {
+        log.debug("initSchedule");
     }
 }

@@ -45,6 +45,7 @@ public class HBaseUtil {
     private Connection connection;
 
     public static final String TABLE_NOT_EXISTS = "This table not exists";
+    public static final String ERROR_MSG = "error from HBaseUtil:{}";
 
     public HBaseUtil(Connection connection) {
         this.connection = connection;
@@ -72,7 +73,7 @@ public class HBaseUtil {
             }
             admin.createTable(desc.build());
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -131,7 +132,7 @@ public class HBaseUtil {
             sb.delete(sb.length() - 1, sb.length());
             return sb.toString();
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -151,7 +152,7 @@ public class HBaseUtil {
                 admin.addColumnFamily(table, builder.build());
             }
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -165,31 +166,35 @@ public class HBaseUtil {
      * @return
      * @throws IOException
      */
-    public ArrayList<String> addFamily2TableIncrementalAdd(String tableName, List<String> families, Compression.Algorithm type)
+    public List<String> addFamily2TableIncrementalAdd(String tableName, List<String> families, Compression.Algorithm type)
             throws IOException {
         ArrayList<String> list = Lists.newArrayList();
         TableName table = TableName.valueOf(tableName);
         try (Admin admin = connection.getAdmin()) {
             Assert.isTrue(admin.tableExists(table), TABLE_NOT_EXISTS);
             for (String cf : families) {
-                try {
-                    ColumnFamilyDescriptorBuilder builder = ColumnFamilyDescriptorBuilder.newBuilder(cf.getBytes());
-                    if (type != null) {
-                        builder.setCompressionType(type);
-                    }
-                    // 指定最大版本1，值会被覆盖
-                    builder.setMaxVersions(1);
-                    admin.addColumnFamily(table, builder.build());
-                } catch (IOException e) {
-                    list.add(cf);
-                    log.error("add family : [{}] failed", cf);
-                }
+                extracted(type, list, table, admin, cf);
             }
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
         return list;
+    }
+
+    private void extracted(Compression.Algorithm type, ArrayList<String> list, TableName table, Admin admin, String cf) {
+        try {
+            ColumnFamilyDescriptorBuilder builder = ColumnFamilyDescriptorBuilder.newBuilder(cf.getBytes());
+            if (type != null) {
+                builder.setCompressionType(type);
+            }
+            // 指定最大版本1，值会被覆盖
+            builder.setMaxVersions(1);
+            admin.addColumnFamily(table, builder.build());
+        } catch (IOException e) {
+            list.add(cf);
+            log.error("add family : [{}] failed", cf);
+        }
     }
 
     public void modifyColumnFamilyName(String tableName, String family, Compression.Algorithm type) throws IOException {
@@ -204,7 +209,7 @@ public class HBaseUtil {
             builder.setMaxVersions(1);
             admin.modifyColumnFamily(table, builder.build());
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -221,7 +226,7 @@ public class HBaseUtil {
             admin.disableTable(name);
             admin.deleteTable(name);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
 
@@ -239,7 +244,7 @@ public class HBaseUtil {
             Assert.isTrue(admin.tableExists(name), TABLE_NOT_EXISTS);
             admin.deleteColumnFamily(name, Bytes.toBytes(family));
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
 
@@ -295,7 +300,7 @@ public class HBaseUtil {
             put.addColumn(Bytes.toBytes(family), getBytes(column), getBytes(value));
             table.put(put);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -312,7 +317,7 @@ public class HBaseUtil {
         try (Table table = connection.getTable(name)) {
             table.put(putList);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -336,7 +341,7 @@ public class HBaseUtil {
                 table.put(put);
             }
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -388,7 +393,7 @@ public class HBaseUtil {
             assembleCellDataWithList(familyMap, dataWithQualifier, rs);
             return assembleReturnDataWithList(dataWithQualifier, familyMap.entrySet());
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -446,7 +451,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -482,7 +487,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -512,7 +517,7 @@ public class HBaseUtil {
             List<Cell> cells = next.listCells();
             return getObject(CellUtil.cloneValue(cells.get(cells.size() - 1)), Double.class);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -561,7 +566,7 @@ public class HBaseUtil {
             }
             return items;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -606,7 +611,7 @@ public class HBaseUtil {
             }
             return items;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -655,7 +660,7 @@ public class HBaseUtil {
             }
             return items;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -704,7 +709,7 @@ public class HBaseUtil {
             }
             return items;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -739,7 +744,7 @@ public class HBaseUtil {
                 }
             }
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -764,9 +769,7 @@ public class HBaseUtil {
             if (!isHasFamily) {
                 scan.addFamily(Bytes.toBytes(family));
                 if (!isHasQualifier) {
-                    qualifiers.stream().forEach(x -> {
-                        scan.addColumn(Bytes.toBytes(family), Bytes.toBytes(x));
-                    });
+                    qualifiers.stream().forEach(x -> scan.addColumn(Bytes.toBytes(family), Bytes.toBytes(x)));
                 }
             }
             scan.withStartRow(Bytes.toBytes(rowKeyStart));
@@ -781,7 +784,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -843,7 +846,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -883,7 +886,7 @@ public class HBaseUtil {
             }
             return data;
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -920,7 +923,7 @@ public class HBaseUtil {
             }
             return assembleReturnDataWithList(dataWithQualifier, familyMap.entrySet());
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -952,7 +955,7 @@ public class HBaseUtil {
                 return true;
             }
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
         return false;
@@ -1038,8 +1041,8 @@ public class HBaseUtil {
      * @param entries      列族集合
      * @return 经过转换的返回值
      */
-    private List<Map<String, Object>> assembleReturnData(Map<String, List<Object>> qualifierMap,
-                                                         Set<Map.Entry<String, Set<String>>> entries) {
+    List<Map<String, Object>> assembleReturnData(Map<String, List<Object>> qualifierMap,
+                                                 Set<Map.Entry<String, Set<String>>> entries) {
         List<Map<String, Object>> families = Lists.newArrayList();
         for (Iterator<Map.Entry<String, Set<String>>> it = entries.iterator(); it.hasNext(); ) {
             Map.Entry<String, Set<String>> next = it.next();
@@ -1073,7 +1076,7 @@ public class HBaseUtil {
             Delete d = new Delete(rowKey.getBytes());
             table.delete(d);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -1091,7 +1094,7 @@ public class HBaseUtil {
             Delete d = new Delete(rowKey.getBytes()).addFamily(Bytes.toBytes(family));
             table.delete(d);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -1111,7 +1114,7 @@ public class HBaseUtil {
             Delete d = new Delete(rowKey.getBytes()).addColumn(Bytes.toBytes(family), Bytes.toBytes(qualifier));
             table.delete(d);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -1128,7 +1131,7 @@ public class HBaseUtil {
         try (Table table = connection.getTable(name)) {
             table.delete(deleteList);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }
@@ -1150,7 +1153,7 @@ public class HBaseUtil {
             Result rs = table.get(g);
             return getObject(rs.value(), Double.class);
         } catch (IOException e) {
-            log.error("get failed:{}", e);
+            log.error(ERROR_MSG, e);
             throw e;
         }
     }

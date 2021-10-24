@@ -14,7 +14,6 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.aimsphm.nuclear.common.constant.CoreConstants.*;
-import static com.aimsphm.nuclear.common.constant.SymbolConstant.SLASH_ZH;
+import static com.aimsphm.nuclear.common.constant.CoreConstants.PANORAMA_ANOMALY;
 
 /**
  * @Package: com.aimsphm.nuclear.core.service.impl
@@ -62,7 +60,7 @@ public class PanoramaServiceImpl implements PanoramaService {
         if (CollectionUtils.isEmpty(list)) {
             return vo;
         }
-        return list.stream().map(item -> getPanoramaVO(item)).collect(Collectors.toList());
+        return list.stream().map(this::getPanoramaVO).collect(Collectors.toList());
     }
 
     private PanoramaVO getPanoramaVO(CommonDeviceDO device) {

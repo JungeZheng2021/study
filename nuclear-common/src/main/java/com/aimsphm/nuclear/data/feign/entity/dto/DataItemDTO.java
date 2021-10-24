@@ -1,4 +1,4 @@
-package com.aimsphm.nuclear.data.entity;
+package com.aimsphm.nuclear.data.feign.entity.dto;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.AllArgsConstructor;
@@ -10,14 +10,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @Package: com.aimsphm.nuclear.data.entity.bo
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/3/31 18:43
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/31 18:43
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:服务入口
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/3/31 18:43
  */
 @Data
 @ToString

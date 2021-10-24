@@ -1,6 +1,5 @@
-package com.aimsphm.nuclear.data.entity.dto;
+package com.aimsphm.nuclear.data.feign.entity.dto;
 
-import com.aimsphm.nuclear.data.feign.entity.dto.ConfigSettingsDTO;
 import lombok.Data;
 
 import java.util.Map;

@@ -12,14 +12,13 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 /**
- * @Package: com.aimsphm.nuclear.report.service.impl
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/6/12 14:47
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/12 14:47
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 19:39
  */
 @Slf4j
 @Service

@@ -17,7 +17,7 @@ public enum DynamicTableTreadLocal {
         return tableName.get();
     }
 
-    public void setTableName(String tableName) {
+    public void tableName(String tableName) {
         this.tableName.set(tableName);
     }
 

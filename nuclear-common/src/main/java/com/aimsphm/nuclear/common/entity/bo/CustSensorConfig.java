@@ -4,6 +4,15 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 14:42
+ */
 @Data
 public class CustSensorConfig implements Serializable {
 

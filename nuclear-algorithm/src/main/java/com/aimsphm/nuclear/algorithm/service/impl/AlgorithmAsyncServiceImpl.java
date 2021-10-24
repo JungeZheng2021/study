@@ -84,9 +84,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
             List<HBaseTimeSeriesDataDTO> cells = hBase.listDataWithLimit(H_BASE_TABLE_NPC_PHM_DATA, family, sensorCode, 1, 60, 60);
             log.debug("请求数据返回值-.family-{}  .sensorCode-{} 返回值数据量 {}  耗时-- {} 毫秒", family, sensorCode, cells.size(), (System.currentTimeMillis() - start));
             data.setCells(cells);
-            cells.stream().forEach(item -> {
-                redis.opsForList().rightPush(key, item);
-            });
+            cells.stream().forEach(item -> redis.opsForList().rightPush(key, item));
         } catch (Exception e) {
             data.setCells(Lists.newArrayList());
             log.error("get point data failed ...family：{},pre:{}, --{}", family, sensorCode, e);
@@ -98,6 +96,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
     @Async
     @Override
     public void faultDiagnosis(List<String> pointIdList) {
+        log.debug("{}", pointIdList);
     }
 
     @Async
@@ -120,9 +119,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
             List<HBaseTimeSeriesDataDTO> cells = hBase.listObjectDataWith3600Columns(H_BASE_TABLE_NPC_PHM_DATA, sensorCode, rangeQuery.getStart(), rangeQuery.getEnd(), family);
             log.debug("请求数据返回值-.family-{}  .sensorCode-{} 返回值数据量 {}  耗时-- {} 毫秒", family, sensorCode, cells.size(), (System.currentTimeMillis() - start));
             data.setCells(cells);
-            cells.stream().forEach(x -> {
-                redis.opsForList().rightPush(key, x);
-            });
+            cells.stream().forEach(x -> redis.opsForList().rightPush(key, x));
         } catch (Exception e) {
             data.setCells(Lists.newArrayList());
             log.error("get point data failed ...family：{},pre:{}, --{}", family, sensorCode, e);
@@ -156,7 +153,7 @@ public class AlgorithmAsyncServiceImpl implements AlgorithmAsyncService {
                     if (CollectionUtils.isEmpty(dtoList)) {
                         return;
                     }
-                    double average = dtoList.stream().mapToDouble(x -> x.getValue()).summaryStatistics().getAverage();
+                    double average = dtoList.stream().mapToDouble(HBaseTimeSeriesDataDTO::getValue).summaryStatistics().getAverage();
                     List<Delete> collect = dtoList.stream().filter(x -> (x.getValue() > average)).map(x -> {
                         Long timestamp = x.getTimestamp();
                         Long rowKey = hBase.rowKeyOf3600(timestamp);

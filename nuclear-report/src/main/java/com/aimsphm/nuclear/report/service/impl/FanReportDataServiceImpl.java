@@ -145,12 +145,7 @@ public class FanReportDataServiceImpl implements ReportDataService {
         }
         List<ReportAlarmEventVO> imageList = new ArrayList<>();
         List<ReportFaultReasoningVO> reasoningList = new ArrayList<>();
-//        AtomicInteger i = new AtomicInteger();
         eventDOS.stream().forEach(x -> {
-//            if (i.get() > 1) {
-//                return;
-//            }
-//            i.getAndIncrement();
             String pointIds = x.getPointIds();
             if (StringUtils.isBlank(pointIds)) {
                 return;
@@ -210,6 +205,9 @@ public class FanReportDataServiceImpl implements ReportDataService {
         if (Objects.nonNull(modelId) && modelId != -1) {
             //算法数据
             Map<String, EventDataVO> eventData = listRealtimeHistoryFromServer(queryBO.getQuery(), query.getDeviceId(), Lists.newArrayList(pointId));
+            if (MapUtils.isEmpty(eventData)) {
+                return null;
+            }
             EventDataVO dataVO = eventData.get(pointId);
             if (Objects.isNull(dataVO) || CollectionUtils.isEmpty(dataVO.getActualData())) {
                 return null;
@@ -347,13 +345,13 @@ public class FanReportDataServiceImpl implements ReportDataService {
             HistoryQueryMultiBO bo = operateQueryParams(rangDate, deviceId, pointIdList);
             ResponseData<Map<String, EventDataVO>> response = historyServerClient.listDataWithPointList(bo);
             if (Objects.isNull(response) || Objects.isNull(response.getData()) || !SUCCESS_CODE.equals(response.getCode())) {
-                return null;
+                return new HashMap<>();
             }
             return response.getData();
         } catch (Exception e) {
             log.error("history realtime data ");
         }
-        return null;
+        return new HashMap<>();
     }
 
     private void baseData4Image(BizReportConfigDO config, List<List<LabelVO>> lists, Map<Integer, Long> integerLongMap) {

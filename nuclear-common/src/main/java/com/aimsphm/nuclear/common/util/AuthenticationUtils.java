@@ -10,17 +10,18 @@ import javax.naming.directory.InitialDirContext;
 import java.util.Hashtable;
 
 /**
- * @Package: com.aimsphm.nuclear.common.util
- * @Description: <身份认证工具类>
- * @Author: MILLA
- * @CreateDate: 2020/3/2 10:55
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/2 10:55
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:身份认证工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/3/2 10:55
  */
 @Slf4j
 public final class AuthenticationUtils {
+    private AuthenticationUtils() {
+    }
 
     /**
      * @param ip       ip地址
@@ -37,14 +38,14 @@ public final class AuthenticationUtils {
         Assert.hasText(username, "username can not be null");
         Assert.hasText(password, "password can not be null");
         // LDAP正式库地址
-        String LDAP_URL = "ldap://" + ip + ":" + port;
+        String ldapUrl = "ldap://" + ip + ":" + port;
 
         // 注意用户名的写法：domain\User或
         String adminName = domain + "\\" + username;
         log.debug("admin login " + adminName + " " + password);
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, LDAP_URL);
+        env.put(Context.PROVIDER_URL, ldapUrl);
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, adminName);
         env.put(Context.SECURITY_CREDENTIALS, password);

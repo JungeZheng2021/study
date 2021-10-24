@@ -3,7 +3,7 @@ package com.aimsphm.nuclear.data;
 import com.aimsphm.nuclear.common.constant.HBaseConstant;
 import com.aimsphm.nuclear.common.entity.dto.HBaseTimeSeriesDataDTO;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
-import com.aimsphm.nuclear.data.entity.DataItemDTO;
+import com.aimsphm.nuclear.data.feign.entity.dto.DataItemDTO;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.*;
@@ -14,6 +14,7 @@ import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.junit.Test;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -168,7 +169,6 @@ public class HBaseTest {
             }
             data.addAll(0, cellData);
         }
-        Thread.sleep(1000L);
         log.debug("", "------------------------------------------");
         data.stream().forEach((o) -> log.debug("", o.getTimestamp()));
         log.debug("", "------------------------------------------");
@@ -213,4 +213,10 @@ public class HBaseTest {
         }
     }
 
+    @Test
+    public void contextLoads() {
+        log.debug("tests");
+    }
+
 }
+

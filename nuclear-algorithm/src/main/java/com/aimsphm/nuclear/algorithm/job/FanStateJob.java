@@ -5,7 +5,6 @@ import com.aimsphm.nuclear.algorithm.service.AlgorithmService;
 import com.aimsphm.nuclear.common.annotation.DistributedLock;
 import com.aimsphm.nuclear.common.enums.DeviceTypeEnum;
 import com.aimsphm.nuclear.common.service.CommonDeviceService;
-import com.aimsphm.nuclear.common.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -49,7 +48,7 @@ public class FanStateJob implements BaseMonitorJob {
         redis.opsForValue().set(REDIS_KEY_FAN, 1);
         try {
             execute(DeviceTypeEnum.FAN.getType(), algorithmService, deviceService, AlgorithmTypeEnum.STATE_MONITOR);
-            log.info("执行----慢： {}", DateUtils.formatCurrentDateTime());
+            log.info("执行----慢");
         } catch (Exception e) {
             log.error("{}", e);
         }

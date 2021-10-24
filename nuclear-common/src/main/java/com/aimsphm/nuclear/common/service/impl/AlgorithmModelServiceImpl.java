@@ -42,9 +42,6 @@ public class AlgorithmModelServiceImpl extends ServiceImpl<AlgorithmModelMapper,
     private LambdaQueryWrapper<AlgorithmModelDO> customerConditions(QueryBO<AlgorithmModelDO> queryBO) {
         LambdaQueryWrapper<AlgorithmModelDO> wrapper = queryBO.lambdaQuery();
         ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-            log.debug("startTime:{}, endTime:{}", query.getStart(), query.getEnd());
-        }
         if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
             wrapper.like(AlgorithmModelDO::getModelName, query.getKeyword());
         }

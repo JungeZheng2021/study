@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Map;
-
 
 @Data
 @NoArgsConstructor

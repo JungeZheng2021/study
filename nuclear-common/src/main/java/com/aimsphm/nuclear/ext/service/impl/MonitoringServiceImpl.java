@@ -79,7 +79,8 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (CollectionUtils.isEmpty(points)) {
             return null;
         }
-        return points.stream().filter((item -> StringUtils.hasText(item.getPlaceholder()))).collect(Collectors.toMap(CommonMeasurePointDO::getPlaceholder, point -> point, (one, two) -> one));
+        return points.stream().filter((item -> StringUtils.hasText(item.getPlaceholder())))
+                .collect(Collectors.toMap(CommonMeasurePointDO::getPlaceholder, point -> point, (one, two) -> one));
     }
 
     private LambdaQueryWrapper<CommonMeasurePointDO> initWrapper(Long deviceId) {
@@ -90,7 +91,8 @@ public class MonitoringServiceImpl implements MonitoringService {
         }
         wrapper.and(w -> w.eq(CommonMeasurePointDO::getDeviceId, deviceId)
                 .or().eq(CommonMeasurePointDO::getSubSystemId, device.getSubSystemId()).isNull(CommonMeasurePointDO::getDeviceId)
-                .or().eq(CommonMeasurePointDO::getSystemId, device.getSystemId()).isNull(CommonMeasurePointDO::getDeviceId).isNull(CommonMeasurePointDO::getSubSystemId)
+                .or().eq(CommonMeasurePointDO::getSystemId, device.getSystemId())
+                .isNull(CommonMeasurePointDO::getDeviceId).isNull(CommonMeasurePointDO::getSubSystemId)
         );
         return wrapper;
     }
@@ -108,7 +110,8 @@ public class MonitoringServiceImpl implements MonitoringService {
                 return 0;
             }
             return o1.getSort().compareTo(o2.getSort());
-        }).collect(Collectors.groupingBy(MeasurePointVO::getRelatedGroup, () -> new TreeMap(Comparator.comparing(GroupSortEnum::getSorted)), Collectors.toList()));
+        }).collect(Collectors.groupingBy(MeasurePointVO::getRelatedGroup,
+                () -> new TreeMap(Comparator.comparing(GroupSortEnum::getSorted)), Collectors.toList()));
     }
 
     @Override
@@ -119,8 +122,9 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (CollectionUtils.isEmpty(points)) {
             return new HashMap<>(16);
         }
-        List<MeasurePointVO> pointVOS = points.stream().filter(item -> Objects.nonNull(item.getStatus()) && item.getStatus() >= 1).collect(Collectors.toList());
-        return pointVOS.stream().collect(Collectors.groupingBy(item -> item.getCategory(), Collectors.counting()));
+        List<MeasurePointVO> pointVOS = points.stream().filter(item -> Objects.nonNull(item.getStatus())
+                && item.getStatus() >= 1).collect(Collectors.toList());
+        return pointVOS.stream().collect(Collectors.groupingBy(CommonMeasurePointDO::getCategory, Collectors.counting()));
     }
 
     @Override
@@ -139,10 +143,25 @@ public class MonitoringServiceImpl implements MonitoringService {
         bo.setVisible(0);
         List<CommonDeviceDetailsDO> list = detailsService.listDetailByConditions(bo);
         TimeRangeQueryBO rangeQueryBO = new TimeRangeQueryBO();
+        extracted(status, list, rangeQueryBO);
+        int count = statusService.countStopStatus(deviceId, rangeQueryBO);
+        status.setStopTimes(Objects.isNull(status.getStopTimes()) ? count : count + status.getStopTimes());
+        Map<Integer, Long> times = listRunningDuration(deviceId, rangeQueryBO);
+        if (MapUtils.isNotEmpty(times)) {
+            long sum = times.entrySet().stream().filter(item -> item.getKey() < DeviceHealthEnum.STOP.getValue())
+                    .collect(Collectors.summarizingLong(Map.Entry::getValue)).getSum();
+            status.setTotalRunningTime(Objects.isNull(status.getTotalRunningTime()) ? sum : sum + status.getTotalRunningTime());
+        }
+        return status;
+    }
+
+    private void extracted(DeviceStatusVO status, List<CommonDeviceDetailsDO> list, TimeRangeQueryBO rangeQueryBO) {
         if (CollectionUtils.isNotEmpty(list)) {
-            CommonDeviceDetailsDO totalTimeStartTime = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn()) && TOTAL_RUNNING_DURATION.equals(item.getFieldNameEn())).findFirst().orElse(null);
+            CommonDeviceDetailsDO totalTimeStartTime = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn())
+                    && TOTAL_RUNNING_DURATION.equals(item.getFieldNameEn())).findFirst().orElse(null);
             rangeQueryBO.setStart(Objects.nonNull(totalTimeStartTime) ? totalTimeStartTime.getGmtModified().getTime() : null);
-            Map<String, String> config = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn())).collect(Collectors.toMap(item -> item.getFieldNameEn(), CommonDeviceDetailsDO::getFieldValue, (a, b) -> a));
+            Map<String, String> config = list.stream().filter(item -> StringUtils.hasText(item.getFieldNameEn()))
+                    .collect(Collectors.toMap(CommonDeviceDetailsDO::getFieldNameEn, CommonDeviceDetailsDO::getFieldValue, (a, b) -> a));
             String startTime = config.get(START_TIME);
             String totalRunningDuration = config.get(TOTAL_RUNNING_DURATION);
             String stopTimes = config.get(STOP_TIMES);
@@ -156,14 +175,6 @@ public class MonitoringServiceImpl implements MonitoringService {
                 status.setContinuousRunningTime(StringUtils.hasText(startTime) ? System.currentTimeMillis() - Long.valueOf(startTime) : 0L);
             }
         }
-        int count = statusService.countStopStatus(deviceId, rangeQueryBO);
-        status.setStopTimes(Objects.isNull(status.getStopTimes()) ? count : count + status.getStopTimes());
-        Map<Integer, Long> times = listRunningDuration(deviceId, rangeQueryBO);
-        if (MapUtils.isNotEmpty(times)) {
-            long sum = times.entrySet().stream().filter(item -> item.getKey() < DeviceHealthEnum.STOP.getValue()).collect(Collectors.summarizingLong(item -> item.getValue())).getSum();
-            status.setTotalRunningTime(Objects.isNull(status.getTotalRunningTime()) ? sum : sum + status.getTotalRunningTime());
-        }
-        return status;
     }
 
     @Override
@@ -208,6 +219,8 @@ public class MonitoringServiceImpl implements MonitoringService {
                         details.setFieldValue(String.valueOf(status.getStopTimes()));
                         updateList.add(details);
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -257,7 +270,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        Map<Integer, Long> collect = list.stream().collect(Collectors.groupingBy(item -> item.getStatus(), TreeMap::new, Collectors.summingLong(item -> item.getStatusDuration())));
+        Map<Integer, Long> collect = list.stream().collect(Collectors.groupingBy(JobDeviceStatusDO::getStatus, TreeMap::new, Collectors.summingLong(JobDeviceStatusDO::getStatusDuration)));
         JobDeviceStatusDO first = list.get(0);
         if (Objects.nonNull(startTime) && Objects.nonNull(first.getGmtEnd())) {
             Integer status = first.getStatus();
@@ -269,10 +282,14 @@ public class MonitoringServiceImpl implements MonitoringService {
         if (Objects.isNull(last.getGmtEnd())) {
             long time = last.getGmtStart().getTime();
             Integer status = last.getStatus();
-            long l = range.getEnd() - (time >= (Objects.isNull(startTime) ? 0 : startTime) ? time : startTime);
+            long l = range.getEnd() - (time >= getLong(Objects.isNull(startTime), 0, startTime) ? time : startTime);
             collect.put(status, l + collect.get(status));
         }
         return collect;
+    }
+
+    private long getLong(boolean aNull, long i, Long startTime2) {
+        return aNull ? i : startTime2;
     }
 
     private void checkRangeTime(TimeRangeQueryBO range) {
@@ -315,7 +332,8 @@ public class MonitoringServiceImpl implements MonitoringService {
 
     private List<List<LabelVO>> listWarmingPointByAlarmTypeAndLevel(Long deviceId, TimeRangeQueryBO range) {
         LambdaQueryWrapper<JobAlarmProcessRecordDO> wrapper = Wrappers.lambdaQuery(JobAlarmProcessRecordDO.class);
-        wrapper.eq(JobAlarmProcessRecordDO::getDeviceId, deviceId).ge(JobAlarmProcessRecordDO::getGmtEventTime, new Date(range.getStart())).le(JobAlarmProcessRecordDO::getGmtEventTime, new Date(range.getEnd()));
+        wrapper.eq(JobAlarmProcessRecordDO::getDeviceId, deviceId).ge(JobAlarmProcessRecordDO::getGmtEventTime, new Date(range.getStart()))
+                .le(JobAlarmProcessRecordDO::getGmtEventTime, new Date(range.getEnd()));
         List<JobAlarmProcessRecordDO> list = processRecordService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
             return Lists.newArrayList(Lists.newArrayList(), Lists.newArrayList());
@@ -330,15 +348,15 @@ public class MonitoringServiceImpl implements MonitoringService {
     public List<MeasurePointVO> listPointByWrapper(LambdaQueryWrapper<CommonMeasurePointDO> wrapper) {
         List<CommonMeasurePointDO> list = pointService.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
-            return null;
+            return new ArrayList<>();
         }
         Set<String> tagList = list.stream().map(item -> pointService.getStoreKey(item)).collect(Collectors.toSet());
         if (CollectionUtils.isEmpty(tagList)) {
-            return null;
+            return new ArrayList<>();
         }
         List<MeasurePointVO> pointList = redisDataService.listPointByRedisKey(tagList);
         if (CollectionUtils.isEmpty(pointList)) {
-            return null;
+            return new ArrayList<>();
         }
         return pointList.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
@@ -353,7 +371,7 @@ public class MonitoringServiceImpl implements MonitoringService {
         List<CommonMeasurePointDO> list = pointService.listPointsByConditions(queryBO);
         if (CollectionUtils.isEmpty(list)) {
             pointService.clearAllPointsData();
-            return null;
+            return new ArrayList<>();
         }
         list.forEach(item -> {
             String storeKey = pointService.getStoreKey(item);

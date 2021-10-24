@@ -1,24 +1,21 @@
 package com.aimsphm.nuclear.report;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @Package: com.aimsphm.nuclear.report
- * @Description: <时间操作工具>
- * @Author: MILLA
- * @CreateDate: 2018/5/4 16:02
- * @UpdateUser: MILLA
- * @UpdateDate: 2018/5/4 16:02
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:自动报告主程序入口
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 18:58
  */
 @RestController
 @EnableAsync

@@ -76,7 +76,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
                 eventBO.setId((long) index.getAndIncrement());
                 return eventBO;
             }).collect(Collectors.toList());
-            EasyExcelUtils.Write2Website(response, collect, JobAlarmEventBO.class, null, String.format("报警事件-%s", time));
+            EasyExcelUtils.write2Website(response, collect, JobAlarmEventBO.class, null, String.format("报警事件-%s", time));
         } catch (IOException e) {
             log.error("error:{}", e);
         }
@@ -147,7 +147,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
         }
         List<AlgorithmModelPointDO> list = pointService.list(mWrapper);
         if (CollectionUtils.isEmpty(list)) {
-            return null;
+            return new ArrayList<>();
         }
         return mPointService.listByIds(list.stream().map(AlgorithmModelPointDO::getPointId).collect(Collectors.toSet()));
     }
@@ -177,7 +177,7 @@ public class JobAlarmEventServiceImpl extends ServiceImpl<JobAlarmEventMapper, J
         wrapper.ne(JobAlarmEventDO::getAlarmStatus, EventStatusEnum.FINISHED);
         List<JobAlarmEventDO> list = this.list(wrapper);
         if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) {
-            return null;
+            return new HashSet<>();
         }
         Set<JobAlarmEventDO> alarmEvents = new TreeSet<>(Comparator.comparing(JobAlarmEventDO::getPointIds));
         list.stream().filter(x -> org.apache.commons.lang3.StringUtils.isNotBlank(x.getPointIds())).forEach(m -> addEvent(alarmEvents, m, pointIds));

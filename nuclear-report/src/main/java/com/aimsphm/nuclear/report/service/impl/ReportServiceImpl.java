@@ -34,14 +34,13 @@ import static com.aimsphm.nuclear.common.constant.ReportConstant.PATH_DEVICE;
 import static com.aimsphm.nuclear.common.constant.ReportConstant.PATH_SUB_SYSTEM;
 
 /**
- * @Package: com.aimsphm.nuclear.report.service.impl
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/5/11 11:01
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/5/11 11:01
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 19:39
  */
 @Service
 @Slf4j
@@ -96,6 +95,7 @@ public class ReportServiceImpl implements ReportService {
         FileOutputStream fos = null;
         Long reportId = null;
         InputStream is = null;
+        XWPFDocument doc = null;
         try {
             BizReportDO find = findReport(query);
             if (Objects.nonNull(find)) {
@@ -115,7 +115,7 @@ public class ReportServiceImpl implements ReportService {
             } else {
                 is = resource.openStream();
             }
-            XWPFDocument doc = new XWPFDocument(is);
+            doc = new XWPFDocument(is);
             ReportDataService reportDataService = dataService.get(query.getReportCategory() + DATA_SERVICE_SUFFIX);
             WordOperationService wordService = this.wordOperationService.get(query.getReportCategory() + WORD_SERVICE_SUFFIX);
             if (Objects.nonNull(wordService) && Objects.nonNull(reportDataService)) {
@@ -142,16 +142,25 @@ public class ReportServiceImpl implements ReportService {
             reportService.updateReportStatus(reportId, DataStatusEnum.FAILED.getValue(), e.getMessage());
             throw new CustomMessageException("报告生成失败");
         } finally {
+            if (Objects.nonNull(doc)) {
+                try {
+                    doc.close();
+                } catch (IOException e) {
+                    log.error("{}", e);
+                }
+            }
             if (Objects.nonNull(is)) {
                 try {
                     is.close();
                 } catch (IOException e) {
+                    log.error("{}", e);
                 }
             }
             if (Objects.nonNull(fos)) {
                 try {
                     fos.close();
                 } catch (IOException e) {
+                    log.error("{}", e);
                 }
             }
         }

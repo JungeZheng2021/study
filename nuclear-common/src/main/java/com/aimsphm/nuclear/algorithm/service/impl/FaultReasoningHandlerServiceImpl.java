@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.algorithm.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningParamDTO;
 import com.aimsphm.nuclear.algorithm.entity.dto.FaultReasoningResponseDTO;
-import com.aimsphm.nuclear.algorithm.entity.dto.SymptomParamDTO;
 import com.aimsphm.nuclear.algorithm.enums.AlgorithmTypeEnum;
 import com.aimsphm.nuclear.algorithm.feign.AlgorithmServiceFeignClient;
 import com.aimsphm.nuclear.algorithm.service.AlgorithmHandlerService;
@@ -11,14 +10,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 /**
- * @Package: com.aimsphm.nuclear.history.service
- * @Description: <特征提取算法>
- * @Author: MILLA
- * @CreateDate: 2020/12/22 13:35
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/12/22 13:35
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:特征提取算法
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-02-01 16:49
  */
 @Slf4j
 @Service("DIAGNOSIS-RE")

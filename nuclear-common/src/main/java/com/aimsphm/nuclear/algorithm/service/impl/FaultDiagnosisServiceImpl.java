@@ -10,14 +10,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 /**
+ * <p>
+ * 功能描述:故障推理
+ * </p>
+ *
  * @author MILLA
  * @version 1.0
- * @Package: com.aimsphm.nuclear.history.service
- * @Description <故障推理>
- * @UpdateUser MILLA
- * @UpdateDate 2020/12/22 13:35
- * @UpdateRemark <>
- * @since 2020/12/22 13:35
+ * @since 2021-02-01 16:49
  */
 @Slf4j
 @Service("DIAGNOSIS")

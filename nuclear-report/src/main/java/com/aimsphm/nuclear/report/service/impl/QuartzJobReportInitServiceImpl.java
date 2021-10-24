@@ -11,21 +11,19 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.report.service.impl
- * @Description: <启动的时候加载加载在运行状态的任务并启动>
- * @Author: MILLA
- * @CreateDate: 2020/5/12 19:39
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/5/12 19:39
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:启动的时候加载加载在运行状态的任务并启动
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 19:39
  */
 @Service("report")
 public class QuartzJobReportInitServiceImpl implements QuartzJobService {

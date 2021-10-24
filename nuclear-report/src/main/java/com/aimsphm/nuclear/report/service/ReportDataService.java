@@ -5,14 +5,13 @@ import com.aimsphm.nuclear.common.entity.bo.ReportQueryBO;
 import java.util.Map;
 
 /**
- * @Package: com.aimsphm.nuclear.report.service
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/6/12 14:02
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/12 14:02
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 19:39
  */
 public interface ReportDataService {
 

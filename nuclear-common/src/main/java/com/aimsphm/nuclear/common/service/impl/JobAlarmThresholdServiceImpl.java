@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -155,11 +156,11 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
                 JobAlarmThresholdBO eventBO = new JobAlarmThresholdBO();
                 BeanUtils.copyProperties(x, eventBO);
                 eventBO.setId((long) index.getAndIncrement());
-                Double subtract = BigDecimalUtils.subtract(Objects.isNull(x.getGmtEndAlarm()) ? System.currentTimeMillis() : x.getGmtEndAlarm().getTime() / 1000, x.getGmtStartAlarm().getTime() / 1000);
+                Double subtract = BigDecimalUtils.subtract(Objects.isNull(x.getGmtEndAlarm()) ? System.currentTimeMillis() : x.getGmtEndAlarm().getTime() / 1000, (double) x.getGmtStartAlarm().getTime() / 1000);
                 eventBO.setDuration(subtract.toString());
                 return eventBO;
             }).collect(Collectors.toList());
-            EasyExcelUtils.Write2Website(response, collect, JobAlarmThresholdBO.class, null, String.format("阈值报警-%s", time));
+            EasyExcelUtils.write2Website(response, collect, JobAlarmThresholdBO.class, null, String.format("阈值报警-%s", time));
         } catch (IOException e) {
             log.error("error:{}", e);
         }
@@ -171,7 +172,7 @@ public class JobAlarmThresholdServiceImpl extends ServiceImpl<JobAlarmThresholdM
         wrapper.eq(JobAlarmThresholdDO::getAlarmStatus, ThresholdAlarmStatusEnum.IN_ACTIVITY.getValue());
         List<JobAlarmThresholdDO> list = this.list(wrapper);
         if (org.apache.commons.collections4.CollectionUtils.isEmpty(list)) {
-            return null;
+            return new ArrayList<>();
         }
         return list.stream().map(vo -> {
             String pointId = vo.getPointId();

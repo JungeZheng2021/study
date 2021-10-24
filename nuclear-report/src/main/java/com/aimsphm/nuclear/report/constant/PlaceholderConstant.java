@@ -1,16 +1,18 @@
 package com.aimsphm.nuclear.report.constant;
 
 /**
- * @Package: com.aimsphm.nuclear.report.constant
- * @Description: <占位符常量类>
- * @Author: MILLA
- * @CreateDate: 2020/6/12 17:05
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/12 17:05
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:占位符常量类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/6/12 17:05
  */
 public class PlaceholderConstant {
+    private PlaceholderConstant() {
+    }
+
     /**
      * 设备编码
      */

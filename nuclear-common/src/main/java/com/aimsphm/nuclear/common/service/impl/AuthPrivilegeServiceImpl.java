@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.AuthPrivilegeDO;
 import com.aimsphm.nuclear.common.entity.BaseDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
 import com.aimsphm.nuclear.common.mapper.AuthPrivilegeMapper;
@@ -59,13 +58,7 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
      * @return
      */
     private LambdaQueryWrapper<AuthPrivilegeDO> customerConditions(QueryBO<AuthPrivilegeDO> queryBO) {
-        LambdaQueryWrapper<AuthPrivilegeDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
-        return wrapper;
+        return queryBO.lambdaQuery();
     }
 
     @Override
@@ -89,7 +82,7 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
         }
         Set<String> privileges = authUtils.getUserPrivilegeByUsername(username, sysCode);
         if (CollectionUtils.isEmpty(privileges)) {
-            return null;
+            return new ArrayList<>();
         }
         LambdaQueryWrapper<AuthPrivilegeDO> wrapper = Wrappers.lambdaQuery(AuthPrivilegeDO.class);
         wrapper.in(AuthPrivilegeDO::getCode, privileges);
@@ -112,7 +105,7 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
 
     private List<AuthPrivilegeDO> operatePrivileges(List<AuthPrivilegeDO> list) {
         if (CollectionUtils.isEmpty(list)) {
-            return null;
+            return new ArrayList<>();
         }
         Map<Long, List<AuthPrivilegeDO>> collect = list.stream().collect(Collectors.groupingBy(AuthPrivilegeDO::getParentId, TreeMap::new, Collectors.toList()));
         Set<Long> needless = new HashSet<>();
@@ -128,7 +121,6 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
                 }
             });
         });
-        List<AuthPrivilegeDO> collect1 = list.stream().filter(x -> !needless.contains(x.getId())).collect(Collectors.toList());
-        return collect1;
+        return list.stream().filter(x -> !needless.contains(x.getId())).collect(Collectors.toList());
     }
 }

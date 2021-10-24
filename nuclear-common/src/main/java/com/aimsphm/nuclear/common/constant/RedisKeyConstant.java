@@ -11,6 +11,8 @@ package com.aimsphm.nuclear.common.constant;
  * @Version: 1.0
  */
 public final class RedisKeyConstant {
+    private RedisKeyConstant() {
+    }
     //------------------已经使用key-------------------
     /**
      * 测点存储在redis中前缀
@@ -89,10 +91,10 @@ public final class RedisKeyConstant {
 
     //-----------------------------
 
-    static public final String I18N_PREFIX = "nuclear__";
-    static public final String I18N_LOCALE = "locale";
-    static public final String I18N_EN = "EN";
-    static public final String I18N_CN = "CN";
+    public static final String I18N_PREFIX = "nuclear__";
+    public static final String I18N_LOCALE = "locale";
+    public static final String I18N_EN = "EN";
+    public static final String I18N_CN = "CN";
     /**
      * 预警测点redis中前缀
      */
@@ -116,8 +118,8 @@ public final class RedisKeyConstant {
     public static final String REDIS_SENSOR_COLLECTOR_PRE = "sensor:collector_time:";
     public static final String REDIS_LAST_VIB_UNIT_ALARM_PRE = "device:vib_unit_alarm_time:";
     public static final String REDIS_LAST_VIB_UNIT_ALARM_RETRY_PRE = "device:vib_unit_alarm_time:retry:";
-//    //子系统下设备id集合
-//    public static final String REDIS_DEVICE_ID_LIST_PRE = "subsystem:device_list_info:";
+    //    子系统下设备id集合
+    public static final String REDIS_DEVICE_ID_LIST_PRE = "subsystem:device_list_info:";
 
     public static final String HBASE_TABLE_NAME = "npc_real_time";
 

@@ -47,53 +47,8 @@ public class OpcConfiguration implements CommandLineRunner {
         Server server = client.getServer();
         try {
             //每1秒异步读取一次opcServer的数据
-            Browser.readAsyn(server, Executors.newScheduledThreadPool(2), 1000L, (dataItems) -> {
-//                System.out.println("-----------------");
-//                System.out.println(JSON.toJSONString(dataItems));
-//                System.out.println("-----------------");
-                mqttGateway.sendToMqtt(JSON.toJSONString(dataItems), "pi/many");
-
-                //                String path="D:\\data\\"+System.currentTimeMillis()+".txt";
-//                File file = new File(path);
-//                //如果没有文件就创建
-//                if (!file.isFile()) {
-//                    file.createNewFile();
-//                }
-//                BufferedWriter writer = new BufferedWriter(new FileWriter(path));
-//                for (DataItem l:dataItems){
-//                    writer.write(l + "\r\n");
-//                }
-//                writer.close();
-//                Map<String, List<DataItem>> groupDataItem = new LinkedHashMap<>();
-//                //根据机组的opc标签名进行归类
-//                for (DataItem dataItem : dataItems) {
-//                    String itemId = dataItem.getItemId();
-//                    if (itemId.indexOf(" ") != -1 || itemId.indexOf("@") != -1 || itemId.indexOf("#") != -1 || itemId.indexOf("Random") != -1) {
-//                        continue;
-//                    }
-//                    System.out.println("<》: " + dataItem);
-//                    System.out.println("tag: " + dataItem.getItemId() + ",value: " + dataItem.getValue() + ",dataTime:" + dataItem.getDataTime() + ",sendTime: " + dataItem.getCurrMonment());
-//                    String groupName = dataItem.getItemId();//.split("\\$")[1].substring(3);
-//                    if (groupDataItem.containsKey(groupName)) {
-//                        groupDataItem.get(groupName).add(dataItem);
-//                    } else {
-//                        List<DataItem> groupList = new LinkedList<>();
-//                        groupList.add(dataItem);
-//                        groupDataItem.put(groupName, groupList);
-//                    }
-//                }
-////
-//                //将不同机组的信息发送到kafka不同的topic
-//                Iterator<Map.Entry<String, List<DataItem>>> iterator = groupDataItem.entrySet().iterator();
-//                while (iterator.hasNext()) {
-//                    Map.Entry<String, List<DataItem>> entry = iterator.next();
-//                    Map map = new ConcurrentHashMap();
-//                    for (DataItem dataItem : entry.getValue()) {
-//                        map.put(dataItem.getItemId(), dataItem.getValue());
-//                    }
-//                    log.info("topic的值为:{}", entry.getKey());
-//                }
-            });
+            Browser.readAsyn(server, Executors.newScheduledThreadPool(2), 1000L
+                    , dataItems -> mqttGateway.sendToMqtt(JSON.toJSONString(dataItems), "pi/many"));
         } catch (Throwable throwable) {
             log.error(throwable.getMessage());
         }

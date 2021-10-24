@@ -3,14 +3,13 @@ package com.aimsphm.nuclear.report.enums;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.common.enums
- * @Description: <图谱类型枚举类>
- * @Author: MILLA
- * @CreateDate: 2020/4/17 14:30
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/4/17 14:30
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:图谱类型枚举类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/4/17 14:30
  */
 public enum FigureTypeEnum {
     ENVELOPE_SPECTRUM("envelopeSpectrum", "包络谱"),

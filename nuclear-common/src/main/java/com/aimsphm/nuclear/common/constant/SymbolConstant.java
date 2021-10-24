@@ -33,6 +33,7 @@ public final class SymbolConstant {
      * 顿号
      */
     public static final String SLASH_ZH = "、";
+
     public static final String SLASH_EN = "/";
     /**
      * 空字符串
@@ -78,7 +79,7 @@ public final class SymbolConstant {
     public static final String DOT_CLASS = ".class";
     public static final String DOT_JAVA = ".java";
     public static final String DOT_XML = ".xml";
-    public static final String EQUALS = "=";
+    public static final String EQ = "=";
     public static final String FALSE = "false";
     public static final String SLASH = "/";
     public static final String HAT = "^";

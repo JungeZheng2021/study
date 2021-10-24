@@ -1,19 +1,17 @@
 package com.aimsphm.nuclear.report.service;
 
-import com.aimsphm.nuclear.common.entity.bo.ReportQueryBO;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import java.util.Map;
 
 /**
- * @Package: com.aimsphm.nuclear.report.service
- * @Description: <>
- * @Author: milla
- * @CreateDate: 2020/07/17 17:29
- * @UpdateUser: milla
- * @UpdateDate: 2020/07/17 17:29
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:报告生成服务类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/07/17 17:29
  */
 public interface WordOperationService {
 

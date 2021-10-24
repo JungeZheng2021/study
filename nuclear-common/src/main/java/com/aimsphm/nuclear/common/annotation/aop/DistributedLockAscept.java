@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.common.annotation.aop;
 
-import java.lang.reflect.Method;
-
+import com.aimsphm.nuclear.common.annotation.DistributedLock;
 import com.aimsphm.nuclear.common.redis.RedisClient;
 import com.aimsphm.nuclear.common.redis.RedisLock;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -11,14 +10,12 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-
-import com.aimsphm.nuclear.common.annotation.DistributedLock;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Method;
 
 @Aspect
 @Component
@@ -38,7 +35,7 @@ public class DistributedLockAscept {
 
     @Pointcut("@annotation(com.aimsphm.nuclear.common.annotation.DistributedLock)")
     public void distributedLockPointcut() {
-
+        log.debug("distributedLockPointcut");
     }
 
 
@@ -48,26 +45,16 @@ public class DistributedLockAscept {
         Method method = methodSignature.getMethod();
         DistributedLock annotation = method.getAnnotation(DistributedLock.class);
         String value = annotation.value();
-        boolean bool = false;
         String key = null;
         try {
-//            bool = client.lock(value);
-//            if (bool) {
-//                joinPoint.proceed();
-//                return;
-//            }
             key = lock.tryLock(value, 3000);
             if (StringUtils.hasText(key)) {
                 joinPoint.proceed();
                 return;
             }
-            log.error("current lock:" + value + " exits");
+            log.error("current lock:{} exits", value);
             log.error("current lock:{},methodName:{}", value, method.getName());
         } finally {
-//            if (bool) {
-//                Thread.sleep(2000);
-//                client.unlock(value);
-//            }
             if (StringUtils.hasText(key)) {
                 lock.unlock(value, key);
             }

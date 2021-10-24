@@ -14,7 +14,6 @@ import java.util.Date;
 /**
  * @Author: xiangfeng
  */
-//@EnableScheduling
 @Component
 public class DownSampleScheduleJobManually {
     private Logger logger = LoggerFactory.getLogger(DownSampleScheduleJobManually.class);
@@ -30,14 +29,11 @@ public class DownSampleScheduleJobManually {
     @Value("${initialTimeStampGap}")
     private String initialGap;
     @Value("${tableName}")
-    private String HABSE_TABLE_NAME;
-    private final String CF = "pRaw";
-    private final String BATCHSIZE = "30";
+    private String hbaseTableName;
+    private static final String CF = "pRaw";
+    private static final String BATCH_SIZE = "30";
     @Autowired
     ISparkSubmitService sparkSubmitService;
-
-    SparkApplicationParam param = new SparkApplicationParam();
-
 
     /* @Async
      @Scheduled(cron = "0 0 * * * ? ") //每小时*/
@@ -45,8 +41,7 @@ public class DownSampleScheduleJobManually {
     public Object hourlyDownSample(long start, long end) throws Exception {
 
         Date currentDate = new Date();
-        //Date executionDate = calculateGapDate(currentDate);
-
+        logger.debug("{}", start);
         SparkApplicationParam param = new SparkApplicationParam();
         param.setMaster(sparkMaster);
         param.setMainClass(sparkMainClass);
@@ -56,16 +51,15 @@ public class DownSampleScheduleJobManually {
         param.setExecutorMemory("6g");
         String[] appParam = new String[10];
         appParam[0] = JobFrequencyConstant.HOURLY;
-        //Tuple2<String,String> startAndEndTimestamp = TimeCalculator.getStartAndEndTimestamp(executionDate,JobFrequencyConstant.HOURLY);
         appParam[1] = start + "";
         appParam[2] = end + "";
-        appParam[3] = HABSE_TABLE_NAME;
+        appParam[3] = hbaseTableName;
         appParam[4] = CF;
         appParam[5] = "1";//执行用1个来做，即生产1条记录
         appParam[6] = "5";//分段瞬态法的特别参数
         appParam[7] = "5";//分段瞬态法的特别参数
         appParam[8] = currentDate.getTime() + "";//creat on的时间
-        appParam[9] = BATCHSIZE;
+        appParam[9] = BATCH_SIZE;
         param.setArgs(appParam);
         return sparkSubmitService.submitApplication(param);
     }
@@ -75,7 +69,6 @@ public class DownSampleScheduleJobManually {
     // @DistributedLock("testDistributeLock") //add a ditributeLock
     public Object dailyDownSample(long start, long end) throws Exception {
         Date currentDate = new Date();
-        //Date executionDate = calculateGapDate(currentDate);
         SparkApplicationParam param = new SparkApplicationParam();
         param.setMaster(sparkMaster);
         param.setMainClass(sparkMainClass);
@@ -85,16 +78,15 @@ public class DownSampleScheduleJobManually {
         param.setExecutorMemory("6g");
         String[] appParam = new String[10];
         appParam[0] = JobFrequencyConstant.DAILY;
-        //Tuple2<String,String> startAndEndTimestamp = TimeCalculator.getStartAndEndTimestamp(executionDate,JobFrequencyConstant.DAILY);
         appParam[1] = start + "";
         appParam[2] = end + "";
-        appParam[3] = HABSE_TABLE_NAME;
+        appParam[3] = hbaseTableName;
         appParam[4] = CF;
         appParam[5] = "6";//执行用6个task来做，即生产6条记录
         appParam[6] = "5";//分段瞬态法的特别参数
         appParam[7] = "5";//分段瞬态法的特别参数
         appParam[8] = currentDate.getTime() + "";//creat on的时间
-        appParam[9] = BATCHSIZE;
+        appParam[9] = BATCH_SIZE;
         param.setArgs(appParam);
         return sparkSubmitService.submitApplication(param);
     }
@@ -104,7 +96,6 @@ public class DownSampleScheduleJobManually {
     // @DistributedLock("testDistributeLock") //add a ditributeLock
     public Object weeklyDownSample(long start, long end) throws Exception {
         Date currentDate = new Date();
-        //Date executionDate = calculateGapDate(currentDate);
         SparkApplicationParam param = new SparkApplicationParam();
         param.setMaster(sparkMaster);
         param.setMainClass(sparkMainClass);
@@ -114,16 +105,15 @@ public class DownSampleScheduleJobManually {
         param.setExecutorMemory("6g");
         String[] appParam = new String[10];
         appParam[0] = JobFrequencyConstant.WEEKLY;
-        //Tuple2<String,String> startAndEndTimestamp = TimeCalculator.getStartAndEndTimestamp(executionDate,JobFrequencyConstant.WEEKLY);
         appParam[1] = start + "";
         appParam[2] = end + "";
-        appParam[3] = HABSE_TABLE_NAME;
+        appParam[3] = hbaseTableName;
         appParam[4] = CF;
         appParam[5] = "15";//执行用6个task来做，即生产6条记录
         appParam[6] = "5";//分段瞬态法的特别参数
         appParam[7] = "5";//分段瞬态法的特别参数
         appParam[8] = currentDate.getTime() + "";//creat on的时间
-        appParam[9] = BATCHSIZE;
+        appParam[9] = BATCH_SIZE;
         param.setArgs(appParam);
         return sparkSubmitService.submitApplication(param);
     }
@@ -133,7 +123,6 @@ public class DownSampleScheduleJobManually {
     // @DistributedLock("testDistributeLock") //add a ditributeLock
     public Object monthlyDownSample(long start, long end) throws Exception {
         Date currentDate = new Date();
-        // Date executionDate = calculateGapDate(currentDate);
         SparkApplicationParam param = new SparkApplicationParam();
         param.setMaster(sparkMaster);
         param.setMainClass(sparkMainClass);
@@ -143,16 +132,15 @@ public class DownSampleScheduleJobManually {
         param.setExecutorMemory("6g");
         String[] appParam = new String[10];
         appParam[0] = JobFrequencyConstant.MONTHLY;
-        // Tuple2<String,String> startAndEndTimestamp = TimeCalculator.getStartAndEndTimestamp(executionDate,JobFrequencyConstant.MONTHLY);
         appParam[1] = start + "";
         appParam[2] = end + "";
-        appParam[3] = HABSE_TABLE_NAME;
+        appParam[3] = hbaseTableName;
         appParam[4] = CF;
         appParam[5] = "30";//执行用32个task来做，即生产30条记录
         appParam[6] = "5";//分段瞬态法的特别参数
         appParam[7] = "5";//分段瞬态法的特别参数
         appParam[8] = currentDate.getTime() + "";//creat on的时间
-        appParam[9] = BATCHSIZE;
+        appParam[9] = BATCH_SIZE;
         param.setArgs(appParam);
         return sparkSubmitService.submitApplication(param);
     }
@@ -160,7 +148,6 @@ public class DownSampleScheduleJobManually {
 
     public Object downSampleSingleJob(String freq, long start, long end, int partiotion) throws Exception {
         Date currentDate = new Date();
-        //Date executionDate = calculateGapDate(currentDate);
         SparkApplicationParam param = new SparkApplicationParam();
         param.setMaster(sparkMaster);
         param.setMainClass(sparkMainClass);
@@ -170,23 +157,21 @@ public class DownSampleScheduleJobManually {
         param.setExecutorMemory("5g");
         String[] appParam = new String[10];
         appParam[0] = freq;
-        //Tuple2<String,String> startAndEndTimestamp = TimeCalculator.getStartAndEndTimestamp(executionDate,JobFrequencyConstant.WEEKLY);
         appParam[1] = start + "";
         appParam[2] = end + "";
-        appParam[3] = HABSE_TABLE_NAME;
+        appParam[3] = hbaseTableName;
         appParam[4] = CF;
         appParam[5] = partiotion + "";//执行用6个task来做，即生产6条记录
         appParam[6] = "5";//分段瞬态法的特别参数
         appParam[7] = "5";//分段瞬态法的特别参数
         appParam[8] = currentDate.getTime() + "";//creat on的时间
-        appParam[9] = BATCHSIZE;
+        appParam[9] = BATCH_SIZE;
         param.setArgs(appParam);
         return sparkSubmitService.submitApplication(param);
     }
 
     public Date calculateGapDate(Date date) {
         long ts = date.getTime() - Long.parseLong(initialGap);
-        Date resDate = new Date(ts);
-        return resDate;
+        return new Date(ts);
     }
 }

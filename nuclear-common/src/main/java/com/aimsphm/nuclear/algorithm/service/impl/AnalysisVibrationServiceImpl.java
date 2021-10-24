@@ -30,7 +30,6 @@ public class AnalysisVibrationServiceImpl implements AlgorithmHandlerService<Ana
 
     @Override
     public Object getInvokeCustomerData(AnalysisVibrationParamDTO params) {
-        AnalysisVibrationResponseDTO responseDTO = invokeServer(client, params, params.getType(), AnalysisVibrationResponseDTO.class);
-        return responseDTO;
+        return invokeServer(client, params, params.getType(), AnalysisVibrationResponseDTO.class);
     }
 }

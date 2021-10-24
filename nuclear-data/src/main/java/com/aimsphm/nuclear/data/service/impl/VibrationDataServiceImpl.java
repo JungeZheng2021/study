@@ -11,8 +11,8 @@ import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.CommonSensorService;
 import com.aimsphm.nuclear.common.util.BigDecimalUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
-import com.aimsphm.nuclear.data.entity.dto.PacketDTO;
-import com.aimsphm.nuclear.data.entity.dto.SensorDataDTO;
+import com.aimsphm.nuclear.data.feign.entity.dto.PacketDTO;
+import com.aimsphm.nuclear.data.feign.entity.dto.SensorDataDTO;
 import com.aimsphm.nuclear.data.enums.CalculateFeatureEnum;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
@@ -329,13 +329,13 @@ public class VibrationDataServiceImpl implements CommonDataService {
 
     public static void main(String[] args) {
         Double format = BigDecimalUtils.format(0.4, 3);
-        System.out.println(format);
+        log.debug("{}", format);
         if (format == 0.4D) {
-            System.out.println("是的");
+            log.debug("是的");
 
         }
         double asDouble = ThreadLocalRandom.current().doubles(0.39, 0.41).findFirst().getAsDouble();
-        System.out.println(asDouble);
+        log.debug("{}", asDouble);
     }
 
     /**

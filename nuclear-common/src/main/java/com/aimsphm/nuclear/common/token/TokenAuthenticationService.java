@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 
 public class TokenAuthenticationService {
+    private TokenAuthenticationService() {
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationService.class);
 
@@ -37,6 +39,7 @@ public class TokenAuthenticationService {
 
     // JWT验证方法
     public static Authentication getAuthentication(HttpServletRequest request) {
+        logger.debug("JWT验证");
         // get token from header
         String token = request.getHeader(AuthConstant.AUTH_HEADER_STRING);
 

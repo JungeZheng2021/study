@@ -1,4 +1,4 @@
-package com.aimsphm.nuclear.opc.model;
+package com.aimsphm.nuclear.data.feign.entity.dto;
 
 import lombok.Data;
 

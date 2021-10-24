@@ -18,7 +18,7 @@ public class QueryBO {
     /**
      * 默认的列族
      */
-    public final static String DEFAULT_COLUMN_FAMILY = "pRaw";
+    public static final String DEFAULT_COLUMN_FAMILY = "pRaw";
     /**
      * 开始时间
      */

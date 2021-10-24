@@ -5,7 +5,6 @@ import com.aimsphm.nuclear.algorithm.service.BizDiagnosisService;
 import com.aimsphm.nuclear.common.entity.AlgorithmRulesConclusionDO;
 import com.aimsphm.nuclear.common.entity.BizDiagnosisResultDO;
 import com.aimsphm.nuclear.common.entity.JobAlarmEventDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.enums.DataStatusEnum;
 import com.aimsphm.nuclear.common.mapper.BizDiagnosisResultMapper;
@@ -25,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.COMMA;
@@ -67,17 +63,11 @@ public class BizDiagnosisResultServiceImpl extends ServiceImpl<BizDiagnosisResul
     /**
      * 拼装查询条件
      *
-     * @param query 查询条件
+     * @param queryBO 查询条件
      * @return 封装后的条件
      */
     private LambdaQueryWrapper<BizDiagnosisResultDO> customerConditions(QueryBO<BizDiagnosisResultDO> queryBO) {
-        LambdaQueryWrapper<BizDiagnosisResultDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
-        return wrapper;
+        return queryBO.lambdaQuery();
     }
 
     @Override
@@ -88,7 +78,9 @@ public class BizDiagnosisResultServiceImpl extends ServiceImpl<BizDiagnosisResul
     @Override
     public boolean getDiagnosisResult(Long eventId) {
         LambdaQueryWrapper<BizDiagnosisResultDO> wrapper = Wrappers.lambdaQuery(BizDiagnosisResultDO.class);
-        wrapper.eq(BizDiagnosisResultDO::getEventId, eventId).eq(BizDiagnosisResultDO::getStatus, DataStatusEnum.RUNNING.getValue()).orderByDesc(BizDiagnosisResultDO::getGmtDiagnosis).last("limit 1");
+        wrapper.eq(BizDiagnosisResultDO::getEventId, eventId)
+                .eq(BizDiagnosisResultDO::getStatus, DataStatusEnum.RUNNING.getValue())
+                .orderByDesc(BizDiagnosisResultDO::getGmtDiagnosis).last("limit 1");
         return this.count(wrapper) > 0;
     }
 
@@ -123,10 +115,11 @@ public class BizDiagnosisResultServiceImpl extends ServiceImpl<BizDiagnosisResul
     @Override
     public List<AlgorithmRulesConclusionDO> lastRulesConclusionWithEventId(Long eventId) {
         LambdaQueryWrapper<BizDiagnosisResultDO> wrapper = Wrappers.lambdaQuery(BizDiagnosisResultDO.class);
-        wrapper.eq(BizDiagnosisResultDO::getEventId, eventId).eq(BizDiagnosisResultDO::getStatus, DataStatusEnum.SUCCESS.getValue()).orderByDesc(BizDiagnosisResultDO::getGmtDiagnosis).last("limit 1");
+        wrapper.eq(BizDiagnosisResultDO::getEventId, eventId).eq(BizDiagnosisResultDO::getStatus, DataStatusEnum.SUCCESS.getValue())
+                .orderByDesc(BizDiagnosisResultDO::getGmtDiagnosis).last("limit 1");
         BizDiagnosisResultDO one = this.getOne(wrapper);
         if (Objects.isNull(one) || StringUtils.isEmpty(one.getDiagnosisResult())) {
-            return null;
+            return new ArrayList<>();
         }
         return conclusionService.listAlgorithmRulesConclusionWithRuleIds(one.getDiagnosisResult().split(COMMA));
     }

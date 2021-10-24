@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.core.controller;
 
 import com.aimsphm.nuclear.common.entity.JobAlarmThresholdDO;
 import com.aimsphm.nuclear.common.entity.bo.AlarmQueryBO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.service.JobAlarmThresholdService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,14 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.core.controller
- * @Description: <阈值报警信息-前端控制器>
- * @Author: MILLA
- * @CreateDate: 2021-01-04
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-01-04
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:阈值报警信息-前端控制器
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/05 14:30
  */
 @RestController
 @Api(tags = "JobAlarmThreshold-阈值报警信息-相关接口")

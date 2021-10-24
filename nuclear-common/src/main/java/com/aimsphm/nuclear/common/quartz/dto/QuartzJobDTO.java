@@ -16,10 +16,6 @@ import lombok.Data;
 @Data
 public class QuartzJobDTO extends BizJobQuartzConfigDO {
     /**
-     * 主键
-     */
-    private Long id;
-    /**
      * 任务名
      */
     private String jobName;

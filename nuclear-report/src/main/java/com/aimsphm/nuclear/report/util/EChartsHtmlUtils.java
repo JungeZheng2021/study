@@ -37,7 +37,8 @@ import static com.aimsphm.nuclear.common.constant.ReportConstant.ECHARTS_TEMP_DI
  * @Version: 1.0
  */
 public final class EChartsHtmlUtils {
-
+    private EChartsHtmlUtils() {
+    }
 
     /**
      * 折线图有多条折线
@@ -50,7 +51,6 @@ public final class EChartsHtmlUtils {
             return null;
         }
         GsonOption option = new GsonOption();
-//        option.title().text("对数轴示例").x(X.center);
         option.tooltip(new Tooltip().trigger(Trigger.axis).showDelay(0).axisPointer(new AxisPointer().type(PointerType.cross)
                 .lineStyle(new LineStyle().type(LineType.dashed).width(1))));
         List<String> titleList = options.stream().map(Line::getName).collect(Collectors.toList());
@@ -75,7 +75,6 @@ public final class EChartsHtmlUtils {
             return null;
         }
         GsonOption option = new GsonOption();
-//        option.title().text("对数轴示例").x(X.center);
         option.tooltip(new Tooltip().trigger(Trigger.axis).showDelay(0).axisPointer(new AxisPointer().type(PointerType.cross)
                 .lineStyle(new LineStyle().type(LineType.dashed).width(1))));
         option.calculable(true);
@@ -125,8 +124,6 @@ public final class EChartsHtmlUtils {
             return null;
         }
         GsonOption option = new GsonOption();
-//        option.tooltip(new Tooltip().trigger(Trigger.axis).showDelay(0).axisPointer(new AxisPointer().type(PointerType.cross)
-//                .lineStyle(new LineStyle().type(LineType.dashed).width(1))));
         option.title().text(title).x(X.center).y(Y.bottom);
         List<String> titleList = options.stream().map(Scatter::getName).collect(Collectors.toList());
         option.legend(titleList.toArray());
@@ -158,7 +155,6 @@ public final class EChartsHtmlUtils {
         Data[] data = options.toArray(new Data[]{});
         pie.data(data).radius("40%", "60%").center("40%", "50%").itemStyle(itemStyle);
         option.series(pie);
-//        option.view();
         return option.exportToHtml(ECHARTS_TEMP_DIR, SeriesType.pie.name() + UUIDUtils.randomUUID() + ECHARTS_HTML_SUFFIX);
     }
 }

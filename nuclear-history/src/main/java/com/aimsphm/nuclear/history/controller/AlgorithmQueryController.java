@@ -19,6 +19,7 @@ import com.aimsphm.nuclear.history.service.AlgorithmQueryService;
 import com.aimsphm.nuclear.history.service.FaultReasoningService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @Api(tags = "算法调用接口")
 @RequestMapping(value = "algorithm", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,6 +44,7 @@ public class AlgorithmQueryController {
     @ApiOperation(value = "去躁数据", notes = "多个参数")
     public Map<String, HistoryDataVO> listMovingAverageInfo(HistoryQueryMultiBO multiBo) {
         Map<String, HistoryDataVO> data = service.listMovingAverageInfo(multiBo);
+        log.debug("{}", data);
         return data;
     }
 
@@ -55,6 +58,7 @@ public class AlgorithmQueryController {
     @ApiOperation(value = "预测数据", notes = "多个参数")
     public Map<String, HistoryDataVO> listPredictionInfo(HistoryQueryMultiBO multiBo) {
         Map<String, HistoryDataVO> data = service.listPredictionInfo(multiBo);
+        log.debug("{}", data);
         return data;
     }
 

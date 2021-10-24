@@ -3,7 +3,7 @@ package com.aimsphm.nuclear.data.service.impl;
 import com.aimsphm.nuclear.common.constant.HBaseConstant;
 import com.aimsphm.nuclear.common.entity.dto.HBaseColumnItemDTO;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
-import com.aimsphm.nuclear.data.entity.DataItemDTO;
+import com.aimsphm.nuclear.data.feign.entity.dto.DataItemDTO;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
 import com.alibaba.fastjson.JSON;
@@ -22,14 +22,13 @@ import java.util.List;
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.ROW_KEY_SEPARATOR;
 
 /**
- * @Package: com.aimsphm.nuclear.data.service.impl
- * @Description: <pi数据>
- * @Author: MILLA
- * @CreateDate: 2020/3/31 11:41
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/31 11:41
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:pi数据
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/3/31 11:41
  */
 @Service("pi")
 @Slf4j
@@ -51,6 +50,7 @@ public class PIDataServiceImpl implements CommonDataService {
     }
 
     private void batchUpdateAndSave(String topic, String message) throws IOException {
+        log.debug("topic:{}", topic);
         List<DataItemDTO> dataItems = JSON.parseArray(message, DataItemDTO.class);
         if (CollectionUtils.isEmpty(dataItems)) {
             return;

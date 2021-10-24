@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +71,7 @@ public class HistoryQueryController {
     @ApiOperation(value = "查询一个测点的历史数据", notes = "pointId是完整测点编号")
     public HistoryDataVO listHistoryWithSinglePoint(HistoryQuerySingleBO singleBO) {
         HistoryDataVO data = service.listHistoryDataWithPointByScan(singleBO);
+        log.debug("{}", data);
         return data;
     }
 
@@ -83,6 +85,7 @@ public class HistoryQueryController {
     @ApiOperation(value = "查询多个测点的历史数据", notes = "")
     public Map<String, HistoryDataVO> listHistoryWithPointList(HistoryQueryMultiBO queryMultiBO) {
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
+        log.debug("{}", data);
         return data;
     }
 
@@ -90,6 +93,7 @@ public class HistoryQueryController {
     @ApiOperation(value = "查询多个测点实测值、估计值、报警测点、残差值", notes = "")
     public Map<String, EventDataVO> listDataWithPointList(HistoryQueryMultiBO queryMultiBO) {
         Map<String, EventDataVO> data = service.listDataWithPointList(queryMultiBO);
+        log.debug("{}", data);
         return data;
     }
 
@@ -130,8 +134,9 @@ public class HistoryQueryController {
     @ApiOperation(value = "导出原始数据", notes = "接口中不使用")
     public Map<String, HistoryDataVO> listHistoryPointList(HistoryQueryMultiBO queryMultiBO, String sql) {
         operationPoints(queryMultiBO, sql);
-        RawDataThreadLocal.INSTANCE.setting(true);
+        RawDataThreadLocal.INSTANCE.perhaps(true);
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
+        log.debug("{}", data);
         return data;
     }
 
@@ -139,7 +144,7 @@ public class HistoryQueryController {
     @ApiOperation(value = "导出原始数据excel", notes = "接口中不使用")
     public void listHistoryPointListExcel(HistoryQueryMultiBO queryMultiBO, HttpServletResponse response, String sql) {
         operationPoints(queryMultiBO, sql);
-        RawDataThreadLocal.INSTANCE.setting(true);
+        RawDataThreadLocal.INSTANCE.perhaps(true);
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByScan(queryMultiBO);
         writeExcelFile(response, data);
     }
@@ -169,13 +174,14 @@ public class HistoryQueryController {
             log.error("get failed:{}", e);
 
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @GetMapping("multiple/gets")
     @ApiOperation(value = "查询多个测点的历史数据-备用", notes = "备用")
     public Map<String, HistoryDataVO> listHistoryWithPointListByGetList(HistoryQueryMultiBO queryMultiBO) {
         Map<String, HistoryDataVO> data = service.listHistoryDataWithPointIdsByGetList(queryMultiBO);
+        log.debug("{}", data);
         return data;
     }
 }

@@ -14,6 +14,9 @@ import java.util.Objects;
  * @Version: 1.0
  */
 public final class CollectionUtils {
+    private CollectionUtils() {
+    }
+
     /**
      * 判断一个集合中所有的元素都是空
      * 只要有一个集合不是空就是非空

@@ -8,14 +8,16 @@ import java.time.temporal.ChronoField;
 import java.util.Date;
 
 public class TimeCalculator {
+    private TimeCalculator() {
+    }
+
     public static Tuple2<String, String> getStartAndEndTimestamp(Date currentDate, String frequency) {
         Tuple2<String, String> result = null;
         long currentTimeInMills = currentDate.getTime();
         long cleanTime = currentTimeInMills - currentTimeInMills % 3600000;
 
-        LocalDateTime lo = DateUtil.DateToLocalDateTime(currentDate);
+        LocalDateTime lo = DateUtil.dateToLocalDateTime(currentDate);
 
-        int month = lo.get(ChronoField.MONTH_OF_YEAR);
         int day = lo.get(ChronoField.DAY_OF_MONTH);
 
         switch (frequency) {
@@ -63,9 +65,9 @@ public class TimeCalculator {
                 result = new Tuple2<>(start + "", end + "");
                 break;
             }
+            default:
+                break;
         }
-
-
         return result;
     }
 
@@ -74,10 +76,8 @@ public class TimeCalculator {
         long currentTimeInMills = startTimeStamp;
         long cleanTime = currentTimeInMills - currentTimeInMills % 3600000;
         Date currentDate = new Date(cleanTime);
-        LocalDateTime lo = DateUtil.DateToLocalDateTime(currentDate);
+        LocalDateTime lo = DateUtil.dateToLocalDateTime(currentDate);
 
-        int month = lo.get(ChronoField.MONTH_OF_YEAR);
-        int day = lo.get(ChronoField.DAY_OF_MONTH);
         LocalDateTime nextMonth = lo.plusMonths(1).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
         long start = cleanTime;
         long end = DateUtil.localDateTime2Date(nextMonth).getTime();

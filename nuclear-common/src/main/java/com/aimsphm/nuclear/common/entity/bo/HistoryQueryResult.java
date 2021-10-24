@@ -4,9 +4,17 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * <p>
+ * 功能描述:多测点查询
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/21 17:33
+ */
 @Data
 public class HistoryQueryResult {
-    //private Integer algo;
     private String tag;
     private Double earlyWarningHi;
     private Double earlyWarningLo;
@@ -15,7 +23,5 @@ public class HistoryQueryResult {
     private Double thrHihi;
     private Double thrLolo;
     private String unit;
-    //private Long startTimestamp;
-    //private String points;
     private List<List<Object>> pointList;
 }

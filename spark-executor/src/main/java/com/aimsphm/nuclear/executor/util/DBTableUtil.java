@@ -1,7 +1,6 @@
 package com.aimsphm.nuclear.executor.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -41,8 +40,8 @@ public class DBTableUtil {
                 if (Objects.nonNull(conn)) {
                     conn.close();
                 }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+            } catch (SQLException e) {
+                log.error("error");
             }
         }
         return false;
@@ -53,7 +52,7 @@ public class DBTableUtil {
         if (aBoolean) {
             return true;
         }
-        StringBuffer sb = new StringBuffer("");
+        StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE `" + tableName + "`  (\n" +
                 "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',\n" +
                 "  `algorithm_type` int(11) NULL DEFAULT 1 COMMENT '算法类型',\n" +

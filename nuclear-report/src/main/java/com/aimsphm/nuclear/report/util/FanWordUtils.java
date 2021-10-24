@@ -56,14 +56,8 @@ import static com.aimsphm.nuclear.report.constant.PlaceholderConstant.PARAGRAPH_
 public class FanWordUtils {
 
     public static void main(String[] args) throws Exception {
-//        boolean flag = demo();
-//        if (flag) {
-//            return;
-//        }
-        FileInputStream is = new FileInputStream(new File("D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\static\\static-rcv.docx"));
-//        FileInputStream is = new FileInputStream(new File("D:\\Desktop\\demo2.docx"));
-//        FileInputStream is = new FileInputStream(new File("D:\\Desktop\\static-turbine1.docx"));
-//        File image = new File("D:\\Desktop\\work\\2021年2月26日 184224田湾部署\\test.png");
+        String path = "D:\\Java\\workspace\\nuclear_power\\nuclear-report\\src\\main\\resources\\static\\static-rcv.docx";
+        FileInputStream is = new FileInputStream(path);
         XWPFDocument doc = new XWPFDocument(is);
         HashMap<String, Object> data = Maps.newHashMap();
         data.put("#stopTimes#", "5次");
@@ -80,7 +74,6 @@ public class FanWordUtils {
         demo(data);
         BizReportConfigDO configDO = new BizReportConfigDO();
         configDO.setPlaceholder("#picRunningStatus#");
-//        configDO.setImage(image);
         data.put("#picRunningStatus#", configDO);
         new FanWordUtils().operationPlaceholderInWord(doc, data);
         final String docPath = ReportConstant.DOC_TEMP_DIR_PRE;
@@ -101,14 +94,14 @@ public class FanWordUtils {
                 "{\"conclusion\":{\"componentId\":29,\"conclusion\":\"滑动轴承故障\",\"conclusionCode\":\"CONC_16\",\"deleted\":false,\"deviceType\":0,\"faultType\":1,\"id\":16,\"reason\":\"1.润滑油参数改变；\\n2.油管、滤网堵塞；\\n3.轴瓦安装间隙不当；\\n4.负载或其他外力造成转子失稳\",\"solution\":\"1.检查油品变质，油液杂质\\n2.检查油管堵塞、滤网\\n3.检查、更换轴瓦\\n4.检查工艺参数，调整工艺\"},\"faultInfo\":{\"componentId\":29,\"conclusionId\":16,\"deleted\":false,\"deviceType\":0,\"id\":16,\"ruleCode\":\"RFC_16\",\"ruleDesc\":\"泵非驱动端滑动轴承故障\",\"ruleIntegrity\":0.8,\"ruleName\":\"滑动轴承故障\",\"ruleType\":0},\"features\":[{\"componentDesc\":\"2号上充泵泵非驱动端\",\"componentId\":29,\"componentName\":\"泵非驱动端\",\"deleted\":false,\"deviceType\":0,\"featureHi\":5.6,\"featureName\":\"泵非驱动端轴承振动-N_通频值\",\"featureType\":5,\"gmtModified\":1627553252000,\"id\":228,\"sampleMethod\":\"median\",\"sensorCode\":\"5M2RCV241MV-N\",\"sensorDesc\":\"5M2RCV241MV-N-vec-Rms\",\"timeGap\":\"10m\",\"timeRange\":\"1h\"},{\"componentDesc\":\"2号上充泵泵非驱动端\",\"componentId\":29,\"componentName\":\"泵非驱动端\",\"deleted\":false,\"deviceType\":0,\"featureHi\":10.0,\"featureName\":\"润滑油油质-N_油液粘度变化（40°C下）\",\"featureType\":5,\"id\":233,\"sampleMethod\":\"median\",\"sensorCode\":\"5M2RCV002ML-N\",\"sensorDesc\":\"5M2RCV002ML-N-ana-viscosity-40-vary\",\"timeGap\":\"10m\",\"timeRange\":\"1h\"},{\"componentDesc\":\"2号上充泵泵非驱动端\",\"componentId\":29,\"componentName\":\"泵非驱动端\",\"deleted\":false,\"deviceType\":0,\"featureHi\":0.5,\"featureName\":\"润滑油油质-N_微粒数总数\",\"featureType\":1,\"id\":237,\"sampleMethod\":\"max\",\"sensorCode\":\"5M2RCV002ML-N\",\"sensorDesc\":\"5M2RCV002ML-N-abr-total\",\"timeGap\":\"1m\",\"timeRange\":\"1h\"}],\"recommend\":0.227,\"ruleDesc\":\"泵非驱动端滑动轴承故障\"}," +
                 "{\"conclusion\":{\"componentId\":29,\"conclusion\":\"滑动轴承故障\",\"conclusionCode\":\"CONC_16\",\"deleted\":false,\"deviceType\":0,\"faultType\":1,\"id\":16,\"reason\":\"1.润滑油参数改变；\\n2.油管、滤网堵塞；\\n3.轴瓦安装间隙不当；\\n4.负载或其他外力造成转子失稳\",\"solution\":\"1.检查油品变质，油液杂质\\n2.检查油管堵塞、滤网\\n3.检查、更换轴瓦\\n4.检查工艺参数，调整工艺\"},\"faultInfo\":{\"componentId\":29,\"conclusionId\":16,\"deleted\":false,\"deviceType\":0,\"id\":16,\"ruleCode\":\"RFC_16\",\"ruleDesc\":\"泵非驱动端滑动轴承故障\",\"ruleIntegrity\":0.8,\"ruleName\":\"滑动轴承故障\",\"ruleType\":0},\"features\":[{\"componentDesc\":\"2号上充泵泵非驱动端\",\"componentId\":29,\"componentName\":\"泵非驱动端\",\"deleted\":false,\"deviceType\":0,\"featureHi\":5.6,\"featureName\":\"泵非驱动端轴承振动-N_通频值\",\"featureType\":5,\"gmtModified\":1627553252000,\"id\":228,\"sampleMethod\":\"median\",\"sensorCode\":\"5M2RCV241MV-N\",\"sensorDesc\":\"5M2RCV241MV-N-vec-Rms\",\"timeGap\":\"10m\",\"timeRange\":\"1h\"},{\"componentDesc\":\"2号上充泵泵非驱动端\",\"componentId\":29,\"componentName\":\"泵非驱动端\",\"deleted\":false,\"deviceType\":0,\"featureHi\":10.0,\"featureName\":\"润滑油油质-N_油液粘度变化（40°C下）\",\"featureType\":5,\"id\":233,\"sampleMethod\":\"median\",\"sensorCode\":\"5M2RCV002ML-N\",\"sensorDesc\":\"5M2RCV002ML-N-ana-viscosity-40-vary\",\"timeGap\":\"10m\",\"timeRange\":\"1h\"},{\"componentDesc\":\"2号上充泵泵非驱动端\",\"componentId\":29,\"componentName\":\"泵非驱动端\",\"deleted\":false,\"deviceType\":0,\"featureHi\":0.5,\"featureName\":\"润滑油油质-N_微粒数总数\",\"featureType\":1,\"id\":237,\"sampleMethod\":\"max\",\"sensorCode\":\"5M2RCV002ML-N\",\"sensorDesc\":\"5M2RCV002ML-N-abr-total\",\"timeGap\":\"1m\",\"timeRange\":\"1h\"}],\"recommend\":0.227,\"ruleDesc\":\"泵非驱动端滑动轴承故障\"}" +
                 "]}]";
-        System.out.println(s);
+        log.debug(s);
         List<ReportFaultReasoningVO> reportFaultReasoningVOS = JSON.parseArray(s, ReportFaultReasoningVO.class);
         data.put(PARAGRAPH_DIAGNOSIS_RESULTS, reportFaultReasoningVOS);
     }
 
     private static void demo(Map<String, Object> data) {
         String s = "[{\"eventName\":\"泵驱动端\",\"images\":{\"TW1RCV240MV\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot4663257404070570888.png\",\"pointIds\":\"TW1RCV240MV\",\"remark\":\"泵驱动端轴承振动\",\"title\":\"泵驱动端轴承振动实时数据\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot5187643431198984829.png\",\"pointIds\":\"TW1RCV240MV\",\"remark\":\"泵驱动端轴承振动\",\"title\":\"泵驱动端轴承振动参数自回归估计值\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot689965337317478253.png\",\"pointIds\":\"TW1RCV240MV\",\"remark\":\"泵驱动端轴承振动\",\"title\":\"泵驱动端轴承振动参数自回归残差值\"}],\"5M2RCV240MS-N-raw-stressWaveStrength\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot4309615434900271361.png\",\"pointIds\":\"5M2RCV240MS-N-raw-stressWaveStrength\",\"remark\":\"泵驱动端轴承声强-N声波强度\",\"title\":\"泵驱动端轴承声强-N声波强度实时数据\"}],\"5M2RCV240MV-N-vec-Rms\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot8579005503490138017.png\",\"pointIds\":\"5M2RCV240MV-N-vec-Rms\",\"remark\":\"泵驱动端轴承振动-N通频值\",\"title\":\"泵驱动端轴承振动-N通频值实时数据\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot7761695180506967482.png\",\"pointIds\":\"5M2RCV240MV-N-vec-Rms\",\"remark\":\"泵驱动端轴承振动-N通频值\",\"title\":\"泵驱动端轴承振动-N通频值参数自回归估计值\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot3020700030873522861.png\",\"pointIds\":\"5M2RCV240MV-N-vec-Rms\",\"remark\":\"泵驱动端轴承振动-N通频值\",\"title\":\"泵驱动端轴承振动-N通频值参数自回归残差值\"}]}},{\"eventName\":\"泵非驱动端\",\"images\":{\"TW1RCV241MV\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot1054045441427823598.png\",\"pointIds\":\"TW1RCV241MV\",\"remark\":\"泵非驱动端轴承振动\",\"title\":\"泵非驱动端轴承振动实时数据\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot3262110023630006662.png\",\"pointIds\":\"TW1RCV241MV\",\"remark\":\"泵非驱动端轴承振动\",\"title\":\"泵非驱动端轴承振动参数自回归估计值\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot7181083528529605076.png\",\"pointIds\":\"TW1RCV241MV\",\"remark\":\"泵非驱动端轴承振动\",\"title\":\"泵非驱动端轴承振动参数自回归残差值\"}],\"5M2RCV241MV-N-vec-Rms\":[{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot4793369533760853843.png\",\"pointIds\":\"5M2RCV241MV-N-vec-Rms\",\"remark\":\"泵非驱动端轴承振动-N通频值\",\"title\":\"泵非驱动端轴承振动-N通频值实时数据\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot4559130627489170605.png\",\"pointIds\":\"5M2RCV241MV-N-vec-Rms\",\"remark\":\"泵非驱动端轴承振动-N通频值\",\"title\":\"泵非驱动端轴承振动-N通频值参数自回归估计值\"},{\"image\":\"C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\screenshot5613300996878057224.png\",\"pointIds\":\"5M2RCV241MV-N-vec-Rms\",\"remark\":\"泵非驱动端轴承振动-N通频值\",\"title\":\"泵非驱动端轴承振动-N通频值参数自回归残差值\"}]}}]";
-        System.out.println(s);
+        log.debug(s);
         List<ReportAlarmEventVO> imageList = JSON.parseArray(s, ReportAlarmEventVO.class);
         data.put(PARAGRAPH_GRAPH_DATA_ITEMS, imageList);
     }
@@ -130,32 +123,36 @@ public class FanWordUtils {
         if (Objects.isNull(tableList)) {
             return;
         }
-        for (; tableList.hasNext(); ) {
+        while (tableList.hasNext()) {
             XWPFTable table = tableList.next();
             List<XWPFTableRow> rows = table.getRows();
             for (XWPFTableRow row : rows) {
                 List<XWPFTableCell> tableCells = row.getTableCells();
-                for (XWPFTableCell cell : tableCells) {
-                    String text = cell.getText();
-                    if (text == null || text.length() == 0) {
-                        continue;
-                    }
-                    if (log.isDebugEnabled() && text.contains("#")) {
-                        log.debug("{}", text);
-                    }
-                    boolean isNeedWrite = text.startsWith(HASH) && text.endsWith(HASH);
-                    //设置均值
-                    if (isNeedWrite && data.containsKey(text)) {
-                        String string = MapUtils.getString(data, text);
-                        setCellText(cell, string, 11, false);
-                    } else if (isNeedWrite) {
-                        //删除第一个位置的文字
-                        cell.removeParagraph(0);
-                        cell.setText(WORD_BLANK);
-                    }
-                    WordUtils.setAlignmentCenter(cell);
-                }
+                operationTableCells(data, tableCells);
             }
+        }
+    }
+
+    private void operationTableCells(Map<String, Object> data, List<XWPFTableCell> tableCells) {
+        for (XWPFTableCell cell : tableCells) {
+            String text = cell.getText();
+            if (text == null || text.length() == 0) {
+                continue;
+            }
+            if (log.isDebugEnabled() && text.contains("#")) {
+                log.debug("{}", text);
+            }
+            boolean isNeedWrite = text.startsWith(HASH) && text.endsWith(HASH);
+            //设置均值
+            if (isNeedWrite && data.containsKey(text)) {
+                String string = MapUtils.getString(data, text);
+                setCellText(cell, string, 11, false);
+            } else if (isNeedWrite) {
+                //删除第一个位置的文字
+                cell.removeParagraph(0);
+                cell.setText(WORD_BLANK);
+            }
+            WordUtils.setAlignmentCenter(cell);
         }
     }
 
@@ -195,42 +192,46 @@ public class FanWordUtils {
             return;
         }
         ListIterator<XWPFParagraph> it = paragraphList.listIterator();
-        for (; it.hasNext(); ) {
+        while (it.hasNext()) {
             XWPFParagraph paragraph = it.next();
             List<XWPFRun> runs = paragraph.getRuns();
-            for (XWPFRun run : runs) {
-                String text = run.getText(0);
-                if (text == null || text.length() == 0) {
+            operationParagraphRuns(doc, data, paragraph, runs);
+        }
+    }
+
+    private void operationParagraphRuns(XWPFDocument doc, Map<String, Object> data, XWPFParagraph paragraph, List<XWPFRun> runs) {
+        for (XWPFRun run : runs) {
+            String text = run.getText(0);
+            if (text == null || text.length() == 0) {
+                continue;
+            }
+            if (log.isDebugEnabled() && text.contains("#")) {
+                log.debug("{}", text);
+            }
+            boolean isNeedWrite = text.startsWith("#") && text.lastIndexOf("#") != 0;
+            if (text.startsWith("#pic") && text.endsWith("#")) {
+                BizReportConfigDO config = (BizReportConfigDO) data.get(text);
+                if (Objects.isNull(config) || Objects.isNull(config.getImage())) {
+                    run.setText("暂无数据", 0);
                     continue;
                 }
-                if (log.isDebugEnabled() && text.contains("#")) {
-                    log.debug("{}", text);
-                }
-                boolean isNeedWrite = text.startsWith("#") && text.lastIndexOf("#") != 0;
-                if (text.startsWith("#pic") && text.endsWith("#")) {
-                    BizReportConfigDO config = (BizReportConfigDO) data.get(text);
-                    if (Objects.isNull(config) || Objects.isNull(config.getImage())) {
-                        run.setText("暂无数据", 0);
-                        continue;
-                    }
-                    //设置图片
-                    WordUtils.addPicture(run, config.getImage(), config.getTitle());
+                //设置图片
+                WordUtils.addPicture(run, config.getImage(), config.getTitle());
 //                    最值替换
-                } else if (text.startsWith("#table")) {
-                    addAlarmEventTable(run, paragraph, doc, (List<Object[]>) data.get(text));
-                } else if (text.startsWith("#paragraph")) {
-                    //在段落中添加文字或者是图片
-                    List paragraphData = (List) data.get(text);
-                    filParagraphWithData(run, paragraphData);
-                } else {
-                    //设置段落中的文本
-                    if (isNeedWrite && data.containsKey(text)) {
-                        run.setText(MapUtils.getString(data, text), 0);
-                    } else if (text.startsWith("#") && text.contains("_max_tag#")) {
-                        run.setText(WORD_BLANK, 0);
-                    } else if (isNeedWrite) {
-                        run.setText(WORD_BLANK, 0);
-                    }
+            } else if (text.startsWith("#table")) {
+                addAlarmEventTable(run, paragraph, doc, (List<Object[]>) data.get(text));
+            } else if (text.startsWith("#paragraph")) {
+                //在段落中添加文字或者是图片
+                List paragraphData = (List) data.get(text);
+                filParagraphWithData(run, paragraphData);
+            } else {
+                //设置段落中的文本
+                if (isNeedWrite && data.containsKey(text)) {
+                    run.setText(MapUtils.getString(data, text), 0);
+                } else if (text.startsWith("#") && text.contains("_max_tag#")) {
+                    run.setText(WORD_BLANK, 0);
+                } else if (isNeedWrite) {
+                    run.setText(WORD_BLANK, 0);
                 }
             }
         }
@@ -346,7 +347,6 @@ public class FanWordUtils {
                 BizReportConfigDO configDO = value.get(j);
                 if (j == 0) {
                     String alias = Objects.isNull(configDO.getRemark()) ? BLANK : configDO.getRemark();
-//                        String pointId = Objects.isNull(configDO.getPointIds()) ? BLANK : configDO.getPointIds();
                     run.setText(String.format("（%s）%s", (i++), alias), -1);
                     run.addCarriageReturn();
                 }

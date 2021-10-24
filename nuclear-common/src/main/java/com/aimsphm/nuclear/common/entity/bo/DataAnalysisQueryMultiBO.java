@@ -6,14 +6,13 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity.bo
- * @Description: <振动分析调用算法>
- * @Author: MILLA
- * @CreateDate: 2020/3/6 10:58
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/6 10:58
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:振动分析调用算法
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/09/04 14:42
  */
 @Data
 public class DataAnalysisQueryMultiBO {

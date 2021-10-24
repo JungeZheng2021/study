@@ -8,19 +8,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @Package: com.aimsphm.nuclear.core.config
- * @Description: <测点位置配置类>
- * @Author: MILLA
- * @CreateDate: 2020/6/28 10:54
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/28 10:54
- * @UpdateRemark: <目前弃用>
- * @Version: 1.0
+ * <p>
+ * 功能描述:测点位置配置类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/6/28 10:54
  */
 @Configuration
 @ConfigurationProperties(prefix = CodeLocationConfig.CONF_PREFIX)
 public class CodeLocationConfig {
-    //默认前缀
+    /**
+     * 默认前缀
+     */
     public static final String CONF_PREFIX = "point.location";
 
     private Map<String, String> properties;
@@ -38,7 +39,7 @@ public class CodeLocationConfig {
             }
             return Stream.of(s).collect(Collectors.toList());
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public void setProperties(Map<String, String> properties) {

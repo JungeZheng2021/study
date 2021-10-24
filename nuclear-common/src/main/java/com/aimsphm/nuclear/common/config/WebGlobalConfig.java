@@ -3,6 +3,7 @@ package com.aimsphm.nuclear.common.config;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -25,14 +26,12 @@ import java.util.TimeZone;
  * @UpdateRemark: <>
  * @Version: 1.0
  */
+@Slf4j
 @Configuration
 public class WebGlobalConfig extends WebMvcConfigurationSupport {
 
     @Value("${spring.jackson.time-zone:GMT+8}")
     private String timeZone;
-//
-//    @Autowired
-//    private HandlerInterceptor interceptor;
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -64,19 +63,7 @@ public class WebGlobalConfig extends WebMvcConfigurationSupport {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-//        if (!enableSwagger) {
-//            registry.addInterceptor(interceptor).addPathPatterns("/**");
-//            return;
-//        }
-//        //启用swagger
-//        ArrayList<String> list = Lists.newArrayList();
-//        list.add("/swagger-resources/**");
-//        list.add("/swagger-ui.html");
-//        list.add("/swagger-resources");
-//        list.add("/v2/api-docs");
-//        list.add("/webjars/**");
-//        list.add("/error");
-//        registry.addInterceptor(interceptor).addPathPatterns("/**").excludePathPatterns(list);
+        log.debug("addInterceptors");
     }
 
     @Override

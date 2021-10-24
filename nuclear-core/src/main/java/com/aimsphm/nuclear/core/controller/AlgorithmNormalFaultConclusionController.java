@@ -14,14 +14,13 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.core.controller
- * @Description: <-前端控制器>
- * @Author: MILLA
- * @CreateDate: 2021-06-09
- * @UpdateUser: MILLA
- * @UpdateDate: 2021-06-09
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:前端控制器
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/12/23 10:54
  */
 @RestController
 @Api(tags = "AlgorithmNormalFaultConclusion--相关接口")

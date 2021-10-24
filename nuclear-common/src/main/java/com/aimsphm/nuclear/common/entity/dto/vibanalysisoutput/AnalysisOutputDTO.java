@@ -5,6 +5,15 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/3/6 10:04
+ */
 @Data
 public class AnalysisOutputDTO implements Serializable {
 
@@ -16,9 +25,9 @@ public class AnalysisOutputDTO implements Serializable {
     private List<List<Object>> fftData;
 
     private List<List<Object>> hilData;
-    private List<List<List<Object>>> dtwpData;
-    private List<List<List<Object>>> dtwpFFTData;
-    private List<List<List<Object>>> dtwpHILData;
+    private List<List<List<Object>>> dtWpData;
+    private List<List<List<Object>>> dtWpFFTData;
+    private List<List<List<Object>>> dtWpHILData;
     private String warning;
 
 

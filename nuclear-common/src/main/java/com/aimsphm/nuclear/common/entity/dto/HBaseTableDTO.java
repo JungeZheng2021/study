@@ -6,14 +6,13 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @Package: com.aimsphm.nuclear.hbase.entity
- * @Description: <>
- * @Author: MILLA
- * @CreateDate: 2020/3/5 17:50
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/3/5 17:50
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/3/5 17:50
  */
 @Data
 public class HBaseTableDTO {

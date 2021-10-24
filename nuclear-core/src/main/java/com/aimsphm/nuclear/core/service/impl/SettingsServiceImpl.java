@@ -142,10 +142,7 @@ public class SettingsServiceImpl implements SettingsService {
 
     private void sendMessage2Edge(CommonSensorSettingsDO dto, CommonSensorSettingsDO one) {
         //如果两个对象完全一样，说明新增数据(需要下发配置)
-        boolean flag = Objects.isNull(dto.getEigenvalueSamplePeriod()) ? true : dto.getEigenvalueSamplePeriod().equals(one.getEigenvalueSamplePeriod())
-                && Objects.isNull(dto.getWaveformSampleDuration()) ? true : dto.getWaveformSampleDuration().equals(one.getWaveformSampleDuration())
-                && Objects.isNull(dto.getWaveformSamplePeriod()) ? true : dto.getWaveformSamplePeriod().equals(one.getWaveformSamplePeriod())
-                && Objects.isNull(dto.getDataReset()) ? true : dto.getDataReset().equals(one.getDataReset());
+        boolean flag = isFlag(dto, one);
         //数据和上次一样且上次是配置成功，不下发数据
         if (flag && ConfigStatusEnum.CONFIG_SUCCESS.getValue().equals(one.getConfigStatus())) {
             return;
@@ -163,6 +160,14 @@ public class SettingsServiceImpl implements SettingsService {
             dto.setConfigStatus(ConfigStatusEnum.CONFIG_FAILED.getValue());
             settingsService.updateById(dto);
         }
+    }
+
+    private boolean isFlag(CommonSensorSettingsDO dto, CommonSensorSettingsDO one) {
+        boolean sample = Objects.isNull(dto.getEigenvalueSamplePeriod()) ? true : dto.getEigenvalueSamplePeriod().equals(one.getEigenvalueSamplePeriod());
+        boolean waveDuration = Objects.isNull(dto.getWaveformSampleDuration()) ? true : dto.getWaveformSampleDuration().equals(one.getWaveformSampleDuration());
+        boolean wavePeriod = Objects.isNull(dto.getWaveformSamplePeriod()) ? true : dto.getWaveformSamplePeriod().equals(one.getWaveformSamplePeriod());
+        boolean reset = Objects.isNull(dto.getDataReset()) ? true : dto.getDataReset().equals(one.getDataReset());
+        return sample && waveDuration && wavePeriod && reset;
     }
 
     private ConfigSettingsDTO initSettingsByCategory(CommonSensorSettingsDO dto, CommonSensorSettingsDO one) {

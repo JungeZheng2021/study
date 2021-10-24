@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @Package: com.aimsphm.nuclear.report.job
- * @Description: <泵类状态监测报告定时任务>
- * @Author: MILLA
- * @CreateDate: 2020/5/12 18:58
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/5/12 18:58
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:泵类状态监测报告定时任务
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/5/12 18:58
  */
 @Slf4j
 public class PumReportJob implements Job {
@@ -43,7 +42,7 @@ public class PumReportJob implements Job {
                 return;
             }
             CountDownLatch count = new CountDownLatch(deviceList.size());
-            deviceList.stream().forEach((device) -> {
+            deviceList.stream().forEach(device -> {
                 try {
                     queryBO.setDeviceId(device.getId());
                     queryBO.setDeviceName(device.getDeviceName());

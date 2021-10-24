@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @Package: com.aimsphm.nuclear.report.util
- * @Description: <主泵中使用的word工具类>
- * @Author: MILLA
- * @CreateDate: 2020/6/11 18:22
- * @UpdateUser: MILLA
- * @UpdateDate: 2020/6/11 18:22
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:word工具类
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/6/11 18:22
  */
 @Slf4j
 public final class WordUtils {
@@ -172,7 +171,7 @@ public final class WordUtils {
         //  --jc开始-->>
         CTJc jc = Objects.isNull(ppr.getJc()) ? ppr.addNewJc() : ppr.getJc();
         //设置单元格对齐方式//水平对齐
-        jc.setVal(alignment.equals("left") ? STJc.LEFT : alignment.equals("right") ? STJc.RIGHT : STJc.CENTER);
+        jc.setVal(alignment.equals("left") ? STJc.LEFT : (alignment.equals("right") ? STJc.RIGHT : STJc.CENTER));
         //  <<--jc结束--
         //  --pRpr开始-->>
         CTParaRPr pRpr = Objects.isNull(ppr.getRPr()) ? ppr.addNewRPr() : ppr.getRPr();
@@ -193,7 +192,7 @@ public final class WordUtils {
         // 设置单元格字体大小
         pszCs.setVal(bFontSize);
         List<CTR> rList = p.getRList();
-        CTR r = rList != null && rList.size() > 0 ? rList.get(0) : p.addNewR();
+        CTR r = rList != null && !rList.isEmpty() ? rList.get(0) : p.addNewR();
         //--rpr开始-->>
         CTRPr rpr = Objects.isNull(r.getRPr()) ? r.addNewRPr() : r.getRPr();
 
@@ -221,7 +220,7 @@ public final class WordUtils {
         CTHpsMeasure szCs = Objects.isNull(rpr.getSzCs()) ? rpr.addNewSz() : rpr.getSzCs();
         szCs.setVal(bFontSize);
         List<CTText> tList = r.getTList();
-        CTText t = tList != null && tList.size() > 0 ? tList.get(0) : r.addNewT();
+        CTText t = tList != null && !tList.isEmpty() ? tList.get(0) : r.addNewT();
         t.setStringValue(content);
     }
 }

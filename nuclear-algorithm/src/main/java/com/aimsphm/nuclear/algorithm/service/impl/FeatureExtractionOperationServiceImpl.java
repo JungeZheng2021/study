@@ -74,21 +74,8 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
         if (CollectionUtils.isEmpty(params)) {
             return;
         }
-        params.stream().forEach(x -> {
-            if (Objects.nonNull(FeatureNameEnum.getByValue(x.getFeatName())) && Objects.nonNull(FeatureNameEnum.getByValue(x.getFeatName()).getValue())) {
-                queryPointHistory(x);
-                return;
-            }
-            if (PointFeatureEnum.VEC.getValue().equals(x.getType())) {
-                x.setSignalKey(String.format(REDIS_WAVE_DATA_VEC, x.getSensorCode()));
-                return;
-            }
-            if (PointFeatureEnum.ACC.getValue().equals(x.getType()) || PointFeatureEnum.ENVE.getValue().equals(x.getType())) {
-                x.setSignalKey(String.format(REDIS_WAVE_DATA_ACC, x.getSensorCode()));
-                return;
-            }
-        });
-        List<FeatureExtractionParamDTO> collect = params.stream().filter(x -> filterParams(x)).collect(Collectors.toList());
+        setRedisKey(params);
+        List<FeatureExtractionParamDTO> collect = params.stream().filter(this::filterParams).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(collect)) {
             log.debug("has no data, invoke algorithm not active.....");
             return;
@@ -98,6 +85,10 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
             log.error("algorithm server's response Data is wrong...");
             return;
         }
+        operateResponseData(collect, values);
+    }
+
+    private void operateResponseData(List<FeatureExtractionParamDTO> collect, List<FeatureExtractionResponseDTO> values) {
         List<Put> list = Lists.newArrayList();
         for (int i = 0, len = collect.size(); i < len; i++) {
             FeatureExtractionParamDTO param = collect.get(i);
@@ -127,6 +118,23 @@ public class FeatureExtractionOperationServiceImpl implements FeatureExtractionO
         } catch (IOException e) {
             log.error("store data 2 hBase failed： {}", e);
         }
+    }
+
+    private void setRedisKey(List<FeatureExtractionParamDTO> params) {
+        params.stream().forEach(x -> {
+            if (Objects.nonNull(FeatureNameEnum.getByValue(x.getFeatName())) && Objects.nonNull(FeatureNameEnum.getByValue(x.getFeatName()).getValue())) {
+                queryPointHistory(x);
+                return;
+            }
+            if (PointFeatureEnum.VEC.getValue().equals(x.getType())) {
+                x.setSignalKey(String.format(REDIS_WAVE_DATA_VEC, x.getSensorCode()));
+                return;
+            }
+            if (PointFeatureEnum.ACC.getValue().equals(x.getType()) || PointFeatureEnum.ENVE.getValue().equals(x.getType())) {
+                x.setSignalKey(String.format(REDIS_WAVE_DATA_ACC, x.getSensorCode()));
+                return;
+            }
+        });
     }
 
     private boolean filterParams(FeatureExtractionParamDTO x) {

@@ -90,35 +90,39 @@ public class DownSampleServiceImpl implements DownSampleService {
             List<List<Object>> lists = listHistoryDataByScan(point, start, end, (int) timesInHour);
             log.debug("query result:{}", JSON.toJSONString(lists));
             long arraySize = timeRangeValue / TimeUnitEnum.HOUR.getValue() * timesInHour;
-            LambdaQueryWrapper<JobDownSampleDO> w = Wrappers.lambdaQuery(JobDownSampleDO.class);
-            w.eq(JobDownSampleDO::getPointId, pointId).eq(JobDownSampleDO::getComponentId, x.getComponentId());
-            w.last("limit 1");
-            JobDownSampleDO one = downSampleService.getOne(w);
-            if (Objects.isNull(one)) {
-                one = new JobDownSampleDO();
-                one.setPointId(pointId);
-                one.setComponentId(x.getComponentId());
-            }
-            ArrayDeque queue = Objects.isNull(one.getData()) ? new ArrayDeque() : JSON.parseObject(one.getData(), ArrayDeque.class);
-            for (List<Object> obj : lists) {
-                if (containsItems(queue, obj)) {
-                    log.debug("包含指定的数值：{}", obj);
-                    continue;
-                }
-                if (queue.size() < arraySize) {
-                    queue.add(obj);
-                    continue;
-                }
-                queue.removeFirst();
-                queue.add(obj);
-            }
-            String dataNew = JSON.toJSONString(queue.toArray());
-            LambdaUpdateWrapper<JobDownSampleDO> update = Wrappers.lambdaUpdate(JobDownSampleDO.class);
-            update.eq(JobDownSampleDO::getPointId, pointId).eq(JobDownSampleDO::getComponentId, x.getComponentId());
-            one.setData(dataNew);
-            one.setGmtModified(new Date());
-            downSampleService.saveOrUpdate(one, update);
+            saveOrUpdate(x, pointId, lists, arraySize);
         });
+    }
+
+    private void saveOrUpdate(AlgorithmPrognosticFaultFeatureDO x, String pointId, List<List<Object>> lists, long arraySize) {
+        LambdaQueryWrapper<JobDownSampleDO> w = Wrappers.lambdaQuery(JobDownSampleDO.class);
+        w.eq(JobDownSampleDO::getPointId, pointId).eq(JobDownSampleDO::getComponentId, x.getComponentId());
+        w.last("limit 1");
+        JobDownSampleDO one = downSampleService.getOne(w);
+        if (Objects.isNull(one)) {
+            one = new JobDownSampleDO();
+            one.setPointId(pointId);
+            one.setComponentId(x.getComponentId());
+        }
+        ArrayDeque queue = Objects.isNull(one.getData()) ? new ArrayDeque() : JSON.parseObject(one.getData(), ArrayDeque.class);
+        for (List<Object> obj : lists) {
+            if (containsItems(queue, obj)) {
+                log.debug("包含指定的数值：{}", obj);
+                continue;
+            }
+            if (queue.size() < arraySize) {
+                queue.add(obj);
+                continue;
+            }
+            queue.removeFirst();
+            queue.add(obj);
+        }
+        String dataNew = JSON.toJSONString(queue.toArray());
+        LambdaUpdateWrapper<JobDownSampleDO> update = Wrappers.lambdaUpdate(JobDownSampleDO.class);
+        update.eq(JobDownSampleDO::getPointId, pointId).eq(JobDownSampleDO::getComponentId, x.getComponentId());
+        one.setData(dataNew);
+        one.setGmtModified(new Date());
+        downSampleService.saveOrUpdate(one, update);
     }
 
     private boolean containsItems(ArrayDeque queue, List<Object> obj) {
@@ -137,10 +141,9 @@ public class DownSampleServiceImpl implements DownSampleService {
                 return IntStream.range(0, timesInHour).mapToObj(x -> Lists.newArrayList(startTime + x * 3600 * 1000 / timesInHour, (Object) null)).collect(Collectors.toList());
             }
             ArrayList<List<Object>> data = Lists.newArrayList();
-            for (int i = 0, len = lists.size(); i < len; ) {
+            for (int i = 0, len = lists.size(); i < len; i = i + (lists.size() <= timesInHour ? 1 : lists.size() / timesInHour)) {
                 List<Object> objects = lists.get(i);
                 data.add(objects);
-                i = i + (lists.size() <= timesInHour ? 1 : lists.size() / timesInHour);
             }
             return data;
         } catch (IOException e) {

@@ -38,7 +38,7 @@ public final class PropertiesReaderUtil {
      * in = PropertyUtil.class.getResourceAsStream("/properties/message_en_US.properties");
      * in = PropertiesReaderUtil.class.getClassLoader().getResourceAsStream("properties/message_en_US.properties");
      */
-    private synchronized static void loadProps(Properties properties, String fileName) {
+    private static synchronized void loadProps(Properties properties, String fileName) {
         logger.debug("start loading properties");
         try (InputStream in = PropertiesReaderUtil.class.getClassLoader().getResourceAsStream(fileName)) {
             properties.load(new InputStreamReader(in, ENCODING));

@@ -23,8 +23,7 @@ public class CorsFilter implements Filter {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-
+        log.debug("...........destroy...........");
     }
 
     @Override
@@ -55,14 +54,12 @@ public class CorsFilter implements Filter {
     private Claim getNameFromToken(String authorization) {
         DecodedJWT jwt = JWT.decode(authorization);
         Map<String, Claim> map = jwt.getClaims();
-        Claim username = map.get("username");
-        return username;
+        return map.get("username");
     }
 
     @Override
     public void init(FilterConfig arg0) throws ServletException {
-        // TODO Auto-generated method stub
-
+        log.debug("...........init...........");
     }
 
 }

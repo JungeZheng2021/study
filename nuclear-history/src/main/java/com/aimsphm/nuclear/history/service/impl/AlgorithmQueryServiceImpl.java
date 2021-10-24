@@ -19,7 +19,6 @@ import com.aimsphm.nuclear.history.service.AlgorithmQueryService;
 import com.aimsphm.nuclear.history.service.HBaseService;
 import com.aimsphm.nuclear.history.service.HistoryQueryService;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
@@ -27,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_FAMILY_NPC_VIBRATION_RAW;
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.H_BASE_TABLE_NPC_PHM_DATA;
@@ -57,7 +53,7 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
 
     @Override
     public Map<String, HistoryDataVO> listMovingAverageInfo(HistoryQueryMultiBO multi) {
-        WhetherThreadLocal.INSTANCE.setting(false);
+        WhetherThreadLocal.INSTANCE.perhaps(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.MOVING_AVERAGE.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
         data.entrySet().forEach(x -> {
@@ -75,8 +71,6 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
 
     @Override
     public Map<String, HistoryDataVO> listPredictionInfo(HistoryQueryMultiBO multi) {
-        //是否需要获取阈值
-//        WhetherThreadLocal.INSTANCE.setWhether(false);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.TREND_FORECAST.getType());
         Map<String, HistoryDataVO> data = historyService.listHistoryDataWithPointIdsByScan(multi);
         data.entrySet().forEach(x -> {
@@ -95,7 +89,6 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
 
     @Override
     public Map<String, List<List<List<Object>>>> listVibrationAnalysisData(DataAnalysisQueryMultiBO query) {
-        Map<String, List<List<List<Object>>>> result = Maps.newHashMap();
         Assert.notNull(query, "params can not be null");
         AlgorithmTypeEnum type = AlgorithmTypeEnum.getByValue(query.getType());
         Assert.notNull(type, "this algorithm is not supported");
@@ -126,6 +119,11 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
         analysisQuery.setTableName(H_BASE_TABLE_NPC_PHM_DATA);
         Map<String, Map<Long, Object>> retVal = hBaseService.listArrayData(analysisQuery);
         AlgorithmHandlerService algorithm = handler.get(AlgorithmTypeEnum.DATA_ANALYSIS.getType());
+        return getStringListMap(type, pointIds, timestamps, pointList, retVal, algorithm);
+    }
+
+    private Map<String, List<List<List<Object>>>> getStringListMap(AlgorithmTypeEnum type, List<String> pointIds, List<Long> timestamps, List<CommonMeasurePointDO> pointList, Map<String, Map<Long, Object>> retVal, AlgorithmHandlerService algorithm) {
+        Map<String, List<List<List<Object>>>> result = new HashMap<>(16);
         for (int i = 0; i < pointIds.size(); i++) {
             Long timestamp = timestamps.get(i);
             CommonMeasurePointDO point = pointList.get(i);
@@ -144,7 +142,6 @@ public class AlgorithmQueryServiceImpl implements AlgorithmQueryService {
             param.setSignal((Double[]) o);
             param.setFs(25000);
 
-            //TODO 以下参数还需要从表中获取
             //根据sensorCode查询以下配置
             param.setMinFrequency(0);
             param.setMaxFrequency(10000);

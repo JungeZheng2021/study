@@ -31,7 +31,7 @@ public class RedisLock {
     /**
      * 解锁脚本，原子操作
      */
-    private static final String unLockScript =
+    private static final String UN_LOCK_SCRIPT =
             "if redis.call(\"get\",KEYS[1]) == ARGV[1]\n"
                     + "then\n"
                     + "    return redis.call(\"del\",KEYS[1])\n"
@@ -116,7 +116,7 @@ public class RedisLock {
         }
         RedisConnection conn = factory.getConnection();
         try {
-            Long result = conn.scriptingCommands().eval(unLockScript.getBytes(StandardCharsets.UTF_8), ReturnType.INTEGER, 1, keysAndArgs);
+            Long result = conn.scriptingCommands().eval(UN_LOCK_SCRIPT.getBytes(StandardCharsets.UTF_8), ReturnType.INTEGER, 1, keysAndArgs);
             if (result != null && result > 0) {
                 return true;
             }

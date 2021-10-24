@@ -3,12 +3,10 @@ package com.aimsphm.nuclear.common.entity.bo;
 import com.aimsphm.nuclear.common.enums.AlarmMessageEnum;
 import com.aimsphm.nuclear.common.enums.ThresholdAlarmStatusEnum;
 import com.aimsphm.nuclear.common.enums.ThresholdStatusEnum;
-import com.aimsphm.nuclear.common.util.BigDecimalUtils;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.Objects;
@@ -16,14 +14,13 @@ import java.util.Objects;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.COLON;
 
 /**
- * @Package: com.aimsphm.nuclear.common.entity
- * @Description: <报警事件信息实体>
- * @Author: MILLA
- * @CreateDate: 2020-12-28
- * @UpdateUser: MILLA
- * @UpdateDate: 2020-12-28
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:查询参数
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/21 17:33
  */
 @Data
 @ApiModel(value = "报警事件信息实体")

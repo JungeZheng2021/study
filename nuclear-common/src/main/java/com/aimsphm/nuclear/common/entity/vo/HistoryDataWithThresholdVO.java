@@ -4,14 +4,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * @Package: com.aimsphm.nuclear.history.entity.vo
- * @Description: <>
- * @Author: milla
- * @CreateDate: 2020/11/26 18:11
- * @UpdateUser: milla
- * @UpdateDate: 2020/11/26 18:11
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:显示对象
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2020/11/26 18:11
  */
 @Data
 public class HistoryDataWithThresholdVO extends HistoryDataVO {

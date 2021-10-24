@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.common.service.impl;
 
 import com.aimsphm.nuclear.common.entity.CommonSensorDO;
 import com.aimsphm.nuclear.common.entity.CommonSensorSettingsDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.SensorVO;
 import com.aimsphm.nuclear.common.enums.ConfigStatusEnum;
@@ -22,10 +21,8 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,6 +45,8 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
     @Resource
     private CommonSensorSettingsService settingsService;
 
+    private static final String LIMIT_SQL = "limit 1";
+
     @Override
     public Page<CommonSensorDO> listCommonSensorByPageWithParams(QueryBO<CommonSensorDO> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
@@ -63,13 +62,7 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
      * @return
      */
     private LambdaQueryWrapper<CommonSensorDO> customerConditions(QueryBO<CommonSensorDO> queryBO) {
-        LambdaQueryWrapper<CommonSensorDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
-        return wrapper;
+        return queryBO.lambdaQuery();
     }
 
     @Override
@@ -90,7 +83,8 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
             vo.setEdgeName(key);
             vo.setSensorList(value);
             LambdaQueryWrapper<CommonSensorSettingsDO> query = Wrappers.lambdaQuery(CommonSensorSettingsDO.class);
-            query.eq(CommonSensorSettingsDO::getEdgeId, sensorDO.getEdgeId()).eq(CommonSensorSettingsDO::getCategory, sensorDO.getCategory()).last("limit 1");
+            query.eq(CommonSensorSettingsDO::getEdgeId, sensorDO.getEdgeId())
+                    .eq(CommonSensorSettingsDO::getCategory, sensorDO.getCategory()).last(LIMIT_SQL);
             CommonSensorSettingsDO one = settingsService.getOne(query);
             if (Objects.nonNull(one)) {
                 vo.setSettingsStatus(one.getConfigStatus());
@@ -111,19 +105,19 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
     @Override
     public CommonSensorSettingsDO getSensorConfigBySensorCode(String sensorCode, Integer category) {
         LambdaQueryWrapper<CommonSensorDO> query = Wrappers.lambdaQuery(CommonSensorDO.class);
-        query.eq(CommonSensorDO::getSensorCode, sensorCode).eq(CommonSensorDO::getCategory, category).last("limit 1");
+        query.eq(CommonSensorDO::getSensorCode, sensorCode).eq(CommonSensorDO::getCategory, category).last(LIMIT_SQL);
         CommonSensorDO one = this.getOne(query);
         if (Objects.isNull(one)) {
             return null;
         }
         LambdaQueryWrapper<CommonSensorSettingsDO> wrapper = Wrappers.lambdaQuery(CommonSensorSettingsDO.class);
         wrapper.eq(CommonSensorSettingsDO::getEdgeId, one.getEdgeId()).eq(CommonSensorSettingsDO::getCategory, category)
-                .eq(CommonSensorSettingsDO::getConfigStatus, ConfigStatusEnum.CONFIG_SUCCESS.getValue()).last("limit 1");
+                .eq(CommonSensorSettingsDO::getConfigStatus, ConfigStatusEnum.CONFIG_SUCCESS.getValue()).last(LIMIT_SQL);
         return settingsService.getOne(wrapper);
     }
 
     @Override
-    public List<CommonSensorDO> listCommonSensorBySensorCodeList(ArrayList<String> sensorCodeList) {
+    public List<CommonSensorDO> listCommonSensorBySensorCodeList(List<String> sensorCodeList) {
         LambdaQueryWrapper<CommonSensorDO> wrapper = Wrappers.lambdaQuery(CommonSensorDO.class);
         wrapper.in(CommonSensorDO::getSensorCode, sensorCodeList);
         return this.list(wrapper);
@@ -151,7 +145,8 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
         if (Objects.nonNull(resetAbrasion)) {
             LambdaUpdateWrapper<CommonSensorSettingsDO> update = Wrappers.lambdaUpdate(CommonSensorSettingsDO.class);
             update.set(CommonSensorSettingsDO::getConfigStatus, resetAbrasion == 1 ? ConfigStatusEnum.CONFIG_SUCCESS.getValue() : ConfigStatusEnum.CONFIG_FAILED.getValue())
-                    .eq(CommonSensorSettingsDO::getEdgeCode, edgeCode).eq(CommonSensorSettingsDO::getCategory, PointCategoryEnum.OIL_QUALITY.getValue());
+                    .eq(CommonSensorSettingsDO::getEdgeCode, edgeCode)
+                    .eq(CommonSensorSettingsDO::getCategory, PointCategoryEnum.OIL_QUALITY.getValue());
             settingsService.update(update);
             return;
         }
@@ -174,7 +169,8 @@ public class CommonSensorServiceImpl extends ServiceImpl<CommonSensorMapper, Com
             sensitivity.forEach((sensorCode, status) -> {
                 LambdaUpdateWrapper<CommonSensorDO> update = Wrappers.lambdaUpdate(CommonSensorDO.class);
                 update.set(CommonSensorDO::getConfigStatus, status == 1 ? ConfigStatusEnum.CONFIG_SUCCESS.getValue() : ConfigStatusEnum.CONFIG_FAILED.getValue())
-                        .eq(CommonSensorDO::getEdgeCode, edgeCode).eq(CommonSensorDO::getCategory, PointCategoryEnum.VIBRATION.getValue()).eq(CommonSensorDO::getSensorCode, sensorCode);
+                        .eq(CommonSensorDO::getEdgeCode, edgeCode)
+                        .eq(CommonSensorDO::getCategory, PointCategoryEnum.VIBRATION.getValue()).eq(CommonSensorDO::getSensorCode, sensorCode);
                 this.update(update);
             });
             return;

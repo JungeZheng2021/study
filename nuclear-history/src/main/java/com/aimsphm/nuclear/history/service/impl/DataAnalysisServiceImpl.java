@@ -57,7 +57,7 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
         }
         Map<String, HistoryDataVO> data = Maps.newHashMap();
         Map<String, List<Long>> retVal = Maps.newHashMap();
-        historyData.entrySet().stream().filter(x -> checkFilter(x)).forEach(x -> {
+        historyData.entrySet().stream().filter(this::checkFilter).forEach(x -> {
             CommonMeasurePointDO point = pointService.getPointByPointId(x.getKey());
             if (Objects.isNull(point)) {
                 return;
@@ -74,7 +74,7 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
     }
 
     private void operateResult(Map<String, HistoryDataVO> data, Map<String, List<Long>> retVal) {
-        data.entrySet().stream().filter(x -> checkFilter(x)).forEach(x -> {
+        data.entrySet().stream().filter(this::checkFilter).forEach(x -> {
             String sensorCode = x.getKey();
             List<List<Object>> chartData = x.getValue().getChartData();
             if (!retVal.containsKey(sensorCode) || CollectionUtils.isEmpty(retVal.get(sensorCode))) {

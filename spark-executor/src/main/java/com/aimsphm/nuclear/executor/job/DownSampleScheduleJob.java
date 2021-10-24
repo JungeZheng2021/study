@@ -77,13 +77,13 @@ public class DownSampleScheduleJob {
     private String executorMemoryMonthly;
 
     @Value("${config.base.batch_size:10}")
-    private String BATCH_SIZE;
+    private String batchSize;
 
     @Value("${config.base.db_schema:nuclear_tw}")
-    private String DB_SCHEMA;
+    private String dbSchema;
 
     @Value("${config.base.daily_table_prefix:spark_down_sample_daily}")
-    private String DAILY_TABLE_PREFIX;
+    private String dailyTablePrefix;
 
     @Autowired
     ISparkSubmitService sparkSubmitService;
@@ -102,8 +102,8 @@ public class DownSampleScheduleJob {
         Date executionDate = calculateGapDate(currentDate);
         String currentYear = DateUtils.format(YEAR, executionDate);
         //找缓存中是否有这个表,只有天表比较大，所以分表
-        String tableName = DAILY_TABLE_PREFIX.concat(SymbolConstant.UNDERLINE).concat(currentYear);
-        boolean hasTable = dbUtil.createAutoDailyDownSampleTable(DB_SCHEMA, tableName);
+        String tableName = dailyTablePrefix.concat(SymbolConstant.UNDERLINE).concat(currentYear);
+        boolean hasTable = dbUtil.createAutoDailyDownSampleTable(dbSchema, tableName);
         if (!hasTable) {
             return null;
         }
@@ -152,7 +152,7 @@ public class DownSampleScheduleJob {
         //数据创建时间
         args[8] = String.valueOf(System.currentTimeMillis());
         //批量大小
-        args[9] = BATCH_SIZE;
+        args[9] = batchSize;
         param.setArgs(args);
         return param;
     }
@@ -210,7 +210,6 @@ public class DownSampleScheduleJob {
 
     public Date calculateGapDate(Date date) {
         long ts = date.getTime() - Long.parseLong(initialGap);
-        Date resDate = new Date(ts);
-        return resDate;
+        return new Date(ts);
     }
 }

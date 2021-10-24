@@ -2,7 +2,6 @@ package com.aimsphm.nuclear.common.entity.vo;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

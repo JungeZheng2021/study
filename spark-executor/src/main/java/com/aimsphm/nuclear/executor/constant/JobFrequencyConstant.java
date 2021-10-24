@@ -1,6 +1,9 @@
 package com.aimsphm.nuclear.executor.constant;
 
 public class JobFrequencyConstant {
+    private JobFrequencyConstant() {
+    }
+
     public static final String HOURLY = "hourly";
     public static final String DAILY = "daily";
     public static final String WEEKLY = "weekly";

@@ -5,7 +5,6 @@ import com.aimsphm.nuclear.algorithm.service.BizDiagnosisService;
 import com.aimsphm.nuclear.common.entity.CommonComponentDO;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.JobForecastResultDO;
-import com.aimsphm.nuclear.common.entity.bo.ConditionsQueryBO;
 import com.aimsphm.nuclear.common.entity.bo.QueryBO;
 import com.aimsphm.nuclear.common.entity.vo.FaultReasoningVO;
 import com.aimsphm.nuclear.common.entity.vo.JobForecastResultVO;
@@ -68,11 +67,6 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
      */
     private LambdaQueryWrapper<JobForecastResultDO> customerConditions(QueryBO<JobForecastResultDO> queryBO) {
         LambdaQueryWrapper<JobForecastResultDO> wrapper = queryBO.lambdaQuery();
-        ConditionsQueryBO query = queryBO.getQuery();
-        if (Objects.nonNull(query.getStart()) && Objects.nonNull(query.getEnd())) {
-        }
-        if (StringUtils.hasText(queryBO.getQuery().getKeyword())) {
-        }
         wrapper.orderByAsc(JobForecastResultDO::getSort);
         return wrapper;
     }

@@ -1,11 +1,11 @@
 package com.aimsphm.nuclear.opc.job;
 
-import com.aimsphm.nuclear.opc.client.MqPushClient;
-import com.aimsphm.nuclear.opc.model.DataItem;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
-import com.aimsphm.nuclear.opc.model.PacketDTO;
-import com.aimsphm.nuclear.opc.model.SensorDataDTO;
+import com.aimsphm.nuclear.data.feign.entity.dto.PacketDTO;
+import com.aimsphm.nuclear.data.feign.entity.dto.SensorDataDTO;
+import com.aimsphm.nuclear.opc.client.MqPushClient;
+import com.aimsphm.nuclear.opc.model.DataItem;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Maps;
@@ -16,7 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,6 +42,10 @@ public class MqClientPushJob {
     @Autowired
     private CommonMeasurePointService pointServiceExt;
 
+    public static final String FILE_NOT_EXIST = "文件目录不存在:{}";
+    public static final String ERROR_FILE_LOG_MSG = "执行异常-文件数据:{}";
+    public static final String SEND_SUCCESS_LOG_MSG = "文件目录为：{}数据发送成功,测点个数：{}";
+
     /**
      * 定时器 每10秒执行一次
      */
@@ -46,12 +53,12 @@ public class MqClientPushJob {
         try {
             File file = new File(path);
             if (!file.exists()) {
-                log.error("文件目录不存在:{}", path);
+                log.error(FILE_NOT_EXIST, path);
                 return;
             }
             readDataFromFile(file, topic, sleepTime);
         } catch (Exception e) {
-            log.error("执行异常-文件数据:{}", e);
+            log.error(ERROR_FILE_LOG_MSG, e);
         }
     }
 
@@ -59,12 +66,12 @@ public class MqClientPushJob {
         try {
             File file = new File(path);
             if (!file.exists()) {
-                log.error("文件目录不存在:{}", path);
+                log.error(FILE_NOT_EXIST, path);
                 return;
             }
             readDataFromFileOil(file, topic, sleepTime);
         } catch (Exception e) {
-            log.error("执行异常-文件数据:{}", e);
+            log.error(ERROR_FILE_LOG_MSG, e);
         }
     }
 
@@ -106,57 +113,58 @@ public class MqClientPushJob {
                     client.send2Mq(JSON.toJSONString(data), topic);
                 });
                 Thread.sleep(sleepTime);
-                log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
+                log.info(SEND_SUCCESS_LOG_MSG, file.getName(), headers.size());
             }
         }
     }
-//
-//    public void execute1(String path, String topic, long start) {
-//        try {
-//            File file = new File(path);
-//            if (!file.exists()) {
-//                log.error("文件目录不存在:{}", path);
-//                return;
-//            }
-//            readDataFromFile1(path, topic, start);
-//        } catch (Exception e) {
-//            log.error("执行异常-文件数据:{}", e);
-//        }
-//    }
-//
-//    private void readDataFromFile1(String path, String topic, long start) throws IOException, InterruptedException {
-//        BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
-//        String line;
-//        String header = reader.readLine();
-//        String[] split = header.split(SEPARATOR);
-//        List<String> headers = Arrays.asList(split);
-//        ArrayList<DataItem> dataItems = new ArrayList<>();
-//        while ((line = reader.readLine()) != null) {
-//            dataItems.clear();
-//            String[] values = line.split(SEPARATOR);
-//            start += 1000;
-//            for (int i = 0; i < values.length; i++) {
-//                double value = Double.parseDouble(values[i]);
-//                DataItem item = new DataItem();
-//                item.setItemId(headers.get(i));
-//                item.setValue(value);
-//                item.setTimestamp(start);
-//                dataItems.add(item);
-//            }
-//            Thread.sleep(30L);
-//            client.send2Mq(dataItems, topic);
-//            log.info("文件目录为：{}数据发送成功,测点个数：{}", path, headers.size());
-//        }
-//    }
+
+    public void execute1(String path, String topic, long start) {
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                log.error(FILE_NOT_EXIST, path);
+                return;
+            }
+            readDataFromFile1(path, topic, start);
+        } catch (Exception e) {
+            log.error(ERROR_FILE_LOG_MSG, e);
+        }
+    }
+
+    private void readDataFromFile1(String path, String topic, long start) throws IOException, InterruptedException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+            String line;
+            String header = reader.readLine();
+            String[] split = header.split(SEPARATOR);
+            List<String> headers = Arrays.asList(split);
+            ArrayList<DataItem> dataItems = new ArrayList<>();
+            while ((line = reader.readLine()) != null) {
+                dataItems.clear();
+                String[] values = line.split(SEPARATOR);
+                start += 1000;
+                for (int i = 0; i < values.length; i++) {
+                    double value = Double.parseDouble(values[i]);
+                    DataItem item = new DataItem();
+                    item.setItemId(headers.get(i));
+                    item.setValue(value);
+                    item.setTimestamp(start);
+                    dataItems.add(item);
+                }
+                Thread.sleep(30L);
+                client.send2Mq(dataItems, topic);
+                log.info(SEND_SUCCESS_LOG_MSG, path, headers.size());
+            }
+        }
+    }
 
     public List<String> pointList() {
         LambdaQueryWrapper<CommonMeasurePointDO> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(CommonMeasurePointDO::getPointType, 1);
         List<CommonMeasurePointDO> list = pointServiceExt.list(wrapper);
         if (CollectionUtils.isEmpty(list)) {
-            return null;
+            return new ArrayList<>();
         }
-        return list.stream().map(item -> item.getPointId()).collect(Collectors.toList());
+        return list.stream().map(CommonMeasurePointDO::getPointId).collect(Collectors.toList());
     }
 
     public void executeFromDatabase(String topic, List<String> list) {
@@ -184,7 +192,7 @@ public class MqClientPushJob {
     }
 
 
-    final static String SEPARATOR = ",";
+    static final String SEPARATOR = ",";
 
     private void readDataFromFile(File file, String topic, Long sleepTime) throws Exception {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -214,11 +222,10 @@ public class MqClientPushJob {
                     item.setValue(1.0);
                     item.setTimestamp(System.currentTimeMillis());
                     dataItems.add(item);
-//                log.info("新增测点{}", item);
                 }
                 client.send2Mq(dataItems, topic);
                 Thread.sleep(sleepTime);
-                log.info("文件目录为：{}数据发送成功,测点个数：{}", file.getName(), headers.size());
+                log.info(SEND_SUCCESS_LOG_MSG, file.getName(), headers.size());
             }
         }
     }
@@ -235,7 +242,7 @@ public class MqClientPushJob {
                 "    }\n" +
                 "  }\n" +
                 "}";
-        System.out.println("发送：" + message);
+        log.debug("发送：tagList: {}msg:{}", tagList, message);
         client.send2Mq(message, topic);
     }
 }
