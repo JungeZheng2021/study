@@ -120,7 +120,7 @@ public interface ReportFileService {
                 //阈值线
                 if (line.contains(HTML_MARK_LINES_DATA)) {
                     String markLines = markLinesData.get();
-                    if (point == null && StringUtils.hasText(markLines)) {
+                    if (Objects.isNull(point) && StringUtils.hasText(markLines)) {
                         line = line.replace(HTML_MARK_LINES_DATA, markLines);
                     } else {
                         line = line.replace(HTML_MARK_LINES_DATA, Objects.nonNull(point) ? JSON.toJSONString(Lists.newArrayList(point.getThresholdLower(), point.getThresholdLow(), point.getThresholdHigh(), point.getThresholdHigher())) : "[]");

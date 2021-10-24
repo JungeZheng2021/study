@@ -446,7 +446,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      */
     public static Double format(Long durationTimes, TemporalUnit unit) {
         Duration duration = unit.getDuration();
-        return BigDecimalUtils.divide(durationTimes, duration.getSeconds() * 1000, 2);
+        return BigDecimalUtils.divide(durationTimes, (double) duration.getSeconds() * 1000, 2);
     }
 
     /**

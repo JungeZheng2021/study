@@ -66,6 +66,7 @@ public final class WordUtils {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
+                    log.error("{}", e);
                 }
             }
         }
@@ -160,7 +161,7 @@ public final class WordUtils {
         }
 
         List<CTP> pList = tc.getPList();
-        if (pList.size() == 0) {
+        if (pList.isEmpty()) {
             cell.setText(content);
             return;
         }
