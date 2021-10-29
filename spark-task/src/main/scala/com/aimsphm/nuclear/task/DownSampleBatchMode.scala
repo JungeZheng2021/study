@@ -31,7 +31,7 @@ object DownSampleBatchMode {
     val properties = new Properties()
     //                 类型     开始时间          结束时间          HBase表格名称     列族                   操作时间                           最大个数
     //    val args = Array("daily", "1631497440000", "1631501050000", "npc_phm_data", "pRaw", "1", "5", "5", System.currentTimeMillis() + "", "30")
-    val in = DownSampleBatchMode.getClass.getClassLoader().getResourceAsStream("test.properties");
+    val in = DownSampleBatchMode.getClass.getClassLoader().getResourceAsStream("prod.properties");
     properties.load(in)
     val defaultPartitionNum = "4"
     val freq = args(0)
