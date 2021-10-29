@@ -53,8 +53,8 @@ spark:
     path: /data/sparkJob/spark-job-down-sample-1.0.0.jar
   # 本地测试配置
   home:
-    linuxdir: /usr/local/spark-2.4.5-bin-hadoop2.7
-  master: spark://10.23.16.205:7077,10.23.16.210:7077
+    linuxdir: /usr/local/spark-3.1.2-bin-hadoop3.2
+  master: spark://10.23.16.202:7077,10.23.16.205:7077
   deploy:
     mode: standalone
 initialTimeStampGap: 0
