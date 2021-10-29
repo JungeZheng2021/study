@@ -85,3 +85,5 @@ customer:
     user-details-url: http://sv-epprd01.jnpc.com.cn:50000/UmpInterfaceService/UmpInterface
     # 获取用户权限
     user-privileges-url: http://autogrant.jnpc.com.cn/autogrant/privileges/queryUserQXPrivileges.so
+    # 开启权限测试
+    enable-privilege-test: true

@@ -107,3 +107,5 @@ customer:
     user-details-url: http://192.168.16.37/UmpInterfaceService/UmpInterface
     # 获取用户权限
     user-privileges-url: http://192.168.16.37/autogrant/privileges/queryUserQXPrivileges.so
+    # 开启权限测试
+    enable-privilege-test: true

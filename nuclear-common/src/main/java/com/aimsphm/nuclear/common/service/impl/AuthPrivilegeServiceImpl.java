@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -75,17 +76,23 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
         return this.list(wrapper);
     }
 
+    @Value("${customer.config.enable-privilege-test}")
+    private boolean enableTest;
+
     @Override
     public List<AuthPrivilegeDO> listAuthPrivilege(String username, String sysCode, String structured) {
         if (StringUtils.isEmpty(username)) {
             throw new CustomMessageException("User not logged in");
         }
         Set<String> privileges = authUtils.getUserPrivilegeByUsername(username, sysCode);
-        if (CollectionUtils.isEmpty(privileges)) {
+        if (!enableTest && CollectionUtils.isEmpty(privileges)) {
+            log.warn("user has no privileges:{}", privileges);
             return new ArrayList<>();
         }
         LambdaQueryWrapper<AuthPrivilegeDO> wrapper = Wrappers.lambdaQuery(AuthPrivilegeDO.class);
-        wrapper.in(AuthPrivilegeDO::getCode, privileges);
+        if (!enableTest) {
+            wrapper.in(AuthPrivilegeDO::getCode, privileges);
+        }
         wrapper.orderByAsc(AuthPrivilegeDO::getSort);
         if (StringUtils.hasText(structured)) {
             //数据权限
