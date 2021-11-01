@@ -76,7 +76,7 @@ public class AuthPrivilegeServiceImpl extends ServiceImpl<AuthPrivilegeMapper, A
         return this.list(wrapper);
     }
 
-    @Value("${customer.config.enable-privilege-test}")
+    @Value("${customer.config.enable-privilege-test:false}")
     private boolean enableTest;
 
     @Override
