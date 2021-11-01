@@ -8,14 +8,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * @Package: ${package.Entity}
- * @Description: <$!{table.comment}实体>
- * @Author: ${author}
- * @CreateDate: ${date}
- * @UpdateUser: ${author}
- * @UpdateDate: ${date}
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:$!{table.comment}实体
+ * </p>
+ *
+ * @author ${author}
+ * @version 1.0
+ * @since ${date}
  */
 @Data
 #if(${cfg.customerTableName})

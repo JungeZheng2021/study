@@ -6,14 +6,13 @@ import ${package.Service}.${table.serviceName};
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
- * @Package: ${cfg.extPackagePre}.${cfg.service}
- * @Description: <$!{table.comment}扩展服务类>
- * @Author: ${author}
- * @CreateDate: ${date}
- * @UpdateUser: ${author}
- * @UpdateDate: ${date}
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:$!{table.comment}扩展服务类
+ * </p>
+ *
+ * @author ${author}
+ * @version 1.0
+ * @since ${date}
  */
 #if(${kotlin})
 interface ${table.serviceName}${cfg.classNameExt} : ${table.serviceName}

@@ -3,14 +3,13 @@ package ${cfg.extPackagePre}.${cfg.mapper};
 import ${package.Mapper}.${table.mapperName};
 
 /**
- * @Package: ${cfg.extPackagePre}.${cfg.mapper}
- * @Description: <$!{table.comment}MapperExt接口>
- * @Author: ${author}
- * @CreateDate: ${date}
- * @UpdateUser: ${author}
- * @UpdateDate: ${date}
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:$!{table.comment}MapperExt接口
+ * </p>
+ *
+ * @author ${author}
+ * @version 1.0
+ * @since ${date}
  */
 #if(${kotlin})
 interface ${table.mapperName}${cfg.classNameExt} : ${superMapperClass}<${entity}>
