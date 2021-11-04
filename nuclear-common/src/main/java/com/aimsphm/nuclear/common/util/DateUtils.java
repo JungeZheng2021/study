@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
+import static java.time.DayOfWeek.MONDAY;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -195,6 +196,17 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     /**
+     * 将Date转换程LocalDate对象
+     *
+     * @param timestamp 时间
+     * @return 时间
+     */
+    public static LocalDate transition(Long timestamp) {
+        LocalDateTime localDateTime = new Date(timestamp).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return localDateTime.toLocalDate();
+    }
+
+    /**
      * 获取某时间的开始[从凌晨开始]
      *
      * @param timestamps 指定时间戳
@@ -207,6 +219,34 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     /**
+     * 获取某一时间的开始小时
+     *
+     * @param timestamps 指定时间戳
+     * @return 日期的字符串格式输出
+     */
+    public static Long getEndOfHour(Long timestamps) {
+        Date date = Objects.isNull(timestamps) ? new Date() : new Date(timestamps);
+        LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime newLocalDateTime = localDateTime.plusHours(1);
+        Instant instant = newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
+        Date from = Date.from(instant);
+        return from.getTime() / 3600 / 1000 * 3600 * 1000 - 99;
+    }
+
+    /**
+     * 获取某一时间的结束小时
+     *
+     * @param timestamps 指定时间戳
+     * @return 日期的字符串格式输出
+     */
+    public static Long getStartOfHour(Long timestamps) {
+        if (Objects.isNull(timestamps)) {
+            return System.currentTimeMillis() / 3600 / 1000 * 3600 * 1000;
+        }
+        return timestamps / 3600 / 1000 * 3600 * 1000;
+    }
+
+    /**
      * 获取前一个月第一天[从凌晨开始]
      *
      * @param timestamps 指定时间戳
@@ -216,7 +256,89 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         Date date = new Date(timestamps);
         LocalDate transition = transition(date);
         LocalDate localDate = transition.plusDays(1);
-        return transition(localDate).getTime() - 1;
+        return transition(localDate).getTime() - 99;
+    }
+
+    /**
+     * 获取前一天的开始
+     *
+     * @return 长整型
+     */
+    public static Long getStartOfPreviousDay() {
+        LocalDate localDate = LocalDate.now();
+        return transition(localDate.plusDays(-1)).getTime();
+    }
+
+    /**
+     * 获取前一天的结束
+     *
+     * @return 长整型
+     */
+    public static Long getEndOfPreviousDay() {
+        LocalDate localDate = LocalDate.now();
+        return transition(localDate).getTime() - 99;
+    }
+
+    /**
+     * 获取前一天的开始
+     *
+     * @return 长整型
+     */
+    public static Long getStartOfPreviousDay(Long timestamps) {
+        Date date = new Date(timestamps);
+        LocalDate localDate = transition(date);
+        return transition(localDate.plusDays(-1)).getTime();
+    }
+
+    /**
+     * 获取前一天的结束
+     *
+     * @return 长整型
+     */
+    public static Long getEndOfPreviousDay(Long timestamps) {
+        Date date = new Date(timestamps);
+        LocalDate localDate = transition(date);
+        return transition(localDate).getTime() - 99;
+    }
+
+    /**
+     * 获取前一周的开始时间
+     *
+     * @return 长整型
+     */
+    public static Long getStartOfPreviousWeek() {
+        LocalDate localDate = LocalDate.now();
+        return transition(localDate.plusWeeks(-1).with(DayOfWeek.MONDAY)).getTime();
+    }
+
+    /**
+     * 获取前一周的结束时间
+     *
+     * @return 长整型
+     */
+    public static Long getEndOfPreviousWeek() {
+        LocalDate localDate = LocalDate.now();
+        return transition(localDate.plusWeeks(0).with(DayOfWeek.MONDAY)).getTime() - 99;
+    }
+
+    /**
+     * 获取某时间前一周的开始时间
+     *
+     * @return 长整型
+     */
+    public static Long getStartOfPreviousWeek(Long timestamp) {
+        LocalDate localDate = transition(new Date(timestamp));
+        return transition(localDate.plusWeeks(-1).with(DayOfWeek.MONDAY)).getTime();
+    }
+
+    /**
+     * 获取时间前一周的结束时间
+     *
+     * @return 长整型
+     */
+    public static Long getEndOfPreviousWeek(Long timestamp) {
+        LocalDate localDate = transition(new Date(timestamp));
+        return transition(localDate.plusWeeks(0).with(DayOfWeek.MONDAY)).getTime() - 99;
     }
 
     /**
@@ -506,7 +628,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         LocalDateTime newLocalDateTime = localDateTime.plusHours(Objects.isNull(previousHours) ? 1 : previousHours + 1);
         Instant instant = newLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
         Date from = Date.from(instant);
-        return from.getTime() / 3600 / 1000 * 3600 * 1000 - 1;
+        return from.getTime() / 3600 / 1000 * 3600 * 1000 - 999;
     }
 
     /**
@@ -541,5 +663,47 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      */
     public static Long previousHourMinValue() {
         return plusHoursMinValue(-1L);
+    }
+
+    /**
+     * 判断是不是每月的第一天
+     *
+     * @param timestamps 指定时间戳
+     * @return 日期的字符串格式输出
+     */
+    public static boolean isStartOfMonth(Long timestamps) {
+        return DateUtils.transition(timestamps).getDayOfMonth() == 1;
+    }
+
+    /**
+     * 判断是不是每周的第一天
+     *
+     * @param timestamps 指定时间戳
+     * @return 日期的字符串格式输出
+     */
+    public static boolean isStartOfWeek(Long timestamps) {
+        return DateUtils.transition(timestamps).getDayOfWeek() == MONDAY;
+    }
+
+    /**
+     * 判断是不是每周的第一天
+     *
+     * @param timestamps 指定时间戳
+     * @return 日期的字符串格式输出
+     */
+    public static boolean isStartOfWeek(Long timestamps, DayOfWeek week) {
+        return DateUtils.transition(timestamps).getDayOfWeek() == week;
+    }
+
+    /**
+     * 判断是不是每天的开始
+     *
+     * @param timestamps 指定时间戳
+     * @return 日期的字符串格式输出
+     */
+    public static boolean isStartOfDay(Long timestamps) {
+        ZonedDateTime dateTime = DateUtils.transition(timestamps).atStartOfDay(ZoneId.systemDefault());
+        Instant plus = dateTime.toInstant();
+        return Date.from(plus).getTime() - timestamps / 1000 * 1000 == 0;
     }
 }
