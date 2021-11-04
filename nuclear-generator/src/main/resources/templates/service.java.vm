@@ -29,7 +29,7 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页结果集
      */
     Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(QueryBO<${entity}> queryBO);
 
@@ -37,7 +37,7 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 查询结果集
      */
     List<${entity}> list${cfg.get(${entity})}WithParams(QueryBO<${entity}> queryBO);
 #end

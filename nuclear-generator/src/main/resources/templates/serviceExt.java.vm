@@ -23,7 +23,7 @@ public interface ${table.serviceName}${cfg.classNameExt} extends ${table.service
      * 根据条件获取分页查询数据
      *
      * @param queryBO 查询条件
-     * @return
+     * @return 分页结果集
      */
     Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(QueryBO<${entity}> queryBO);
 }

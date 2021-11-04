@@ -48,7 +48,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     @Override
     public Page<${entity}> list${cfg.get(${entity})}ByPageWithParams(QueryBO<${entity}> queryBO) {
         if (Objects.nonNull(queryBO.getPage().getOrders()) && !queryBO.getPage().getOrders().isEmpty()) {
-            queryBO.getPage().getOrders().stream().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
+            queryBO.getPage().getOrders().forEach(item -> item.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getColumn())));
         }
         return this.page(queryBO.getPage(), customerConditions(queryBO));
     }
@@ -56,8 +56,8 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     /**
      * 拼装查询条件
      *
-     * @param queryBO
-     * @return
+     * @param queryBO 查询条件
+     * @return 组装好的查询条件
      */
     private LambdaQueryWrapper<${entity}> customerConditions(QueryBO<${entity}> queryBO) {
         LambdaQueryWrapper<${entity}> wrapper = queryBO.lambdaQuery();
