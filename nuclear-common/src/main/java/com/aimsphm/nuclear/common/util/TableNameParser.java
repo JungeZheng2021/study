@@ -1,13 +1,12 @@
-package com.aimsphm.nuclear.history.util;
+package com.aimsphm.nuclear.common.util;
 
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
+import com.aimsphm.nuclear.common.enums.TableNameEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
-import com.aimsphm.nuclear.common.util.DateUtils;
-import com.aimsphm.nuclear.history.entity.enums.TableNameEnum;
 
 import java.util.Objects;
 
-import static com.aimsphm.nuclear.history.constant.MillisecondValueConstant.*;
+import static com.aimsphm.nuclear.common.constant.MillisecondValueConstant.*;
 
 /**
  * @Package: com.aimsphm.nuclear.history.util

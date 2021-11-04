@@ -1,4 +1,4 @@
-package com.aimsphm.nuclear.history.constant;
+package com.aimsphm.nuclear.common.constant;
 
 /**
  * <p>

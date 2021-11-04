@@ -1,11 +1,15 @@
+server:
+  servlet:
+    context-path: /history
+  port: 8082
 hbase:
   config:
     properties:
-      hbase.zookeeper.quorum: hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181
+      hbase.zookeeper.quorum: tw-phm-hadoop-01:2181,tw-phm-hadoop-02:2181,tw-phm-hadoop-03:2181
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
+      defaultZone: http://10.23.16.167:8761/eureka/,http://10.23.16.187:8762/eureka/
     fetchRegistry: true
   instance:
     prefer-ip-address: true
@@ -15,14 +19,13 @@ spring:
   config:
     enableRedis: true
     enableHBase: true
-    enableFilled: true
     enableSwagger2: true
     enableAlgorithm: true
     enableServiceExtImpl: true
     enableMybatisPlusDynamicTable: true
   #数据源
   datasource:
-    url: jdbc:mysql://192.168.16.28:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://10.23.16.201:3306/nuclear_tw?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: aims2016
     type: com.zaxxer.hikari.HikariDataSource
@@ -47,7 +50,7 @@ spring:
       auto-commit: true
   #MQ配置信息
   rabbitmq:
-    host: 192.168.16.43
+    host: 10.23.16.188
     port: 5672
     username: admin
     password: admin123$
@@ -56,15 +59,7 @@ spring:
       simple:
         acknowledge-mode: auto
   redis:
-    cluster:
-      nodes:
-        - 192.168.16.43:6378
-        - 192.168.16.43:6379
-        - 192.168.16.44:6378
-        - 192.168.16.44:6379
-        - 192.168.16.45:6378
-        - 192.168.16.45:6379
-      max-redirects: 5
+    host: 10.23.16.188
     password: aims2016
     timeout: 6000ms
     database: 15
@@ -104,8 +99,3 @@ ribbon:
   MaxAutoRetriesNextServer: 1 #重试负载均衡其他的实例最大重试次数,不包括首次调用
   #是否所有操作都重试
   OkToRetryOnAllOperations: false
-
-
-
-
-

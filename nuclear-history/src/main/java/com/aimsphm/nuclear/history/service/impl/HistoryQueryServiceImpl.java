@@ -2,29 +2,27 @@ package com.aimsphm.nuclear.history.service.impl;
 
 import com.aimsphm.nuclear.algorithm.entity.bo.PointEstimateDataBO;
 import com.aimsphm.nuclear.algorithm.util.RawDataThreadLocal;
-import com.aimsphm.nuclear.algorithm.util.WhetherThreadLocal;
 import com.aimsphm.nuclear.common.config.DynamicTableTreadLocal;
 import com.aimsphm.nuclear.common.entity.CommonMeasurePointDO;
 import com.aimsphm.nuclear.common.entity.SparkDownSample;
+import com.aimsphm.nuclear.common.entity.bo.HistoryQueryFilledBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQueryMultiBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleBO;
 import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
-import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
 import com.aimsphm.nuclear.common.entity.vo.EventDataVO;
 import com.aimsphm.nuclear.common.entity.vo.HistoryDataVO;
 import com.aimsphm.nuclear.common.entity.vo.HistoryDataWithThresholdVO;
 import com.aimsphm.nuclear.common.enums.PointTypeEnum;
+import com.aimsphm.nuclear.common.enums.TableNameEnum;
 import com.aimsphm.nuclear.common.exception.CustomMessageException;
+import com.aimsphm.nuclear.common.response.ResponseData;
 import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.SparkDownSampleService;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
-import com.aimsphm.nuclear.history.entity.enums.TableNameEnum;
+import com.aimsphm.nuclear.common.util.TableNameParser;
+import com.aimsphm.nuclear.history.feign.DownSampleServiceFeignClient;
 import com.aimsphm.nuclear.history.service.HistoryQueryService;
-import com.aimsphm.nuclear.history.util.TableNameParser;
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -43,6 +41,7 @@ import java.util.stream.Collectors;
 
 import static com.aimsphm.nuclear.common.constant.HBaseConstant.*;
 import static com.aimsphm.nuclear.common.constant.SymbolConstant.*;
+import static com.aimsphm.nuclear.common.response.ResponseData.SUCCESS_CODE;
 
 /**
  * <p>
@@ -61,6 +60,9 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     private CommonMeasurePointService serviceExt;
     @Resource
     private SparkDownSampleService downSampleServiceExt;
+
+    @Resource
+    private DownSampleServiceFeignClient sampleServiceFeignClient;
 
     private final HBaseUtil hBase;
 
@@ -195,7 +197,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             if (Objects.isNull(point) || CollectionUtils.isEmpty(collect.get(pointId))) {
                 continue;
             }
-            List<String> points = collect.get(pointId).stream().filter(x -> StringUtils.isNotBlank(x.getPoints())).map(SparkDownSample::getPoints).collect(Collectors.toList());
+            List<String> points = collect.get(pointId).stream().filter(x -> StringUtils.isNotBlank(x.getPoints()) && x.getPoints().length() > 2).map(SparkDownSample::getPoints).collect(Collectors.toList());
             String collect1 = points.stream().collect(Collectors.joining(COMMA));
             HistoryDataVO vo = new HistoryDataWithThresholdVO();
             BeanUtils.copyProperties(point, vo);
@@ -214,16 +216,16 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
     }
 
     /**
-     * 判断是否需要补点(默认补点)
+     * 判断是否需要补点 -目前只有是天表的时候补点
      *
-     * @param points
-     * @param point
-     * @param multi
+     * @param points 集合
+     * @param point  测点
+     * @param multi  起止时间
      */
     private void fillPoint(List<List<Object>> points, CommonMeasurePointDO point, HistoryQueryMultiBO multi) {
         try {
-            if (Objects.nonNull(WhetherThreadLocal.INSTANCE.getWhether()) && !WhetherThreadLocal.INSTANCE.getWhether()) {
-                WhetherThreadLocal.INSTANCE.remove();
+            String tableName = TableNameParser.getTableName(multi.getStart(), multi.getEnd());
+            if (!TableNameEnum.DAILY.getValue().equals(tableName)) {
                 return;
             }
             if (CollectionUtils.isEmpty(points)) {
@@ -237,15 +239,13 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
                 log.debug("min:{},max:{},gap:{}", minTimeInterval, maxTimeInterval, gap);
                 return;
             }
-            HistoryQuerySingleWithFeatureBO single = new HistoryQuerySingleWithFeatureBO();
-            single.setEnd(end);
-            single.setStart(start + 1);
-            single.setSensorCode(point.getSensorCode());
-            if (StringUtils.isNotBlank(point.getFeature()) && StringUtils.isNotBlank(point.getFeatureType())) {
-                single.setFeature(point.getFeatureType().concat(DASH).concat(point.getFeature()));
+            HistoryQueryFilledBO bo = new HistoryQueryFilledBO(start + 1, end);
+            bo.setTableName(tableName);
+            bo.setPointId(point.getPointId());
+            ResponseData<List<List<Object>>> response = sampleServiceFeignClient.historyQueryDataFilled(bo);
+            if (Objects.nonNull(response) && CollectionUtils.isNotEmpty(response.getData()) && SUCCESS_CODE.equals(response.getCode())) {
+                points.addAll(response.getData());
             }
-            List<List<Object>> lists = listHistoryDataWithPointByScan(single);
-            points.addAll(lists);
         } catch (Exception e) {
             log.error("filled point failed: {}", e.getCause());
         }
@@ -256,7 +256,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         Long start = multi.getStart();
         String tableName = TableNameParser.getTableName(start, end);
         if (StringUtils.isBlank(tableName) || CollectionUtils.isEmpty(multi.getPointIds())) {
-            return new HashMap<>();
+            return new HashMap<>(16);
         }
         //如果是天表[天表根据年份分表-需要将跨跃2年的部分拼接起来]
         if (TableNameEnum.DAILY.getValue().equals(tableName)) {
@@ -265,77 +265,12 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             Map<String, List<SparkDownSample>> result = Maps.newHashMap();
             for (int year = startYear; year <= endYear; year++) {
                 resetTableName(tableName, year);
-                result.putAll(listSparkDownSampleByPointIdsAndRangeTime(multi.getPointIds(), start, end));
+                result.putAll(downSampleServiceExt.listDataByRangeTime(multi.getPointIds(), start, end));
             }
             return result;
         }
         resetTableName(tableName, null);
-        return listSparkDownSampleByPointIdsAndRangeTime(multi.getPointIds(), start, end);
-    }
-
-    private Map<String, List<SparkDownSample>> listSparkDownSampleByPointIdsAndRangeTime(List<String> pointIds, Long start, Long end) {
-        Map<String, List<SparkDownSample>> result = Maps.newHashMap();
-        if (Objects.isNull(start) || Objects.isNull(end)) {
-            return result;
-        }
-        //开始时间计算成当前时间的小时值
-        TimeRangeQueryBO rangeTime = TableNameParser.getRangeTime(start, end);
-
-        for (String pointId : pointIds) {
-            LambdaQueryWrapper<SparkDownSample> wrapper = Wrappers.lambdaQuery(SparkDownSample.class);
-            wrapper.eq(SparkDownSample::getPointId, pointId).ge(SparkDownSample::getStartTimestamp, rangeTime.getStart())
-                    .le(SparkDownSample::getStartTimestamp, rangeTime.getEnd()).orderByAsc(SparkDownSample::getStartTimestamp);
-            List<SparkDownSample> list = downSampleServiceExt.list(wrapper);
-            if (CollectionUtils.isEmpty(list)) {
-                continue;
-            }
-            SparkDownSample first = list.get(0);
-            //截取开头数据
-            subPointsByStartAndEnd(start, end, first);
-            if (list.size() > 1) {
-                SparkDownSample last = list.get(list.size() - 1);
-                //截取结束数据
-                subPointsByStartAndEnd(start, end, last);
-            }
-            result.put(pointId, list);
-        }
-        return result;
-    }
-
-    /**
-     * 根据时间截取开头和结尾数据
-     *
-     * @param start  开始时间
-     * @param end    结束时间
-     * @param sample 将采样对象
-     */
-    private void subPointsByStartAndEnd(Long start, Long end, SparkDownSample sample) {
-        try {
-            String points = sample.getPoints();
-            if (StringUtils.isEmpty(points)) {
-                sample.setPoints(LEFT_SQ_BRACKET + RIGHT_SQ_BRACKET);
-                return;
-            }
-            List<List> lists = JSON.parseArray(LEFT_SQ_BRACKET + points + RIGHT_SQ_BRACKET, List.class);
-            String collect = lists.stream().filter(x -> peakItem(x, start, end)).map(d -> Arrays.toString(d.toArray())).collect(Collectors.joining(COMMA));
-            sample.setPoints(collect);
-        } catch (Exception e) {
-            log.error("down sample query error,{}", e);
-            sample.setPoints(LEFT_SQ_BRACKET + RIGHT_SQ_BRACKET);
-        }
-    }
-
-    private boolean peakItem(List x, Long start, Long end) {
-        if (Objects.nonNull(start) && Objects.nonNull(end)) {
-            return (Long) x.get(0) >= start && (Long) x.get(0) <= end;
-        }
-        if (Objects.nonNull(start)) {
-            return (Long) x.get(0) >= start;
-        }
-        if (Objects.nonNull(end)) {
-            return (Long) x.get(0) <= end;
-        }
-        return false;
+        return downSampleServiceExt.listDataByRangeTime(multi.getPointIds(), start, end);
     }
 
     private void resetTableName(String tableName, Integer year) {
