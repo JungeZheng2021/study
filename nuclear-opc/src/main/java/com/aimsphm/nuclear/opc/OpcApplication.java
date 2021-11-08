@@ -27,7 +27,6 @@ public class OpcApplication {
     @Autowired
     private MqPushClient client;
 
-    @PostConstruct
     void execute() {
         String topic = "pi.many";
         String topicUpload = "JSNPC.Upload";
@@ -55,6 +54,20 @@ public class OpcApplication {
         scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.execute(rootPath + "1s_data.csv", "pi.data", 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
         scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "10s_data.csv", topicUpload, 10 * 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
         scheduledExecutor.scheduleWithFixedDelay(() -> pushJob.executeOli(rootPath + "10min_data.csv", topicUpload, 10 * 60 * 1000L), 1000, 1000, TimeUnit.MILLISECONDS);
+    }
+
+    @PostConstruct
+    void test() {
+        Long start = 1608393600000L;
+        Long end = 1611072000000L;
+        while (start <= end) {
+            String s = "[{\"itemId\":\"TW1RCV018MD\",\"timestamp\":" + start + ",\"value\":" + ThreadLocalRandom.current().nextDouble(47.5, 50) + "}]";
+            System.out.println(start);
+            start = start + 1000;
+            client.send2Mq(s, "pi.data");
+            client.send2Mq(s, "pi.many1");
+        }
+        System.out.println("结束.....");
     }
 
     void demo() {
