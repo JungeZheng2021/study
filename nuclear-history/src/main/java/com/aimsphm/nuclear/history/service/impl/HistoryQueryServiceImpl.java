@@ -265,7 +265,14 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             Map<String, List<SparkDownSample>> result = Maps.newHashMap();
             for (int year = startYear; year <= endYear; year++) {
                 resetTableName(tableName, year);
-                result.putAll(downSampleServiceExt.listDataByRangeTime(multi.getPointIds(), start, end));
+                Map<String, List<SparkDownSample>> map = downSampleServiceExt.listDataByRangeTime(multi.getPointIds(), start, end);
+                map.forEach((k, v) -> {
+                    if (result.containsKey(k)) {
+                        result.get(k).addAll(v);
+                        return;
+                    }
+                    result.put(k, v);
+                });
             }
             return result;
         }
