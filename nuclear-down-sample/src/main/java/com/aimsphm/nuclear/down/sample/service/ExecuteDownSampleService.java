@@ -67,12 +67,30 @@ public interface ExecuteDownSampleService {
         String dataJson = new Gson().toJson(result);
         SparkDownSample sample = new SparkDownSample();
         sample.setPointId(pointId);
+        Long timestamp = (Long) result.get(0).get(0);
         sample.setStartTimestamp((Long) result.get(0).get(0));
         sample.setAlgorithmType(1);
         sample.setPoints(dataJson.substring(1, dataJson.length() - 1));
-        String tableName = TableNameEnum.DAILY.getValue() + UNDERLINE + DateUtils.formatCurrentDateTime(YEAR);
-        DynamicTableTreadLocal.INSTANCE.tableName(StringUtils.isBlank(rate.getTableName()) ? tableName : rate.getTableName());
+        String tableName = rate.getTableName();
+        if (StringUtils.isBlank(rate.getTableName())) {
+            tableName = TableNameEnum.DAILY.getValue() + UNDERLINE + DateUtils.format(YEAR, timestamp);
+            boolean flag = checkAndCreateTable(tableName);
+            if (!flag) {
+                return;
+            }
+        }
+        DynamicTableTreadLocal.INSTANCE.tableName(tableName);
         saveDownSampleResult(sample);
+    }
+
+    /**
+     * 检查并创建表格
+     *
+     * @param tableName 表格名称
+     * @return
+     */
+    default boolean checkAndCreateTable(String tableName) {
+        return true;
     }
 
     /**

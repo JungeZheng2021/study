@@ -22,14 +22,15 @@
     <modules>
         <module>nuclear-common</module>
         <!--        <module>nuclear-algorithm</module>-->
+        <module>nuclear-down-sample</module>
         <!--        <module>nuclear-auth</module>-->
         <!--        <module>nuclear-core</module>-->
         <!--        <module>nuclear-opc</module>-->
-        <module>spark-task</module>
-        <module>spark-executor</module>
         <!--        <module>nuclear-data</module>-->
-        <!--        <module>nuclear-history</module>-->
+        <module>nuclear-history</module>
         <!--        <module>nuclear-report</module>-->
+        <!--        <module>spark-task</module>-->
+        <!--        <module>spark-executor</module>-->
     </modules>
     <properties>
         <encoding>UTF-8</encoding>
@@ -54,7 +55,8 @@
         <eureka_salver>http://10.23.16.166:8762/eureka/</eureka_salver>
 
         <!--数据库配置-->
-        <db_url>jdbc:mysql://10.23.16.201:3306/nuclear_tw?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai&amp;allowMultiQueries=true</db_url>
+        <db_url>jdbc:mysql://10.23.16.201:3306/${db_dbSchema}?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai&amp;allowMultiQueries=true</db_url>
+        <db_dbSchema>nuclear_tw</db_dbSchema>
         <db_username>root</db_username>
         <db_password>jnpc.123</db_password>
 

@@ -6,12 +6,14 @@ import com.aimsphm.nuclear.common.entity.bo.HistoryQuerySingleWithFeatureBO;
 import com.aimsphm.nuclear.common.entity.bo.TimeRangeQueryBO;
 import com.aimsphm.nuclear.common.enums.FrequencyEnum;
 import com.aimsphm.nuclear.common.service.SparkDownSampleService;
+import com.aimsphm.nuclear.common.util.DBTableUtil;
 import com.aimsphm.nuclear.common.util.DateUtils;
 import com.aimsphm.nuclear.down.sample.entity.bo.ThreePointBO;
 import com.aimsphm.nuclear.down.sample.service.DataQueryService;
 import com.aimsphm.nuclear.down.sample.service.ExecuteDownSampleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,6 +38,11 @@ public class HourlyDownSampleServiceImpl implements ExecuteDownSampleService {
     @Resource
     private SparkDownSampleService downSampleService;
 
+    @Value("${spring.datasource.db_schema:nuclear_tw}")
+    private String dbSchema;
+    @Resource
+    DBTableUtil dbUtil;
+
     @Override
     public List<List<Object>> executeDownSample4HistoryData(SparkDownSampleConfigDO config, TimeRangeQueryBO rangTime, FrequencyEnum frequencyEnum) {
         return rawDataOperation4History(getHistoryQuerySingleWithFeatureBO(rangTime, config), config.getTargetNum());
@@ -56,6 +63,15 @@ public class HourlyDownSampleServiceImpl implements ExecuteDownSampleService {
                 log.error("lost point :{} ;cause:{}", x.getSensorCode(), e);
             }
         });
+    }
+
+    @Override
+    public boolean checkAndCreateTable(String tableName) {
+        boolean hasTable = dbUtil.createAutoDailyDownSampleTable(dbSchema, tableName);
+        if (!hasTable) {
+            log.error("table create failed: tableName: {}", tableName);
+        }
+        return hasTable;
     }
 
     private HistoryQuerySingleWithFeatureBO getHistoryQuerySingleWithFeatureBO(TimeRangeQueryBO rangTime, SparkDownSampleConfigDO x) {

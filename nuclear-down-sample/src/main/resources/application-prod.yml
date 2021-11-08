@@ -1,7 +1,7 @@
 hbase:
   config:
     properties:
-      hbase.zookeeper.quorum: hadoop-master:2181,hadoop-slave01:2181,hadoop-slave02:2181
+      hbase.zookeeper.quorum: @hbase_zk_quorum@
 config:
   cron:
     # 每隔3分
@@ -17,7 +17,7 @@ config:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://192.168.16.38:8761/eureka/,http://192.168.16.39:8762/eureka/
+      defaultZone: @eureka_master@,@eureka_salver@
     fetchRegistry: true
   instance:
     prefer-ip-address: true
@@ -33,10 +33,10 @@ spring:
     enableMybatisPlusDynamicTable: true
   #数据源
   datasource:
-    url: jdbc:mysql://192.168.16.28:3306/${spring.datasource.db_dbSchema}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: aims2016
-    db_dbSchema: nuclear_tw
+    url: @db_url@
+    username: @db_username@
+    password: @db_password@
+    db_dbSchema: @db_dbSchema@
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari: #默认连接池配置

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.aimsphm.nuclear</groupId>
     <artifactId>executor</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.RELEASE</version>
     <name>spark-executor</name>
     <description>Executor project for Spring Boot</description>
 
