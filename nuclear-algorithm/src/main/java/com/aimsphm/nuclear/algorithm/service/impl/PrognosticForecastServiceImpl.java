@@ -87,7 +87,7 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
             AlgorithmNormalFaultFeatureDO featureDO = new AlgorithmNormalFaultFeatureDO();
             BeanUtils.copyProperties(x, featureDO);
             return featureDO;
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        }).collect(Collectors.toList());
         try {
             LambdaQueryWrapper<JobDownSampleDO> query = Wrappers.lambdaQuery(JobDownSampleDO.class);
             query.eq(JobDownSampleDO::getComponentId, componentId);
@@ -140,6 +140,8 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
             LambdaUpdateWrapper<JobForecastResultDO> update = Wrappers.lambdaUpdate(JobForecastResultDO.class);
             update.eq(JobForecastResultDO::getComponentId, componentId);
             update.eq(JobForecastResultDO::getPointId, pointId);
+            forecast.setForecastRange(response.getPredRange());
+            forecast.setGmtForecast(new Date(response.getPredTime()));
             //只有预测值和趋势值都不为空的时候才会存储
             if (CollectionUtils.isEmpty(x.getPred()) || CollectionUtils.isEmpty(x.getHistory())) {
                 forecast.setGmtModified(new Date());
@@ -147,8 +149,6 @@ public class PrognosticForecastServiceImpl implements PrognosticForecastService 
                 return;
             }
             forecast.setSymptomIds(symptomIds);
-            forecast.setForecastRange(response.getPredRange());
-            forecast.setGmtForecast(new Date(response.getPredTime()));
             //如果历史数据为空 为了保证有数据展示不更新
             forecast.setHistoryData(Objects.isNull(history) ? null : JSON.toJSONString(history));
             forecast.setForecastData(Objects.isNull(x.getPred()) ? null : JSON.toJSONString(x.getPred()));

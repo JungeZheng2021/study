@@ -101,6 +101,9 @@ public class JobForecastResultServiceImpl extends ServiceImpl<JobForecastResultM
             dataVO.setTrendData(JSON.parseArray(x.getTrendData(), List.class));
             dataVO.setHistoryData(JSON.parseArray(x.getHistoryData(), List.class));
             dataVO.setForecastData(JSON.parseArray(x.getForecastData(), List.class));
+            if (CollectionUtils.isEmpty(dataVO.getTrendData()) && CollectionUtils.isEmpty(dataVO.getHistoryData()) && CollectionUtils.isEmpty(dataVO.getForecastData())) {
+                return;
+            }
             dataList.add(dataVO);
             first.set(x);
         });
