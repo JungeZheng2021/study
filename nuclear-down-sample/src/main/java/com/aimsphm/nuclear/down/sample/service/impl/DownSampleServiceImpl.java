@@ -43,7 +43,7 @@ public class DownSampleServiceImpl implements DownSampleService {
 
     @Override
     public void executeDownSample(String type, Integer rate, TimeRangeQueryBO rangTime) {
-        if (!checkParam(rate, rangTime)) {
+        if (!checkRangeTime(rangTime)) {
             return;
         }
         List<SparkDownSampleConfigDO> spark = listDownSampleConfig(type, rate);
@@ -57,15 +57,6 @@ public class DownSampleServiceImpl implements DownSampleService {
             return;
         }
         execute.executeDownSample(spark, rangTime);
-    }
-
-    private boolean checkParam(Integer rate, TimeRangeQueryBO rangTime) {
-        FrequencyEnum frequencyEnum = FrequencyEnum.getByRate(rate);
-        if (Objects.isNull(frequencyEnum)) {
-            log.error("unsupported this rate : {}", rate);
-            return false;
-        }
-        return checkRangeTime(rangTime);
     }
 
     private boolean checkRangeTime(TimeRangeQueryBO rangTime) {

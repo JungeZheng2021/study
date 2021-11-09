@@ -12,6 +12,7 @@ import com.aimsphm.nuclear.down.sample.entity.bo.ThreePointBO;
 import com.google.gson.Gson;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -193,10 +194,11 @@ public interface ExecuteDownSampleService {
     /**
      * 保存数据到多个数据
      *
+     * @param log
      * @param list     数据
      * @param rangTime 起止时间
      */
-    default void dataStore2ManyTable(List<SparkDownSampleConfigDO> list, TimeRangeQueryBO rangTime) {
+    default void dataStore2ManyTable(Logger log, List<SparkDownSampleConfigDO> list, TimeRangeQueryBO rangTime) {
         Map<String, List<SparkDownSampleConfigDO>> collect = list.stream().filter(x -> StringUtils.isNotBlank(x.getSensorCode()))
                 .collect(Collectors.groupingBy(x -> x.getSensorCode() + (Objects.isNull(x.getFeature()) ? EMPTY : UNDERLINE + x.getFeature())));
         collect.forEach((pointId, v) -> {
@@ -212,18 +214,20 @@ public interface ExecuteDownSampleService {
             bo.setEnd(rangTime.getEnd());
             List<List<Object>> lists = queryDataByPoint(bo);
             if (CollectionUtils.isEmpty(lists)) {
+                log.warn(" daily point data is null:{}", rangTime);
                 return;
             }
             v.forEach(x -> {
                 try {
                     FrequencyEnum rate = FrequencyEnum.getByRate(x.getRate());
                     if (Objects.isNull(rate)) {
+                        log.warn("unsupported this rate : {}", x.getRate());
                         return;
                     }
                     Map<TimeRangeQueryBO, ThreePointBO> data = initKeys(rangTime.getStart(), rangTime.getEnd(), x.getTargetNum());
                     rawDataOperation(lists, bo.getSensorCode() + (Objects.isNull(bo.getFeature()) ? EMPTY : DASH + bo.getFeature()), data, rate);
                 } catch (Exception e) {
-//                    log.error("lost point :{} ;cause:{}", x.getSensorCode(), e);
+                    log.error("lost point :{} ;cause:{}", x.getSensorCode(), e);
                 }
             });
         });

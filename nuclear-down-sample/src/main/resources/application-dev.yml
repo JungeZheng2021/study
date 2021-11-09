@@ -57,6 +57,29 @@ spring:
       connection-test-query: SELECT 1
       #自动提交
       auto-commit: true
+  redis:
+    cluster:
+      nodes:
+        - 192.168.16.43:6378
+        - 192.168.16.43:6379
+        - 192.168.16.44:6378
+        - 192.168.16.44:6379
+        - 192.168.16.45:6378
+        - 192.168.16.45:6379
+      max-redirects: 5
+    password: aims2016
+    timeout: 6000ms
+    database: 15
+    lettuce:
+      pool:
+        #连接池最大连接数（使用负值表示没有限制）
+        max-active: 200
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 1000
+        # 连接池中的最小空闲连接
+        min-idle: 20
+        # 连接池中的最大空闲连接
+        max-idle: 50
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   typeAliasesPackage: com.aimsphm.nuclear.*.entity

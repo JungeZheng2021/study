@@ -32,7 +32,7 @@ public class DailyDownSampleServiceImpl implements ExecuteDownSampleService {
 
     @Override
     public void executeDownSample(List<SparkDownSampleConfigDO> list, TimeRangeQueryBO rangTime) {
-        dataStore2ManyTable(list, rangTime);
+        dataStore2ManyTable(log, list, rangTime);
     }
 
 

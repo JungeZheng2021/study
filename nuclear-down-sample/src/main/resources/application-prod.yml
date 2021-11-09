@@ -57,6 +57,15 @@ spring:
       connection-test-query: SELECT 1
       #自动提交
       auto-commit: true
+  redis:
+    host: @redis_host@
+    password: @redis_password@
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: 1000
+        min-idle: 20
+        max-idle: 50
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   typeAliasesPackage: com.aimsphm.nuclear.*.entity
