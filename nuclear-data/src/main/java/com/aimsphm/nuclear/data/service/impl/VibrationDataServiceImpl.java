@@ -11,9 +11,9 @@ import com.aimsphm.nuclear.common.service.CommonMeasurePointService;
 import com.aimsphm.nuclear.common.service.CommonSensorService;
 import com.aimsphm.nuclear.common.util.BigDecimalUtils;
 import com.aimsphm.nuclear.common.util.HBaseUtil;
+import com.aimsphm.nuclear.data.enums.CalculateFeatureEnum;
 import com.aimsphm.nuclear.data.feign.entity.dto.PacketDTO;
 import com.aimsphm.nuclear.data.feign.entity.dto.SensorDataDTO;
-import com.aimsphm.nuclear.data.enums.CalculateFeatureEnum;
 import com.aimsphm.nuclear.data.service.CommonDataService;
 import com.aimsphm.nuclear.data.service.HBaseService;
 import com.alibaba.fastjson.JSON;
@@ -86,13 +86,11 @@ public class VibrationDataServiceImpl implements CommonDataService {
         List<CalculateFeatureEnum> calculateFeatureEnums = Arrays.asList(values);
         List<String> collect = calculateFeatureEnums.stream().map(m -> m.getValue()).collect(Collectors.toList());
         store2RedisFeatureList.addAll(collect);
-
         //默认值
         config.put(0.4001, 0.0401);
         config.put(0.5001, 0.0501);
         config.put(0.8501, 0.0851);
         config.put(0.9501, 0.0951);
-
     }
 
     @Override
@@ -106,6 +104,11 @@ public class VibrationDataServiceImpl implements CommonDataService {
         }
         Integer type = sensorDataBO.getType();
         PacketDTO packet = sensorDataBO.getPacket();
+        //状态是1不做任何处理
+        if (Objects.nonNull(packet.getTagStatus()) && packet.getTagStatus().equals(1)) {
+            log.warn("tag status is 1 , Nothing has been done ");
+            return;
+        }
         //传感器设置结果
         if (SETTINGS_STATUS.getType().equals(type)) {
             settingSensorConfigStatus(packet);
@@ -121,7 +124,6 @@ public class VibrationDataServiceImpl implements CommonDataService {
         }
         log.info("topic:{} ,message:{},type:{}", topic, packet.getSensorCode(), sensorDataBO.getType());
         batchUpdateAndSave(packet);
-
     }
 
     private void updateWaveDate2Redis(PacketDTO packet) {
