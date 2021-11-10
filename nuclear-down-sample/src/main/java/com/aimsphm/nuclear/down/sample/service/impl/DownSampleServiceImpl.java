@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.*;
 
+import static com.aimsphm.nuclear.common.constant.SymbolConstant.DASH;
+
 /**
  * <p>
  * 功能描述:降采样实现类
@@ -83,7 +85,7 @@ public class DownSampleServiceImpl implements DownSampleService {
             log.warn("this pointId is not exist -> :{}", bo.getPointId());
             return new ArrayList<>();
         }
-        List<SparkDownSampleConfigDO> configList = listDownSampleConfig(frequencyEnum, point.getSensorCode(), point.getFeature());
+        List<SparkDownSampleConfigDO> configList = listDownSampleConfig(frequencyEnum, point.getSensorCode(), point.getFeatureType() + DASH + point.getFeature());
         if (CollectionUtils.isEmpty(configList)) {
             log.warn("down sample config list is null --> frequency:{},point:{}", frequencyEnum, bo.getPointId());
             return new ArrayList<>();
