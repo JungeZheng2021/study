@@ -18,6 +18,7 @@ spring:
     allow-bean-definition-overriding: true
   config:
     enableRedis: true
+    enableFilled: true
     enableHBase: true
     enableSwagger2: true
     enableAlgorithm: true

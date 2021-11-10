@@ -226,6 +226,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
         try {
             String tableName = TableNameParser.getTableName(multi.getStart(), multi.getEnd());
             if (!TableNameEnum.DAILY.getValue().equals(tableName)) {
+                log.warn("needless fill point ,the target data is not from table :{}", tableName);
                 return;
             }
             if (CollectionUtils.isEmpty(points)) {
@@ -236,7 +237,7 @@ public class HistoryQueryServiceImpl implements HistoryQueryService {
             Long start = (Long) pointValue.get(0);
             long gap = end - start;
             if (minTimeInterval >= gap || gap >= maxTimeInterval) {
-                log.debug("min:{},max:{},gap:{}", minTimeInterval, maxTimeInterval, gap);
+                log.warn("needless fill point,min:{},max:{},gap:{}", minTimeInterval, maxTimeInterval, gap);
                 return;
             }
             HistoryQueryFilledBO bo = new HistoryQueryFilledBO(start + 1, end);

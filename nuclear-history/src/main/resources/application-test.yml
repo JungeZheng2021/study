@@ -12,6 +12,7 @@ spring:
   config:
     enableRedis: true
     enableHBase: true
+    enableFilled: true
     enableSwagger2: true
     enableAlgorithm: true
     enableServiceExtImpl: true
