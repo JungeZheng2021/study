@@ -85,7 +85,7 @@ public class DownSampleServiceImpl implements DownSampleService {
             log.warn("this pointId is not exist -> :{}", bo.getPointId());
             return new ArrayList<>();
         }
-        List<SparkDownSampleConfigDO> configList = listDownSampleConfig(frequencyEnum, point.getSensorCode(), point.getFeatureType() + DASH + point.getFeature());
+        List<SparkDownSampleConfigDO> configList = listDownSampleConfig(frequencyEnum, point);
         if (CollectionUtils.isEmpty(configList)) {
             log.warn("down sample config list is null --> frequency:{},point:{}", frequencyEnum, bo.getPointId());
             return new ArrayList<>();
@@ -107,13 +107,13 @@ public class DownSampleServiceImpl implements DownSampleService {
         return configService.list(wrapper);
     }
 
-    public List<SparkDownSampleConfigDO> listDownSampleConfig(FrequencyEnum rate, String sensorCode, String feature) {
+    public List<SparkDownSampleConfigDO> listDownSampleConfig(FrequencyEnum rate, CommonMeasurePointDO point) {
         LambdaQueryWrapper<SparkDownSampleConfigDO> wrapper = Wrappers.lambdaQuery(SparkDownSampleConfigDO.class);
         wrapper.eq(SparkDownSampleConfigDO::getFrequency, rate.getFrequency());
         wrapper.eq(SparkDownSampleConfigDO::getRate, rate.getRate());
-        wrapper.eq(SparkDownSampleConfigDO::getSensorCode, sensorCode);
-        if (StringUtils.isNotBlank(feature)) {
-            wrapper.eq(SparkDownSampleConfigDO::getFeature, feature);
+        wrapper.eq(SparkDownSampleConfigDO::getSensorCode, point.getSensorCode());
+        if (StringUtils.isNotBlank(point.getFeatureType())) {
+            wrapper.eq(SparkDownSampleConfigDO::getFeature, point.getFeatureType() + DASH + point.getFeature());
         }
         return configService.list(wrapper);
     }
