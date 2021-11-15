@@ -12,6 +12,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Administrator
+ */
 @SpringBootApplication(scanBasePackages = {"com.aimsphm.nuclear"})
 @Slf4j
 public class OpcApplication {

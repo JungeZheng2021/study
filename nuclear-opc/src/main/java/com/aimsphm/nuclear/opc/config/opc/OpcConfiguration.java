@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * @ClassName OpcConfiguration
@@ -47,7 +47,7 @@ public class OpcConfiguration implements CommandLineRunner {
         Server server = client.getServer();
         try {
             //每1秒异步读取一次opcServer的数据
-            Browser.readAsyn(server, Executors.newScheduledThreadPool(2), 1000L
+            Browser.readAsync(server, new ScheduledThreadPoolExecutor(2), 1000L
                     , dataItems -> mqttGateway.sendToMqtt(JSON.toJSONString(dataItems), "pi/many"));
         } catch (Throwable throwable) {
             log.error(throwable.getMessage());

@@ -21,6 +21,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/**
+ * @author Administrator
+ */
 @Slf4j
 public final class Browser extends Observable {
     public static final String MSG = "Simulation Items";
@@ -55,17 +58,7 @@ public final class Browser extends Observable {
     public static List<DataItem> readSyncForGroup(Server server, String groupName) throws DuplicateGroupException, NotConnectedException,
             JIException, UnknownHostException {
         Group group = server.addGroup(groupName);
-        List<String> itemNameList = new ArrayList<>();
-        Branch branch = group.getServer().getTreeBrowser().browse();
-        for (Branch branch1 : branch.getBranches()) {
-            if (Objects.equals(branch1.getName(), MSG)) {
-                continue;
-            }
-            for (Leaf leaf : branch1.getLeaves()) {
-                itemNameList.add(leaf.getItemId());
-            }
-        }
-        return readSync(server, itemNameList);
+        return readSyncForGroup(server, group);
     }
 
     public static List<DataItem> readSyncForGroup(Server server, Group group) throws JIException, UnknownHostException {
@@ -85,17 +78,7 @@ public final class Browser extends Observable {
     public static List<DataItem> readSyncForGroup(Server server) throws DuplicateGroupException, NotConnectedException,
             JIException, UnknownHostException {
         Group group = server.addGroup();
-        List<String> itemNameList = new ArrayList<>();
-        Branch branch = group.getServer().getTreeBrowser().browse();
-        for (Branch branch1 : branch.getBranches()) {
-            if (Objects.equals(branch1.getName(), MSG)) {
-                continue;
-            }
-            for (Leaf leaf : branch1.getLeaves()) {
-                itemNameList.add(leaf.getItemId());
-            }
-        }
-        return readSync(server, itemNameList);
+        return readSyncForGroup(server, group);
     }
 
     /**
@@ -108,8 +91,8 @@ public final class Browser extends Observable {
      * @param dataCallback 数据接收后的回调处理
      * @throws Throwable
      */
-    public static void readAsyn(Server server, Collection<String> itemIds, ScheduledExecutorService threadPool,
-                                long heartBeat, DataCallback dataCallback) throws Throwable {
+    public static void readAsync(Server server, Collection<String> itemIds, ScheduledExecutorService threadPool,
+                                 long heartBeat, DataCallback dataCallback) throws Throwable {
         Group group = server.addGroup();
         Map<String, Item> items = group.addItems(itemIds.toArray(new String[0]));
         Runnable runnable = () -> {
@@ -139,7 +122,7 @@ public final class Browser extends Observable {
 
     /**
      * 异步读取数据（查询所有节点,重复查询）<br>
-     * 该方法仅调用 {@link Browser#readAsyn(Server, Collection, ScheduledExecutorService, long, DataCallback)}
+     * 该方法仅调用 {@link Browser#readAsync(Server, Collection, ScheduledExecutorService, long, DataCallback)}
      *
      * @param server       OPC服务
      * @param threadPool   线程池
@@ -147,26 +130,25 @@ public final class Browser extends Observable {
      * @param dataCallback 接收到数据后的回调处理
      * @throws Throwable
      */
-    public static void readAsyn(Server server, ScheduledExecutorService threadPool, long heartBeat, DataCallback dataCallback) throws Throwable {
-        readAsyn(server, browseItemIds(server), threadPool, heartBeat, dataCallback);
+    public static void readAsync(Server server, ScheduledExecutorService threadPool, long heartBeat, DataCallback dataCallback) throws Throwable {
+        readAsync(server, browseItemIds(server), threadPool, heartBeat, dataCallback);
     }
 
     /**
      * 异步读取数据（查询所有节点,只查询一次）<br>
-     * 该方法仅调用 {@link Browser#readAsyn(Server, Collection, ScheduledExecutorService, long, DataCallback)}
+     * 该方法仅调用 {@link Browser#readAsync(Server, Collection, ScheduledExecutorService, long, DataCallback)}
      *
      * @param server       OPC服务
      * @param threadPool   线程池
      * @param dataCallback 接收到数据后的回调处理
      * @throws Throwable
      */
-    public static void readAsyn(Server server, ScheduledExecutorService threadPool, DataCallback dataCallback) throws Throwable {
-        readAsyn(server, browseItemIds(server), threadPool, -1L, dataCallback);
+    public static void readAsync(Server server, ScheduledExecutorService threadPool, DataCallback dataCallback) throws Throwable {
+        readAsync(server, browseItemIds(server), threadPool, -1L, dataCallback);
     }
 
     public static void subscibe(Server server) {
         log.debug("{}", server);
-
     }
 
     /**

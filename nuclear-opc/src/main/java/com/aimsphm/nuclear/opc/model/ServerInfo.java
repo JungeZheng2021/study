@@ -5,6 +5,9 @@ import org.openscada.opc.dcom.list.ClassDetails;
 
 import java.io.Serializable;
 
+/**
+ * @author Administrator
+ */
 @Data
 @AllArgsConstructor
 @ToString
