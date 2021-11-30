@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,7 +52,7 @@ public class OrderServiceImpl implements IOrderService {
         new ScheduledThreadPoolExecutor(1).scheduleAtFixedRate(() -> {
             cache.delayClear();
             //1个小时清除一次缓存
-        }, 10000, 1 * 10 * 1000, TimeUnit.MILLISECONDS);
+        }, 10000, 5 * 60 * 1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -73,6 +74,9 @@ public class OrderServiceImpl implements IOrderService {
         enable.put(query.getUrl(), true);
         while (enable.get(query.getUrl())) {
             List<String> resources = cache.cache(query.getUrl());
+            if (CollectionUtils.isEmpty(resources)) {
+                continue;
+            }
             try {
                 Random random = new Random();
                 int i = random.nextInt(this.objects.size());
