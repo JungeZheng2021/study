@@ -1,4 +1,4 @@
-package com.example.mq.config;
+package com.study.mq.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

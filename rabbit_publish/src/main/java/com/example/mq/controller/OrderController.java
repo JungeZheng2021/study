@@ -1,7 +1,7 @@
-package com.example.mq.controller;
+package com.study.mq.controller;
 
-import com.example.mq.service.IOrderService;
-import com.example.mq.util.entity.DataQuery;
+import com.study.mq.service.IOrderService;
+import com.study.mq.util.entity.DataQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

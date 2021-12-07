@@ -1,6 +1,6 @@
-package com.example.mq.service;
+package com.study.mq.service;
 
-import com.example.mq.util.entity.DataQuery;
+import com.study.mq.util.entity.DataQuery;
 
 /**
  * @Package: com.example.mq.service

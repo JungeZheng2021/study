@@ -1,15 +1,15 @@
 package com.study.common.mapper;
 
-import com.study.common.entity.ShopOrderDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.study.common.entity.ShopOrderDO;
 
 /**
  * @Package: com.study.common.mapper
- * @Description: <订单信息Mapper接口>
+ * @Description: <Mapper接口>
  * @Author: milla
- * @CreateDate: 2020-11-14
+ * @CreateDate: 2021-12-06
  * @UpdateUser: milla
- * @UpdateDate: 2020-11-14
+ * @UpdateDate: 2021-12-06
  * @UpdateRemark: <>
  * @Version: 1.0
  */

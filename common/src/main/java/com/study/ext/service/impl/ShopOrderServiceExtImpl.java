@@ -1,17 +1,17 @@
 package com.study.ext.service.impl;
 
-import com.study.ext.service.ShopOrderServiceExt;
 import com.study.common.service.impl.ShopOrderServiceImpl;
-import org.springframework.stereotype.Service;
+import com.study.ext.service.ShopOrderServiceExt;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 /**
  * @Package: com.study.ext.service.impl
- * @Description: <订单信息扩展服务实现类>
+ * @Description: <扩展服务实现类>
  * @Author: milla
- * @CreateDate: 2020-11-14
+ * @CreateDate: 2021-12-06
  * @UpdateUser: milla
- * @UpdateDate: 2020-11-14
+ * @UpdateDate: 2021-12-06
  * @UpdateRemark: <>
  * @Version: 1.0
  */

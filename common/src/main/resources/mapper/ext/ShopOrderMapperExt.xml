@@ -10,13 +10,12 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,
-        importance,
-        creator,
-        modifier,
         gmt_create,
+        creator,
         gmt_modified,
+        modifier,
         is_deleted,
-        mount, status
+        status
     </sql>
 
 </mapper>

@@ -4,11 +4,11 @@ import com.study.common.service.ShopOrderService;
 
 /**
  * @Package: com.study.ext.service
- * @Description: <订单信息扩展服务类>
+ * @Description: <扩展服务类>
  * @Author: milla
- * @CreateDate: 2020-11-14
+ * @CreateDate: 2021-12-06
  * @UpdateUser: milla
- * @UpdateDate: 2020-11-14
+ * @UpdateDate: 2021-12-06
  * @UpdateRemark: <>
  * @Version: 1.0
  */

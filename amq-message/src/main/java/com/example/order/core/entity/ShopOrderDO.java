@@ -1,4 +1,4 @@
-package com.study.common.entity;
+package com.example.order.core.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -6,14 +6,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * @Package: com.study.common.entity
- * @Description: <实体>
- * @Author: milla
- * @CreateDate: 2021-12-06
- * @UpdateUser: milla
- * @UpdateDate: 2021-12-06
- * @UpdateRemark: <>
- * @Version: 1.0
+ * <p>
+ * 功能描述:实体
+ * </p>
+ *
+ * @author MILLA
+ * @version 1.0
+ * @since 2021-12-07
  */
 @Data
 @TableName("shop_order")
@@ -22,10 +21,16 @@ public class ShopOrderDO extends BaseDO {
     /**
      * 序列化时候使用
      */
-    private static final long serialVersionUID = 8985653170140721455L;
+    private static final long serialVersionUID = -8985653170140721455L;
 
-    @ApiModelProperty(value = "", notes = "订单状态：1:待支付,2:支付成功，3:订单超时 4:订单支付失败")
+    @ApiModelProperty(value = "订单状态", notes = "1:待支付,2:支付成功，3:订单超时 4:订单支付失败")
     private Integer status;
+
+    @ApiModelProperty(value = "重要成都", notes = "")
+    private Integer importance;
+
+    @ApiModelProperty(value = "备注", notes = "")
+    private String remark;
 
     @Override
     public String toString() {

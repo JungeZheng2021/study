@@ -1,0 +1,25 @@
+spring:
+#  config-service:
+  #    enable: true
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.16.28:3306/hjy?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: aims2016
+    hikari:
+      pool-name: coreHikariPool
+      maximum-pool-size: 12
+      connection-timeout: 30000
+      minimum-idle: 10
+      idle-timeout: 500000
+      max-lifetime: 540000
+      connection-test-query: SELECT 1
+      auto-commit: true
+  rabbitmq:
+    addresses: 192.168.16.43:5672,192.168.16.44:5672,192.168.16.45:5672
+    username: admin
+    password: admin123$
+#mybatis-plus:
+#  quarzt-enable: 1
+#  mapper-locations: classpath*:**/*.xml
+#  typeAliasesPackage: com.study.*.entity

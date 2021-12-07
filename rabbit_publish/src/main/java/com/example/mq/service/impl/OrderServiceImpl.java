@@ -1,9 +1,9 @@
-package com.example.mq.service.impl;
+package com.study.mq.service.impl;
 
-import com.example.mq.service.IOrderService;
-import com.example.mq.util.CacheResourcesUtil;
-import com.example.mq.util.ThreadLocalStore;
-import com.example.mq.util.entity.DataQuery;
+import com.study.mq.service.IOrderService;
+import com.study.mq.util.CacheResourcesUtil;
+import com.study.mq.util.ThreadLocalStore;
+import com.study.mq.util.entity.DataQuery;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

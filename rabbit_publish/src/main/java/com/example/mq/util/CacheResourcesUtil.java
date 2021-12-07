@@ -1,6 +1,6 @@
-package com.example.mq.util;
+package com.study.mq.util;
 
-import com.example.mq.util.entity.DataQuery;
+import com.study.mq.util.entity.DataQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;

@@ -1,4 +1,4 @@
-package com.example.mail.util;
+package com.study.mail.util;
 
 /**
  * @Package: com.example.mail.util

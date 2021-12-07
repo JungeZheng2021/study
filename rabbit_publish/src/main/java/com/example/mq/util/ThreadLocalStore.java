@@ -1,4 +1,4 @@
-package com.example.mq.util;
+package com.study.mq.util;
 
 /**
  * @Package: com.example.mq.util

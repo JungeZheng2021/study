@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
     <version>1.0.0</version>
     <modules>
-        <module>common</module>
-        <module>memcached</module>
+        <!--        <module>common</module>-->
+        <!--        <module>memcached</module>-->
     </modules>
     <!--    <packaging>study-all</packaging>-->
 

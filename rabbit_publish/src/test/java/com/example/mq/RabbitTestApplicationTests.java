@@ -1,4 +1,4 @@
-package com.example.mq;
+package com.study.mq;
 
 import lombok.Data;
 import org.assertj.core.util.Lists;

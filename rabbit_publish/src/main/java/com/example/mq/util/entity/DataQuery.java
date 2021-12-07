@@ -1,4 +1,4 @@
-package com.example.mq.util.entity;
+package com.study.mq.util.entity;
 
 import lombok.Data;
 

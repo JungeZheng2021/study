@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * @Package: com.study.common.service
- * @Description: <订单信息服务类>
+ * @Description: <服务类>
  * @Author: milla
- * @CreateDate: 2020-11-14
+ * @CreateDate: 2021-12-06
  * @UpdateUser: milla
- * @UpdateDate: 2020-11-14
+ * @UpdateDate: 2021-12-06
  * @UpdateRemark: <>
  * @Version: 1.0
  */
